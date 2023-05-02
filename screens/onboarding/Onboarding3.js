@@ -25,11 +25,11 @@ const Onboarding3 = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#DCD1FF',
-    width: "26%",
-    padding: 10,
-    alignItems: 'center',
+    width: 400,
+    padding: 30,
+    alignContent: 'center',
     alignSelf: 'center',
-    marginLeft: 15,
+    alignItems: 'center',
   },
 
   imageContainer: {

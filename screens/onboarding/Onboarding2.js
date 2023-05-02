@@ -11,7 +11,7 @@ const Onboarding2 = ({ navigation }) => {
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.header}>BUY PROPERTIES</Text>
-        <Text style={styles.subText}>Buy and own a slice our hostels via our National Real Estate project</Text>
+        <Text style={styles.subText}>Buy and own a slice of our hostels via our National Real Estate project</Text>
       </View>
       <View style={styles.navigationIndicatorContainer}>
         <View style={styles.navigationIndicator} />
@@ -27,11 +27,11 @@ const Onboarding2 = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#DCD1FF',
-    width: "30%",
+    width: 400,
     padding: 30,
-    marginRight: 20,
-    alignItems: 'center',
+    alignContent: 'center',
     alignSelf: 'center',
+    alignItems: 'center',
   },
 
   imageContainer: {

@@ -1,236 +1,205 @@
-import React from 'react';
-import { View, Text, Image, ScrollView, Switch, TouchableOpacity, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-//import { styles } from './styles';
+import React, { useState } from 'react';
+import { View, Text, Switch, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import * as ImagePicker from 'expo-image-picker';
+import Header from '../components/Header';
+import Divider from '../components/Divider';
 
-const Profile = ({ navigation }) => {
-  const [isEnabled, setIsEnabled] = React.useState(false);
-  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+
+const Profile = ({ navigation, setProfileImageUri }) => {
+  const [imageUri, setImageUri] = useState(null);
+  const [enableFingerprint, setEnableFingerprint] = useState(false);
+  const [showMyFundInDollars, setShowMyFundInDollars] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
+
+  const handlePickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status === 'granted') {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+      if (!result.cancelled) {
+        setImageUri(result.uri);
+        setProfileImageUri(result.uri);
+
+      }
+    }
+  };
 
   return (
-    <><ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Icon name="menu-outline" size={30} color="#4C28BC" />
-        </TouchableOpacity>
-        <View style={styles.headerRight}>
-          <TouchableOpacity onPress={() => alert('Notifications')}>
-            <Icon name="notifications-outline" size={30} color="#4C28BC" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => alert('Profile')}>
-            <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.profileImage} />
-          </TouchableOpacity>
-        </View>
+   <>
+          <Header navigation={navigation} headerText='PROFILE'/>
+<ScrollView style={styles.container}>
+      <TouchableOpacity style={styles.imageContainer} onPress={handlePickImage}>
+        {imageUri ? (
+          <Image source={{ uri: imageUri }} style={styles.image} />
+        ) : (
+          <Ionicons name="person-circle-outline" size={120} color="grey" />
+        )}
+      </TouchableOpacity>
+      <Text style={styles.nameText}>Tolulope</Text>
+      <Text style={styles.usernameText}>ceo@myfundmobile.com</Text>
+      <Divider/>
+     
+      <View style={styles.settingContainer}>
+        <Text style={styles.settingText}>Enable Fingerprint</Text>
+        <Switch
+          trackColor={{ false: 'grey', true: '#4C28BC' }}
+          thumbColor={enableFingerprint ? '#8976FF' : 'silver'}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={() => setEnableFingerprint(!enableFingerprint)}
+          value={enableFingerprint}
+        />
       </View>
-      <View style={styles.content}>
-        <TouchableOpacity onPress={() => alert('Select Profile Picture')}>
-          <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.profileImage} />
-        </TouchableOpacity>
-        <Text style={styles.name}>[FirstName]</Text>
-        <Text style={styles.username}>@[first part of user email]</Text>
-        <View style={styles.options}>
-          <Text style={styles.optionText}>Enable Fingerprint</Text>
-          <Switch
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
-            onValueChange={toggleSwitch}
-            value={isEnabled}
-          />
-        </View>
-        <View style={styles.points}>
-          <Text style={styles.pointsText}>Total Points</Text>
-          <Text style={styles.pointsNumber}>[Points]</Text>
-        </View>
-        <View style={styles.referral}>
-          <Text style={styles.referralText}>Referral Bonus (# of Referrals)</Text>
-          <View style={styles.referralAmount}>
-            <Text style={styles.referralAmountText}>[$Amount]</Text>
-            <Text style={styles.referralCount}>[#]</Text>
-          </View>
-        </View>
-        <TouchableOpacity style={styles.button} onPress={() => alert('General Settings')}>
-          <Icon name="settings-outline" size={25} color="#FFFFFF" />
+      <View style={styles.settingContainer}>
+        <Text style={styles.settingText}>Show MyFund in Dollars</Text>
+        <Switch
+          trackColor={{ false: 'grey', true: '#4C28BC' }}
+          thumbColor={showMyFundInDollars ? '#8976FF' : 'silver'}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={() => setShowMyFundInDollars(!showMyFundInDollars)}
+          value={showMyFundInDollars}
+        />
+      </View>
+      <View style={styles.settingContainer}>
+        <Text style={styles.settingText}>Turn on Dark Mode</Text>
+        <Switch
+          trackColor={{ false: 'grey', true: '#4C28BC' }}
+          thumbColor={darkMode ? '#8976FF' : 'silver'}
+          ios_backgroundColor="#3e3e3e"
+          onValueChange={() => setDarkMode(!darkMode)}
+          value={darkMode}
+        />
+      </View>
+
+      <View style={styles.buttonsContainer}>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="settings-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>General Settings</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => alert('Bank and Card Settings')}>
-          <Icon name="card-outline" size={25} color="#FFFFFF" />
+        </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="card-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Bank and Card Settings</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => alert('Fill KYC Form')}>
-          <Icon name="document-text-outline" size={25} color="#FFFFFF" />
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="document-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Fill KYC Form</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => alert('Redeem Points')}>
-        <Icon name="checkmark-outline" size={25} color="#FFFFFF" />
-        <Text style={styles.buttonText}>Redeem Points</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => alert('Share Testimony')}>
-        <Icon name="chatbox-ellipses-outline" size={25} color="#FFFFFF" />
-        <Text style={styles.buttonText}>Share Testimony</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => alert('Rate MyFund')}>
-        <Icon name="star-outline" size={25} color="#FFFFFF" />
-        <Text style={styles.buttonText}>Rate MyFund</Text>
-      </TouchableOpacity>
-
-    </View>
-
-  </ScrollView>
-
-  <View style={styles.tabContainer}>
-
-    <TouchableOpacity style={styles.tabItem} onPress={() => alert('Home')}>
-      <Icon name="home-outline" size={25} color="#4C28BC" />
-      <Text style={styles.tabText}>Home</Text>
-    </TouchableOpacity>
-
-    <TouchableOpacity style={styles.tabItem} onPress={() => alert('Save')}>
-      <Icon name="save-outline" size={25} color="#4C28BC" />
-      <Text style={styles.tabText}>Save</Text>
-    </TouchableOpacity>
-
-    <TouchableOpacity style={styles.tabItem} onPress={() => alert('Invest')}>
-      <Icon name="cash-outline" size={25} color="#4C28BC" />
-      <Text style={styles.tabText}>Invest</Text>
-    </TouchableOpacity>
-
-    <TouchableOpacity style={styles.tabItem} onPress={() => alert('Withdraw')}>
-      <Icon name="card-outline" size={25} color="#4C28BC" />
-      <Text style={styles.tabText}>Withdraw</Text>
-    </TouchableOpacity>
-
-    <TouchableOpacity style={styles.tabItem} onPress={() => alert('More')}>
-      <Icon name="ellipsis-horizontal-outline" size={25} color="#4C28BC" />
-      <Text style={styles.tabText}>More</Text>
-    </TouchableOpacity>
-
-  </View>
-  </>
-);
-  }
-
-
-export default Profile;
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="wallet-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Text style={styles.buttonText}>Redeem Points</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="chatbubbles-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Text style={styles.buttonText}>Chat Admin</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="star-half-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Text style={styles.buttonText}>Rate MyFund</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="exit-outline" size={24} color="brown" style={{ marginRight: 15 }} />
+          <Text color='brown' style={styles.buttonText}>Log Out</Text>
+        </TouchableOpacity>
+      </View>
+      </View>
+    </ScrollView>
+    </> 
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F1FF',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+
+  imageContainer: {
     alignItems: 'center',
-    backgroundColor: '#F5F1FF',
-    paddingHorizontal: 20,
-    paddingTop: 50,
-    paddingBottom: 20,
+    marginTop: 6,
+    
   },
-  profileIcon: {
-    marginRight: 10,
+  image: {
+    marginTop: 6,
+    width: 130,
+    height: 130,
+    borderRadius: 80,
+    borderWidth: 3,
+    borderColor: 'white',
   },
-  menuIcon: {
-    marginLeft: 10,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  nameText: {
+    marginTop: 2,
+    fontFamily: 'proxima',
+    fontSize: 28,
+    textAlign: 'center',
     color: '#4C28BC',
   },
-  contentContainer: {
-    backgroundColor: '#F5F1FF',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  profilePictureContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  profilePicture: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: '#4C28BC',
-    alignSelf: 'center',
-    marginTop: 30,
-    },
-    name: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginTop: 20,
-    marginBottom: 10,
+  usernameText: {
+    fontFamily: 'karla',
+    fontSize: 12,
+    letterSpacing: -0.5,
+    color: 'gray',
     textAlign: 'center',
-    },
-    username: {
-    fontSize: 16,
-    color: '#999999',
-    textAlign: 'center',
-    marginBottom: 20,
-    },
-    switchContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
-    },
-    switchText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    },
-    pointsContainer: {
-    flex: 1,
+    color: '#4C28BC',
+
+  },
+  settingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#DCD1FF',
-    paddingHorizontal: 20,
-    paddingVertical: 30,
-    },
-    pointsText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    },
-    referralsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
-    },
-    referralsText: {
-    fontSize: 16,
-    },
-    referralAmount: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    },
-    referralCount: {
-    fontSize: 18,
-    },
-    button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#4C28BC',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    marginTop: 20,
-    },
-    buttonText: {
-    color: '#FFFFFF',
+    paddingHorizontal: 25,
+    marginTop: -14,
+  },
+  settingText: {
+    fontFamily: 'karla',
+    letterSpacing: -0.3,
     fontSize: 16,
     marginLeft: 10,
-    },
-    });
-    
+  },
+
+  buttonsContainer: {
+    alignItems: 'center',
+    marginTop: 30,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    marginTop: 13,
+  },
+  button: {
+    flexDirection: 'row',
+  borderColor: 'silver',
+  backgroundColor: 'white',
+  height: 45,
+  width: '90%',
+  padding: 8,
+  borderWidth: 1,
+  borderRadius: 9,
+  },
+  buttonText: {
+    marginTop: 5,
+   fontSize: 16,
+    fontFamily: 'ProductSans',
+    color: '#4C28BC',
+    flex: 1,
+    alignContents: 'flex-start',
+  },
+});
+
+export default Profile;
 

@@ -20,8 +20,8 @@ import MyFundLogo from './logo..png';
         setModalVisible (true);
         setTimeout(() => {
           setModalVisible(false);
-          navigation.navigate('Home', { firstName });
-        }, 2000);
+          navigation.navigate('DrawerTab', { firstName });
+        }, 1500);
       };
 
   return (

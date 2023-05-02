@@ -14,7 +14,7 @@ const OnboardingScreens = ({ navigation }) => {
     const interval = setInterval(() => {
       const nextPage = currentPage < 2 ? currentPage + 1 : 0;
       setCurrentPage(nextPage);
-      scrollViewRef.current.scrollTo({ x: nextPage * 375 });
+      scrollViewRef.current.scrollTo({ x: nextPage * 400 });
     }, 5000);
     return () => clearInterval(interval);
   }, [currentPage]);
@@ -32,7 +32,7 @@ const OnboardingScreens = ({ navigation }) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ width: 1200 }}
           onMomentumScrollEnd={(event) => {
-            const pageNumber = Math.round(event.nativeEvent.contentOffset.x / 375);
+            const pageNumber = Math.round(event.nativeEvent.contentOffset.x / 400);
             setCurrentPage(pageNumber);
           }}
         >
@@ -53,15 +53,22 @@ const OnboardingScreens = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    alignContent: 'center',
+    alignSelf: 'center',
     backgroundColor: '#DCD1FF',
+    borderWidth: 0.5,
   },
   content: {
     flex: 1,
+    alignContent: 'center',
+    alignSelf: 'center',
+    alignItems: 'center',
   },
 
   skipButton: {
    alignItems: 'center',
-   marginTop: 70,
+   marginTop: 50,
    marginLeft: 300,
 
   },

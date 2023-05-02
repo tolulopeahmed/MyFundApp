@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
@@ -10,8 +9,11 @@ import OnboardingScreens from './screens/onboarding/OnboardingScreens';
 import CreateAccount from './screens/login/CreateAccount';
 import Confirmation from './screens/login/Confirmation';
 import Login from './screens/login/Login';
-import Home from './screens/menu/Home';
-import Profile from './screens/menu/Profile';
+import MainTab from './screens/menu/MainTab';
+import Sponsorship from './screens/menu/Sponsorship';
+import DrawerTab from './screens/menu/DrawerTab';
+
+
 
 
 
@@ -29,7 +31,7 @@ const App = () => {
         'ProductSans': require('./screens/fonts/ProductSans-Regular.ttf'),
         'ProductSansBold': require('./screens/fonts/ProductSans-Black.ttf')
       });
-      setTimeout(() => setIsLoading(false), 4000);
+      setTimeout(() => setIsLoading(false), 2000);
     }
     loadFonts();
   }, []);
@@ -40,7 +42,7 @@ const App = () => {
 
   setTimeout(() => {
     setIsLoading(false);
-  }, 5000);
+  }, 2000);
 
   return (
     <NavigationContainer>
@@ -52,8 +54,10 @@ const App = () => {
         <Stack.Screen name="CreateAccount" component={CreateAccount} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Confirmation" component={Confirmation} />
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="DrawerTab" component={DrawerTab} />
+        <Stack.Screen name="Sponsorship" component={Sponsorship} />
+
+
 
       </Stack.Navigator>
     </NavigationContainer>

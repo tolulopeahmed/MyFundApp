@@ -30,6 +30,25 @@ const CreateAccount = ({ navigation }) => {
       <TouchableOpacity style={styles.loginTextContainer} onPress={() => navigation.navigate('Login')}>
         <Text style={styles.loginText}>Already have an account? <Text style={styles.login}>Log in</Text></Text>
       </TouchableOpacity>
+
+
+ {/* add a divider line */}
+ <View style={styles.divider} />
+ <Text style={styles.orLoginText}>OR SIGN UP WITH</Text>
+
+{/* add two buttons */}
+<View style={styles.buttonContainer}>
+  <TouchableOpacity style={styles.googleButton}>
+    <Ionicons name="logo-google" size={24} color="#fff" />
+    <Text style={styles.googleButtonText}>Google</Text>
+  </TouchableOpacity>
+  <TouchableOpacity style={styles.linkedinButton}>
+    <Ionicons name="logo-linkedin" size={24} color="#fff" />
+    <Text style={styles.linkedinButtonText}>LinkedIn</Text>
+  </TouchableOpacity>
+</View>
+
+
     </View>
   );
 };
@@ -134,6 +153,80 @@ const styles = StyleSheet.create({
     marginHorizontal: 40,
     marginTop: 5,
   },
+
+
+
+  
+  divider: {
+    width: '90%',
+    marginTop: 10,
+    height: 1,
+    backgroundColor: 'silver',
+  },
+
+  orLoginText: {
+    fontSize: 10,
+      marginTop: 16,
+      color: 'grey',
+      fontFamily: 'karla',
+  },
+
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 17,
+  },
+
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    //backgroundColor: '#DB4437',
+    borderRadius: 20,
+    paddingVertical: 1,
+    paddingHorizontal: 10,
+    width: '25%',
+    height: 30,
+    backgroundColor: '#9D8CD7',
+    marginRight: 5,
+  },
+  googleButtonText: {
+    color: 'white',
+    fontSize: 15,
+    marginLeft: 10,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 5,
+  },
+
+  linkedinButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    //backgroundColor: '#DB4437',
+    borderRadius: 20,
+    paddingVertical: 1,
+    paddingHorizontal: 10,
+    width: '30%',
+    height: 30,
+    backgroundColor: '#9D8CD7',
+  },
+  linkedinButtonText: {
+    color: 'white',
+    fontSize: 15,
+    marginLeft: 10,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 5,
+  },
+
+
+
 });
 
 export default CreateAccount;

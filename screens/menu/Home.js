@@ -1,26 +1,16 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useState} from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Header from '../components/Header';
+import AutoSaveModal from './AutoSaveModal';
 
-const Home = ({ navigation, firstName }) => {
+
+const Home = ({ navigation, firstName, transactionAmount }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+
   return (
-    
-    <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Ionicons name="menu-outline" size={30} color="#000" />
-        </TouchableOpacity>
-        <View style={styles.profileIcons}>
-          <TouchableOpacity > 
-            <Ionicons name="person-outline" size={24} color="#000" style={{ marginRight: 15 }} onPress={() => navigation.navigate('Profile')}/>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="notifications-outline" size={24} color="#000" />
-          </TouchableOpacity>
-        </View>
-      </View>
-      </View>
+        <SafeAreaView style={styles.container}>
+      <Header navigation={navigation} headerText='MYFUND'/>
       <Text style={styles.welcome}><Text style={styles.welcomeText}>Welcome</Text> <Text style={styles.firstNameText}>[firstName],</Text></Text>
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={24} color="#000" style={{ marginRight: 15 }} />
@@ -50,10 +40,12 @@ const Home = ({ navigation, firstName }) => {
       <View style={styles.todoContainer}>
       <Text style={styles.todoList}>To-Do List</Text>
         <View style={styles.todoList1}>
-          <TouchableOpacity style={styles.todoButton}>
+          <TouchableOpacity style={styles.todoButton} onPress={() => setModalVisible(true)}>
           <Ionicons name="save-outline" size={24} color="#000" style={{ marginRight: 15 }} />
           <Text style={styles.todoText}>Turn On Autosave</Text>
         </TouchableOpacity>
+        <AutoSaveModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
+
         </View>
         <View>
         <TouchableOpacity style={styles.todoButton}>
@@ -78,28 +70,7 @@ const Home = ({ navigation, firstName }) => {
           </View>
         </View>
       </View>
-      <View style={styles.tabNavigator}>
-        <TouchableOpacity style={styles.tabButton}>
-          <Ionicons name="home-outline" size={24} color="#000" />
-          <Text style={styles.activeTab}>Home</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.tabButton}>
-      <Ionicons name="wallet-outline" size={24} color="#000" />
-      <Text style={styles.tabText}>Save</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.tabButton}>
-      <Ionicons name="trending-up-outline" size={24} color="#000" />
-      <Text style={styles.tabText}>Invest</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.tabButton}>
-      <Ionicons name="cash-outline" size={24} color="#000" />
-      <Text style={styles.tabText}>Withdraw</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.tabButton}>
-      <Ionicons name="ellipsis-horizontal-outline" size={24} color="#000" />
-      <Text style={styles.tabText}>More</Text>
-    </TouchableOpacity>
-  </View>
+     
 </SafeAreaView>
 
 );
@@ -109,7 +80,6 @@ const styles = StyleSheet.create({
 container: {
 flex: 1,
 backgroundColor: '#F5F1FF',
-marginTop: 50,
 },
 headerContainer: {
 backgroundColor: 'white',
@@ -127,8 +97,13 @@ marginHorizontal: 20,
 marginTop: 10,
 },
 welcomeText: {
- color: '#4C28BC',
- fontFamily: 'ProductSansBold',
+  fontSize: 20,
+    marginLeft: 25,
+    fontFamily: 'proxima',
+    color: '#4C28BC',
+    marginTop: 5,
+    marginBottom: 5,
+    marginLeft: 20,
 },
 
 firstNameText:{
@@ -151,7 +126,7 @@ backgroundColor: '#DCD1FF',
 padding: 15,
 marginHorizontal: 20,
 borderRadius: 10,
-marginTop: 20,
+marginTop: 10,
 },
 propertyIcon: {
 marginRight: 10,
