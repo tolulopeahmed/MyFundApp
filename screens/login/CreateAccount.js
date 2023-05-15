@@ -1,12 +1,22 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
+import React, { useState} from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 
 
 const CreateAccount = ({ navigation }) => {
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
+    <>
+
     <View style={styles.container}>
+
            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back" size={24} color="#4C28BC" />
       </TouchableOpacity>
@@ -17,12 +27,60 @@ const CreateAccount = ({ navigation }) => {
         <Text style={styles.header}>Create Account</Text>
         <Text style={styles.subText}>Join thousands of landlords to learn how to become one yourself with MyFund.</Text>
       </View>
+
+      <ScrollView>
       <View style={styles.inputContainer}>
-        <TextInput style={styles.input} placeholder="First Name"/>
+
+      <View style={styles.inputWrapper}>
+      <Ionicons name='person-outline' marginBottom={8} size={20} color="grey" padding={8}/>
+      <TextInput style={styles.input} placeholder="First Name"/>
+      </View>
+
+      <View style={styles.inputWrapper}>
+<Ionicons name='person-outline' marginBottom={8} size={20} color="grey" padding={8}/>
         <TextInput style={styles.input} placeholder="Last Name" />
-        <TextInput style={styles.input} placeholder="Email Address" keyboardType="email-address" />
-        <TextInput style={styles.input} placeholder="Phone Number" keyboardType="phone-pad" />
-        <TextInput style={styles.input} placeholder="Referral Phone/Username (optional)" keyboardType="phone-pad" />
+    </View>
+
+        <View style={styles.inputWrapper}>
+        <Ionicons name='at-outline' marginBottom={8} size={20} color="grey" padding={8}/>
+          <TextInput style={styles.input} placeholder="Email Address" keyboardType="email-address" />
+      </View>
+
+      <View style={styles.inputWrapper}>  
+      <Ionicons name='call-outline' marginBottom={8} size={20} color="grey" padding={8}/>
+ <TextInput style={styles.input} placeholder="Phone Number" keyboardType="phone-pad" />
+        </View>
+
+        <View style={styles.inputWrapper}>
+        <TouchableOpacity style={styles.eyeIcon} onPress={toggleShowPassword}>
+          <Ionicons name={showPassword ? 'eye' : 'eye-off'} size={20} color="grey" marginBottom={8} padding={8} />
+        </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry={!showPassword}
+          keyboardType="email-address"
+          fontFamily='karla'
+        />
+      </View>
+
+      <View style={styles.inputWrapper}>
+      <TouchableOpacity style={styles.eyeIcon} onPress={toggleShowPassword}>
+          <Ionicons name={showPassword ? 'eye' : 'eye-off'} size={20} color="grey" marginBottom={8} padding={8}  />
+        </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          secureTextEntry={!showPassword}
+          keyboardType="email-address"
+        />
+      </View>
+
+        <View style={styles.inputWrapper}>
+        <Ionicons name='person-add-outline' marginBottom={9} size={20} color="grey" padding={8}/>
+<TextInput style={styles.input} placeholder="Referral Phone/Username (optional)" keyboardType="phone-pad" />
+        </View>
+      
       </View>
       <TouchableOpacity style={styles.createAccountButton} onPress={() => navigation.navigate('Confirmation')}>
         <Text style={styles.createAccountButtonText}>CREATE ACCOUNT</Text>
@@ -48,8 +106,11 @@ const CreateAccount = ({ navigation }) => {
   </TouchableOpacity>
 </View>
 
+</ScrollView>
 
     </View>
+
+</>
   );
 };
 
@@ -71,10 +132,9 @@ const styles = StyleSheet.create({
     fontFamily: 'proxima',
   },
   logoContainer: {
-    flex: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 50,
+    marginTop: 70,
   },
   logo: {
     width: 75,
@@ -101,26 +161,35 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginTop: 30,
-    width: '100%',
+    width: '90%',
     alignItems: 'center',
     justifyContent: 'center',
   },
   input: {
-    fontSize: 17,
-    height: 45,
+    fontSize: 15,
+    height: 37,
     width: '80%',
     backgroundColor: 'white',
     borderRadius: 10,
-    marginBottom: 15,
-    paddingLeft: 15,
-    paddingRight: 5,
+    marginBottom: 10,
+    paddingLeft: 14,    
   },
+
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 0,
+    marginRight: -18,
+    justifyContent: 'flex-end', // align items to the end of container
+ },
+
   createAccountButton: {
     backgroundColor: '#4C28BC',
     width: '80%',
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
+    alignSelf: 'center',
     borderRadius: 15,
     marginBottom: 4,
     marginTop: 10,
@@ -169,6 +238,7 @@ const styles = StyleSheet.create({
       marginTop: 16,
       color: 'grey',
       fontFamily: 'karla',
+      alignSelf: 'center'
   },
 
   buttonContainer: {
@@ -176,6 +246,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 17,
+    marginBottom: 20
   },
 
   googleButton: {

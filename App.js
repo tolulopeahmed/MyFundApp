@@ -9,9 +9,15 @@ import OnboardingScreens from './screens/onboarding/OnboardingScreens';
 import CreateAccount from './screens/login/CreateAccount';
 import Confirmation from './screens/login/Confirmation';
 import Login from './screens/login/Login';
-import MainTab from './screens/menu/MainTab';
+import Ownership from './screens/menu/Ownership';
 import Sponsorship from './screens/menu/Sponsorship';
 import DrawerTab from './screens/menu/DrawerTab';
+import MainTab from './screens/menu/MainTab';
+import PropertyList from './screens/menu/PropertyList';
+import WealthMap from './screens/menu/WealthMap';
+import Resources from './screens/menu/Resources';
+import Wallet from './screens/menu/Wallet';
+
 
 
 
@@ -56,6 +62,13 @@ const App = () => {
         <Stack.Screen name="Confirmation" component={Confirmation} />
         <Stack.Screen name="DrawerTab" component={DrawerTab} />
         <Stack.Screen name="Sponsorship" component={Sponsorship} />
+        <Stack.Screen name="Ownership" component={Ownership} />
+        <Stack.Screen name="MainTab" component={MainTab} />
+        <Stack.Screen name="PropertyList" component={PropertyList} />
+        <Stack.Screen name="WealthMap" component={WealthMap} />
+        <Stack.Screen name="Resources" component={Resources} />
+        <Stack.Screen name="Wallet" component={Wallet} />
+
 
 
 

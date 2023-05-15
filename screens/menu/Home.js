@@ -1,19 +1,18 @@
 import React, { useState} from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Header from '../components/Header';
-import AutoSaveModal from './AutoSaveModal';
 
 
 const Home = ({ navigation, firstName, transactionAmount }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
       <Header navigation={navigation} headerText='MYFUND'/>
       <Text style={styles.welcome}><Text style={styles.welcomeText}>Welcome</Text> <Text style={styles.firstNameText}>[firstName],</Text></Text>
       <View style={styles.propertyContainer}>
-        <Ionicons name="home-outline" size={24} color="#000" style={{ marginRight: 15 }} />
+        <Ionicons name="home-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
         <Text style={styles.propertyText}>You need $9,500.75 to acquire your next property. Keep growing your funds until your rental income is more than your expenses.</Text>
       </View>
       <View style={styles.savingsContainer}>
@@ -27,8 +26,8 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
         <View>
           <Text style={styles.rate}>@10% p.a.</Text>
           </View>
-        <TouchableOpacity style={styles.quickSaveButton}>
-          <Text style={styles.quickSaveText}>Quick Save</Text>
+        <TouchableOpacity style={styles.quickSaveButton} >
+          <Text style={styles.quickSaveText}>QuickSave</Text>
         </TouchableOpacity>
         <View style={styles.navigatorContainer}>
           <View style={styles.navigatorIndicator} ></View>
@@ -42,9 +41,8 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
         <View style={styles.todoList1}>
           <TouchableOpacity style={styles.todoButton} onPress={() => setModalVisible(true)}>
           <Ionicons name="save-outline" size={24} color="#000" style={{ marginRight: 15 }} />
-          <Text style={styles.todoText}>Turn On Autosave</Text>
+          <Text style={styles.todoText}>Turn On AutoSave</Text>
         </TouchableOpacity>
-        <AutoSaveModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
 
         </View>
         <View>
@@ -54,24 +52,109 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
         </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.transactionsContainer}>
-        <View style={styles.transactionItem}>
-        <View>
-          <Text style={styles.todoList}>Recent Transactions</Text>
-          </View>
-          <View style={styles.recentContainer}>
-          <View style={styles.transactionText}>
-            <Text style={styles.transactionDescription}>Autosave</Text>
-            <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
+    
+    
+      <SafeAreaView style={styles.transactionContainer}>
+      <Text style={styles.recentTransaction}>Recent Transactions</Text>
+
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.transactionsContainer}>
+          <View style={styles.transactionItem}>
+            <Ionicons
+              name="car-outline"
+              size={25}
+              style={styles.transactionIcon}
+            />
+            <View style={styles.transactionText}>
+              <Text style={styles.transactionDescription}>AutoSave</Text>
+              <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
             </View>
             <View>
             <Text style={styles.transactionAmount}>+300.50</Text>
+            </View>
+          </View>
+          <View style={styles.transactionItem}>
+            <Ionicons
+              name="cash-outline"
+              size={25}
+              style={styles.transactionIcon}
+            />
+            <View style={styles.transactionText}>
+              <Text style={styles.transactionDescription}>QuickSave</Text>
+              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
+            </View>
+            <View>
+            <Text style={styles.transactionAmount}>+1000.00</Text>
+            </View>
+          </View>
+          <View style={styles.transactionItem}>
+            <Ionicons
+              name="wallet-outline"
+              size={25}
+              style={styles.transactionIcon}
+            />
+            <View style={styles.transactionText}>
+              <Text style={styles.transactionDescription}>
+                Withdrawal From Saving
+              </Text>
+              <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
+            </View>
+            <View style={styles.transactionAmountContainer}>
+            <Text style={styles.negativeAmount}>-500.00</Text>
+            </View>
           </View>
           </View>
-        </View>
-      </View>
+          {/* Add more transaction items here */}
+          <View style={styles.transactionsContainer}>
+          <View style={styles.transactionItem}>
+            <Ionicons
+              name="car-outline"
+              size={25}
+              style={styles.transactionIcon}
+            />
+            <View style={styles.transactionText}>
+              <Text style={styles.transactionDescription}>AutoSave</Text>
+              <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
+            </View>
+            <View>
+            <Text style={styles.transactionAmount}>+300.50</Text>
+            </View>
+          </View>
+          <View style={styles.transactionItem}>
+            <Ionicons
+              name="cash-outline"
+              size={25}
+              style={styles.transactionIcon}
+            />
+            <View style={styles.transactionText}>
+              <Text style={styles.transactionDescription}>QuickSave</Text>
+              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
+            </View>
+            <View>
+            <Text style={styles.transactionAmount}>+1000.00</Text>
+            </View>
+          </View>
+          <View style={styles.transactionItem}>
+            <Ionicons
+              name="wallet-outline"
+              size={25}
+              style={styles.transactionIcon}
+            />
+            <View style={styles.transactionText}>
+              <Text style={styles.transactionDescription}>
+                Withdrawal From Saving
+              </Text>
+              <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
+            </View>
+            <View style={styles.transactionAmountContainer}>
+            <Text style={styles.negativeAmount}>-500.00</Text>
+            </View>
+          </View>
+          </View>
+          </ScrollView>
+    </SafeAreaView>
      
-</SafeAreaView>
+</View>
 
 );
 }
@@ -125,6 +208,7 @@ flexDirection: 'row',
 backgroundColor: '#DCD1FF',
 padding: 15,
 marginHorizontal: 20,
+alignItems: 'center',
 borderRadius: 10,
 marginTop: 10,
 },
@@ -161,15 +245,18 @@ color: '#8E8E93',
 fontFamily: 'karla',
 },
 savingsLine2: {
-fontSize: 60,
-fontFamily: 'ProductSans',
-textAlign: 'left',
-marginRight: 85,
-  color: '#fff',
+  fontSize: 70,
+  fontFamily: 'karla',
+  textAlign: 'center',
+  letterSpacing: -4,
+  marginRight: 0,
+    color: '#fff',
+    marginRight: 85,
+
 },
 rate: {
 fontSize: 13,
-color: 'orange',
+color: '#43FF8E',
 marginRight: 278,
 fontFamily: 'karla',
 },
@@ -267,71 +354,89 @@ height: 50,
 },
 
 
+
+todoList: {
+  marginTop: 2,
+  fontSize: 18,
+  color: 'black',
+   fontFamily: 'ProductSansBold',
+   
+},
+
+
+recentTransaction: {
+  marginTop: 2,
+  marginLeft:20,
+  fontSize: 18,
+  color: 'black',
+   fontFamily: 'ProductSansBold',
+   
+},
+transactionContainer: {
+  marginTop: 25,
+  flex: 1,
+    },
+
 transactionsContainer: {
   borderRadius: 10,
   marginHorizontal: 20,
-  marginTop: 20,
-  
+  marginTop: 5,
 },
 transactionItem: {
-flexDirection: 'column',
-alignItems: 'flex-start',
-paddingVertical: 10,
-borderBottomWidth: 1,
-borderBottomColor: '#ccc',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  paddingVertical: 10,
+  borderBottomWidth: 1,
+  borderBottomColor: '#ccc',
 },
 transactionIcon: {
-backgroundColor: '#4C28BC',
-color: '#fff',
-padding: 10,
-borderRadius: 25,
-marginRight: 10,
+  backgroundColor: '#DEE4FC',
+  color: '#4C28BC',
+  padding: 8,
+  borderRadius: 10,
+  marginRight: 10,
+},
+transactionText: {
+  flex: 1,
+  alignItems: 'flex-start',
+
 },
 transactionDescription: {
-color: '#44D47D',
-fontSize: 20,
-fontFamily: 'karla',
-marginTop: 3,
-marginLeft: 10,
+  color: '#4C28BC',
+  letterSpacing: -1,
+  fontSize: 18,
+  fontFamily: 'karla',
+  marginTop: 3,
+  textAlign: 'left',
+  alignItems: 'flex-start',
 },
 transactionDate: {
-fontFamily: 'karla',
-fontSize: 12,
-marginTop: 3,
-marginLeft: 10,
+  fontFamily: 'karla',
+  fontSize: 12,
+  marginTop: 3,
 },
 transactionAmount: {
-  color: '#44D47D',
-  fontSize: 25,
-  fontFamily: 'ProductSans',
+  color: 'green',
+  fontSize: 23,
+  fontFamily: 'karla',
+  letterSpacing: -1,
   marginTop: 10,
-  marginLeft: 130,
-},
-transactionTime: {
-color: '#ccc',
+  textAlign: 'right',
 },
 
+negativeAmount: {
+  color: 'red',
+  fontSize: 23,
+  fontFamily: 'karla',
+  letterSpacing: -1,
+  marginTop: 10,
+  textAlign: 'right',
+},
 
-tabNavigator: {
-flexDirection: 'row',
-justifyContent: 'space-around',
-alignItems: 'center',
-backgroundColor: '#fff',
-top: 40,
-flex: 0.6,
-},
-tabButton: {
-alignItems: 'center',
-fontFamily: 'karla',
-},
-tabButtonTitle: {
-fontSize: 12,
-marginTop: 8,
-fontFamily: 'karla',
-},
-activeTab: {
-color: 'purple',
-fontWeight: 'bold',
+transactionAmountContainer: {
+  textAlign: 'right',
+  
 },
 });
 

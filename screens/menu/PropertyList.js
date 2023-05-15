@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AutoInvestModal from './AutoInvestModal';
-import { ProgressBar } from 'react-native-paper';
-import { MaterialIcons } from '@expo/vector-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faHouseCircleCheck } from '@fortawesome/free-solid-svg-icons';import { ProgressBar } from 'react-native-paper';
 
 
-const Sponsorship = ({ navigation, firstName }) => {
+const PropertyList = ({ navigation, firstName }) => {
   const [autoSave, setAutoSave] = React.useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -25,7 +24,7 @@ const handleActivateAutoSave = () => {
         <Ionicons name="arrow-back-outline" size={30} color="#4C28BC" />
       </TouchableOpacity>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>SPONSORSHIP INVESTMENT</Text>
+        <Text style={styles.headerText}>PROPERTY LIST</Text>
         <TouchableOpacity style={styles.person}> 
             <Ionicons name="person-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('More', component={Profile} )}/>
           </TouchableOpacity>
@@ -35,152 +34,79 @@ const handleActivateAutoSave = () => {
         </View>
     </View>
 
-      <Text style={styles.title}>Sponsorship Investment</Text>
+      <Text style={styles.title}>My Properties</Text>
       <View style={styles.propertyContainer}>
-        <MaterialIcons name="trending-up" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
+        <Ionicons name="home-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}>Earn up to <Text style={{color: 'green'}}>20% p.a.</Text> sponsoring any of our National Hostel Project. Multiples of 60,000.</Text>
+        <Text style={styles.propertyText}>Earn <Text style={{color: '#4C28BC'}}>rental income for life </Text> by buying a fraction of our hostels. Next property progress...</Text>
         <ProgressBar progress={0.25} color='#4C28BC' height={6} style={styles.progressBar}/>
       </View>
       </View>
       
       <View style={styles.savingsContainer}>
         <View style={styles.savingsLine1}>
-          <Ionicons name="trending-up-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
-          <Text style={styles.greyText}>Total Investment    <Text style={styles.rateText}>@15-20% p.a.</Text> </Text>
+          <Ionicons name="home-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
+          <Text style={styles.greyText}>Number of Properties    <Text style={styles.rateText}>@30%+ p.a.</Text> </Text>
         </View>
         <View style={styles.amountContainer}>
-        <Text style={styles.dollarSign}>₦</Text><Text style={styles.savingsAmount}>3,650,200</Text><Text style={styles.decimal}>.50</Text>
-        </View>
-       
-       <View style={styles.autoSaveContainer}>
-        <Text style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]}>
-    {autoSave ? 'AutoInvest is ON' : 'AutoInvest is OFF'}
-        </Text>
-            <Switch
-          title="Open Modal" onPress={() => setModalVisible(true)}
-          style={styles.switch}
-            trackColor={{ false: 'grey', true: '#0AA447' }}
-            thumbColor={autoSave ? '#43FF8E' : 'silver'}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={() => handleActivateAutoSave()}
-            value={autoSave}
-          />
-        <AutoInvestModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
-        </View>
-
-
-        <View style={styles.autoSaveSettingContainer}>
-            {autoSave && <Text style={styles.autoSaveSetting}>@$20/month
-            <Ionicons name="checkmark" size={17} color="#0AA447" />          
-
-            </Text>}
-            </View> 
-        <View>
-          <TouchableOpacity style={styles.quickSaveButton}>
-          <Ionicons name="add-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
-          <Text style={styles.quickSaveText}>QuickInvest</Text>
-        </TouchableOpacity>
+        <Text style={styles.savingsAmount}>02</Text>
         </View>
       </View>
-
+          <TouchableOpacity style={styles.quickSaveButton} onPress={() => navigation.navigate('Ownership')}>
+          <FontAwesomeIcon icon={faHouseCircleCheck} animation="beat" style={styles.buttonIcon} />
+          <Text style={styles.quickSaveText}>Buy Property</Text>
+        </TouchableOpacity>
 
       <SafeAreaView style={styles.transactionContainer}>
-      <Text style={styles.todoList}>Investment Transactions</Text>
+      <Text style={styles.todoList}>Acquired Properties</Text>
+
+      <View style={styles.containerHead}>
+      <View style={styles.column}>
+        <Text style={styles.text}>Acquired </Text>
+      </View>
+      <View style={styles.column}>
+        <Text style={styles.text}>          Value</Text>
+      </View>
+      <View style={styles.column}>
+        <Text style={styles.text2}>          Yearly Rent</Text>
+      </View>
+    </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.transactionsContainer}>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="car-outline"
+              name="home-outline"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>AutoInvest</Text>
-              <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
+              <Text style={styles.transactionDescription}>FUNAAB</Text>
+              <Text style={styles.transactionDate}>05 Mar, 2023</Text>
             </View>
-            <View>
-            <Text style={styles.transactionAmount}>+300.50</Text>
+            <View flexDirection='row' alignContent='space-between'>
+            <Text style={styles.transactionAmount}>5000000           </Text>
+            <Text style={styles.transactionAmount2}>200000</Text>
             </View>
           </View>
+
+
           <View style={styles.transactionItem}>
             <Ionicons
-              name="cash-outline"
+              name="home-outline"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickInvest</Text>
-              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
+              <Text style={styles.transactionDescription}>IBADAN</Text>
+              <Text style={styles.transactionDate}>05 Jun, 2023</Text>
             </View>
-            <View>
-            <Text style={styles.transactionAmount}>+1000.00</Text>
-            </View>
-          </View>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="wallet-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>
-                Withdrawal From Investment
-              </Text>
-              <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
-            </View>
-            <View style={styles.transactionAmountContainer}>
-            <Text style={styles.negativeAmount}>-500.00</Text>
+            <View flexDirection='row' alignContent='space-between'>
+            <Text style={styles.transactionAmount}>5000000           </Text>
+            <Text style={styles.transactionAmount2}>200000</Text>
             </View>
           </View>
-          </View>
-          {/* Add more transaction items here */}
-          <View style={styles.transactionsContainer}>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="car-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>AutoInvest</Text>
-              <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+300.50</Text>
-            </View>
-          </View>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="cash-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickInvest</Text>
-              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+1000.00</Text>
-            </View>
-          </View>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="wallet-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>
-                Withdrawal From Investment
-              </Text>
-              <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
-            </View>
-            <View style={styles.transactionAmountContainer}>
-            <Text style={styles.negativeAmount}>-500.00</Text>
-            </View>
-          </View>
+          
           </View>
           </ScrollView>
     </SafeAreaView>
@@ -292,7 +218,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'regular',
     fontFamily: 'karla',
-    letterSpacing: -0.2,
+    letterSpacing: -0.4,
     color: 'black',
 
     },
@@ -331,7 +257,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 20,
     alignItems: 'center',
-    height: 150,
+    height: 125,
     },
     savingsLine1: {
       flexDirection: 'row',
@@ -350,7 +276,7 @@ const styles = StyleSheet.create({
 
     rateText: {
       fontSize: 11,
-      color: '#43FF8E',
+      color: 'orange',
       marginRight: 278,
       fontFamily: 'karla',
       },
@@ -420,17 +346,20 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
       },
 
-
+      buttonIcon: {
+        color: '#FFFFFF',
+        marginRight: 7,
+      },
     quickSaveButton: {
       marginTop: 30,
       flexDirection: 'row',
       backgroundColor: '#4C28BC',
-      width: 140,
+      width: 146,
       height: 40,
+      alignSelf: 'center',
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: 10,
-      marginBottom: 5,
     
     },
     quickSaveText: {
@@ -458,11 +387,38 @@ const styles = StyleSheet.create({
       fontSize: 18,
       color: 'black',
        fontFamily: 'ProductSansBold',
-       
+       marginBottom:10,
+
     },
 
+    containerHead: {
+        backgroundColor: '#fff',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '90%',
+        alignSelf: 'center',
+        height: 40,
+        borderRadius: 5,
+      },
+      column: {
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center',
+      },
+      text: {
+        color: '#4C28BC',
+        fontFamily: 'ProductSans',
+        fontSize: 16,
+      },
+      text2: {
+        color: 'green',
+        fontFamily: 'ProductSans',
+        fontSize: 16,
+      },
+
+
     transactionContainer: {
-      marginTop: 100,
+      marginTop: 30,
       flex: 1,
         },
 
@@ -506,14 +462,22 @@ const styles = StyleSheet.create({
       marginTop: 3,
     },
     transactionAmount: {
-      color: 'green',
-      fontSize: 23,
+      color: '#4C28BC',
+      fontSize: 20,
       fontFamily: 'karla',
       letterSpacing: -1,
       marginTop: 10,
       textAlign: 'right',
     },
 
+    transactionAmount2: {
+        color: 'green',
+        fontSize: 20,
+        fontFamily: 'karla',
+        letterSpacing: -1,
+        marginTop: 10,
+        textAlign: 'right',
+      },
     negativeAmount: {
       color: 'red',
       fontSize: 23,
@@ -531,4 +495,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default Sponsorship;
+export default PropertyList;

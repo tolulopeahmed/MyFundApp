@@ -20,7 +20,7 @@ const Profile = ({ navigation, setProfileImageUri }) => {
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,
-      });
+        });
       if (!result.cancelled) {
         setImageUri(result.uri);
         setProfileImageUri(result.uri);
@@ -28,6 +28,11 @@ const Profile = ({ navigation, setProfileImageUri }) => {
       }
     }
   };
+
+  const handleLogout = () => {
+    navigation.navigate('Login');
+  }
+ 
 
   return (
    <>
@@ -37,7 +42,7 @@ const Profile = ({ navigation, setProfileImageUri }) => {
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.image} />
         ) : (
-          <Ionicons name="person-circle-outline" size={120} color="grey" />
+          <Ionicons name="person-circle" size={120} color="silver" />
         )}
       </TouchableOpacity>
       <Text style={styles.nameText}>Tolulope</Text>
@@ -78,8 +83,8 @@ const Profile = ({ navigation, setProfileImageUri }) => {
       <View style={styles.buttonsContainer}>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button}>
-          <Ionicons name="settings-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
-          <Text style={styles.buttonText}>General Settings</Text>
+          <Ionicons name="save-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Text style={styles.buttonText}>Savings Goal Settings</Text>
         </TouchableOpacity>
         </View>
       <View style={styles.buttonContainer}>
@@ -113,8 +118,8 @@ const Profile = ({ navigation, setProfileImageUri }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
-          <Ionicons name="exit-outline" size={24} color="brown" style={{ marginRight: 15 }} />
+        <TouchableOpacity style={styles.button} onPress={handleLogout}>
+          <Ionicons name="exit-outline" size={24} color="brown" style={{ marginRight: 15 }}/>
           <Text color='brown' style={styles.buttonText}>Log Out</Text>
         </TouchableOpacity>
       </View>

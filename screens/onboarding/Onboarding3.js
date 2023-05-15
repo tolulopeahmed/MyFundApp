@@ -10,7 +10,7 @@ const Onboarding3 = ({ navigation }) => {
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.header}>EARN RENT</Text>
-        <Text style={styles.subText}>Earn rental income passively every year for life.</Text>
+        <Text style={styles.subText}>Earn rental income every year for life as the landlord.</Text>
       </View>
       <View style={styles.navigationIndicatorContainer}>
         <View style={styles.navigationIndicator} />

@@ -2,35 +2,29 @@ import React, { useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AutoSaveModal from './AutoSaveModal';
-import QuickSaveModal from '../components/QuickSaveModal';
 import { ProgressBar } from 'react-native-paper';
 import Header from '../components/Header';
 
 
-const Save = ({ navigation, firstName }) => {
+const Wallet = ({ navigation, firstName }) => {
   const [autoSave, setAutoSave] = React.useState(false);
-  const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
-  const [autoSaveModalVisible, setAutoSaveModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // in the Save component
+const handleActivateAutoSave = () => {
+  setModalVisible(true);
+  setAutoSave(true);
+};
 
   
-  const handleQuickSave = () => {
-    setQuickSaveModalVisible(true);
-  };
-  
-  const handleActivateAutoSave = (value) => {
-    if (value) {
-    setAutoSave(value);
-  };
-}
-
   return (
     <View style={styles.container}>
-      <Header navigation={navigation} headerText='SAVE'/>
-      <Text style={styles.title}>Savings</Text>
+      <Header navigation={navigation} headerText='WALLET'/>
+      <Text style={styles.title}>Wallet</Text>
       <View style={styles.propertyContainer}>
         <Ionicons name="wallet-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}><Text style={{fontFamily: "proxima"}}>Savings Goal: </Text>You need to be saving <Text style={styles.goalText}>41,666.7</Text> to achieve your goal of <Text style={styles.goalText}>1,000,000 <Text style={styles.propertyText}>in </Text><Text style={styles.goalText}>2</Text> <Text style={styles.restText}>years. And you're currently <Text style={styles.goalText}>25%</Text> to success. Well done!</Text></Text></Text>
+        <Text style={styles.propertyText}>You need to be saving <Text style={styles.goalText}>41,666.7</Text> to achieve your goal of <Text style={styles.goalText}>1,000,000 <Text style={styles.propertyText}>in </Text><Text style={styles.goalText}>2</Text> <Text style={styles.restText}>years. And you're currently <Text style={styles.goalText}>25%</Text> to success. Well done!</Text></Text></Text>
         <ProgressBar progress={0.25} color='#4C28BC' height={6} style={styles.progressBar}/>
       </View>
       </View>
@@ -43,25 +37,10 @@ const Save = ({ navigation, firstName }) => {
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text><Text style={styles.savingsAmount}>250,000</Text><Text style={styles.decimal}>.50</Text>
         </View>
-
         <View style={styles.autoSaveContainer}>
-        <Text style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]}>
-    {autoSave ? 'AutoSave is ON' : 'AutoSave is OFF'}
-        </Text>
-            <Switch
-          title="Open Modal" onPress={() => setAutoSaveModalVisible(true)}
-          style={styles.switch}
-            trackColor={{ false: 'grey', true: '#0AA447' }}
-            thumbColor={autoSave ? '#43FF8E' : 'silver'}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={() => handleActivateAutoSave()}
-            value={autoSave}
-          />
-        <AutoSaveModal autoSaveModalVisible={autoSaveModalVisible} setAutoSaveModalVisible={setAutoSaveModalVisible} />
+       
+        <AutoSaveModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
         </View>
-
-  
-        
         <View style={styles.autoSaveSettingContainer}>
             {autoSave && <Text style={styles.autoSaveSetting}>@$20/month
             <Ionicons name="checkmark" size={17} color="#0AA447" />          
@@ -69,18 +48,10 @@ const Save = ({ navigation, firstName }) => {
             </Text>}
             </View> 
         <View>
-          <TouchableOpacity style={styles.quickSaveButton} onPress={handleQuickSave}>
-          <Ionicons name="add-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
-          <Text style={styles.quickSaveText}>QuickSave</Text>
+          <TouchableOpacity style={styles.quickSaveButton}>
+          <Ionicons name="arrow-down-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
+          <Text style={styles.quickSaveText}>Withdraw</Text>
         </TouchableOpacity>
-
-        {quickSaveModalVisible && (
-  <QuickSaveModal
-  quickSaveModalVisible={quickSaveModalVisible} 
-  setQuickSaveModalVisible={setQuickSaveModalVisible}
-  />
-)}
-
         </View>
       </View>
 
@@ -497,4 +468,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default Save;
+export default Wallet;

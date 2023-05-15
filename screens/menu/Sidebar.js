@@ -2,8 +2,15 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider';
+import { TransitionSpecs } from '@react-navigation/stack';
+
 
 const Sidebar = ({ navigation, firstName, profileImageUri }) => {
+  const handleLogout = () => {
+    navigation.navigate('Login');
+  }
+  
+
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
@@ -21,26 +28,31 @@ const Sidebar = ({ navigation, firstName, profileImageUri }) => {
         </View>
       </View>
       <View style={styles.menuItemsContainer}>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Save')}>
           <Ionicons name="save-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
           <Text style={styles.menuText}>Save</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Invest')}>
           <Ionicons name="trending-up-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
           <Text style={styles.menuText}>Invest</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Wallet')}>
           <Ionicons name="wallet-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
           <Text style={styles.menuText}>Wallet</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.push('WealthMap')}>
+              <View style={{ marginLeft: -29, marginRight: 15 }}>
+        <View style={styles.arrow} />
+        </View>
           <Ionicons name="cellular-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
           <Text style={styles.menuText}>My WealthMap</Text>
         </TouchableOpacity>
+
       </View>
       <Divider />
       <View style={styles.subMenuItemsContainer}>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('More')}>
           <Ionicons name="settings-outline" size={18} color="silver" style={{ marginRight: 15 }} />
           <Text style={styles.subMenuText}>Settings</Text>
         </TouchableOpacity>
@@ -48,7 +60,7 @@ const Sidebar = ({ navigation, firstName, profileImageUri }) => {
           <Ionicons name="chatbubbles-outline" size={18} color="silver" style={{ marginRight: 15 }} />
           <Text style={styles.subMenuText}>Chat Admin</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={18} color="orange" style={{ marginRight: 15 }} />
           <Text style={styles.subMenuText}>Log Out</Text>
         </TouchableOpacity>
@@ -115,7 +127,20 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'ProductSans'
   },
+  arrow: {
+    borderTopWidth: 7,
+    borderRightWidth: 6,
+    borderBottomWidth: 7,
+    borderLeftWidth: 8,
+    borderTopColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderLeftColor: '#FF9933',
+    marginTop: 0,
+    transform: [{ scaleX: -1 }]
 
+
+  },
   subMenuItemsContainer: {
     marginBottom: 10,
     marginLeft: 10

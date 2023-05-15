@@ -7,14 +7,13 @@ import Sidebar from './Sidebar';
 
 const Drawer = createDrawerNavigator();
 
-const DrawerTab = (navigation, firstName) => {
+const DrawerTab = ({ navigation, firstName }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [profileImageUri, setProfileImageUri] = useState(null);
 
   useEffect(() => {
     console.log('profileImageUri:', profileImageUri);
   }, [profileImageUri]);
-  
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -23,22 +22,24 @@ const DrawerTab = (navigation, firstName) => {
   return (
     <View style={styles.container}>
       <Drawer.Navigator
-        drawerStyle={{
-            width: '80%',
-            animationType: 'slide',
-            edgeWidth: 0,
-        }}
-        drawerContent={(props) => <Sidebar {...props} toggleSidebar={toggleSidebar} navigation={navigation} firstName={firstName} profileImageUri={profileImageUri} />}
-      >
-        <Drawer.Screen name="MainTab" component={MainTab}  options={{
-            headerShown: false,
-            headerTitle: '',
-            }}
-            initialParams={{setProfileImageUri}}
-            />
+  drawerContent={(props) => <Sidebar {...props} firstName={firstName} profileImageUri={profileImageUri} />}
+  drawerStyle={{ width: '80%' }}
+  drawerPosition="right"
+  edgeWidth={0}
+  screenOptions={{ headerShown: false }}
+  drawerAnimationEnabled
+>
+        <Drawer.Screen
+          name="MainTab"
+          component={MainTab}
+          initialParams={{ setProfileImageUri }}
+        />
       </Drawer.Navigator>
       {isSidebarOpen && (
-        <View style={styles.overlay} onTouchStart={() => setIsSidebarOpen(false)} />
+        <View
+          style={styles.overlay}
+          onTouchStart={() => setIsSidebarOpen(false)}
+        />
       )}
     </View>
   );

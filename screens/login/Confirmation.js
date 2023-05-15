@@ -8,13 +8,31 @@ import MyFundLogo from './logo..png';
     const input2 = useRef(null);
     const input3 = useRef(null);
     const input4 = useRef(null);
-    
+    const input5 = useRef(null);
+    const input6 = useRef(null);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [firstName, setFirstName] = useState('');
+
 
     const focusNext = (next) => {
         next.current.focus();
       }
+    
+      const clearAndSelectAll = (ref) => {
+        if (ref && ref.current) {
+          ref.current.clear();
+          ref.current.focus();
+        }
+      };
+      
+      const submitForm = () => {
+        setModalVisible(true);
+        setTimeout(() => {
+          setModalVisible(false);
+          navigation.navigate('DrawerTab', { firstName });
+        }, 1500);
+      };
 
       const handleConfirm = () => {
         setModalVisible (true);
@@ -34,13 +52,15 @@ import MyFundLogo from './logo..png';
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.header}>Enter Confirmation Code</Text>
-        <Text style={styles.subText}>Use the code sent to your email/phone number to complete your signup</Text>
+        <Text style={styles.subText}>Use the code we just sent to your email/phone number to complete your signup</Text>
       </View>
       <View style={styles.inputContainer}>
-        <TextInput style={styles.input} placeholder="_" keyboardType="numeric" maxLength={1} ref={input1} onSubmitEditing={() => focusNext(input2)}/>
-        <TextInput style={styles.input} placeholder="_" keyboardType="numeric" maxLength={1} ref={input2} onSubmitEditing={() => focusNext(input3)}/>
-        <TextInput style={styles.input} placeholder="_" keyboardType="numeric" maxLength={1} ref={input3} onSubmitEditing={() => focusNext(input4)}/>
-        <TextInput style={styles.input} placeholder="_" keyboardType="numeric" maxLength={1} ref={input4}/>
+        <TextInput style={styles.input} placeholder="_" keyboardType="numeric" maxLength={1} ref={input1} onFocus={() => clearAndSelectAll(input1)} onChangeText={() => focusNext(input2)}/>
+        <TextInput style={styles.input} placeholder="_" keyboardType="numeric" maxLength={1} ref={input2} onFocus={() => clearAndSelectAll(input2)} onChangeText={() => focusNext(input3)}/>
+        <TextInput style={styles.input} placeholder="_" keyboardType="numeric" maxLength={1} ref={input3} onFocus={() => clearAndSelectAll(input3)} onChangeText={() => focusNext(input4)}/>
+        <TextInput style={styles.input} placeholder="_" keyboardType="numeric" maxLength={1} ref={input4} onFocus={() => clearAndSelectAll(input4)} onChangeText={() => focusNext(input5)}/>
+        <TextInput style={styles.input} placeholder="_" keyboardType="numeric" maxLength={1} ref={input5} onFocus={() => clearAndSelectAll(input5)} onChangeText={() => focusNext(input6)}/>
+        <TextInput style={styles.input} placeholder="_" keyboardType="numeric" maxLength={1} ref={input6} onFocus={() => clearAndSelectAll(input6)} onChangeText={submitForm}/>
       </View>
       <TouchableOpacity style={styles.confirmCodeButton} onPress={handleConfirm}>
         <Text style={styles.confirmCodeButtonText}>CONFIRM CODE</Text>
@@ -57,7 +77,7 @@ import MyFundLogo from './logo..png';
       >
         <View style={styles.modalContainer} onPress={() => setModalVisible(false)} >
           <View style={styles.modalContent}>
-          <Text style={styles.modalHeader}>Confirmed!</Text>
+          <Text style={styles.modalHeader}>We've confirmed it's you!</Text>
             <Text style={styles.modalSubText}>Welcome to MyFund{firstName}</Text>
           <Animated.View style={[styles.checkmarkContainer, { opacity: animation }]}>
             <Ionicons name="checkmark" size={170} color="green" />
@@ -122,15 +142,15 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 30,
-    height: 45,
-    width: '15%',
+    height: 50,
+    width: '13%',
     fontFamily: 'karla',
     backgroundColor: 'white',
     borderRadius: 5,
     marginBottom: 15,
-    paddingLeft: 15,
+    paddingLeft: 5,
     paddingRight: 5,
-    marginHorizontal: 10,
+    marginHorizontal: 3,
     textAlign: 'center',
     alignContent: 'center',
     alignSelf: 'center',

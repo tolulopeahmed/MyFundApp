@@ -76,7 +76,7 @@ const Login = ({ navigation }) => {
       >
         <View style={styles.modalContainer} onPress={() => setModalVisible(false)} >
           <View style={styles.modalContent}>
-          <Text style={styles.modalHeader}>Confirmed!</Text>
+          <Text style={styles.modalHeader}>We've confirmed it's you!</Text>
             <Text style={styles.modalSubText}>Welcome to MyFund{firstName}</Text>
           <Animated.View style={[styles.checkmarkContainer, { opacity: animation }]}>
             <Ionicons name="checkmark" size={170} color="green" />
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginTop: 25,
-    width: '100%',
+    width: '90%',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -194,12 +194,13 @@ const styles = StyleSheet.create({
         marginHorizontal: 40,
       },
       createAccountText: {
-        fontSize: 14,
+        fontSize: 13,
         fontFamily: 'karla',
         color: 'black',
         textAlign: 'center',
-        marginHorizontal: 40,
+        marginHorizontal: 10,
         marginTop: 5,
+        letterSpacing: -0.2,
       },
       createAccount: {
         fontSize: 14,

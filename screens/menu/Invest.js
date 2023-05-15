@@ -3,8 +3,6 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
 import Divider from '../components/Divider';
-import Sponsorship from './Sponsorship';
-
 
 const Invest = ({ navigation, firstName }) => {
   return (
@@ -26,15 +24,15 @@ const Invest = ({ navigation, firstName }) => {
           </TouchableOpacity>
         </TouchableOpacity>
 
-        <View style={{ backgroundColor: '#E2E4FF', flex: 1, padding: 7, alignItems: 'center', marginLeft: 5, marginRight: 20, borderRadius: 10, height: 230}}>
+        <TouchableOpacity onPress={() => navigation.navigate('Ownership')} style={{ backgroundColor: '#E2E4FF', flex: 1, padding: 7, alignItems: 'center', marginLeft: 5, marginRight: 20, borderRadius: 10, height: 230}}>
           <Ionicons name="home-outline" size={40} color="#4C28BC" alignItems='center' marginTop={5} />
           <Text style={{ padding: 3, marginTop: 2, fontSize: 17, fontFamily: 'proxima', textAlign: 'center', color: '#4C28BC', letterSpacing: -0.3, }}>Fractional Ownership Investment</Text>
           <Text style={{ marginTop: 4, fontSize: 12, fontFamily: 'karla', textAlign: 'center',}}>Earn rental income for life by buying a fraction of our hostels.</Text>
-          <TouchableOpacity style={styles.buyPropertyButton}>
+          <TouchableOpacity style={styles.buyPropertyButton} onPress={() => navigation.navigate('Ownership')}>
             <Ionicons name="home-outline" size={24} color="#fff" />
             <Text style={styles.quickInvestText}>Buy Property</Text>
           </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

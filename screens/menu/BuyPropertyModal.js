@@ -1,25 +1,27 @@
 import React, { useState } from 'react';
-import { Modal, Text, animation, StyleSheet, Animated, View, TextInput, TouchableOpacity } from 'react-native';
+import { Modal, Text, animation, StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import Divider from '../components/Divider'
+import { Ionicons } from '@expo/vector-icons';
 
-const AutoInvestModal = ({ modalVisible, setModalVisible }) => {
+const BuyPropertyModal = ({ navigation, modalVisible, setModalVisible }) => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
   
 
   const handleActivate = () => {
+    setModalVisible(true);
     Animated.timing(animation, {
       toValue: 1,
       duration: 1500,
       useNativeDriver: true,
     }).start(() => {
       setModalVisible(false);
-      navigation.navigate('Sponsorship');
+      navigation.navigate('Save');
       setAnimation(new Animated.Value(0));
     });
   };
-  
 
   return (
     <Modal
@@ -30,22 +32,16 @@ const AutoInvestModal = ({ modalVisible, setModalVisible }) => {
     >
       <View style={styles.modalContainer} onPress={() => setModalVisible(false)}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalHeader}>Activate AutoInvest</Text>
+         <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
+             <Text style={styles.modalHeader} >Buy Property</Text>
+             <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setModalVisible(false)}/>
+         </View>
+          <Divider />
           <Text style={styles.modalSubText}>
-            AutoInvest allows you to set an amount to automatically debit from your local bank account
-            to your MyFund account for up to <Text style={{color: 'green'}}>20% ROI p.a.</Text> Minimum: 60,000
+            Buy Kings and Queen Hostels, at Harmony Estate, Federal University of Agriculture, Abeokuta, FUNAAB. {'\n'}{'\n'}Pay: <Text style={{color: '#4C28BC', fontFamily: 'proxima'}}>N5million/unit</Text> {'\n'}Earn <Text style={{color: 'green', fontFamily: 'proxima'}}>N250,000/year</Text>{'\n'}
+            {'\n'}Select how many units you want to buy.
           </Text>
-          <View style={styles.inputContainer}>
-          <Text style={styles.autoSaveSetting}>AutoInvest Settings</Text>
-
-            <TextInput
-              style={styles.input}
-              value={amount}
-              onChangeText={setAmount}
-              keyboardType="numeric"
-              placeholder="Enter The Amount to AutoInvest"
-            />
-          </View>
+        
           
           <View style={styles.inputContainer}>
       <View style={styles.dropdown}>
@@ -54,12 +50,14 @@ const AutoInvestModal = ({ modalVisible, setModalVisible }) => {
           selectedValue={frequency}
           onValueChange={(value) => setFrequency(value)}
         >
-          <Picker.Item color='silver' label="Set The Frequency" value="Frequency" />
-          <Picker.Item label="Hourly" value="hourly" />
-          <Picker.Item label="Daily" value="daily" />
-          <Picker.Item label="Weekly" value="weekly" />
-          <Picker.Item label="Monthly" value="monthly" />
+          <Picker.Item color='silver' label="Select How Many Units" value="Frequency" />
+          <Picker.Item label="1 unit" value="1" />
+          <Picker.Item label="2 units" value="2" />
+          <Picker.Item label="3 units" value="3" />
+          <Picker.Item label="4 units" value="4" />
+          <Picker.Item label="5 units" value="5" />
         </Picker>
+
       </View>
     </View>
 
@@ -68,20 +66,25 @@ const AutoInvestModal = ({ modalVisible, setModalVisible }) => {
             <Text style={styles.label}>Payment Options</Text>
             
             <Picker
-          style={styles.labelItem}
+          style={styles.labelItem2}
           selectedValue={paymentOption}
           onValueChange={(value) => setPaymentOption(value)}
         >
-          <Picker.Item color='silver' label="Select Source of Funding" value="Frequency" />
-          <Picker.Item label="Pay with saved card" value="Pay with card" />
+          <Picker.Item color='silver' label="Select Source of Funding" value="Frequency"/>
+          <Picker.Item label="Savings: (15000)" value="Savings: (15000)" />
+          <Picker.Item label="Sponsorship Investment: (250000)" value="Sponsorship Investment: (250000)" />
+          <Picker.Item label="Pay with saved card" value="Pay with saved card" />
           <Picker.Item label="Add new card" value="Add new card" />
           <Picker.Item label="Pay with bank transfer" value="Pay with bank transfer" />
         </Picker>
-            
-            </View>
+                       </View>
+
+
+        <Text style={styles.modalSubText2}>By clicking Confirm, you agree to the <Text style={{color: '#4C28BC', fontFamily: 'proxima'}}>Deed of Agreement.</Text></Text>
+
           <View style={styles.buttonsContainer}>
-  <TouchableOpacity style={styles.primaryButton} onPress={() => setModalVisible(false)}>
-    <Text style={styles.primaryButtonText}>Activate Now</Text>
+  <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.navigate('PropertyList')}>
+    <Text style={styles.primaryButtonText}>Continue</Text>
   </TouchableOpacity>
 
           <TouchableOpacity
@@ -107,7 +110,7 @@ const styles = {
   modalContent: {
     backgroundColor: '#F6F3FF',
     width: '100%',
-    height: '75%',
+    height: '72%',
     alignItems: 'center',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
@@ -116,42 +119,33 @@ const styles = {
   },
 
   modalHeader: {
-    marginTop: 30,
-    alignItems: 'flex-start',
+    marginTop: 20,
     fontSize: 25,
     fontFamily: 'proxima',
     color: '#4C28BC',
+    flex: 1,
   },
   modalSubText: {
     fontSize: 14,
     fontFamily: 'karla',
     color: 'black',
-    textAlign: 'center',
-    marginHorizontal: 40,
-    marginTop: 10,
+    textAlign: 'left',
+    marginHorizontal: 30,
+    marginTop: 5,
   },
-
-  inputContainer: {
-    marginTop: 30,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  input: {
-    fontSize: 17,
-    height: 45,
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    paddingLeft: 15,
-    paddingRight: 5,
+   
+  modalSubText2: {
+    fontSize: 12,
     fontFamily: 'karla',
-    letterSpacing: -0.5,
+    textAlign: 'center',
+    color: 'black',
+    textAlign: 'left',
+    marginHorizontal: 30,
+    marginTop: 5,
   },
 
   inputContainer: {
-    marginTop: 20,
+    marginTop: 10,
     width: '100%',
     alignItems: 'center',
   },
@@ -159,8 +153,10 @@ const styles = {
   autoSaveSetting: {
     fontSize: 17,
     fontFamily: 'proxima',
-    marginRight: 190,
+    marginLeft: 40,
+    alignSelf: 'flex-start',
     marginBottom: 10,
+
   },
 
   label: {
@@ -168,6 +164,7 @@ const styles = {
     fontFamily: 'proxima',
     marginRight: 190,
     marginTop: 20,
+    marginBottom: 10,
   },
 
   labelItem: {
@@ -175,7 +172,20 @@ const styles = {
     textAlign: 'left',
     marginLeft: -16,
     marginBottom: 30,
+    fontFamily: 'karla',
     backgroundColor: '#fff',
+    marginRadius: 10,
+  },
+
+  labelItem2: {
+    color: 'grey',
+    textAlign: 'left',
+    marginLeft: -5,
+    marginBottom: 30,
+    fontFamily: 'karla',
+    backgroundColor: '#fff',
+    marginRadius: 10,
+
   },
 
   dropdown: {
@@ -237,4 +247,4 @@ const styles = {
 
 };
 
-export default AutoInvestModal;
+export default BuyPropertyModal;

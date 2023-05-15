@@ -12,7 +12,7 @@ const Onboarding1 = ({ navigation }) => {
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.header}>SAVE</Text>
-        <Text style={styles.subText}>Grow Your Funds. Develop the saving habit to reach your first millions</Text>
+        <Text style={styles.subText}>Develop the saving habit to reach your first millions</Text>
       </View>
       <View style={styles.navigationIndicatorContainer}>
         <View style={[styles.navigationIndicator, styles.activeIndicator]} />

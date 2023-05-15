@@ -5,8 +5,8 @@ const Divider = () => {
   return (
     <View
       style={{
-        marginTop: 15,
-        marginBottom: 20,
+        marginTop: 10,
+        marginBottom: 15,
         alignSelf: 'center',
         width: '90%',
         borderBottomWidth: 0.4,

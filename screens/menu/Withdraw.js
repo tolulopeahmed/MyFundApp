@@ -1,10 +1,13 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
+import WithdrawModal from './WithdrawModal'
 
 const Withdraw = ({ navigation }) => {
+  const [modalVisible, setModalVisible] = useState(false); // define modalVisible state
+
   const balance = 7500.25; // replace with actual balance
   const savingsBalance = 250000.50;
 
@@ -12,6 +15,7 @@ const Withdraw = ({ navigation }) => {
     <View style={styles.container}>
       <Header navigation={navigation} headerText="WITHDRAW" />
       <Text style={styles.title}>Withdraw From...</Text>
+      
       <View style={styles.walletContainer}>
         <View style={styles.walletDetails}>
        
@@ -23,11 +27,12 @@ const Withdraw = ({ navigation }) => {
          <View style={styles.amountContainer2}> 
          <Text style={styles.nairaSign}>₦</Text><Text style={styles.walletBalance}>7500</Text><Text style={styles.decimal}>.25</Text>
          </View>
-         <Text style={styles.walletMessage}>Withdraw for free anytime</Text>
-        <TouchableOpacity style={styles.withdrawButton}>
+         <Text style={styles.walletMessage}>Withdraw for <Text style={{color: '#43FF8E'}}>free</Text> anytime</Text>
+        <TouchableOpacity style={styles.withdrawButton} onPress={() => setModalVisible(true)}>
           <Text style={styles.withdrawText}>Withdraw</Text>
         </TouchableOpacity>
-        
+        <WithdrawModal navigation={navigation} modalVisible={modalVisible} setModalVisible={setModalVisible} />
+
         </View>
       
       </View>
@@ -44,7 +49,7 @@ const Withdraw = ({ navigation }) => {
          <View style={styles.amountContainer2}> 
          <Text style={styles.nairaSign}>₦</Text><Text style={styles.walletBalance}>250,000</Text><Text style={styles.decimal}>.00</Text>
          </View>
-         <Text style={styles.walletMessage}>Immediate withdrawal attracts 2.5% fee.
+         <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>2.5%</Text> fee.
 </Text>
         <TouchableOpacity style={styles.withdrawButton}>
           <Text style={styles.withdrawText}>Withdraw</Text>
@@ -65,7 +70,7 @@ const Withdraw = ({ navigation }) => {
          <View style={styles.amountContainer2}> 
          <Text style={styles.nairaSign}>₦</Text><Text style={styles.walletBalance}>3,650,200</Text><Text style={styles.decimal}>.00</Text>
          </View>
-         <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text color='red'>5%</Text> fee.
+         <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>5%</Text> fee.
 </Text>
         <TouchableOpacity style={styles.withdrawButton}>
           <Text style={styles.withdrawText}>Withdraw</Text>

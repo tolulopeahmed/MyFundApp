@@ -1,41 +1,37 @@
 import React, { useState } from 'react';
 import { Modal, Text, animation, StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import ConfirmationModal from './ConfirmationModal'
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Divider from '../components/Divider'
 
-const AutoSaveModal = ({ modalVisible, setModalVisible }) => {
+const AutoSaveModal = ({ autoSaveModalVisible, setAutoSaveModalVisible }) => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
-  
 
-  const handleActivate = () => {
-    setModalVisible(true);
-    Animated.timing(animation, {
-      toValue: 1,
-      duration: 1500,
-      useNativeDriver: true,
-    }).start(() => {
-      setModalVisible(false);
-      navigation.navigate('Save');
-      setAnimation(new Animated.Value(0));
-    });
+  const closeModal = () => {
+    setAutoSaveModalVisible(false);
   };
+  
 
   return (
     <Modal
       animationType="slide"
+      visible={autoSaveModalVisible}
       transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}
+      onRequestClose={closeModal}
     >
-      <View style={styles.modalContainer} onPress={() => setModalVisible(false)}>
+         <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalHeader}>Activate AutoSave</Text>
+         <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
+             <Text style={styles.modalHeader} >Activate AutoSave</Text>
+             <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setAutoSaveModalVisible(false)}/>
+         </View>
+          <Divider />
           <Text style={styles.modalSubText}>
-            Autosave allows you to set an amount to automatically debit from your local bank account
-            to your MyFund account.
+          Autosave allows you to set an amount to automatically debit from your local bank account to your MyFund account.
           </Text>
+        
           <View style={styles.inputContainer}>
           <Text style={styles.autoSaveSetting}>AutoSave Settings</Text>
 
@@ -81,19 +77,19 @@ const AutoSaveModal = ({ modalVisible, setModalVisible }) => {
             
             </View>
           <View style={styles.buttonsContainer}>
-  <TouchableOpacity style={styles.primaryButton} onPress={() => setModalVisible(false)}>
+          <TouchableOpacity style={styles.primaryButton} onPress={() => setAutoSaveModalVisible(false)}>
     <Text style={styles.primaryButtonText}>Activate Now</Text>
   </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.secondaryButton}
-            onPress={() => setModalVisible(false)}
+            onPress={() => setAutoSaveModalVisible(false)}
           >
             <Text style={styles.secondaryButtonText}>Back</Text>
           </TouchableOpacity>
           </View>
         </View>
-      </View>
+        </View>
     </Modal>
   );
 };
@@ -122,14 +118,15 @@ const styles = {
     fontSize: 25,
     fontFamily: 'proxima',
     color: '#4C28BC',
+    flex: 1,
   },
   modalSubText: {
     fontSize: 14,
     fontFamily: 'karla',
     color: 'black',
-    textAlign: 'center',
+    textAlign: 'left',
     marginHorizontal: 40,
-    marginTop: 10,
+    marginTop: 1,
   },
 
   inputContainer: {

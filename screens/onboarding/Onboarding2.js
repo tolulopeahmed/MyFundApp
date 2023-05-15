@@ -11,7 +11,7 @@ const Onboarding2 = ({ navigation }) => {
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.header}>BUY PROPERTIES</Text>
-        <Text style={styles.subText}>Buy and own a slice of our hostels via our National Real Estate project</Text>
+        <Text style={styles.subText}>Buy and own a fraction of any of our hostels across the country</Text>
       </View>
       <View style={styles.navigationIndicatorContainer}>
         <View style={styles.navigationIndicator} />
