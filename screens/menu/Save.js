@@ -76,6 +76,7 @@ const Save = ({ navigation, firstName }) => {
 
         {quickSaveModalVisible && (
   <QuickSaveModal
+  navigation={navigation}
   quickSaveModalVisible={quickSaveModalVisible} 
   setQuickSaveModalVisible={setQuickSaveModalVisible}
   />

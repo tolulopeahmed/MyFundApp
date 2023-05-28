@@ -4,6 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import Header from '../components/Header';
 import Divider from '../components/Divider';
+import SavingsGoalModal from './SavingsGoalModal';
 
 
 const Profile = ({ navigation, setProfileImageUri }) => {
@@ -11,6 +12,7 @@ const Profile = ({ navigation, setProfileImageUri }) => {
   const [enableFingerprint, setEnableFingerprint] = useState(false);
   const [showMyFundInDollars, setShowMyFundInDollars] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+  const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
 
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -37,17 +39,20 @@ const Profile = ({ navigation, setProfileImageUri }) => {
   return (
    <>
           <Header navigation={navigation} headerText='PROFILE'/>
-<ScrollView style={styles.container}>
-      <TouchableOpacity style={styles.imageContainer} onPress={handlePickImage}>
+          <View style={styles.imageContainer}>
+          <TouchableOpacity>
         {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.image} />
+          <Image source={{ uri: imageUri }} style={styles.image} onPress={handlePickImage}/>
         ) : (
-          <Ionicons name="person-circle" size={120} color="silver" />
+          <Ionicons name="person-circle" size={120} color="silver" onPress={handlePickImage}/>
         )}
       </TouchableOpacity>
       <Text style={styles.nameText}>Tolulope</Text>
       <Text style={styles.usernameText}>ceo@myfundmobile.com</Text>
-      <Divider/>
+      <Divider backgroundColor='#fff'/>
+      </View>
+<ScrollView style={styles.container}>
+      
      
       <View style={styles.settingContainer}>
         <Text style={styles.settingText}>Enable Fingerprint</Text>
@@ -82,19 +87,22 @@ const Profile = ({ navigation, setProfileImageUri }) => {
 
       <View style={styles.buttonsContainer}>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => setGoalModalVisible(true)}>
           <Ionicons name="save-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Savings Goal Settings</Text>
         </TouchableOpacity>
         </View>
+        <SavingsGoalModal navigation={navigation} goalModalVisible={goalModalVisible} setGoalModalVisible={setGoalModalVisible} />
+
+
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Card')}>
           <Ionicons name="card-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Bank and Card Settings</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('KYC')}>
           <Ionicons name="document-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Fill KYC Form</Text>
         </TouchableOpacity>
@@ -124,6 +132,9 @@ const Profile = ({ navigation, setProfileImageUri }) => {
         </TouchableOpacity>
       </View>
       </View>
+      <Divider />
+      <Text style={styles.credits}>MyFund</Text><Text style={{fontSize: 10,     marginBottom: 22, textAlign: 'center', fontFamily: 'karla'}}>version 1.0.0</Text>
+
     </ScrollView>
     </> 
   );
@@ -138,6 +149,8 @@ const styles = StyleSheet.create({
   imageContainer: {
     alignItems: 'center',
     marginTop: 6,
+    backgroundColor: '#F5F1FF',
+
     
   },
   image: {
@@ -154,6 +167,8 @@ const styles = StyleSheet.create({
     fontSize: 28,
     textAlign: 'center',
     color: '#4C28BC',
+    backgroundColor: '#F5F1FF',
+
   },
   usernameText: {
     fontFamily: 'karla',
@@ -162,8 +177,20 @@ const styles = StyleSheet.create({
     color: 'gray',
     textAlign: 'center',
     color: '#4C28BC',
-
+    backgroundColor: '#F5F1FF',
   },
+
+  credits: {
+    fontFamily: 'karla',
+    fontSize: 12,
+    letterSpacing: -0.5,
+    color: 'gray',
+    textAlign: 'center',
+    color: 'grey',
+    backgroundColor: '#F5F1FF',
+    marginBottom: 2,
+  },
+
   settingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -202,7 +229,6 @@ const styles = StyleSheet.create({
     fontFamily: 'ProductSans',
     color: '#4C28BC',
     flex: 1,
-    alignContents: 'flex-start',
   },
 });
 

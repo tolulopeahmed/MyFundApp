@@ -1,116 +1,95 @@
 import React, { useState} from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
-import * as Font from 'expo-font';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, Dimensions, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+const { width, height } = Dimensions.get('window');
 
 const CreateAccount = ({ navigation }) => {
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
 
-  const [showPassword, setShowPassword] = useState(false);
-
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!isPasswordVisible);
   };
 
   return (
     <>
-
-    <View style={styles.container}>
-
-           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="#4C28BC" />
-      </TouchableOpacity>
-      <View style={styles.logoContainer}>
-        <Image source={require('./logo..png')} style={styles.logo} />
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.header}>Create Account</Text>
-        <Text style={styles.subText}>Join thousands of landlords to learn how to become one yourself with MyFund.</Text>
-      </View>
-
-      <ScrollView>
-      <View style={styles.inputContainer}>
-
-      <View style={styles.inputWrapper}>
-      <Ionicons name='person-outline' marginBottom={8} size={20} color="grey" padding={8}/>
-      <TextInput style={styles.input} placeholder="First Name"/>
-      </View>
-
-      <View style={styles.inputWrapper}>
-<Ionicons name='person-outline' marginBottom={8} size={20} color="grey" padding={8}/>
-        <TextInput style={styles.input} placeholder="Last Name" />
-    </View>
-
-        <View style={styles.inputWrapper}>
-        <Ionicons name='at-outline' marginBottom={8} size={20} color="grey" padding={8}/>
-          <TextInput style={styles.input} placeholder="Email Address" keyboardType="email-address" />
-      </View>
-
-      <View style={styles.inputWrapper}>  
-      <Ionicons name='call-outline' marginBottom={8} size={20} color="grey" padding={8}/>
- <TextInput style={styles.input} placeholder="Phone Number" keyboardType="phone-pad" />
-        </View>
-
-        <View style={styles.inputWrapper}>
-        <TouchableOpacity style={styles.eyeIcon} onPress={toggleShowPassword}>
-          <Ionicons name={showPassword ? 'eye' : 'eye-off'} size={20} color="grey" marginBottom={8} padding={8} />
+      <SafeAreaView style={styles.container}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="#4C28BC" />
         </TouchableOpacity>
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry={!showPassword}
-          keyboardType="email-address"
-          fontFamily='karla'
-        />
-      </View>
-
-      <View style={styles.inputWrapper}>
-      <TouchableOpacity style={styles.eyeIcon} onPress={toggleShowPassword}>
-          <Ionicons name={showPassword ? 'eye' : 'eye-off'} size={20} color="grey" marginBottom={8} padding={8}  />
-        </TouchableOpacity>
-        <TextInput
-          style={styles.input}
-          placeholder="Confirm Password"
-          secureTextEntry={!showPassword}
-          keyboardType="email-address"
-        />
-      </View>
-
-        <View style={styles.inputWrapper}>
-        <Ionicons name='person-add-outline' marginBottom={9} size={20} color="grey" padding={8}/>
-<TextInput style={styles.input} placeholder="Referral Phone/Username (optional)" keyboardType="phone-pad" />
-        </View>
-      
-      </View>
-      <TouchableOpacity style={styles.createAccountButton} onPress={() => navigation.navigate('Confirmation')}>
-        <Text style={styles.createAccountButtonText}>CREATE ACCOUNT</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.loginTextContainer} onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.loginText}>Already have an account? <Text style={styles.login}>Log in</Text></Text>
-      </TouchableOpacity>
-
-
- {/* add a divider line */}
- <View style={styles.divider} />
- <Text style={styles.orLoginText}>OR SIGN UP WITH</Text>
-
-{/* add two buttons */}
-<View style={styles.buttonContainer}>
-  <TouchableOpacity style={styles.googleButton}>
-    <Ionicons name="logo-google" size={24} color="#fff" />
-    <Text style={styles.googleButtonText}>Google</Text>
-  </TouchableOpacity>
-  <TouchableOpacity style={styles.linkedinButton}>
-    <Ionicons name="logo-linkedin" size={24} color="#fff" />
-    <Text style={styles.linkedinButtonText}>LinkedIn</Text>
-  </TouchableOpacity>
-</View>
-
-</ScrollView>
-
-    </View>
-
-</>
+        <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+          <View style={styles.logoContainer}>
+            <Image source={require('./logo..png')} style={styles.logo} />
+          </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.header}>Create Account</Text>
+            <Text style={styles.subText}>Join thousands of landlords to learn how to become one yourself with MyFund.</Text>
+          </View>
+          <View style={styles.inputContainer}>
+            <View style={styles.inputWrapper}>
+              <Ionicons name='person-outline' marginBottom={8} size={20} color="grey" padding={8} />
+              <TextInput style={styles.input} placeholder="First Name" />
+            </View>
+            <View style={styles.inputWrapper}>
+              <Ionicons name='person-outline' marginBottom={8} size={20} color="grey" padding={8} />
+              <TextInput style={styles.input} placeholder="Last Name" />
+            </View>
+            <View style={styles.inputWrapper}>
+              <Ionicons name='at-outline' marginBottom={8} size={20} color="grey" padding={8} />
+              <TextInput style={styles.input} placeholder="Email Address" keyboardType="email-address" />
+            </View>
+            <View style={styles.inputWrapper}>
+              <Ionicons name='call-outline' marginBottom={8} size={20} color="grey" padding={8} />
+              <TextInput style={styles.input} placeholder="Phone Number" keyboardType="phone-pad" />
+            </View>
+            <View style={styles.inputWrapper}>
+              <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
+                <Ionicons name={isPasswordVisible ? 'eye' : 'eye-off'} size={20} color="grey" marginBottom={8} padding={8} />
+              </TouchableOpacity>
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                secureTextEntry={!isPasswordVisible}
+                keyboardType="default"
+              />
+            </View>
+            <View style={styles.inputWrapper}>
+              <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
+                <Ionicons name={isPasswordVisible ? 'eye' : 'eye-off'} size={20} color="grey" marginBottom={8} padding={8} />
+              </TouchableOpacity>
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm Password"
+                secureTextEntry={!isPasswordVisible}
+                keyboardType="default"
+              />
+            </View>
+            <View style={styles.inputWrapper}>
+              <Ionicons name='person-add-outline' marginBottom={9} size={20} color="grey" padding={8} />
+              <TextInput style={styles.input} placeholder="Referral Phone/Username (optional)" keyboardType="phone-pad" />
+            </View>
+          </View>
+          <TouchableOpacity style={styles.createAccountButton} onPress={() => navigation.navigate('Confirmation')}>
+            <Text style={styles.createAccountButtonText}>CREATE ACCOUNT</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.loginTextContainer} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.loginText}>Already have an account? <Text style={styles.login}>Log in</Text></Text>
+          </TouchableOpacity>
+          <View style={styles.divider} />
+          <Text style={styles.orLoginText}>OR SIGN UP WITH</Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.googleButton}>
+              <Ionicons name="logo-google" size={24} color="#fff" />
+              <Text style={styles.googleButtonText}>Google</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.linkedinButton}>
+              <Ionicons name="logo-linkedin" size={24} color="#fff" />
+              <Text style={styles.linkedinButtonText}>LinkedIn</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 };
 
@@ -121,16 +100,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  contentContainer: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: width,
+    minHeight: height,
+  },
+
   backButton: {
     position: 'absolute',
     top: 50,
     left: 20,
+    zIndex: -1,
   },
   backButtonText: {
     fontSize: 16,
     color: '#4C28BC',
     fontFamily: 'proxima',
   },
+  
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -178,9 +168,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 0,
-    marginRight: -18,
-    justifyContent: 'flex-end', // align items to the end of container
+    justifyContent: 'center', // align items to the end of container
  },
 
   createAccountButton: {

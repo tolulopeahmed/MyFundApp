@@ -13,6 +13,7 @@ const Divider = () => {
         borderBottomColor: 'gray',
         borderBottomStyle: 'solid',
         marginVertical: 10,
+        backgroundColor: '#F5F1FF',
       }}
     />
   );

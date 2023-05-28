@@ -19,7 +19,7 @@ const Header = ({ navigation, headerText,  }) => {
             <Ionicons name="person-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('More')}/>
           </TouchableOpacity>
       <TouchableOpacity style={styles.bell}>
-            <Ionicons name="notifications-outline" size={22} color="#4C28BC" />
+            <Ionicons name="notifications-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('Notifications')} />
           </TouchableOpacity>
         </View>
     </View>

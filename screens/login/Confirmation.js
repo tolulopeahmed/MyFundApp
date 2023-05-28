@@ -2,6 +2,7 @@ import React, { useRef, useState} from 'react';
 import { View, Text, animation, StyleSheet, Image, TouchableOpacity, TextInput, Modal, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import MyFundLogo from './logo..png';
+import SavingsGoalModal from '../menu/SavingsGoalModal';
 
   const Confirmation = ({ navigation }) => {
     const input1 = useRef(null);
@@ -13,6 +14,7 @@ import MyFundLogo from './logo..png';
 
   const [modalVisible, setModalVisible] = useState(false);
   const [firstName, setFirstName] = useState('');
+  const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
 
 
     const focusNext = (next) => {
@@ -27,7 +29,7 @@ import MyFundLogo from './logo..png';
       };
       
       const submitForm = () => {
-        setModalVisible(true);
+        setModalVisible (true);
         setTimeout(() => {
           setModalVisible(false);
           navigation.navigate('DrawerTab', { firstName });
@@ -80,11 +82,13 @@ import MyFundLogo from './logo..png';
           <Text style={styles.modalHeader}>We've confirmed it's you!</Text>
             <Text style={styles.modalSubText}>Welcome to MyFund{firstName}</Text>
           <Animated.View style={[styles.checkmarkContainer, { opacity: animation }]}>
-            <Ionicons name="checkmark" size={170} color="green" />
+            <Ionicons name="checkmark-circle-outline" size={170} color="green" />
           </Animated.View>          
           </View>
         </View>
       </Modal>
+
+      <SavingsGoalModal navigation={navigation} goalModalVisible={goalModalVisible} setGoalModalVisible={setGoalModalVisible} />
 
     </View>
   );

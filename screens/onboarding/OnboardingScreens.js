@@ -1,10 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, SafeAreaView, View, ScrollView, TouchableOpacity, Text, Dimensions } from 'react-native';
 import Onboarding1 from './Onboarding1';
 import Onboarding2 from './Onboarding2';
 import Onboarding3 from './Onboarding3';
 import { PrimaryButton, SecondaryButton } from '../components/MainButtons';
 
+const { width } = Dimensions.get('window');
 
 const OnboardingScreens = ({ navigation }) => {
   const scrollViewRef = useRef(null);
@@ -14,14 +15,14 @@ const OnboardingScreens = ({ navigation }) => {
     const interval = setInterval(() => {
       const nextPage = currentPage < 2 ? currentPage + 1 : 0;
       setCurrentPage(nextPage);
-      scrollViewRef.current.scrollTo({ x: nextPage * 400 });
+      scrollViewRef.current.scrollTo({ x: nextPage * width });
     }, 5000);
     return () => clearInterval(interval);
   }, [currentPage]);
 
   return (
-    <View style={styles.container}>
-        <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('Login')}>
+    <SafeAreaView style={styles.container}>
+      <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('Login')}>
         <Text style={styles.skipButtonText}>SKIP</Text>
       </TouchableOpacity>
       <View style={styles.content}>
@@ -30,9 +31,8 @@ const OnboardingScreens = ({ navigation }) => {
           horizontal={true}
           pagingEnabled={true}
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ width: 1200 }}
           onMomentumScrollEnd={(event) => {
-            const pageNumber = Math.round(event.nativeEvent.contentOffset.x / 400);
+            const pageNumber = Math.round(event.nativeEvent.contentOffset.x / width);
             setCurrentPage(pageNumber);
           }}
         >
@@ -46,7 +46,7 @@ const OnboardingScreens = ({ navigation }) => {
           <SecondaryButton title="LOG IN" onPress={() => navigation.navigate('Login')} />
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -65,24 +65,23 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
   },
-
+  
   skipButton: {
-   alignItems: 'center',
-   marginTop: 50,
-   marginLeft: 300,
-
+    position: 'absolute',
+    top: 45,
+    right: 20,
+    zIndex: 1,
   },
   skipButtonText: {
     fontSize: 18,
     color: '#4C28BC',
     fontFamily: 'proxima',
   },
-
+  
   buttonContainer: {
     alignItems: 'center',
     marginBottom: 45,
-  }
-
+  },
 });
 
 export default OnboardingScreens;

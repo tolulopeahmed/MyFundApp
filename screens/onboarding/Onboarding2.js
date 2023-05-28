@@ -1,12 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { PrimaryButton, SecondaryButton } from '../components/MainButtons';
 
+const { width, height } = Dimensions.get('window');
 
 const Onboarding2 = ({ navigation }) => {
   return (
     <View style={styles.container}>
-          <View style={styles.imageContainer}>
+      <View style={styles.imageContainer}>
         <Image source={require('./landlord.png')} style={styles.image} />
       </View>
       <View style={styles.textContainer}>
@@ -18,8 +19,6 @@ const Onboarding2 = ({ navigation }) => {
         <View style={[styles.navigationIndicator, styles.activeIndicator]} />
         <View style={styles.navigationIndicator} />
       </View>
-   
-     
     </View>
   );
 };
@@ -27,23 +26,19 @@ const Onboarding2 = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#DCD1FF',
-    width: 400,
     padding: 30,
+    width: width,
     alignContent: 'center',
     alignSelf: 'center',
     alignItems: 'center',
   },
-
-  imageContainer: {
-  },
-  
+  imageContainer: {},
   image: {
     marginTop: 10,
-    width: 300,
-    height: 300,
+    width: width - 60, // Adjust the image width to fit the screen
+    height: height * 0.4, // Adjust the image height to fit the screen
     resizeMode: 'contain',
   },
-
   textContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -55,7 +50,6 @@ const styles = StyleSheet.create({
     marginTop: 15,
     fontFamily: 'proxima',
     color: '#4C28BC',
-
   },
   subText: {
     fontSize: 16,
@@ -65,7 +59,6 @@ const styles = StyleSheet.create({
     marginRight: 20,
     marginLeft: 20,
   },
-
   navigationIndicatorContainer: {
     marginTop: 50,
     flexDirection: 'row',
@@ -84,7 +77,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#4C28BC',
     width: 25,
   },
-
 });
 
-export default Onboarding2
+export default Onboarding2;

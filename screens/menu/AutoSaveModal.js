@@ -9,17 +9,14 @@ const AutoSaveModal = ({ autoSaveModalVisible, setAutoSaveModalVisible }) => {
   const [frequency, setFrequency] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
 
-  const closeModal = () => {
-    setAutoSaveModalVisible(false);
-  };
   
 
   return (
     <Modal
-      animationType="slide"
-      visible={autoSaveModalVisible}
-      transparent={true}
-      onRequestClose={closeModal}
+    animationType="slide"
+    transparent={true}
+    visible={autoSaveModalVisible}
+    onRequestClose={() => setAutoSaveModalVisible(false)}
     >
          <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
@@ -81,12 +78,7 @@ const AutoSaveModal = ({ autoSaveModalVisible, setAutoSaveModalVisible }) => {
     <Text style={styles.primaryButtonText}>Activate Now</Text>
   </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={() => setAutoSaveModalVisible(false)}
-          >
-            <Text style={styles.secondaryButtonText}>Back</Text>
-          </TouchableOpacity>
+          
           </View>
         </View>
         </View>

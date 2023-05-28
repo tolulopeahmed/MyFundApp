@@ -17,9 +17,10 @@ import PropertyList from './screens/menu/PropertyList';
 import WealthMap from './screens/menu/WealthMap';
 import Resources from './screens/menu/Resources';
 import Wallet from './screens/menu/Wallet';
-
-
-
+import Card from './screens/menu/Card';
+import Bank from './screens/menu/Bank'
+import KYC from './screens/menu/KYC'
+import Notifications from './screens/menu/Notifications';
 
 
 
@@ -68,7 +69,10 @@ const App = () => {
         <Stack.Screen name="WealthMap" component={WealthMap} />
         <Stack.Screen name="Resources" component={Resources} />
         <Stack.Screen name="Wallet" component={Wallet} />
-
+        <Stack.Screen name="Card" component={Card} />
+        <Stack.Screen name="Bank" component={Bank} />
+        <Stack.Screen name="KYC" component={KYC} />
+        <Stack.Screen name="Notifications" component={Notifications} />
 
 
 

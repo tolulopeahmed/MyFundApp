@@ -1,5 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, Dimensions, StyleSheet } from 'react-native';
+
+const { width } = Dimensions.get('window');
 
 export const PrimaryButton = ({ title, onPress }) => {
   return (
@@ -20,7 +22,7 @@ export const SecondaryButton = ({ title, onPress }) => {
 const styles = StyleSheet.create({
   primaryButton: {
     backgroundColor: '#4C28BC',
-    width: 300,
+    width: width * 0.7,
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
@@ -29,7 +31,7 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     backgroundColor: '#ffffff',
-    width: 300,
+    width: width * 0.7,
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',

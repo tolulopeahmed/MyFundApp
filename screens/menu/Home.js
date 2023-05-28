@@ -2,10 +2,21 @@ import React, { useState} from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Header from '../components/Header';
-
+import QuickSaveModal from '../components/QuickSaveModal';
+import AutoSaveModal from './AutoSaveModal';
 
 const Home = ({ navigation, firstName, transactionAmount }) => {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
+  const [autoSaveModalVisible, setAutoSaveModalVisible] = useState(false);
+
+ 
+  const handleQuickSave = () => {
+    setQuickSaveModalVisible(true);
+  };
+
+  const handleAutoSave = () => {
+    setAutoSaveModalVisible(true);
+  };
 
   return (
         <View style={styles.container}>
@@ -26,9 +37,15 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
         <View>
           <Text style={styles.rate}>@10% p.a.</Text>
           </View>
-        <TouchableOpacity style={styles.quickSaveButton} >
+        <TouchableOpacity style={styles.quickSaveButton} onPress={handleQuickSave}>
           <Text style={styles.quickSaveText}>QuickSave</Text>
         </TouchableOpacity>
+        <QuickSaveModal
+  navigation={navigation}
+  quickSaveModalVisible={quickSaveModalVisible} 
+  setQuickSaveModalVisible={setQuickSaveModalVisible}
+  />
+
         <View style={styles.navigatorContainer}>
           <View style={styles.navigatorIndicator} ></View>
           <View style={styles.navigatorIndicator}></View>
@@ -39,10 +56,12 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
       <View style={styles.todoContainer}>
       <Text style={styles.todoList}>To-Do List</Text>
         <View style={styles.todoList1}>
-          <TouchableOpacity style={styles.todoButton} onPress={() => setModalVisible(true)}>
+          <TouchableOpacity style={styles.todoButton} onPress={handleAutoSave}>
           <Ionicons name="save-outline" size={24} color="#000" style={{ marginRight: 15 }} />
           <Text style={styles.todoText}>Turn On AutoSave</Text>
         </TouchableOpacity>
+
+    
 
         </View>
         <View>

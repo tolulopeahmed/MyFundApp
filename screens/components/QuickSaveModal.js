@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Modal, Text, Animated, View, TextInput, TouchableOpacity } from 'react-native';
+import { Modal, Text, Image, View, TextInput, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
@@ -67,7 +67,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
           {frequency === 'My Saved Cards' && (
             <>
               <View style={styles.paymentOptionsContainer}>
-                <Text style={styles.label}>Which of them?     </Text>
+                <Text style={styles.label3}>Which of them?     </Text>
                 <Picker
                   style={styles.labelItem2}
                   selectedValue={paymentOption}
@@ -76,36 +76,61 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                   <Picker.Item color='silver' label="My Saved Cards" value="My Saved Cards"/>
                   <Picker.Item label="Mastercard 3591" value="Mastercard 3591" />
                 </Picker>
+
+
+                <View style={styles.buttonsContainer}>
+                <TouchableOpacity style={styles.primaryButton}>
+                <Image source={require('./paystack.png')} style={styles.image} />
+                  <Text style={styles.primaryButtonText}>Continue</Text>
+                </TouchableOpacity>
+
+           
+              </View>
       
               </View>
             </>
           )}
 
-{frequency === "Another user's wallet" && (
+
+{frequency === "Add New Card" && (
   <>
     <View style={styles.paymentOptionsContainer}>
-      <Text style={styles.label}>Enter user's email</Text>
-      <TextInput
-        style={styles.emailInput}
-        placeholder="Enter the correct user's email"
-        onChangeText={(value) => setEmail(value)}
-      />
+    <Text style={styles.modalSubText2} alignSelf='center'>Tap the button below to add a new card first.</Text>
+
+      
+      <View style={styles.buttonsContainer}>
+                <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.navigate('Card')}>
+                  <Text style={styles.primaryButtonText}>Add Card Now</Text>
+                </TouchableOpacity>
+
+            
+              </View>
     </View>
   </>
 )}
 
 
-            <View style={styles.buttonsContainer}>
+{frequency === "Bank Transfer" && (
+  <>
+    <View style={styles.paymentOptionsContainer}>
+    <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. 
+    Click 'Submit' after payment and your account will be updated within 12 hours.</Text>
+
+      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} Vcorp Systems Limited</Text>
+      
+      <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.primaryButton}>
-                  <Text style={styles.primaryButtonText}>Continue</Text>
+                  <Text style={styles.primaryButtonText}>Submit</Text>
                 </TouchableOpacity>
 
             
-
-                <TouchableOpacity style={styles.secondaryButton} onPress={handleBackButtonPress}>
-                  <Text style={styles.secondaryButtonText}>Back</Text>
-                </TouchableOpacity>
               </View>
+    </View>
+  </>
+)}
+
+
+           
         </View>
       </View>
 
@@ -126,7 +151,7 @@ const styles = {
   modalContent: {
     backgroundColor: '#F6F3FF',
     width: '100%',
-    flex: 0.65,
+    flex: 0.68,
     alignItems: 'center',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
@@ -155,9 +180,10 @@ const styles = {
     fontFamily: 'karla',
     textAlign: 'center',
     color: 'black',
-    textAlign: 'left',
+    textAlign: 'center',
     marginHorizontal: 45,
     marginTop: 5,
+    letterSpacing: -0.5,
   },
 
   inputContainer: {
@@ -183,9 +209,18 @@ const styles = {
   label: {
     fontSize: 17,
     fontFamily: 'proxima',
-    marginRight: 190,
     marginTop: 20,
-    marginBottom: 10,
+    marginBottom: 5,
+    textAlign: 'center',
+    letterSpacing: -0.5,
+  },
+
+  label3: {
+      fontSize: 17,
+      fontFamily: 'proxima',
+      marginRight: 190,
+      marginTop: 20,
+      marginBottom: 10,
   },
 
   labelItem: {
@@ -252,16 +287,28 @@ const styles = {
 
   buttonsContainer: {
     flexDirection: 'row',
-    marginTop: 415,
-    position: 'absolute',
+    marginTop: 10,
+    position: 'relative',
+    alignSelf: 'center',
 
   },
 
+  image: {
+    marginTop: 5,
+    marginRight: 5,
+    borderWidth: 1,
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+    marginBottom: 5,
+
+  
+  },
   primaryButton: {
     marginTop: 5,
     flexDirection: 'row',
     backgroundColor: '#4C28BC',
-    width: 160,
+    width: 140,
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
@@ -273,29 +320,9 @@ const styles = {
     color: '#fff',
     fontSize: 18,
     fontFamily: 'ProductSans',
+    marginRight: 5,
   },
 
-  secondaryButton: {
-    marginTop: 5,
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    borderColor: '#4C28BC',
-    borderWidth: 1,
-    width: 90,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    marginBottom: 5,
-    marginLeft: 20,
-
-  
-  },
-  secondaryButtonText: {
-    color: '#4C28BC',
-    fontSize: 18,
-    fontFamily: 'ProductSans',
-  },
 
 
 };
