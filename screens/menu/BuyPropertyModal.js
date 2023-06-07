@@ -4,11 +4,11 @@ import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 
-const BuyPropertyModal = ({ navigation, modalVisible, setModalVisible }) => {
+const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVisible}) => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
-  
+
 
   const handleActivate = () => {
     setModalVisible(true);
@@ -23,18 +23,33 @@ const BuyPropertyModal = ({ navigation, modalVisible, setModalVisible }) => {
     });
   };
 
+  const closeModal = () => {
+    setPropertyModalVisible(false);
+  };
+
+
   return (
     <Modal
       animationType="slide"
       transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}
+      visible={propertyModalVisible}
+      onRequestClose={() => setPropertyModalVisible(false)}
     >
-      <View style={styles.modalContainer} onPress={() => setModalVisible(false)}>
-        <View style={styles.modalContent}>
+
+<TouchableOpacity
+  style={styles.modalContainer}
+  activeOpacity={1}
+  onPress={closeModal}
+  
+>
+  <TouchableOpacity
+    activeOpacity={1}
+    style={styles.modalContent}
+    onPress={() => {}}
+  > 
          <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
              <Text style={styles.modalHeader} >Buy Property</Text>
-             <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setModalVisible(false)}/>
+             <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setPropertyModalVisible(false)}/>
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
@@ -87,15 +102,10 @@ const BuyPropertyModal = ({ navigation, modalVisible, setModalVisible }) => {
     <Text style={styles.primaryButtonText}>Continue</Text>
   </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={() => setModalVisible(false)}
-          >
-            <Text style={styles.secondaryButtonText}>Back</Text>
-          </TouchableOpacity>
+         
           </View>
-        </View>
-      </View>
+          </TouchableOpacity>
+          </TouchableOpacity>
     </Modal>
   );
 };
@@ -110,7 +120,6 @@ const styles = {
   modalContent: {
     backgroundColor: '#F6F3FF',
     width: '100%',
-    height: '72%',
     alignItems: 'center',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
@@ -202,44 +211,25 @@ const styles = {
 
   buttonsContainer: {
     flexDirection: 'row',
+    marginTop: 15,
+    position: 'relative',
+    marginBottom: 35,
+    alignSelf: 'center'
   },
 
   primaryButton: {
-    marginTop: 30,
     flexDirection: 'row',
     backgroundColor: '#4C28BC',
-    width: 160,
-    height: 40,
+    width: '85%',
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    marginBottom: 5,
   
   },
+
   primaryButtonText: {
     color: '#fff',
-    fontSize: 18,
-    fontFamily: 'ProductSans',
-  },
-
-  secondaryButton: {
-    marginTop: 30,
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    borderColor: '#4C28BC',
-    borderWidth: 1,
-    width: 90,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    marginBottom: 5,
-    marginLeft: 20,
-
-  
-  },
-  secondaryButtonText: {
-    color: '#4C28BC',
     fontSize: 18,
     fontFamily: 'ProductSans',
   },

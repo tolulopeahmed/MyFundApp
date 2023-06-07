@@ -39,7 +39,6 @@ const handleActivateAutoSave = () => {
         <Ionicons name="home-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
         <Text style={styles.propertyText}>Earn <Text style={{color: '#4C28BC'}}>rental income for life </Text> by buying a fraction of our hostels. Next property progress...</Text>
-        <ProgressBar progress={0.25} color='#4C28BC' height={6} style={styles.progressBar}/>
       </View>
       </View>
       
@@ -186,26 +185,12 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     
   },
-  propertyContainer: {
-    flex: 0.16,
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    backgroundColor: '#DCD1FF',
-    padding: 15,
-    marginHorizontal: 20,
-    borderRadius: 10,
-    marginTop: 5,
-  },
- 
 
     welcomeText: {
      color: '#4C28BC',
      fontFamily: 'ProductSansBold',
     },
-    
- 
-    
+       
     profileIcons: {
     flexDirection: 'row',
     },
@@ -213,15 +198,7 @@ const styles = StyleSheet.create({
     propertyIcon: {
     marginRight: 10,
     },
-    propertyText: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: 'regular',
-    fontFamily: 'karla',
-    letterSpacing: -0.4,
-    color: 'black',
-
-    },
+    
     goalText:{
       flex: 1,
       fontSize: 14,
@@ -238,18 +215,32 @@ const styles = StyleSheet.create({
       color: 'black',
     },
 
+    propertyContainer: {
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      flexDirection: 'row',
+      backgroundColor: '#DCD1FF',
+      padding: 15,
+      marginHorizontal: 20,
+      borderRadius: 10,
+      marginTop: 5,
+    },
+    
+    propertyText: {
+      fontSize: 14,
+      fontWeight: 'normal',
+      fontFamily: 'karla',
+      letterSpacing: -0.2,
+      color: 'black',
+      marginBottom: 8,  // Add some bottom margin to separate from the progress bar
+    },
+    
     progressBarContainer: {
       flex: 1,
       flexDirection: 'column',
+      marginLeft: 3,  // Adjust the left margin to align with the text
     },
-    progressBar: {
-      height: 3.5,
-      backgroundColor: '#AEA5E1',
-      borderRadius: 10,
-
-
-    },
-
+    
     savingsContainer: {
     flexDirection: 'column',
     backgroundColor: '#4C28BC',
@@ -259,11 +250,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 125,
     },
+
     savingsLine1: {
       flexDirection: 'row',
     color: '#8E8E93',
     marginTop: 8,
     },
+
     greyText: {
     marginLeft: 8,
     marginTop:8,

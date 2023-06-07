@@ -10,6 +10,11 @@ const AutoSaveModal = ({ autoSaveModalVisible, setAutoSaveModalVisible }) => {
   const [paymentOption, setPaymentOption] = useState('');
 
   
+  const closeModal = () => {
+    setAutoSaveModalVisible(false);
+  };
+  
+
 
   return (
     <Modal
@@ -18,7 +23,18 @@ const AutoSaveModal = ({ autoSaveModalVisible, setAutoSaveModalVisible }) => {
     visible={autoSaveModalVisible}
     onRequestClose={() => setAutoSaveModalVisible(false)}
     >
-         <View style={styles.modalContainer}>
+<TouchableOpacity
+  style={styles.modalContainer}
+  activeOpacity={1}
+  onPress={closeModal}
+  
+>
+  <TouchableOpacity
+    activeOpacity={1}
+    style={styles.modalContent}
+    onPress={() => {}}
+  >       
+
         <View style={styles.modalContent}>
          <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
              <Text style={styles.modalHeader} >Activate AutoSave</Text>
@@ -81,7 +97,8 @@ const AutoSaveModal = ({ autoSaveModalVisible, setAutoSaveModalVisible }) => {
           
           </View>
         </View>
-        </View>
+        </TouchableOpacity>
+        </TouchableOpacity>
     </Modal>
   );
 };
@@ -96,7 +113,6 @@ const styles = {
   modalContent: {
     backgroundColor: '#F6F3FF',
     width: '100%',
-    height: '75%',
     alignItems: 'center',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
@@ -182,47 +198,28 @@ const styles = {
 
   buttonsContainer: {
     flexDirection: 'row',
+    marginTop: 10,
+    position: 'relative',
+    marginBottom: 35,
+    alignSelf: 'center'
   },
 
   primaryButton: {
-    marginTop: 30,
     flexDirection: 'row',
     backgroundColor: '#4C28BC',
-    width: 160,
-    height: 40,
+    width: '85%',
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 10,
-    marginBottom: 5,
-  
+    borderRadius: 10,  
   },
+
   primaryButtonText: {
     color: '#fff',
     fontSize: 18,
     fontFamily: 'ProductSans',
   },
 
-  secondaryButton: {
-    marginTop: 30,
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    borderColor: '#4C28BC',
-    borderWidth: 1,
-    width: 90,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    marginBottom: 5,
-    marginLeft: 20,
-
-  
-  },
-  secondaryButtonText: {
-    color: '#4C28BC',
-    fontSize: 18,
-    fontFamily: 'ProductSans',
-  },
 
 
 };

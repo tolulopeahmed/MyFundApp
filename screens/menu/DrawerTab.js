@@ -24,7 +24,7 @@ const DrawerTab = ({ navigation, firstName }) => {
       <Drawer.Navigator
   drawerContent={(props) => <Sidebar {...props} firstName={firstName} profileImageUri={profileImageUri} />}
   drawerStyle={{ width: '80%' }}
-  drawerPosition="right"
+  drawerPosition="left"
   edgeWidth={0}
   screenOptions={{ headerShown: false }}
   drawerAnimationEnabled

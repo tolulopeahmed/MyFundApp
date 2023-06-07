@@ -6,6 +6,12 @@ const { width, height } = Dimensions.get('window');
 
 const CreateAccount = ({ navigation }) => {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
+  const [userInfo, setUserInfo] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    mobileNumber: '',
+  });
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!isPasswordVisible);
@@ -28,19 +34,27 @@ const CreateAccount = ({ navigation }) => {
           <View style={styles.inputContainer}>
             <View style={styles.inputWrapper}>
               <Ionicons name='person-outline' marginBottom={8} size={20} color="grey" padding={8} />
-              <TextInput style={styles.input} placeholder="First Name" />
+              <TextInput style={styles.input} placeholder="First Name" 
+                onChangeText={(text) => setUserInfo({ ...userInfo, firstName: text })}
+                />
             </View>
             <View style={styles.inputWrapper}>
               <Ionicons name='person-outline' marginBottom={8} size={20} color="grey" padding={8} />
-              <TextInput style={styles.input} placeholder="Last Name" />
+              <TextInput style={styles.input} placeholder="Last Name" 
+                onChangeText={(text) => setUserInfo({ ...userInfo, lastName: text })}
+                />
             </View>
             <View style={styles.inputWrapper}>
               <Ionicons name='at-outline' marginBottom={8} size={20} color="grey" padding={8} />
-              <TextInput style={styles.input} placeholder="Email Address" keyboardType="email-address" />
+              <TextInput style={styles.input} placeholder="Email Address" keyboardType="email-address" 
+                onChangeText={(text) => setUserInfo({ ...userInfo, email: text })}
+                />
             </View>
             <View style={styles.inputWrapper}>
               <Ionicons name='call-outline' marginBottom={8} size={20} color="grey" padding={8} />
-              <TextInput style={styles.input} placeholder="Phone Number" keyboardType="phone-pad" />
+              <TextInput style={styles.input} placeholder="Phone Number" keyboardType="phone-pad" 
+                onChangeText={(text) => setUserInfo({ ...userInfo, mobileNumber: text })}
+                />
             </View>
             <View style={styles.inputWrapper}>
               <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
@@ -69,7 +83,7 @@ const CreateAccount = ({ navigation }) => {
               <TextInput style={styles.input} placeholder="Referral Phone/Username (optional)" keyboardType="phone-pad" />
             </View>
           </View>
-          <TouchableOpacity style={styles.createAccountButton} onPress={() => navigation.navigate('Confirmation')}>
+          <TouchableOpacity style={styles.createAccountButton} onPress={() => navigation.navigate('Confirmation', { userInfo })}>
             <Text style={styles.createAccountButtonText}>CREATE ACCOUNT</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.loginTextContainer} onPress={() => navigation.navigate('Login')}>
@@ -113,7 +127,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 50,
     left: 20,
-    zIndex: -1,
+    zIndex: 1,
   },
   backButtonText: {
     fontSize: 16,

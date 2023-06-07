@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Text, Platform, Button, View, TextInput, TouchableOpacity } from 'react-native';
+import { Modal, Text, Button, View, TextInput, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
@@ -87,8 +87,10 @@ const bankOptions = [
       setAddBankModalVisible(false);
     };
   
-  
-  
+    const closeModal = () => {
+      setAddBankModalVisible(false);
+    };
+    
   const dropdownOptions = bankOptions.map((bank) => bank.name);
 
    return (
@@ -99,8 +101,18 @@ const bankOptions = [
       visible={addBankModalVisible}
       onRequestClose={() => setAddBankModalVisible(false)}
     >
-      <View style={styles.modalContainer}>
-     
+
+<TouchableOpacity
+  style={styles.modalContainer}
+  activeOpacity={1}
+  onPress={closeModal}
+  
+>
+  <TouchableOpacity
+    activeOpacity={1}
+    style={styles.modalContent}
+    onPress={() => {}}
+  >     
         <View style={styles.modalContent}>
          <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
              <Text style={styles.modalHeader} >Add Bank Account</Text>
@@ -109,28 +121,32 @@ const bankOptions = [
           <Divider />
           <Text style={styles.modalSubText}>
           Set up your bank accounts so you can perform faster withdrawals locally.{'\n'}
-            {'\n'}<Text style={{fontFamily: 'proxima'}}>            Bank                               Enter Account Number</Text>
           </Text>
 
-        <View flexDirection='row' alignSelf='center'>
-         
-        <View style={styles.dropdown}> 
-        <SelectDropdown
-      data={dropdownOptions}
-      onSelect={handleSelect}
-      buttonTextAfterSelection={(selectedItem) => selectedItem}
-      rowTextForSelection={(item) => item}
-      buttonStyle={{ borderRadius: 10, fontFamily: 'karla' }}
-      dropdownStyle={{ fontFamily: 'karla' }}
-      rowStyle={{ alignSelf: 'flex-start', fontFamily: 'karla' }}
-      rowTextStyle={{ textAlign: 'left', fontSize: 16, color: 'black', fontFamily: 'ProductSans'}}
-      defaultButtonText="Select Bank" // Placeholder text
-      buttonTextStyle={{ color: 'black', fontSize: 16, fontFamily: 'karla', marginRight: 70, letterSpacing: -0.6, }} // Style for the placeholder text
-    />
-            </View>
 
+          <View>
+    <Text style={styles.labelText}>Bank</Text>
+    <View style={styles.fieldContainer3}>
+      <SelectDropdown
+        data={dropdownOptions}
+        onSelect={handleSelect}
+        buttonTextAfterSelection={(selectedItem) => selectedItem}
+        rowTextForSelection={(item) => item}
+        buttonStyle={{ borderRadius: 10, fontFamily: 'karla', width: '85%', marginBottom: 15, }}
+        dropdownStyle={{ fontFamily: 'karla' }}
+        rowStyle={{ alignSelf: 'flex-start', fontFamily: 'karla' }}
+        rowTextStyle={{ textAlign: 'left', fontSize: 16, color: 'black', fontFamily: 'ProductSans' }}
+        defaultButtonText="Select Bank" // Placeholder text
+        buttonTextStyle={{ color: 'black', fontSize: 16, fontFamily: 'karla', letterSpacing: -0.6 }} // Style for the placeholder text
+      />
+  </View>
 
-            <TextInput
+</View>
+
+  <View style={styles.fieldContainer2}>
+    <Text style={styles.labelText}>Bank Account</Text>
+    <View style={styles.inputContainer}>
+    <TextInput
               style={styles.amountInput}
               placeholder="1234567890"
               keyboardType="numeric"
@@ -138,12 +154,25 @@ const bankOptions = [
               onChangeText={(value) => setAccountNumber(value)}
               value={accountNumber}
             />
+    </View>
+</View>
 
-            </View>
+<View style={styles.fieldContainer2}>
+    <Text style={styles.labelText}>Account Name</Text>
+    <View style={styles.inputContainer}>
+    <TextInput
+              style={styles.amountInput2}
+              keyboardType="email-address"
+            />
+    </View>
+</View>
+
+
+        
 
 
   
-  <Text style={{fontFamily: 'karla', letterSpacing: -0.8, marginBottom: 7, marginTop: 45, alignSelf: 'center', color: 'grey', fontSize: 12,}}>This bank account can only be used by you for receiving money</Text>
+  <Text style={{fontFamily: 'karla', letterSpacing: -0.8, marginBottom: 7, marginTop: 20, alignSelf: 'center', color: 'grey', fontSize: 12,}}>This bank account can only be used by you for receiving money</Text>
   
     
 
@@ -156,7 +185,8 @@ const bankOptions = [
 
               </View>
         </View>
-      </View>
+        </TouchableOpacity>
+        </TouchableOpacity>
 
     </Modal>
 
@@ -174,7 +204,6 @@ const styles = {
   modalContent: {
     backgroundColor: '#F6F3FF',
     width: '100%',
-    flex: 0.5,
     alignItems: 'center',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
@@ -189,6 +218,7 @@ const styles = {
     color: '#4C28BC',
     flex: 1,
   },
+
   modalSubText: {
     fontSize: 14,
     fontFamily: 'karla',
@@ -201,115 +231,75 @@ const styles = {
   },
    
 
+  labelText: {
+    fontFamily: 'proxima',
+    marginLeft: 3,
+    marginBottom: 5,
+    textAlign: 'left',
+  },
+
+  fieldContainer3: {
+    width: '100%',
+  },
+
+  fieldContainer2: {
+    alignSelf: 'center',
+    width: '85%',
+  },
 
   amountInput: {
     color: 'black',
     fontFamily: 'ProductSans',
     backgroundColor: '#fff',
     height: 50,
-    width: 200,
+    width: '100%',
     padding: 10,
-    marginTop: 5,
-    fontSize: 16,
-    letterSpacing: 1,
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
+    fontSize: 17,
+    letterSpacing: 3,
+    borderRadius: 5,
+    marginBottom: 15,
   },
 
-  
   amountInput2: {
     color: 'black',
     fontFamily: 'ProductSans',
     backgroundColor: '#fff',
-    height: 35,
-    width: 60,
-    textAlign: 'center',
-    padding: 6,
-    fontSize: 15,
-    letterSpacing: 1,
-    borderRadius: 4,
-    marginTop: 15,
+    height: 50,
+    width: '100%',
+    padding: 10,
+    fontSize: 17,
+    borderRadius: 5,
+    marginBottom: 15,
   },
   
-  dropdown: {
-    height: 50,
-    width: 10,
-    marginTop: 5,
-    borderRadius: 10,
-    marginBottom: 10,
-    paddingRight: 5,
-    marginRight: 165,
-  },
-
-
-  pickContainer: {
-    alignItems: 'center',
-    height: 40,
-    justifyContent: 'center',
-    alignSelf: 'center',
-    alignContents: 'center',
-    width: '90%',
-    backgroundColor: 'white'
-
-  },
-  pickerContainer: {
-    flexDirection: 'row',
-    width: '94%',
-
-  },
-  picker: {
-    flex: 0.5,
-    height: 150,
-    width: 10,
-  },
   
   buttonsContainer: {
     flexDirection: 'row',
-    marginTop: 10,
+    marginTop: 15,
     position: 'relative',
+    marginBottom: 35,
+
 
   },
 
   primaryButton: {
-    marginTop: 5,
     flexDirection: 'row',
     backgroundColor: '#4C28BC',
-    width: 170,
-    height: 40,
+    width: '85%',
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    marginBottom: 5,
   
   },
+
   primaryButtonText: {
     color: '#fff',
     fontSize: 18,
     fontFamily: 'ProductSans',
   },
 
-  secondaryButton: {
-    marginTop: 5,
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    borderColor: '#4C28BC',
-    borderWidth: 1,
-    width: 90,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    marginBottom: 5,
-    marginLeft: 20,
-
   
-  },
-  secondaryButtonText: {
-    color: '#4C28BC',
-    fontSize: 18,
-    fontFamily: 'ProductSans',
-  },
-
 
 };
 

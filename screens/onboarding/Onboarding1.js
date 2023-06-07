@@ -14,11 +14,7 @@ const Onboarding1 = ({ navigation }) => {
         <Text style={styles.header}>SAVE</Text>
         <Text style={styles.subText}>Develop the saving habit to reach your first millions</Text>
       </View>
-      <View style={styles.navigationIndicatorContainer}>
-        <View style={[styles.navigationIndicator, styles.activeIndicator]} />
-        <View style={styles.navigationIndicator} />
-        <View style={styles.navigationIndicator} />
-      </View>
+    
     </View>
   );
 };
@@ -59,13 +55,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
     marginLeft: 20,
   },
-  navigationIndicatorContainer: {
-    marginTop: 50,
-    flexDirection: 'row',
-    position: 'relative',
-    bottom: 10,
-    color: '#4C28BC',
-  },
+
   navigationIndicator: {
     width: 8,
     height: 8,

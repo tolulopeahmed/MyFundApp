@@ -8,7 +8,7 @@ import Profile from './Profile'
 
 
 const Ownership = ({navigation}) => {
-    const [modalVisible, setModalVisible] = useState(false);
+    const [propertyModalVisible, setPropertyModalVisible] = useState(false);
 
     // in the Save component
   const handleActivateAutoSave = () => {
@@ -45,17 +45,25 @@ const Ownership = ({navigation}) => {
       </View>
       <View style={styles.detailsContainer}>
         <Text style={styles.headerText2}>K&Q Hostels, FUNAAB</Text>
-        <Text style={styles.subText1}>At Harmony Estate opposite FUNAAB.{'\n'}<Text style={{color: '#4C28BC', fontFamily: 'proxima', fontSize: 15}}>N5million/unit</Text></Text>
+        <Text style={styles.subText1}>At Harmony Estate opposite FUNAAB.</Text>
         <Text style={styles.subText2}>1 Bed/Self-contain: 26 units</Text>
         <Text style={styles.subText2}>Room and Parlour: 14 units</Text>
+        <Text style={{color: '#4C28BC', marginLeft: 4, alignSelf: 'flex-start', fontFamily: 'proxima', fontSize: 15}}>N5million/unit</Text>
         <Text style={styles.rate}>N150,000 p.a.</Text>
-        <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
+        <TouchableOpacity style={styles.button} onPress={() => setPropertyModalVisible(true)}>
         <FontAwesomeIcon icon={faHouseCircleCheck} style={styles.buttonIcon} />
           <Text style={styles.buttonText}>Buy Now!</Text>
-          <BuyPropertyModal navigation={navigation} modalVisible={modalVisible} setModalVisible={setModalVisible} />
         </TouchableOpacity>
       </View>
       </View>
+
+      {propertyModalVisible && (
+<BuyPropertyModal 
+      navigation={navigation} 
+      propertyModalVisible={propertyModalVisible} 
+      setPropertyModalVisible={setPropertyModalVisible} />
+      )}
+
 
       <View style={styles.itemContainer}>
       <View style={styles.imageContainer}>
@@ -63,9 +71,10 @@ const Ownership = ({navigation}) => {
       </View>
       <View style={styles.detailsContainer}>
         <Text style={styles.headerText2}>Amethyst Hall, Lagos</Text>
-        <Text style={styles.subText1}>At Harmony Estate opposite FUNAAB.{'\n'}<Text style={{color: '#4C28BC', fontFamily: 'proxima', fontSize: 15}}>N5million/unit</Text></Text>
+        <Text style={styles.subText1}>At Harmony Estate opposite FUNAAB.</Text>
         <Text style={styles.subText2}>1 Bed/Self-contain: 26 units</Text>
         <Text style={styles.subText2}>Room and Parlour: 14 units</Text>
+        <Text style={{color: '#4C28BC', marginLeft: 4, alignSelf: 'flex-start', fontFamily: 'proxima', fontSize: 15}}>N5million/unit</Text>
         <Text style={styles.rate}>N250,000 p.a.</Text>
         <TouchableOpacity style={styles.soldButton}>
         <FontAwesomeIcon icon={faHouseCircleCheck} animation="beat" style={styles.soldButtonIcon} />
@@ -98,9 +107,10 @@ const Ownership = ({navigation}) => {
       </View>
       <View style={styles.detailsContainer}>
         <Text style={styles.headerText2}>MyFund Hall, Lagos</Text>
-        <Text style={styles.subText1}>At Harmony Estate opposite FUNAAB.{'\n'}<Text style={{color: '#4C28BC', fontFamily: 'proxima', fontSize: 15}}>N5million/unit</Text></Text>
+        <Text style={styles.subText1}>At Harmony Estate opposite FUNAAB.</Text>
         <Text style={styles.subText2}>1 Bed/Self-contain: 26 units</Text>
         <Text style={styles.subText2}>Room and Parlour: 14 units</Text>
+        <Text style={{color: '#4C28BC', fontFamily: 'proxima', fontSize: 15}}>N5million/unit</Text>
         <Text style={styles.rate}>N250,000 p.a.</Text>
         <TouchableOpacity style={styles.soldButton}>
         <FontAwesomeIcon icon={faHouseCircleCheck} animation="beat" style={styles.soldButtonIcon} />
@@ -207,17 +217,17 @@ bell: {
   },
 
   itemContainer: {
-    flex: 0.5,
+    flex: 1,
     backgroundColor: '#E5DDFF',
     borderRadius: 10,
     borderWidth: 0.3,
     alignItems: 'center',
     alignSelf: 'center',
-    height: '25%',
     width: '90%',
     flexDirection: 'row',
     overflow: 'hidden',
     marginBottom: 15,
+    position: 'relative', // Add this property to enable positioning of the button
   },
 
   imageContainer: {
@@ -233,13 +243,14 @@ bell: {
 
   },
 
-  detailsContainer: {
-    padding: 1,
-    justifyContent: 'center',
-    alignSelf: 'center',
-    alignContent: 'center',
-    alignItems: 'center'
-  },
+ detailsContainer: {
+  flex: 1, // Add this property to allow the container to take full width
+  padding: 1,
+  justifyContent: 'center',
+  alignSelf: 'center',
+  alignContent: 'center',
+  alignItems: 'center'
+},
 
   headerText2: {
     color: '#4C28BC',
@@ -247,7 +258,6 @@ bell: {
     fontFamily: 'proxima',
     letterSpacing: -0.5,
     marginTop: 13,
-    marginBottom: 9,
     alignSelf: 'flex-start',
     marginLeft: 4,
   },
@@ -256,13 +266,11 @@ bell: {
     fontSize: 11,
     width: '95%',
     fontFamily: 'karla',
-    marginBottom: 5,
     letterSpacing: -0.3,
   },
 
   subText2: {
     fontSize: 11,
-    width: '95%',
     width: '95%',
     color: '#808080',
   },
@@ -271,26 +279,27 @@ bell: {
     fontSize: 16,
     fontFamily: 'karla',
     color: 'green',
-    marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 50,
     letterSpacing: -0.5,
     alignSelf: 'flex-start',
     marginLeft: 4,
   },
 
   button: {
+    position: 'absolute', // Position the button absolutely inside the item container
+    bottom: 10, // Adjust the value as per your requirement
+    right: 10, // Adjust the value as per your requirement
     backgroundColor: '#4C28BC',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'flex-end',
     paddingVertical: 7,
     paddingHorizontal: 8,
     width: '55%',
     borderRadius: 10,
-    marginRight: 4,
-    marginBottom: 10,
   },
+
+
   buttonIcon: {
     color: '#FFFFFF',
     marginRight: 7,
@@ -304,17 +313,16 @@ bell: {
 
   soldButton: {
     backgroundColor: 'white',
+    position: 'absolute', // Position the button absolutely inside the item container
+    bottom: 10, // Adjust the value as per your requirement
+    right: 10, // Adjust the value as per your requirement
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'flex-end',
     paddingVertical: 7,
     paddingHorizontal: 8,
     width: '55%',
     borderRadius: 10,
-    marginRight: 4,
-    marginBottom: 10,
-    borderWidth: 0.5,
     borderColor: 'grey',
   },
 

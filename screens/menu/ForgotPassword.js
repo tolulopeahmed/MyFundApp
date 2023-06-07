@@ -1,25 +1,18 @@
 import React, { useRef, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet,Image,animation,TouchableOpacity,TextInput,Modal,Animated,} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import logo from './logo..png';
+import logo from '../login/logo..png';
+import Divider from '../components/Divider';
 
-const Login = ({ navigation }) => {
+const ForgotPassword = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Added toggle state
 
 
   const handleConfirm = () => {
     setModalVisible(true);
-    setTimeout(() => {
-      setModalVisible(false);
-      navigation.navigate('DrawerTab', { firstName });
-    }, 1000);
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+ 
 
   return (
     <>
@@ -32,69 +25,24 @@ const Login = ({ navigation }) => {
           <Image source={logo} style={styles.logo} />
         </View>
         <View style={styles.headerContainer}>
-          <Text style={styles.header}>Welcome Back</Text>
+          <Text style={styles.header}>Reset Password</Text>
           <Text style={styles.subText}>
-            Have you earned your first rent yet? To do so, you need get your first property. That’s why you’re here.
-            Jump right back in!
+          Enter the email address you use for MyFund, and we’ll help you create a new password.
+
           </Text>
         </View>
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} placeholder="Email or Phone Number" />
-          
+          <TextInput style={styles.input} placeholder="Enter Your Email Address" />
           <View style={styles.passwordInputContainer}>
-            <TextInput
-              style={styles.passwordInput}
-              placeholder="Password"
-              secureTextEntry={!showPassword}
-            />
-            <TouchableOpacity style={styles.passwordToggle} onPress={togglePasswordVisibility}>
-              <Ionicons
-                name={showPassword ? 'eye-outline' : 'eye-off-outline'}
-                size={20}
-                color="grey"
-              />
-            </TouchableOpacity>
+           </View>
 
-          </View>
-
-          <View>
-            <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-          </TouchableOpacity>
-          </View>
-         
-          <TouchableOpacity style={styles.fingerprintContainer} onLongPress={handleConfirm}>
-            <Image source={require('./fingerprint.png')} style={styles.image} />
-            <Text style={styles.fingerprintText}>Press and Hold</Text>
-          </TouchableOpacity>
           <TouchableOpacity style={styles.loginButton} onPress={handleConfirm}>
-            <Text style={styles.loginButtonText}>LOG IN</Text>
+            <Text style={styles.loginButtonText}>RESET</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.createAccountTextContainer}
-            onPress={() => navigation.navigate('CreateAccount')}
-          >
-            <Text style={styles.createAccountText}>
-              New to MyFund? <Text style={styles.createAccount}>Create Free Account</Text>
-            </Text>
-          </TouchableOpacity>
+     
         </View>
 
-        {/* add a divider line */}
-        <View style={styles.divider} />
-        <Text style={styles.orLoginText}>OR LOGIN WITH</Text>
-
-        {/* add two buttons */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.googleButton}>
-            <Ionicons name="logo-google" size={24} color="#fff" />
-            <Text style={styles.googleButtonText}>Google</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.linkedinButton}>
-            <Ionicons name="logo-linkedin" size={24} color="#fff" />
-            <Text style={styles.linkedinButtonText}>LinkedIn</Text>
-          </TouchableOpacity>
-        </View>
+   <Divider/>
 
         <Modal
           animationType="slide"
@@ -102,14 +50,22 @@ const Login = ({ navigation }) => {
           visible={modalVisible}
           onRequestClose={() => setModalVisible(false)}
         >
-          <View style={styles.modalContainer} onPress={() => setModalVisible(false)}>
+          <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalHeader}>We've confirmed it's you!</Text>
-              <Text style={styles.modalSubText}>Welcome to MyFund{firstName}</Text>
+              <Text style={styles.modalHeader}>Password Reset</Text>
+              <Text style={styles.modalSubText}>Click the reset link we just sent to your email address to create a new password. Afterwards, tap OK to login with your new password</Text>
               <Animated.View style={[styles.checkmarkContainer, { opacity: animation }]}>
-              <Ionicons name="checkmark-circle-outline" size={170} color="green" marginBottom={60} marginTop={20}/>
+              <Ionicons name="checkmark-circle-outline" size={170} color="green" marginBottom={20} marginTop={20}/>
               </Animated.View>
+
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.navigate('Login')}>
+                  <Text style={styles.primaryButtonText}>OK</Text>
+                </TouchableOpacity>      
+              </View>
             </View>
+
+         
           </View>
         </Modal>
       </ScrollView>
@@ -327,14 +283,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
-  modalContent: {
+
+modalContent: {
     backgroundColor: '#F6F3FF',
     width: '100%',
     alignItems: 'center',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
+    borderBottomRightRadius: 0,    
   },
   modalHeader: {
     marginTop: 50,
@@ -350,6 +307,32 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
+  
+  buttonsContainer: {
+    flexDirection: 'row',
+    marginTop: 15,
+    position: 'relative',
+    marginBottom: 35,
+    alignSelf: 'center'
+  },
+
+  primaryButton: {
+    flexDirection: 'row',
+    backgroundColor: '#4C28BC',
+    width: '85%',
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+  },
+
+  primaryButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'ProductSans',
+    marginRight: 5,
+  },
+
 });
 
-export default Login;
+export default ForgotPassword;

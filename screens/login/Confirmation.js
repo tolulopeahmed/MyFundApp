@@ -5,6 +5,7 @@ import MyFundLogo from './logo..png';
 import SavingsGoalModal from '../menu/SavingsGoalModal';
 
   const Confirmation = ({ navigation }) => {
+
     const input1 = useRef(null);
     const input2 = useRef(null);
     const input3 = useRef(null);
@@ -82,7 +83,7 @@ import SavingsGoalModal from '../menu/SavingsGoalModal';
           <Text style={styles.modalHeader}>We've confirmed it's you!</Text>
             <Text style={styles.modalSubText}>Welcome to MyFund{firstName}</Text>
           <Animated.View style={[styles.checkmarkContainer, { opacity: animation }]}>
-            <Ionicons name="checkmark-circle-outline" size={170} color="green" />
+            <Ionicons name="checkmark-circle-outline" size={170} color="green" marginBottom={60} marginTop={20}/>
           </Animated.View>          
           </View>
         </View>
@@ -209,7 +210,6 @@ const styles = StyleSheet.create({
       modalContent: {
         backgroundColor: '#F6F3FF',
         width: '100%',
-        height: '45%',
         alignItems: 'center',
         borderTopRightRadius: 25,
         borderTopLeftRadius: 25,

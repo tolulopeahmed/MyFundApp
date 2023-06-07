@@ -41,6 +41,18 @@ const OnboardingScreens = ({ navigation }) => {
           <Onboarding3 />
         </ScrollView>
 
+        <View style={styles.indicatorContainer}>
+          <View style={styles.indicatorWrapper}>
+            {Array.from({ length: 3 }, (_, index) => (
+              <View
+                key={index}
+                style={[styles.dot, index === currentPage && styles.activeDot]}
+              />
+            ))}
+          </View>
+        </View>
+
+
         <View style={styles.buttonContainer}>
           <PrimaryButton title="CREATE ACCOUNT" onPress={() => navigation.navigate('CreateAccount')} />
           <SecondaryButton title="LOG IN" onPress={() => navigation.navigate('Login')} />
@@ -77,7 +89,36 @@ const styles = StyleSheet.create({
     color: '#4C28BC',
     fontFamily: 'proxima',
   },
+
+  indicatorContainer: {
+    marginBottom: 45,
+    alignItems: 'center',
+    width: '100%',
+  },
   
+  indicatorWrapper: {
+    flexDirection: 'row',
+  },
+
+  dot: {
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#BDBDBD',
+    marginHorizontal: 5,
+  },
+  activeDot: {
+    backgroundColor: '#4C28BC',
+    width: 25,
+    height: 8,
+    borderRadius: 5,
+  },
+
+  paginationContainer: {
+    bottom: 150,
+  },
+
   buttonContainer: {
     alignItems: 'center',
     marginBottom: 45,

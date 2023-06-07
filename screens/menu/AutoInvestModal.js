@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, Text, animation, StyleSheet, Animated, View, TextInput, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { Ionicons } from '@expo/vector-icons';
+import Divider from '../components/Divider';
+
 
 const AutoInvestModal = ({ modalVisible, setModalVisible }) => {
   const [amount, setAmount] = useState('');
@@ -20,6 +23,9 @@ const AutoInvestModal = ({ modalVisible, setModalVisible }) => {
     });
   };
   
+  const closeModal = () => {
+    setModalVisible(false);
+  };
 
   return (
     <Modal
@@ -28,9 +34,25 @@ const AutoInvestModal = ({ modalVisible, setModalVisible }) => {
       visible={modalVisible}
       onRequestClose={() => setModalVisible(false)}
     >
-      <View style={styles.modalContainer} onPress={() => setModalVisible(false)}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalHeader}>Activate AutoInvest</Text>
+<TouchableOpacity
+  style={styles.modalContainer}
+  activeOpacity={1}
+  onPress={closeModal}
+  
+>
+  <TouchableOpacity
+    activeOpacity={1}
+    style={styles.modalContent}
+    onPress={() => {}}
+  >       
+       
+      <View style={styles.modalContent}>
+         <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
+             <Text style={styles.modalHeader} >Activate AutoInvest</Text>
+             <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setModalVisible(false)}/>
+         </View>
+          <Divider />
+
           <Text style={styles.modalSubText}>
             AutoInvest allows you to set an amount to automatically debit from your local bank account
             to your MyFund account for up to <Text style={{color: 'green'}}>20% ROI p.a.</Text> Minimum: 60,000
@@ -84,15 +106,12 @@ const AutoInvestModal = ({ modalVisible, setModalVisible }) => {
     <Text style={styles.primaryButtonText}>Activate Now</Text>
   </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={() => setModalVisible(false)}
-          >
-            <Text style={styles.secondaryButtonText}>Back</Text>
-          </TouchableOpacity>
+          
           </View>
         </View>
-      </View>
+        </TouchableOpacity>
+        </TouchableOpacity>
+
     </Modal>
   );
 };
@@ -104,32 +123,36 @@ const styles = {
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
-  modalContent: {
+
+
+modalContent: {
     backgroundColor: '#F6F3FF',
     width: '100%',
-    height: '75%',
     alignItems: 'center',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,      
+    borderBottomRightRadius: 0,    
   },
 
   modalHeader: {
-    marginTop: 30,
-    alignItems: 'flex-start',
+    marginTop: 20,
     fontSize: 25,
     fontFamily: 'proxima',
     color: '#4C28BC',
+    flex: 1,
   },
-  modalSubText: {
+
+    modalSubText: {
     fontSize: 14,
     fontFamily: 'karla',
     color: 'black',
-    textAlign: 'center',
-    marginHorizontal: 40,
-    marginTop: 10,
+    textAlign: 'left',
+    marginHorizontal: 30,
+    marginTop: 5,
+
   },
+
 
   inputContainer: {
     marginTop: 30,
@@ -192,47 +215,29 @@ const styles = {
 
   buttonsContainer: {
     flexDirection: 'row',
+    marginTop: 15,
+    position: 'relative',
+    marginBottom: 35,
+    alignSelf: 'center'
   },
 
   primaryButton: {
-    marginTop: 30,
     flexDirection: 'row',
     backgroundColor: '#4C28BC',
-    width: 160,
-    height: 40,
+    width: '85%',
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 10,
-    marginBottom: 5,
-  
+    borderRadius: 10,  
   },
+
   primaryButtonText: {
     color: '#fff',
     fontSize: 18,
     fontFamily: 'ProductSans',
   },
 
-  secondaryButton: {
-    marginTop: 30,
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    borderColor: '#4C28BC',
-    borderWidth: 1,
-    width: 90,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    marginBottom: 5,
-    marginLeft: 20,
 
-  
-  },
-  secondaryButtonText: {
-    color: '#4C28BC',
-    fontSize: 18,
-    fontFamily: 'ProductSans',
-  },
 
 
 };

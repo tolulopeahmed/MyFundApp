@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, Image, TextInput, ScrollView, TouchableOpacity, StyleSheet, Button } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, Dimensions, TextInput, ScrollView, TouchableOpacity, StyleSheet, Button } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider';
 import { MaterialIcons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
+import * as ImagePicker from 'react-native-image-picker';
+
+const screenWidth = Dimensions.get('window').width;
+
+
+
+
 
 const KYC = ({ navigation, firstName }) => {
     const [selectedGender, setSelectedGender] = useState(null);
@@ -13,8 +20,34 @@ const KYC = ({ navigation, firstName }) => {
     const [cardType, setCardType] = useState(null);
     const [relationshipWithNextOfKin, setRelationshipWithNextOfKin] = useState(null);
 
-    const [imageData, setImageData] = useState(null);
+    const { launchImageLibrary } = ImagePicker;
+    const [selectedImage, setSelectedImage] = useState(null);
 
+
+    const openImagePicker = () => {
+      const options = {
+        title: 'Select ID Image',
+        mediaType: 'photo',
+        maxWidth: 300,
+        maxHeight: 300,
+        quality: 1,
+      };
+    
+      ImagePicker.launchImageLibrary({}, (response) => {
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.error) {
+          console.log('ImagePicker Error: ', response.error);
+        } else if (response.customButton) {
+          console.log('User tapped custom button: ', response.customButton);
+        } else {
+          setSelectedImage(response);
+        }
+      });
+    };
+       
+    
+    
 
     const onGenderSelect = (index, value) => {
         setSelectedGender(value);
@@ -86,6 +119,8 @@ const KYC = ({ navigation, firstName }) => {
         </View>
     </View>
 
+    <ScrollView showsVerticalScrollIndicator={false}>
+
       <View style={styles.propertyContainer}>
         <Ionicons name="shield-checkmark-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
@@ -95,7 +130,6 @@ const KYC = ({ navigation, firstName }) => {
       </View>
       
     
-      <ScrollView>
       <View style={styles.inputContainer}>
 
       <View style={styles.inputWrapper}>
@@ -107,8 +141,7 @@ const KYC = ({ navigation, firstName }) => {
         defaultIndex={null}
         defaultButtonText={
             <>
-              GENDER                                                                  {' '}
-              <Ionicons name="chevron-down" size={16} color="black" />
+              <Ionicons name="chevron-down" size={16} color="black" />  GENDER
             </>
           }
          buttonTextAfterSelection={(selectedItem) => selectedItem}
@@ -130,8 +163,7 @@ const KYC = ({ navigation, firstName }) => {
           defaultIndex={null}
           defaultButtonText={
             <>
-              RELATIONSHIP STATUS                                    {' '}
-              <Ionicons name="chevron-down" size={16} color="black" />
+            <Ionicons name="chevron-down" size={16} color="black" />  RELATIONSHIP STATUS
             </>
           }
           buttonTextAfterSelection={(selectedItem) => selectedItem}
@@ -154,8 +186,7 @@ const KYC = ({ navigation, firstName }) => {
           defaultIndex={null}
           defaultButtonText={
             <>
-              EMPLOYMENT STATUS                                     {' '}
-              <Ionicons name="chevron-down" size={16} color="black" />
+             <Ionicons name="chevron-down" size={16} color="black" />  EMPLOYMENT STATUS
             </>
           }          buttonTextAfterSelection={(selectedItem) => selectedItem}
           buttonStyle={styles.dropdownButton}
@@ -177,8 +208,7 @@ const KYC = ({ navigation, firstName }) => {
           defaultIndex={null}
           defaultButtonText={
             <>
-              YEARLY INCOME                                                  {' '}
-              <Ionicons name="chevron-down" size={16} color="black" />
+             <Ionicons name="chevron-down" size={16} color="black" />  YEARLY INCOME
             </>
           }          
           buttonTextAfterSelection={(selectedItem) => selectedItem}
@@ -221,8 +251,7 @@ const KYC = ({ navigation, firstName }) => {
           defaultIndex={null}
           defaultButtonText={
             <>
-              RELATIONSHIP WITH NEXT OF KIN              {' '}
-              <Ionicons name="chevron-down" size={16} color="black" />
+             <Ionicons name="chevron-down" size={16} color="black" />  RELATIONSHIP WITH NEXT OF KIN
             </>
           }              buttonTextAfterSelection={(selectedItem) => selectedItem}
           buttonStyle={styles.dropdownButton}
@@ -244,45 +273,52 @@ const KYC = ({ navigation, firstName }) => {
         <Divider />
 
         <View style={styles.inputWrapper}>
-        <MaterialIcons name='badge' marginBottom={9} size={20} color="grey" padding={8}/>
-<View style={styles.dropdown}>
-        {/* Identification Card Type */}
-        <SelectDropdown
-          data={cardTypeOptions}
-          onSelect={(index, value) => setCardType(value)}
-          defaultIndex={null}
-          defaultButtonText={
-            <>
-              IDENTIFICATION TYPE                                       {' '}
-              <Ionicons name="chevron-down" size={16} color="black" />
-            </>
-          }              buttonTextAfterSelection={(selectedItem) => selectedItem}
-          buttonStyle={styles.dropdownButton}
-          dropdownStyle={styles.dropdown}
-          rowStyle={styles.dropdownRow}
-          rowTextStyle={styles.dropdownRowText}
-          buttonTextStyle={styles.placeholderText}
-        />
-      </View>        
-      </View>
+  <MaterialIcons name='badge' marginBottom={9} size={20} color="grey" padding={8} />
+  <View style={styles.dropdown}>
+    {/* Identification Card Type */}
+    <SelectDropdown
+      data={cardTypeOptions}
+      onSelect={(index, value) => setCardType(value)}
+      defaultIndex={null}
+      defaultButtonText={
+        <>
+          <Ionicons name="chevron-down" size={16} color="black" /> IDENTIFICATION TYPE
+        </>
+      }
+      buttonTextAfterSelection={(selectedItem) => selectedItem}
+      buttonStyle={styles.dropdownButton}
+      dropdownStyle={styles.dropdown}
+      rowStyle={styles.dropdownRow}
+      rowTextStyle={styles.dropdownRowText}
+      buttonTextStyle={styles.placeholderText}
+    />
+  </View>
+</View>
+
+<TouchableOpacity onPress={openImagePicker}>
+    {selectedImage ? (
+
+      <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
+    ) : (
+      <Text style={styles.uploadText}>Upload ID</Text>
+    )}
+  </TouchableOpacity>
+
+
+      
 
       
       
 
       </View>
-    
-
-
- {/* add a divider line */}
- <View style={styles.divider} />
- 
+     
 </ScrollView>
 
 
 
 
       <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton} onPress={() => setAddCardModalVisible(true)}>
+                <TouchableOpacity style={styles.primaryButton}>
                 <Ionicons name="shield-checkmark-outline" size={24} color="#fff" marginRight={10}/>
                 <Text style={styles.primaryButtonText}>Update KYC</Text>
                 </TouchableOpacity>
@@ -378,14 +414,14 @@ const styles = StyleSheet.create({
 
     inputContainer: {
         marginTop: 20,
-        width: '90%',
+        width: '95%',
         alignItems: 'center',
         justifyContent: 'center',
       },
       input: {
         fontSize: 15,
         height: 37,
-        width: '80%',
+        width: screenWidth * 0.80,
         backgroundColor: 'white',
         borderRadius: 10,
         marginBottom: 10,
@@ -405,7 +441,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         fontFamily: 'karla',
         height: 35,
-        width: 310,
+        width: screenWidth * 0.80,
         marginBottom: 10,
         backgroundColor: '#fff',
       },
@@ -438,30 +474,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 15,
     position: 'relative',
-    alignSelf: 'center',
-    marginBottom: 20,
-
-
+    marginBottom: 35,
+    alignSelf: 'center'
   },
 
   primaryButton: {
-    marginTop: 5,
     flexDirection: 'row',
     backgroundColor: '#4C28BC',
-    width: 175,
-    height: 40,
+    width: '85%',
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    marginBottom: 5,
   
   },
+
   primaryButtonText: {
     color: '#fff',
     fontSize: 18,
     fontFamily: 'ProductSans',
   },
-
 
 
 

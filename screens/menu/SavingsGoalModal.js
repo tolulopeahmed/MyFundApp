@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Text, Animated, View, TextInput, TouchableOpacity } from 'react-native';
+import { Modal, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +17,10 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
     setAmount(formattedValue);
   };
 
+  const closeModal = () => {
+    setGoalModalVisible(false);
+  };
+  
   
    return (
     <>
@@ -26,11 +30,21 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
       visible={goalModalVisible}
       onRequestClose={() => setGoalModalVisible(false)}
     >
-      <View style={styles.modalContainer}>
-     
+
+<TouchableOpacity
+  style={styles.modalContainer}
+  activeOpacity={1}
+  onPress={closeModal}
+  
+>
+  <TouchableOpacity
+    activeOpacity={1}
+    style={styles.modalContent}
+    onPress={() => {}}
+  >         
         <View style={styles.modalContent}>
          <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
-             <Text style={styles.modalHeader} >Set Your Savings Goal</Text>
+             <Text style={styles.modalHeader} >Update Savings Goal</Text>
              <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setGoalModalVisible(false)}/>
          </View>
           <Divider />
@@ -82,13 +96,16 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
  
             <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.navigate('Save')}>
-                  <Text style={styles.primaryButtonText}>Proceed </Text>
+                <Ionicons name="arrow-up-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
+
+                  <Text style={styles.primaryButtonText}>Update </Text>
                 </TouchableOpacity>
 
               </View>
         </View>
-      </View>
+        </TouchableOpacity>
 
+        </TouchableOpacity>
     </Modal>
 
     </>
@@ -105,7 +122,6 @@ const styles = {
   modalContent: {
     backgroundColor: '#F6F3FF',
     width: '100%',
-    flex: 0.7,
     alignItems: 'center',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
@@ -231,47 +247,26 @@ const styles = {
 
   buttonsContainer: {
     flexDirection: 'row',
-    marginTop: 445,
-    position: 'absolute',
+    marginTop: 15,
+    position: 'relative',
+    marginBottom: 35,
+
 
   },
 
   primaryButton: {
-    marginTop: 5,
     flexDirection: 'row',
     backgroundColor: '#4C28BC',
-    width: 160,
-    height: 40,
+    width: '85%',
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    marginBottom: 5,
   
   },
+
   primaryButtonText: {
     color: '#fff',
-    fontSize: 18,
-    fontFamily: 'ProductSans',
-  },
-
-  secondaryButton: {
-    marginTop: 5,
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    borderColor: '#4C28BC',
-    borderWidth: 1,
-    width: 90,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    marginBottom: 5,
-    marginLeft: 20,
-
-  
-  },
-  secondaryButtonText: {
-    color: '#4C28BC',
     fontSize: 18,
     fontFamily: 'ProductSans',
   },

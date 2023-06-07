@@ -15,12 +15,12 @@ const Header = ({ navigation, headerText,  }) => {
       </TouchableOpacity>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>{headerText}</Text>
-        <TouchableOpacity style={styles.person}> 
-            <Ionicons name="person-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('More')}/>
-          </TouchableOpacity>
-      <TouchableOpacity style={styles.bell}>
+        {<TouchableOpacity style={styles.person}> 
+            <Ionicons name="person-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('More...')}/>
+          </TouchableOpacity>}
+      {<TouchableOpacity style={styles.bell}>
             <Ionicons name="notifications-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('Notifications')} />
-          </TouchableOpacity>
+          </TouchableOpacity>}
         </View>
     </View>
   );

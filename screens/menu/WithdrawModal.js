@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { Modal, Text, Animated, View, TextInput, TouchableOpacity } from 'react-native';
+import { Modal, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
-import SuccessModal from '../components/SuccessModal'
 
 
-const WithdrawModal = ({ navigation, modalVisible, setModalVisible }) => {
+const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisible }) => {
+ 
   const [frequency, setFrequency] = useState('');
+  const [toAccount, setToAccount] = useState('');
+  const [toBank, setToBank] = useState('');
+
   const [paymentOption, setPaymentOption] = useState('');
   const [email, setEmail] = useState('');
   const [amount, setAmount] = useState('');
-  const [successModalVisible, setSuccessModalVisible] = useState('');
 
 
   const handleAmountChange = (value) => {
@@ -20,16 +22,8 @@ const WithdrawModal = ({ navigation, modalVisible, setModalVisible }) => {
     setAmount(formattedValue);
   };
 
-  const handleSuccessModalClose = () => {
-    setSuccessModalVisible(false);
-  };
-  
-
-  const handleWithdrawNow = () => {
-    setModalVisible(false); // hide the withdraw modal
-    setTimeout(() => {
-      setSuccessModalVisible(true);
-    }, 1500);
+  const closeModal = () => {
+    setWithdrawModalVisible(false);
   };
 
 
@@ -38,39 +32,61 @@ const WithdrawModal = ({ navigation, modalVisible, setModalVisible }) => {
     <Modal
       animationType="slide"
       transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}
+      visible={withdrawModalVisible}
+      onRequestClose={() => setWithdrawModalVisible(false)}
     >
-      <View style={styles.modalContainer}>
 
+<TouchableOpacity
+  style={styles.modalContainer}
+  activeOpacity={1}
+  onPress={closeModal}
+  
+>
+  <TouchableOpacity
+    activeOpacity={1}
+    style={styles.modalContent}
+    onPress={() => {}}
+  >    
       
 
         <View style={styles.modalContent}>
          <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
-             <Text style={styles.modalHeader} >Withdraw From Wallet</Text>
-             <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setModalVisible(false)}/>
+             <Text style={styles.modalHeader} >Withdraw...</Text>
+             <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setWithdrawModalVisible(false)}/>
          </View>
           <Divider />
-          <Text style={styles.modalSubText}>
-          Withdraw from Wallet anytime for <Text style={{color: 'green'}}>free</Text> to any account of your choice.  {'\n'}
-            {'\n'}Withdraw...
-          </Text>
-        
+
+         <View style={styles.sectionContainer}> 
+          <Text style={styles.modalSubText}>Amount</Text>
           <TextInput
         style={styles.amountInput}
         placeholder="How much do you want to withdraw?"
         keyboardType="numeric"
         onChangeText={(value) => handleAmountChange(value)}
       />
-          <Text style={{alignSelf: 'flex-start', marginLeft: 45, fontSize: 12, fontFamily: 'proxima', marginTop: 2}}>Balance: <Text style={{color: '#4C28BC'}}>7500.25</Text></Text>
+      </View>
 
-          <Text style={styles.modalSubText} alignSelf='flex-start'>to...</Text>
-          <View style={styles.inputContainer}>
-            <View style={styles.dropdown}>
-              <Picker
+
+      <View style={styles.sectionContainer}> 
+          <Text style={styles.modalSubText}>From...</Text>
+          <Picker
                 style={styles.labelItem}
                 selectedValue={frequency}
                 onValueChange={(value) => setFrequency(value)}
+              >
+                <Picker.Item color='silver' label="Select account" value="Select account" />
+                <Picker.Item label="My Wallet" value="Wallet" />
+                <Picker.Item label="My Savings" value="Savings" />
+                <Picker.Item label="My Sponsorship Investment" value="Sponsorship Investment" />
+              </Picker>
+      </View>
+
+      <View style={styles.sectionContainer}> 
+      <Text style={styles.modalSubText}>To...</Text>
+              <Picker
+                style={styles.labelItem}
+                selectedValue={toAccount}
+                onValueChange={(value) => setToAccount(value)}
               >
                 <Picker.Item color='silver' label="Select destination account" value="Select destination account" />
                 <Picker.Item label="My local bank account" value="My local bank account" />
@@ -78,27 +94,26 @@ const WithdrawModal = ({ navigation, modalVisible, setModalVisible }) => {
                 <Picker.Item label="My Sponsorship Investment" value="Sponsorship Investment" />
                 <Picker.Item label="Another user's wallet" value="Another user's wallet" />
               </Picker>
-            </View>
-          </View>
 
-          {frequency === 'My local bank account' && (
+          {toAccount === 'My local bank account' && (
             <>
               <View style={styles.paymentOptionsContainer}>
                 <Text style={styles.label}>Which of them?     </Text>
                 <Picker
-                  style={styles.labelItem2}
-                  selectedValue={paymentOption}
-                  onValueChange={(value) => setPaymentOption(value)}
+                  style={styles.labelItem}
+                  selectedValue={toBank}
+                  onValueChange={(value) => setToBank(value)}
                 >
                   <Picker.Item color='silver' label="My Saved Bank Accounts" value="Saved Bank Account"/>
-                  <Picker.Item label="Tolulope Ahmed" value="Tolulope Ahmed" />
+                  <Picker.Item label="Oluwapelumi Oginni - Zenith" value="Tolulope Ahmed" />
+                  <Picker.Item label="Oluwapelumi Oginni - Access" value="Tolulope Ahmed" />
                 </Picker>
       
               </View>
             </>
           )}
 
-{frequency === "Another user's wallet" && (
+{toAccount === "Another user's wallet" && (
   <>
     <View style={styles.paymentOptionsContainer}>
       <Text style={styles.label}>Enter user's email</Text>
@@ -110,28 +125,22 @@ const WithdrawModal = ({ navigation, modalVisible, setModalVisible }) => {
     </View>
   </>
 )}
+      </View>
 
 
             <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton} onPress={handleWithdrawNow}>
+                <TouchableOpacity style={styles.primaryButton}>
+                <Ionicons name="arrow-down-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
                   <Text style={styles.primaryButtonText}>Withdraw Now</Text>
                 </TouchableOpacity>
 
             
 
-                <TouchableOpacity style={styles.secondaryButton} onPress={() => setModalVisible(false)}>
-                  <Text style={styles.secondaryButtonText}>Back</Text>
-                </TouchableOpacity>
               </View>
         </View>
-      </View>
-
+        </TouchableOpacity>
+        </TouchableOpacity>
     </Modal>
-
-    {successModalVisible && (
-      <SuccessModal Header='Sucess' Button='Close' Body='The withdrawal amount is on the way to its destination' />
-    )}
-
     </>
   );
 };
@@ -146,7 +155,6 @@ const styles = {
   modalContent: {
     backgroundColor: '#F6F3FF',
     width: '100%',
-    flex: 0.65,
     alignItems: 'center',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
@@ -161,12 +169,19 @@ const styles = {
     color: '#4C28BC',
     flex: 1,
   },
+
+  sectionContainer: {
+    alignSelf: 'flex-start',
+    marginLeft: 30,
+    marginTop: 5,
+    width: '80%',
+  },
+  
   modalSubText: {
     fontSize: 14,
     fontFamily: 'karla',
     color: 'black',
     textAlign: 'left',
-    marginHorizontal: 30,
     marginTop: 5,
   },
    
@@ -180,12 +195,7 @@ const styles = {
     marginTop: 5,
   },
 
-  inputContainer: {
-    marginTop: 5,
-    marginBottom: 15,
-    width: '100%',
-    alignItems: 'center',
-  },
+ 
 
   autoSaveSetting: {
     fontSize: 17,
@@ -197,31 +207,21 @@ const styles = {
   },
 
   paymentOptionsContainer:{
-    marginTop: -20,
+    marginTop: 5,
   },
 
   label: {
     fontSize: 17,
     fontFamily: 'proxima',
-    marginRight: 190,
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
   },
 
-  labelItem: {
-    color: 'grey',
-    textAlign: 'left',
-    marginLeft: -16,
-    marginBottom: 30,
-    fontFamily: 'karla',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-  },
+  
 
   labelItem2: {
     color: 'grey',
     textAlign: 'left',
-    marginLeft: -5,
     marginBottom: 10,
     fontFamily: 'karla',
     backgroundColor: '#fff',
@@ -230,89 +230,75 @@ const styles = {
   },
 
   emailInput: {
-    color: 'grey',
+    color: 'black',
     textAlign: 'left',
-    marginLeft: -5,
-    marginBottom: 30,
     fontFamily: 'karla',
     backgroundColor: '#fff',
-    borderRadius: 10,
-    height: 45,
+    borderRadius: 5,
+    height: 50,
+    width: "108%",
     padding: 10,
-    borderRadius: 10,
+    fontSize: 18,
+    letterSpacing: -0.4,
   },
 
   amountInput: {
     color: 'black',
     textAlign: 'left',
-    marginLeft: -5,
     fontFamily: 'karla',
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 5,
     height: 50,
-    width: "80%",
+    width: "108%",
     padding: 10,
     marginTop: 5,
-    borderRadius: 10,
-    fontSize: 16,
+    fontSize: 18,
     letterSpacing: -0.3,
   },
 
   dropdown: {
     height: 45,
-    width: '80%',
+    width: '108%',
     backgroundColor: 'white',
     borderRadius: 10,
     marginBottom: 15,
     paddingLeft: 15,
     paddingRight: 5,
+  },
 
+  labelItem: {
+    color: 'grey',
+    textAlign: 'left',
+    marginBottom: 4,
+    fontFamily: 'karla',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    width: "108%",
   },
 
 
   buttonsContainer: {
     flexDirection: 'row',
-    marginTop: 415,
-    position: 'absolute',
+    marginTop: 15,
+    position: 'relative',
+    marginBottom: 35,
+
 
   },
 
   primaryButton: {
-    marginTop: 5,
     flexDirection: 'row',
     backgroundColor: '#4C28BC',
-    width: 160,
-    height: 40,
+    width: '85%',
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    marginBottom: 5,
   
   },
+
   primaryButtonText: {
     color: '#fff',
-    fontSize: 18,
-    fontFamily: 'ProductSans',
-  },
-
-  secondaryButton: {
-    marginTop: 5,
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    borderColor: '#4C28BC',
-    borderWidth: 1,
-    width: 90,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    marginBottom: 5,
-    marginLeft: 20,
-
-  
-  },
-  secondaryButtonText: {
-    color: '#4C28BC',
     fontSize: 18,
     fontFamily: 'ProductSans',
   },

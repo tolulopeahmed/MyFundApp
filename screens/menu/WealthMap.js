@@ -4,14 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
 const WealthMap = ({ navigation, firstName }) => {
-  const [autoSave, setAutoSave] = React.useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
 
-  // in the Save component
-const handleActivateAutoSave = () => {
-  setModalVisible(true);
-  setAutoSave(true);
-};
 
   
   return (
@@ -31,6 +24,10 @@ const handleActivateAutoSave = () => {
           </TouchableOpacity>
         </View>
     </View>
+
+
+
+
 
       <Text style={styles.title}>My Current Financial Status</Text>
       <View style={styles.propertyContainer}>
@@ -54,18 +51,15 @@ const handleActivateAutoSave = () => {
       <Image source={require('./9steps.png')} style={styles.image} />
 
           
-      <View marginTop={25} flexDirection='row' alignContent="center" alignSelf='center'>
-      <TouchableOpacity style={styles.quickSaveButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back-outline" size={24} style={styles.buttonIcon} />
-          <Text style={styles.quickSaveText}>Go Back</Text>
-        </TouchableOpacity>
-          <TouchableOpacity style={styles.learnMore} onPress={() => navigation.push('Resources')}>
-          <Text style={styles.learnMoreText}>Learn More</Text>
+      <View style={styles.buttonsContainer}>
+          <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.push('Resources')}>
+          <Text style={styles.primaryButtonText}>Learn More</Text>
         </TouchableOpacity>
         </View>
 
-      
-    </View>
+
+
+   </View>
   );
 };
 
@@ -288,172 +282,36 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         marginRight: 7,
       },
-    quickSaveButton: {
-      marginTop: 30,
-      flexDirection: 'row',
-      backgroundColor: '#4C28BC',
-      width: 130,
-      height: 40,
-      marginRight: 10,
-      alignSelf: 'center',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 10,
-    },
-
-   
-    
-    learnMore: {
-      marginTop: 30,
-      flexDirection: 'row',
-      backgroundColor: '#fff',
-      width: 130,
-      marginLeft: 10,
-      height: 40,
-      alignSelf: 'center',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 10,
-      borderColor: '#4C28BC',
-      borderWidth: 1,
-    },
-
-    quickSaveText: {
-      color: '#fff',
-      fontSize: 18,
-      fontFamily: 'ProductSans',
-    },
-
-    learnMoreText: {
-      color: '#4C28BC',
-      fontSize: 18,
-      fontFamily: 'ProductSans',
-    },
-    
-    navigatorContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    },
-    navigatorIndicator: {
-    height: 3,
-    width: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
-    backgroundColor: 'silver',
-    },
-
-
-    todoList: {
-      marginTop: 2,
-      marginLeft:20,
-      fontSize: 18,
-      color: 'black',
-       fontFamily: 'ProductSansBold',
-       marginBottom:10,
-
-    },
-
-    containerHead: {
-        backgroundColor: '#fff',
+     
+ 
+      buttonsContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '90%',
-        alignSelf: 'center',
-        height: 40,
-        borderRadius: 5,
-      },
-      column: {
-        alignItems: 'center',
-        flex: 1,
         justifyContent: 'center',
+        position: 'relative',
+        top: 30,
+        left: 0,
+        right: 0,
       },
-      text: {
-        color: '#4C28BC',
-        fontFamily: 'ProductSans',
-        fontSize: 16,
-      },
-      text2: {
-        color: 'green',
-        fontFamily: 'ProductSans',
-        fontSize: 16,
-      },
-
-
-    transactionContainer: {
-      marginTop: 30,
-      flex: 1,
-        },
-
-    transactionsContainer: {
-      borderRadius: 10,
-      marginHorizontal: 20,
-      marginTop: 5,
-    },
-    transactionItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingVertical: 10,
-      borderBottomWidth: 1,
-      borderBottomColor: '#ccc',
-    },
-    transactionIcon: {
-      backgroundColor: '#DEE4FC',
-      color: '#',
-      padding: 8,
-      borderRadius: 10,
-      marginRight: 10,
-    },
-    transactionText: {
-      flex: 1,
-      alignItems: 'flex-start',
-
-    },
-    transactionDescription: {
-      color: '#4C28BC',
-      letterSpacing: -1,
-      fontSize: 18,
-      fontFamily: 'karla',
-      marginTop: 3,
-      textAlign: 'left',
-      alignItems: 'flex-start',
-    },
-    transactionDate: {
-      fontFamily: 'karla',
-      fontSize: 12,
-      marginTop: 3,
-    },
-    transactionAmount: {
-      color: '#4C28BC',
-      fontSize: 20,
-      fontFamily: 'karla',
-      letterSpacing: -1,
-      marginTop: 10,
-      textAlign: 'right',
-    },
-
-    transactionAmount2: {
-        color: 'green',
-        fontSize: 20,
-        fontFamily: 'karla',
-        letterSpacing: -1,
-        marginTop: 10,
-        textAlign: 'right',
-      },
-    negativeAmount: {
-      color: 'red',
-      fontSize: 23,
-      fontFamily: 'karla',
-      letterSpacing: -1,
-      marginTop: 10,
-      textAlign: 'right',
-    },
-
-    transactionAmountContainer: {
-      textAlign: 'right',
       
-    },
+      primaryButton: {
+        flexDirection: 'row',
+        backgroundColor: '#4C28BC',
+        width: '85%',
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 10,
+        marginBottom: 5,
+      },
+
+primaryButtonText: {
+  color: '#fff',
+  fontSize: 18,
+  fontFamily: 'ProductSans',
+},
+
+
+
 
 
 });

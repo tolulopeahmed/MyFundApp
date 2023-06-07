@@ -4,64 +4,178 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Header from '../components/Header';
 import QuickSaveModal from '../components/QuickSaveModal';
 import AutoSaveModal from './AutoSaveModal';
+import Divider from '../components/Divider';
+import Swiper from 'react-native-swiper';
+import QuickInvestModal from '../components/QuickInvestModal';
+import WithdrawModal from './WithdrawModal';
+import BuyPropertyModal from './BuyPropertyModal';
 
 const Home = ({ navigation, firstName, transactionAmount }) => {
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
-  const [autoSaveModalVisible, setAutoSaveModalVisible] = useState(false);
+  const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
+  const [propertyModalVisible, setPropertyModalVisible] = useState(false);
 
  
   const handleQuickSave = () => {
     setQuickSaveModalVisible(true);
   };
 
-  const handleAutoSave = () => {
-    setAutoSaveModalVisible(true);
+  const handleQuickInvest = () => {
+    setQuickInvestModalVisible(true);
+  };
+
+  const handleActivateAutoSave = () => {
+    setModalVisible(true);
   };
 
   return (
-        <View style={styles.container}>
+    <>
       <Header navigation={navigation} headerText='MYFUND'/>
+
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+
       <Text style={styles.welcome}><Text style={styles.welcomeText}>Welcome</Text> <Text style={styles.firstNameText}>[firstName],</Text></Text>
+     
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
         <Text style={styles.propertyText}>You need $9,500.75 to acquire your next property. Keep growing your funds until your rental income is more than your expenses.</Text>
       </View>
+
+
+     
+      <Swiper
+  style={styles.swiperContainer}
+  autoplay
+  autoplayTimeout={20}
+  dot={<View style={styles.dot} />}
+  activeDot={<View style={styles.activeDot} />}
+  paginationStyle={styles.paginationContainer}
+>
       <View style={styles.savingsContainer}>
         <View style={styles.savingsLine1}>
           <Ionicons name="save-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
-          <Text style={styles.greyText}>Total Savings</Text>
+          <Text style={styles.greyText}>TOTAL SAVINGS    
+          <Text style={styles.rateText}>    @10% p.a.</Text> </Text>
         </View>
-        <View>
-          <Text style={styles.savingsLine2}>$1,930.50</Text>
-          </View>
-        <View>
-          <Text style={styles.rate}>@10% p.a.</Text>
-          </View>
-        <TouchableOpacity style={styles.quickSaveButton} onPress={handleQuickSave}>
-          <Text style={styles.quickSaveText}>QuickSave</Text>
-        </TouchableOpacity>
+        <View style={styles.amountContainer}>
+        <Text style={styles.dollarSign}>₦</Text>
+        <Text style={styles.savingsAmount}>250,000</Text>
+        <Text style={styles.dollarSign}>50</Text>
+        </View>
+
+        <View style={styles.quickSaveButtonContainer}>
+  <TouchableOpacity style={styles.quickSaveButton} onPress={() => handleQuickSave()}>
+    <Text style={styles.quickSaveText}>QuickSave</Text>
+  </TouchableOpacity>
+</View>
+    </View>
+
+    <View style={styles.savingsContainer}>
+        <View style={styles.savingsLine1}>
+          <Ionicons name="trending-up-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
+          <Text style={styles.greyText}>TOTAL INVESTMENTS    
+          <Text style={styles.rateText}>    @20% p.a.</Text> </Text>
+        </View>
+        <View style={styles.amountContainer}>
+        <Text style={styles.dollarSign}>₦</Text>
+        <Text style={styles.savingsAmount}>3,650,200</Text>
+        <Text style={styles.dollarSign}>00</Text>
+        </View>
+
+        <View style={styles.quickSaveButtonContainer}>
+  <TouchableOpacity style={styles.quickSaveButton} onPress={handleQuickInvest}>
+    <Text style={styles.quickSaveText}>QuickInvest</Text>
+  </TouchableOpacity>
+</View>
+    </View>
+
+    {quickInvestModalVisible && (
+  <QuickInvestModal
+  navigation={navigation}
+  quickInvestModalVisible={quickInvestModalVisible} 
+  setQuickInvestModalVisible={setQuickInvestModalVisible}
+  />
+)}
+
+
+    <View style={styles.savingsContainer}>
+        <View style={styles.savingsLine1}>
+          <Ionicons name="wallet-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
+          <Text style={styles.greyText}>WALLET    
+          <Text style={styles.rateText}> (My Earnings)</Text> </Text>
+        </View>
+        <View style={styles.amountContainer}>
+        <Text style={styles.dollarSign}>₦</Text>
+        <Text style={styles.savingsAmount}>7,500</Text>
+        <Text style={styles.dollarSign}>25</Text>
+        </View>
+
+        <View style={styles.quickSaveButtonContainer}>
+  <TouchableOpacity style={styles.quickSaveButton} onPress={() => setWithdrawModalVisible(true)}>
+    <Text style={styles.quickSaveText}>Withdraw</Text>
+  </TouchableOpacity>
+</View>
+    </View>
+
+    {withdrawModalVisible && (
+    <WithdrawModal 
+        navigation={navigation} 
+        withdrawModalVisible={withdrawModalVisible} 
+        setWithdrawModalVisible={setWithdrawModalVisible} />
+    )}
+
+    <View style={styles.savingsContainer}>
+        <View style={styles.savingsLine1}>
+          <Ionicons name="home-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
+          <Text style={styles.greyText}>ACQUIRED PROPERTIES    
+          <Text style={styles.rateText}>    @yearly rent</Text> </Text>
+        </View>
+        <View style={styles.amountContainer}>
+        <Text style={styles.savingsAmount}>02</Text>
+        </View>
+
+        <View style={styles.quickSaveButtonContainer}>
+  <TouchableOpacity style={styles.quickSaveButton} onPress={() => setPropertyModalVisible(true)}>
+    <Text style={styles.quickSaveText}>Buy Properties</Text>
+  </TouchableOpacity>
+</View>
+    </View>
+
+    {propertyModalVisible && (
+  <BuyPropertyModal 
+      navigation={navigation} 
+      propertyModalVisible={propertyModalVisible} 
+      setPropertyModalVisible={setPropertyModalVisible} />
+      )}
+
+    </Swiper>
+
+        
+
+    {quickSaveModalVisible && (
         <QuickSaveModal
   navigation={navigation}
   quickSaveModalVisible={quickSaveModalVisible} 
   setQuickSaveModalVisible={setQuickSaveModalVisible}
   />
-
-        <View style={styles.navigatorContainer}>
-          <View style={styles.navigatorIndicator} ></View>
-          <View style={styles.navigatorIndicator}></View>
-          <View style={styles.navigatorIndicator}></View>
-          <View style={styles.navigatorIndicator}></View>
-        </View>
-      </View>
+    )}
+       
+      
       <View style={styles.todoContainer}>
       <Text style={styles.todoList}>To-Do List</Text>
         <View style={styles.todoList1}>
-          <TouchableOpacity style={styles.todoButton} onPress={handleAutoSave}>
+          <TouchableOpacity style={styles.todoButton} onPress={() => handleActivateAutoSave()}>
           <Ionicons name="save-outline" size={24} color="#000" style={{ marginRight: 15 }} />
           <Text style={styles.todoText}>Turn On AutoSave</Text>
         </TouchableOpacity>
 
-    
+        {modalVisible && (
+   <AutoSaveModal 
+        autoSaveModalVisible={modalVisible} 
+        setAutoSaveModalVisible={setModalVisible} />
+        )}
 
         </View>
         <View>
@@ -74,6 +188,8 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
     
     
       <SafeAreaView style={styles.transactionContainer}>
+      <Divider />
+
       <Text style={styles.recentTransaction}>Recent Transactions</Text>
 
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -173,8 +289,8 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
           </ScrollView>
     </SafeAreaView>
      
-</View>
-
+</ScrollView>
+</>
 );
 }
 
@@ -230,6 +346,7 @@ marginHorizontal: 20,
 alignItems: 'center',
 borderRadius: 10,
 marginTop: 10,
+flexWrap: 'wrap', // Adjust container size based on the text inside
 },
 propertyIcon: {
 marginRight: 10,
@@ -240,45 +357,119 @@ fontSize: 14,
 fontWeight: 'regular',
 fontFamily: 'karla',
 },
+
+swiperContainer: {
+  height: 150,
+},
+dot: {
+  backgroundColor: 'rgba(0, 0, 0, 0.2)', // Customize the color of the inactive dots
+  width: 5,
+  height: 5,
+  borderRadius: 5,
+  marginLeft: 3,
+  marginRight: 3,
+  marginTop: 3,
+  marginBottom: 3,
+},
+activeDot: {
+  backgroundColor: '#4C28BC', // Customize the color of the active dot
+  width: 10,
+  height: 4,
+  borderRadius: 5,
+  marginLeft: 3,
+  marginRight: 3,
+  marginTop: 3,
+  marginBottom: 3,
+},
+paginationContainer: {
+  bottom: -10, // Adjust the value as per your requirement
+},
 savingsContainer: {
-flexDirection: 'column',
-backgroundColor: '#4C28BC',
-padding: 0,
-marginHorizontal: 20,
-borderRadius: 10,
-marginTop: 20,
-alignItems: 'center',
-height: 150,
+  flexDirection: 'column',
+  backgroundColor: '#4C28BC',
+  marginHorizontal: 20,
+  borderRadius: 10,
+  marginTop: 5,
+  alignItems: 'center',
+  height: 150,
 },
-savingsLine1: {
-  flexDirection: 'row',
-marginRight: 10,
-color: '#8E8E93',
-},
-greyText: {
-flex: 1,
-marginLeft: 10,
-marginTop:8,
-fontSize: 14,
-color: '#8E8E93',
-fontFamily: 'karla',
-},
-savingsLine2: {
-  fontSize: 70,
+
+  savingsLine1: {
+    flexDirection: 'row',
+  color: '#8E8E93',
+  marginTop: 8,
+  alignSelf: 'flex-start',
+  marginRight: 10,
+  },
+  
+  greyText: {
+  marginLeft: 8,
+  marginTop:10,
+  fontSize: 11,
+  color: 'silver',
+  fontFamily: 'karla',
+  textAlign: 'center',
+
+  },
+
+  rateText: {
+    fontSize: 11,
+    color: '#43FF8E',
+    marginRight: 278,
+    fontFamily: 'karla',
+    },
+
+  amountContainer: {
+    flexDirection: 'row',
+    alignSelf: 'flex-start',
+    marginLeft: 15,
+  },
+
+  dollarSign: {
+    fontSize: 30,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    marginTop: 12,
+      color: 'silver',
+      letterSpacing: -2,
+    },
+
+  savingsAmount: {
+  fontSize: 65,
   fontFamily: 'karla',
   textAlign: 'center',
   letterSpacing: -4,
   marginRight: 0,
     color: '#fff',
-    marginRight: 85,
+  },
 
+   
+
+    autoSaveContainer: {
+      flexDirection: 'row',
+      marginTop: 7
+    },
+
+    autoSaveText: {
+      color: 'silver',
+      fontFamily: 'karla',
+      marginRight: 5,
+    },
+
+    grayText: {
+      color: 'silver',
+    },
+    greenText: {
+      color: '#43FF8E',
+    },
+
+
+quickSaveButtonContainer: {
+  position: 'absolute',
+  bottom: -5,
+  right: 10,
 },
-rate: {
-fontSize: 13,
-color: '#43FF8E',
-marginRight: 278,
-fontFamily: 'karla',
-},
+
 quickSaveButton: {
 backgroundColor: '#9D8CD7',
 borderRadius: 8,

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -21,13 +21,15 @@ import Card from './screens/menu/Card';
 import Bank from './screens/menu/Bank'
 import KYC from './screens/menu/KYC'
 import Notifications from './screens/menu/Notifications';
-
-
+import FAQ from './screens/menu/FAQ';
+import ForgotPassword from './screens/menu/ForgotPassword';
 
 const Stack = createStackNavigator();
 
-const App = () => {
+const App = ({ styles, darkModeStyles, }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
+
 
   useEffect(() => {
     async function loadFonts() {
@@ -38,10 +40,12 @@ const App = () => {
         'ProductSans': require('./screens/fonts/ProductSans-Regular.ttf'),
         'ProductSansBold': require('./screens/fonts/ProductSans-Black.ttf')
       });
-      setTimeout(() => setIsLoading(false), 2000);
+      setIsLoading(false);
     }
     loadFonts();
   }, []);
+
+
 
   if (isLoading) {
      return <Splash />;
@@ -51,7 +55,11 @@ const App = () => {
     setIsLoading(false);
   }, 2000);
 
+
+
   return (
+    <SafeAreaView style={{ flex: 1 }}>
+
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName="OnboardingScreens"
@@ -61,6 +69,7 @@ const App = () => {
         <Stack.Screen name="CreateAccount" component={CreateAccount} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Confirmation" component={Confirmation} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="DrawerTab" component={DrawerTab} />
         <Stack.Screen name="Sponsorship" component={Sponsorship} />
         <Stack.Screen name="Ownership" component={Ownership} />
@@ -73,11 +82,14 @@ const App = () => {
         <Stack.Screen name="Bank" component={Bank} />
         <Stack.Screen name="KYC" component={KYC} />
         <Stack.Screen name="Notifications" component={Notifications} />
+        <Stack.Screen name="FAQ" component={FAQ} />
 
 
 
       </Stack.Navigator>
     </NavigationContainer>
+    </SafeAreaView>
+
   );
 };
 
@@ -89,5 +101,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+});
+
+const darkModeStyles = StyleSheet.create({
+  container: {
+    backgroundColor: '#303030',
+  },
+  text: {
+    color: 'white',
+  },
+  whiteBackground: {
+    backgroundColor: '#303030',
   },
 });

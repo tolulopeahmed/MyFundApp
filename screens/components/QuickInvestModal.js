@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 
-const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVisible }) => {
+const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestModalVisible }) => {
   const [frequency, setFrequency] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
   const [amount, setAmount] = useState('');
@@ -13,13 +13,9 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
     setAmount(value);
   }
 
-  const handleBackButtonPress = useCallback(() => {
-    setQuickSaveModalVisible(false);
-  }, [setQuickSaveModalVisible]);
-
-
+ 
   const closeModal = () => {
-    setQuickSaveModalVisible(false);
+    setQuickInvestModalVisible(false);
   };
 
   return (
@@ -27,8 +23,8 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
     <Modal
       animationType="slide"
       transparent={true}
-      visible={quickSaveModalVisible}
-      onRequestClose={() => setQuickSaveModalVisible(false)}
+      visible={quickInvestModalVisible}
+      onRequestClose={() => setQuickInvestModalVisible(false)}
       >
 <TouchableOpacity
   style={styles.modalContainer}
@@ -45,13 +41,13 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
 
         <View style={styles.modalContent}>
          <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
-             <Text style={styles.modalHeader} >QuickSave</Text>
-             <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setQuickSaveModalVisible(false)}/>
+             <Text style={styles.modalHeader} >QuickInvest</Text>
+             <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setQuickInvestModalVisible(false)}/>
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          Manually move funds from your local bank acount into your Savings Account with a few taps.  {'\n'}
-            {'\n'}QuickSave...
+          Manually move funds from your local bank acount into your Sponsorship Investment Account with a few taps.  {'\n'}
+            {'\n'}QuickInvest...
           </Text>
         
           <TextInput
@@ -338,4 +334,4 @@ const styles = {
 
 };
 
-export default QuickSaveModal;
+export default QuickInvestModal;

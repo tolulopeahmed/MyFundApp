@@ -1,63 +1,74 @@
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AutoSaveModal from './AutoSaveModal';
-import { ProgressBar } from 'react-native-paper';
 import Header from '../components/Header';
-
+import Divider from '../components/Divider';
+import WithdrawModal from './WithdrawModal';
 
 const Wallet = ({ navigation, firstName }) => {
-  const [autoSave, setAutoSave] = React.useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
 
-  // in the Save component
-const handleActivateAutoSave = () => {
-  setModalVisible(true);
-  setAutoSave(true);
-};
 
   
   return (
     <View style={styles.container}>
-      <Header navigation={navigation} headerText='WALLET'/>
+
+<View style={styles.header}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back-outline" size={30} color="#4C28BC" />
+      </TouchableOpacity>
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>MY EARNINGS</Text>
+        <TouchableOpacity style={styles.person}> 
+            <Ionicons name="person-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('More', component={Profile} )}/>
+          </TouchableOpacity>
+      <TouchableOpacity style={styles.bell}>
+            <Ionicons name="notifications-outline" size={22} color="#4C28BC" />
+          </TouchableOpacity>
+        </View>
+    </View>
+
+<ScrollView showsVerticalScrollIndicator={false}>
       <Text style={styles.title}>Wallet</Text>
+      
       <View style={styles.propertyContainer}>
         <Ionicons name="wallet-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}>You need to be saving <Text style={styles.goalText}>41,666.7</Text> to achieve your goal of <Text style={styles.goalText}>1,000,000 <Text style={styles.propertyText}>in </Text><Text style={styles.goalText}>2</Text> <Text style={styles.restText}>years. And you're currently <Text style={styles.goalText}>25%</Text> to success. Well done!</Text></Text></Text>
-        <ProgressBar progress={0.25} color='#4C28BC' height={6} style={styles.progressBar}/>
+        <Text style={styles.propertyText}>Withdraw from your Wallet at any time into your bank account</Text>
       </View>
       </View>
       
       <View style={styles.savingsContainer}>
         <View style={styles.savingsLine1}>
-          <Ionicons name="save-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
-          <Text style={styles.greyText}>Total Savings    <Text style={styles.rateText}>@10% p.a.</Text> </Text>
+          <Ionicons name="wallet-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
+          <Text style={styles.greyText}>Total Earnings </Text>
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text><Text style={styles.savingsAmount}>250,000</Text><Text style={styles.decimal}>.50</Text>
         </View>
         <View style={styles.autoSaveContainer}>
        
-        <AutoSaveModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
         </View>
-        <View style={styles.autoSaveSettingContainer}>
-            {autoSave && <Text style={styles.autoSaveSetting}>@$20/month
-            <Ionicons name="checkmark" size={17} color="#0AA447" />          
+      
+       
+      </View>
 
-            </Text>}
-            </View> 
-        <View>
-          <TouchableOpacity style={styles.quickSaveButton}>
+      <View>
+          <TouchableOpacity
+           style={styles.withdrawButton}
+           onPress={() => setIsWithdrawModalVisible(true)}
+         >
+          
           <Ionicons name="arrow-down-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
           <Text style={styles.quickSaveText}>Withdraw</Text>
         </TouchableOpacity>
         </View>
-      </View>
 
+
+<Divider/>
 
       <SafeAreaView style={styles.transactionContainer}>
-      <Text style={styles.todoList}>Savings Transactions</Text>
+      <Text style={styles.todoList}>Wallet Transactions</Text>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.transactionsContainer}>
@@ -155,6 +166,14 @@ const handleActivateAutoSave = () => {
           </View>
           </ScrollView>
     </SafeAreaView>
+    {isWithdrawModalVisible && (
+  <WithdrawModal
+    modalVisible={isWithdrawModalVisible}
+    setModalVisible={setIsWithdrawModalVisible}
+  />
+)}
+
+</ScrollView>
     </View>
   );
 };
@@ -164,23 +183,81 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F1FF',
   },
+
+  header: {
+    marginTop: 50,
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  paddingHorizontal: 15,
+  backgroundColor: 'white',
+  height: 43,
+},
+icon: {
+  marginRight: 0,
+},
+
+headerContainer: {
+flex: 1,
+flexDirection: 'row',
+justifyContent: 'flex-end',
+
+},
+
+headerText:{
+flex: 1,
+color: 'silver',
+alignSelf: 'center',
+marginLeft: 15,
+fontFamily: 'karla',
+letterSpacing: 3,
+},
+
+person: {
+    borderWidth: 1.5,
+    padding: 4.5,
+    borderRadius: 80,
+    borderColor: '#4C28BC',
+    height: 35,
+    width: 35,
+    alignSelf: 'center',
+    alignItems: 'center',
+    alignContent: 'center'
+},
+
+bell: {
+    marginLeft: 6,
+    borderWidth: 1.5,
+    borderColor: '#4C28BC',
+    padding: 4.5,
+    height: 35,
+    width: 35,
+    borderRadius: 80,
+    alignSelf: 'center',
+    alignItems: 'center',
+    alignContent: 'center'
+},
+
+
+title: {
+fontSize: 20,
+marginLeft: 25,
+fontFamily: 'proxima',
+color: '#4C28BC',
+marginTop: 5,
+marginBottom: 5,
+marginLeft: 20,
+
+},
+
+
   profileIcons: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  title: {
-    fontSize: 20,
-    marginLeft: 25,
-    fontFamily: 'proxima',
-    color: '#4C28BC',
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 20,
-    
-  },
+
   propertyContainer: {
-    flex: 0.30,
     alignItems: 'center',
     paddingHorizontal: 16,
     flexDirection: 'row',
@@ -190,49 +267,30 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 5,
   },
- 
-
-  headerContainer: {
-    backgroundColor: 'white',
+  
+  propertyText: {
+    fontSize: 14,
+    fontWeight: 'normal',
+    fontFamily: 'karla',
+    letterSpacing: -0.2,
+    color: 'black',
+    marginBottom: 8,  // Add some bottom margin to separate from the progress bar
   },
-
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginHorizontal: 20,
-    marginVertical: 10,
-    fontFamily: 'proxima',
-    },
    
+
     welcomeText: {
      color: '#4C28BC',
      fontFamily: 'ProductSansBold',
     },
     
-    headerText: {
-      marginTop: 10,
-      fontFamily: 'karla',
-      marginHorizontal: 20,
-      fontSize: 18,
-    },
+   
     
-    profileIcons: {
-    flexDirection: 'row',
-    },
+   
    
     propertyIcon: {
     marginRight: 10,
     },
-    propertyText: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: 'regular',
-    fontFamily: 'karla',
-    letterSpacing: -0.2,
-    color: 'black',
-
-    },
+    
     goalText:{
       flex: 1,
       fontSize: 14,
@@ -358,7 +416,7 @@ const styles = StyleSheet.create({
       },
 
 
-    quickSaveButton: {
+    withdrawButton: {
       marginTop: 30,
       flexDirection: 'row',
       backgroundColor: '#4C28BC',
@@ -366,8 +424,9 @@ const styles = StyleSheet.create({
       height: 40,
       alignItems: 'center',
       justifyContent: 'center',
+      alignSelf: 'center',
       borderRadius: 10,
-      marginBottom: 5,
+      marginBottom: 25,
     
     },
     quickSaveText: {
@@ -399,7 +458,7 @@ const styles = StyleSheet.create({
     },
 
     transactionContainer: {
-      marginTop: 100,
+      marginTop: 10,
       flex: 1,
         },
 
@@ -408,6 +467,7 @@ const styles = StyleSheet.create({
       marginHorizontal: 20,
       marginTop: 5,
     },
+
     transactionItem: {
       flexDirection: 'row',
       alignItems: 'center',

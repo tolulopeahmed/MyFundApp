@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, Pressable, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { MaterialIcons } from '@expo/vector-icons';
 import AddBankModal from './AddBankModal'
@@ -52,13 +52,13 @@ const Bank = ({ navigation, initialBankRecords}) => {
     </View>
 
       <View flexDirection='row' alignSelf='center' padding={5} alignContents='space-between'>
-        <TouchableOpacity style={styles.cardContainer} onPress={() => navigation.navigate('Card')}>
+        <Pressable style={styles.cardContainer} onPress={() => navigation.navigate('Card')}>
             <Text style={styles.title}>My Cards</Text>
-            </TouchableOpacity>
+            </Pressable>
         
-      <TouchableOpacity style={styles.bankContainer}>
+      <View style={styles.bankContainer}>
         <Text style={styles.title2}>My Bank Accounts</Text>
-        </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.propertyContainer}>
@@ -68,12 +68,7 @@ const Bank = ({ navigation, initialBankRecords}) => {
       </View>
       </View>
       
-      <View style={styles.container}>
-      <Text style={styles.header}>Bank Accounts</Text>
-      {renderBankAccounts()}
-    </View>
-
-    
+         
       <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.primaryButton} onPress={() => setAddBankModalVisible(true)}>
                 <MaterialIcons name="add" size={30} color="#fff" marginRight={5}/>
@@ -223,26 +218,27 @@ const styles = StyleSheet.create({
         },
  
 
-  buttonsContainer: {
-    flexDirection: 'row',
-    marginTop: 715,
-    position: 'absolute',
-    alignSelf: 'center'
-
-  },
-
-  primaryButton: {
-    marginTop: 5,
-    flexDirection: 'row',
-    backgroundColor: '#4C28BC',
-    width: 199,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    marginBottom: 5,
   
-  },
+        buttonsContainer: {
+          flexDirection: 'row',
+          justifyContent: 'center',
+          position: 'absolute',
+          bottom: 30,
+          left: 0,
+          right: 0,
+        },
+        
+        primaryButton: {
+          flexDirection: 'row',
+          backgroundColor: '#4C28BC',
+          width: '85%',
+          height: 50,
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 10,
+          marginBottom: 5,
+        },
+
   primaryButtonText: {
     color: '#fff',
     fontSize: 18,

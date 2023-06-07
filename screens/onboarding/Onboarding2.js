@@ -14,11 +14,7 @@ const Onboarding2 = ({ navigation }) => {
         <Text style={styles.header}>BUY PROPERTIES</Text>
         <Text style={styles.subText}>Buy and own a fraction of any of our hostels across the country</Text>
       </View>
-      <View style={styles.navigationIndicatorContainer}>
-        <View style={styles.navigationIndicator} />
-        <View style={[styles.navigationIndicator, styles.activeIndicator]} />
-        <View style={styles.navigationIndicator} />
-      </View>
+ 
     </View>
   );
 };

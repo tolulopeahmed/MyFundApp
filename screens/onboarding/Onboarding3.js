@@ -14,11 +14,7 @@ const Onboarding3 = ({ navigation }) => {
         <Text style={styles.header}>EARN RENT</Text>
         <Text style={styles.subText}>Earn rental income every year for life as the landlord.</Text>
       </View>
-      <View style={styles.navigationIndicatorContainer}>
-        <View style={styles.navigationIndicator} />
-        <View style={styles.navigationIndicator} />
-        <View style={[styles.navigationIndicator, styles.activeIndicator]} />
-      </View>
+  
     </View>
   );
 };

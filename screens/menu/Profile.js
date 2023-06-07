@@ -1,18 +1,31 @@
 import React, { useState } from 'react';
-import { View, Text, Switch, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, Switch, StyleSheet, ScrollView, Pressable, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
-import Header from '../components/Header';
+import { MaterialIcons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
 import SavingsGoalModal from './SavingsGoalModal';
+import ProfileEditModal from './ProfileEditModal';
 
-
-const Profile = ({ navigation, setProfileImageUri }) => {
+const Profile = ({ navigation, setProfileImageUri, }) => {
   const [imageUri, setImageUri] = useState(null);
   const [enableFingerprint, setEnableFingerprint] = useState(false);
   const [showMyFundInDollars, setShowMyFundInDollars] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
+  const [profileEditModalVisible, setProfileEditModalVisible] = useState(false); // define modalVisible state
+  const [profile, setProfile] = useState({
+    firstName: 'Tolulope',
+    lastName: 'Oladimeji',
+    mobileNumber: '+2348012345678',
+    email: 'name@gmail.com',
+  });
+  
+
+  const updateProfile = (updatedInfo) => {
+    setProfile(updatedInfo);
+  };  
+
 
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -31,29 +44,110 @@ const Profile = ({ navigation, setProfileImageUri }) => {
     }
   };
 
+  const darkModeStyles = StyleSheet.create({
+    container: {
+      backgroundColor: '#303030',
+    },
+    text: {
+      color: 'white',
+    },
+    whiteBackground: {
+      backgroundColor: '#303030',
+    },
+  });
+
   const handleLogout = () => {
     navigation.navigate('Login');
   }
- 
+
+  const handleEditProfile = () => {
+    setProfileEditModalVisible(true); // Open the ProfileEditModal
+  };
+
+  const handleProfileEditModalClose = (updatedProfile) => {
+    setProfileEditModalVisible(false); // Close the ProfileEditModal
+    setProfile(updatedProfile); // Update the profile state with the new values
+  };
+  
+  
+
 
   return (
-   <>
-          <Header navigation={navigation} headerText='PROFILE'/>
-          <View style={styles.imageContainer}>
-          <TouchableOpacity>
-        {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.image} onPress={handlePickImage}/>
-        ) : (
-          <Ionicons name="person-circle" size={120} color="silver" onPress={handlePickImage}/>
-        )}
+   <View style={[styles.container, darkMode && darkModeStyles.container]}>
+
+
+<View style={styles.header}>
+      <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+        <Ionicons name="menu-outline" size={30} color="#4C28BC" />
       </TouchableOpacity>
-      <Text style={styles.nameText}>Tolulope</Text>
-      <Text style={styles.usernameText}>ceo@myfundmobile.com</Text>
-      <Divider backgroundColor='#fff'/>
-      </View>
-<ScrollView style={styles.container}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>MORE...</Text>
       
-     
+        </View>
+    </View>
+
+          <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+
+          <View style={styles.profileContainer}>
+
+   
+
+  <View flexDirection='row'>
+  <View style={styles.leftContainer}>
+    <View style={styles.imageContainer}>
+      <Pressable>
+        {imageUri ? (
+          <Image source={{ uri: imageUri }} style={styles.image} onPress={handlePickImage} />
+        ) : (
+          <Ionicons name="person-circle" size={160} color="silver" onPress={handlePickImage} />
+        )}
+      </Pressable>
+    </View>
+    <Text style={styles.nameText}>{profile.firstName}</Text>
+    <Text style={styles.usernameText}>{profile.email}</Text>
+  </View>
+
+  <View style={styles.rightContainer}>
+  <View style={styles.buttonsContainer1}>
+  <TouchableOpacity style={styles.secondaryButton} onPress={handlePickImage}>
+  <MaterialIcons name="edit" size={14} color="#4C28BC" style={{ marginRight: 7 }}/>
+    <Text style={styles.secondaryButtonText}>Picture</Text>
+  </TouchableOpacity>
+  <TouchableOpacity style={styles.primaryButton} onPress={handleEditProfile}>
+  <MaterialIcons name="edit" size={14} color="white" style={{ marginRight: 7 }}/>
+    <Text style={styles.primaryButtonText}>Profile</Text>
+  </TouchableOpacity>
+  </View>
+    <Text style={styles.infoText}>Full Name</Text>
+    <Text style={styles.infoText2}>{updateProfile.firstName} {updateProfile.lastName}</Text>
+    <Text style={styles.infoText}>Mobile Number</Text>
+    <Text style={styles.infoText2}>{updateProfile.mobileNumber}</Text>
+    <Text style={styles.infoText}>Email</Text>
+    <Text style={styles.infoText2}>{updateProfile.email}</Text>
+    <Text style={styles.infoText}>Points</Text>
+    <Text style={styles.infoText2}>88888</Text>
+  </View>
+  </View>
+</View>
+
+{profileEditModalVisible && (
+ <ProfileEditModal
+ navigation={navigation}
+ profile={profile}
+ setProfile={setProfile}
+ profileEditModalVisible={profileEditModalVisible}
+ setProfileEditModalVisible={setProfileEditModalVisible}
+ onClose={handleProfileEditModalClose} // Pass the onClose function
+ />
+
+)}
+
+
+
+
+      <Divider/>
+      
+     <View style={styles.settingsContainer}>
       <View style={styles.settingContainer}>
         <Text style={styles.settingText}>Enable Fingerprint</Text>
         <Switch
@@ -84,17 +178,21 @@ const Profile = ({ navigation, setProfileImageUri }) => {
           value={darkMode}
         />
       </View>
+      </View>
+    
 
-      <View style={styles.buttonsContainer}>
-      <View style={styles.buttonContainer}>
+        <SavingsGoalModal 
+        navigation={navigation} 
+        goalModalVisible={goalModalVisible} 
+        setGoalModalVisible={setGoalModalVisible} />
+
+<View>
+<View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => setGoalModalVisible(true)}>
           <Ionicons name="save-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Savings Goal Settings</Text>
         </TouchableOpacity>
         </View>
-        <SavingsGoalModal navigation={navigation} goalModalVisible={goalModalVisible} setGoalModalVisible={setGoalModalVisible} />
-
-
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Card')}>
           <Ionicons name="card-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
@@ -113,12 +211,23 @@ const Profile = ({ navigation, setProfileImageUri }) => {
           <Text style={styles.buttonText}>Redeem Points</Text>
         </TouchableOpacity>
       </View>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FAQ')}>
+          <MaterialIcons name="forum" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Text style={styles.buttonText}>FAQs</Text>
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button}>
           <Ionicons name="chatbubbles-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Chat Admin</Text>
         </TouchableOpacity>
       </View>
+
+      
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button}>
           <Ionicons name="star-half-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
@@ -132,11 +241,12 @@ const Profile = ({ navigation, setProfileImageUri }) => {
         </TouchableOpacity>
       </View>
       </View>
+      
       <Divider />
       <Text style={styles.credits}>MyFund</Text><Text style={{fontSize: 10,     marginBottom: 22, textAlign: 'center', fontFamily: 'karla'}}>version 1.0.0</Text>
 
     </ScrollView>
-    </> 
+    </View> 
   );
 };
 
@@ -146,29 +256,91 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F1FF',
   },
 
-  imageContainer: {
-    alignItems: 'center',
-    marginTop: 6,
-    backgroundColor: '#F5F1FF',
+  header: {
+    marginTop: 50,
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  paddingHorizontal: 15,
+  backgroundColor: 'white',
+  height: 43,
+},
+icon: {
+  marginRight: 0,
+},
 
-    
+  headerContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+
+    },
+ 
+    headerText:{
+    flex: 1,
+    color: 'silver',
+    alignSelf: 'center',
+    marginLeft: 15,
+    fontFamily: 'karla',
+    letterSpacing: 3,
+    },
+
+    person: {
+        borderWidth: 1.5,
+        padding: 4.5,
+        borderRadius: 80,
+        borderColor: '#4C28BC',
+        height: 35,
+        width: 35,
+        alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center'
+    },
+
+    bell: {
+        marginLeft: 6,
+        borderWidth: 1.5,
+        borderColor: '#4C28BC',
+        padding: 4.5,
+        height: 35,
+        width: 35,
+        borderRadius: 80,
+        alignSelf: 'center',
+        alignItems: 'center',
+        alignContent: 'center'
+    },
+
+  
+  leftContainer: {
+    width: "40%",
+    marginLeft: 30,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
+
+  profileContainer: {
+    backgroundColor: '#F5F1FF',
+  },
+
+  imageContainer: {
+    alignItems: 'flex-start',
+    backgroundColor: '#F5F1FF',
+  },
+
   image: {
     marginTop: 6,
-    width: 130,
-    height: 130,
+    width: 160,
+    height: 160,
     borderRadius: 80,
     borderWidth: 3,
     borderColor: 'white',
   },
   nameText: {
-    marginTop: 2,
     fontFamily: 'proxima',
     fontSize: 28,
     textAlign: 'center',
     color: '#4C28BC',
     backgroundColor: '#F5F1FF',
-
   },
   usernameText: {
     fontFamily: 'karla',
@@ -178,6 +350,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#4C28BC',
     backgroundColor: '#F5F1FF',
+  },
+  rightContainer: {
+    flex: 1,
+    marginRight: 20,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-start',
+  },
+
+  infoText: {
+    fontFamily: 'proxima',
+    fontSize: 11,
+    color: 'silver',
+    textAlign: 'left',
+    letterSpacing: -0.5,
+  },
+
+  infoText2: {
+    fontFamily: 'karla',
+    fontSize: 16,
+    marginBottom: 10,
+    color: '#4C28BC',
+    letterSpacing: -0.5,
   },
 
   credits: {
@@ -191,6 +385,12 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
 
+  settingsContainer:{
+    marginTop: 20,
+    marginBottom: 20,
+
+  },
+
   settingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -199,15 +399,15 @@ const styles = StyleSheet.create({
     marginTop: -14,
   },
   settingText: {
-    fontFamily: 'karla',
-    letterSpacing: -0.3,
+    fontFamily: 'ProductSans',
+    letterSpacing: -0.1,
     fontSize: 16,
     marginLeft: 10,
   },
 
   buttonsContainer: {
     alignItems: 'center',
-    marginTop: 30,
+    marginTop: 20,
   },
   buttonContainer: {
     alignItems: 'center',
@@ -229,6 +429,53 @@ const styles = StyleSheet.create({
     fontFamily: 'ProductSans',
     color: '#4C28BC',
     flex: 1,
+  },
+
+  buttonsContainer1: {
+    flexDirection: 'row',
+    marginTop: 10,
+    position: 'relative',
+    marginBottom: 10,
+    alignSelf: 'flex-end',
+  },
+
+
+  primaryButton: {
+    flexDirection: 'row',
+    backgroundColor: '#4C28BC',
+    flex: 0.4,
+    height: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+  
+  },
+
+  primaryButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontFamily: 'ProductSans',
+  },
+
+  
+  secondaryButton: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    flex: 0.4,
+    height: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    marginRight: 5,
+    borderWidth: 0.5,
+    borderColor: '#4C28BC',
+  
+  },
+
+  secondaryButtonText: {
+    color: '#4C28BC',
+    fontSize: 14,
+    fontFamily: 'ProductSans',
   },
 });
 

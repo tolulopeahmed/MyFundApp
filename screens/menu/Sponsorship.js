@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AutoInvestModal from './AutoInvestModal';
-import { ProgressBar } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
-
+import QuickInvestModal from '../components/QuickInvestModal';
+import Divider from '../components/Divider';
 
 const Sponsorship = ({ navigation, firstName }) => {
   const [autoSave, setAutoSave] = React.useState(false);
+  const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // in the Save component
-const handleActivateAutoSave = () => {
+  const handleQuickInvest = () => {
+    setQuickInvestModalVisible(true);
+  };
+
+  const handleActivateAutoSave = () => {
   setModalVisible(true);
   setAutoSave(true);
 };
@@ -35,12 +39,14 @@ const handleActivateAutoSave = () => {
         </View>
     </View>
 
+    <ScrollView showsVerticalScrollIndicator={false}>
+
+
       <Text style={styles.title}>Sponsorship Investment</Text>
       <View style={styles.propertyContainer}>
         <MaterialIcons name="trending-up" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
         <Text style={styles.propertyText}>Earn up to <Text style={{color: 'green'}}>20% p.a.</Text> sponsoring any of our National Hostel Project. Multiples of 60,000.</Text>
-        <ProgressBar progress={0.25} color='#4C28BC' height={6} style={styles.progressBar}/>
       </View>
       </View>
       
@@ -50,7 +56,9 @@ const handleActivateAutoSave = () => {
           <Text style={styles.greyText}>Total Investment    <Text style={styles.rateText}>@15-20% p.a.</Text> </Text>
         </View>
         <View style={styles.amountContainer}>
-        <Text style={styles.dollarSign}>₦</Text><Text style={styles.savingsAmount}>3,650,200</Text><Text style={styles.decimal}>.50</Text>
+        <Text style={styles.dollarSign}>₦</Text>
+        <Text style={styles.savingsAmount}>3,650,200</Text>
+        <Text style={styles.dollarSign}>50</Text>
         </View>
        
        <View style={styles.autoSaveContainer}>
@@ -76,19 +84,30 @@ const handleActivateAutoSave = () => {
 
             </Text>}
             </View> 
+
         <View>
-          <TouchableOpacity style={styles.quickSaveButton}>
+          <TouchableOpacity style={styles.quickSaveButton} onPress={handleQuickInvest}>
           <Ionicons name="add-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
           <Text style={styles.quickSaveText}>QuickInvest</Text>
         </TouchableOpacity>
         </View>
       </View>
 
+      {quickInvestModalVisible && (
+  <QuickInvestModal
+  navigation={navigation}
+  quickInvestModalVisible={quickInvestModalVisible} 
+  setQuickInvestModalVisible={setQuickInvestModalVisible}
+  />
+)}
+
 
       <SafeAreaView style={styles.transactionContainer}>
+
+      <Divider />
+
       <Text style={styles.todoList}>Investment Transactions</Text>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.transactionsContainer}>
           <View style={styles.transactionItem}>
             <Ionicons
@@ -182,8 +201,9 @@ const handleActivateAutoSave = () => {
             </View>
           </View>
           </View>
-          </ScrollView>
     </SafeAreaView>
+    </ScrollView>
+
     </View>
   );
 };
@@ -260,8 +280,8 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     
   },
+  
   propertyContainer: {
-    flex: 0.16,
     alignItems: 'center',
     paddingHorizontal: 16,
     flexDirection: 'row',
@@ -270,6 +290,26 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 10,
     marginTop: 5,
+  },
+  
+  propertyText: {
+    fontSize: 14,
+    fontWeight: 'normal',
+    fontFamily: 'karla',
+    letterSpacing: -0.2,
+    color: 'black',
+    marginBottom: 8,  // Add some bottom margin to separate from the progress bar
+  },
+  
+  progressBarContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    marginLeft: 3,  // Adjust the left margin to align with the text
+  },
+  progressBar: {
+    height: 3.5,
+    backgroundColor: '#AEA5E1',
+    borderRadius: 10,
   },
  
 
@@ -287,15 +327,7 @@ const styles = StyleSheet.create({
     propertyIcon: {
     marginRight: 10,
     },
-    propertyText: {
-    flex: 1,
-    fontSize: 14,
-    fontWeight: 'regular',
-    fontFamily: 'karla',
-    letterSpacing: -0.2,
-    color: 'black',
-
-    },
+   
     goalText:{
       flex: 1,
       fontSize: 14,
@@ -312,17 +344,7 @@ const styles = StyleSheet.create({
       color: 'black',
     },
 
-    progressBarContainer: {
-      flex: 1,
-      flexDirection: 'column',
-    },
-    progressBar: {
-      height: 3.5,
-      backgroundColor: '#AEA5E1',
-      borderRadius: 10,
-
-
-    },
+    
 
     savingsContainer: {
     flexDirection: 'column',
@@ -360,15 +382,16 @@ const styles = StyleSheet.create({
     },
   
     dollarSign: {
-      fontSize: 40,
+      fontSize: 30,
       fontFamily: 'karla',
       textAlign: 'center',
-      marginTop: 8,
+      marginTop: 12,
         color: 'silver',
+        letterSpacing: -2,
       },
 
     savingsAmount: {
-    fontSize: 70,
+    fontSize: 65,
     fontFamily: 'karla',
     textAlign: 'center',
     letterSpacing: -4,
@@ -376,16 +399,7 @@ const styles = StyleSheet.create({
       color: '#fff',
     },
 
-      decimal: {
-        fontSize: 30,
-        marginTop: 33,
-        fontFamily: 'karla',
-        textAlign: 'center',
-        marginRight: 0,
-        color: 'silver',
-        letterSpacing: -2,
-
-      },
+   
 
       autoSaveContainer: {
         flexDirection: 'row',

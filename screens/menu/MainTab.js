@@ -48,7 +48,7 @@ const MainTab = ({ navigation }) => {
             iconName = 'md-trending-up';
           } else if (route.name === 'Withdraw') {
             iconName = 'md-wallet';
-          } else if (route.name === 'More') {
+          } else if (route.name === 'More...') {
             iconName = 'md-menu';
           }
 
@@ -71,7 +71,7 @@ const MainTab = ({ navigation }) => {
       <Tab.Screen name="Save" component={Save} />
       <Tab.Screen name="Invest" component={Invest} />
       <Tab.Screen name="Withdraw" component={Withdraw} />
-      <Tab.Screen name="More" component={Profile} />
+      <Tab.Screen name="More..." component={Profile} />
     </Tab.Navigator>
 
   );

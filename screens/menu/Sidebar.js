@@ -1,18 +1,28 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, {useState} from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider';
-import { TransitionSpecs } from '@react-navigation/stack';
+import QuickSaveModal from '../components/QuickSaveModal';
+
 
 
 const Sidebar = ({ navigation, firstName, profileImageUri }) => {
+  const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
+
+
   const handleLogout = () => {
     navigation.navigate('Login');
+  }
+
+  const handleSave = () => {
+    navigation.navigate('Save');
+    setQuickSaveModalVisible(true);
   }
   
 
   return (
     <View style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.profileContainer}>
 
       {profileImageUri ? (
@@ -28,17 +38,26 @@ const Sidebar = ({ navigation, firstName, profileImageUri }) => {
         </View>
       </View>
       <View style={styles.menuItemsContainer}>
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Save')}>
+        <TouchableOpacity style={styles.menuItem} onPress={handleSave}>
           <Ionicons name="save-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
           <Text style={styles.menuText}>Save</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Invest')}>
-          <Ionicons name="trending-up-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
-          <Text style={styles.menuText}>Invest</Text>
+
+        {quickSaveModalVisible && (
+      <QuickSaveModal
+        navigation={navigation}
+        quickSaveModalVisible={quickSaveModalVisible}
+        setQuickSaveModalVisible={setQuickSaveModalVisible}
+      />
+    )}
+
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Ownership')}>
+          <Ionicons name="home-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
+          <Text style={styles.menuText}>Buy Properties</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Wallet')}>
           <Ionicons name="wallet-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
-          <Text style={styles.menuText}>Wallet</Text>
+          <Text style={styles.menuText}>Earn Rent</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.push('WealthMap')}>
@@ -48,11 +67,12 @@ const Sidebar = ({ navigation, firstName, profileImageUri }) => {
           <Ionicons name="cellular-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
           <Text style={styles.menuText}>My WealthMap</Text>
         </TouchableOpacity>
-
       </View>
+
+
       <Divider />
       <View style={styles.subMenuItemsContainer}>
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('More')}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('More...')}>
           <Ionicons name="settings-outline" size={18} color="silver" style={{ marginRight: 15 }} />
           <Text style={styles.subMenuText}>Settings</Text>
         </TouchableOpacity>
@@ -65,6 +85,7 @@ const Sidebar = ({ navigation, firstName, profileImageUri }) => {
           <Text style={styles.subMenuText}>Log Out</Text>
         </TouchableOpacity>
       </View>
+      </ScrollView>
     </View>
   );
 };

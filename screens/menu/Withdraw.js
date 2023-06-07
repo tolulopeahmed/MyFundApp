@@ -6,14 +6,16 @@ import Divider from '../components/Divider';
 import WithdrawModal from './WithdrawModal'
 
 const Withdraw = ({ navigation }) => {
-  const [modalVisible, setModalVisible] = useState(false); // define modalVisible state
+  const [withdrawModalVisible, setWithdrawModalVisible] = useState(false); // define modalVisible state
 
   const balance = 7500.25; // replace with actual balance
   const savingsBalance = 250000.50;
 
   return (
-    <View style={styles.container}>
-      <Header navigation={navigation} headerText="WITHDRAW" />
+    <SafeAreaView style={styles.container}>
+          <Header navigation={navigation} headerText="WITHDRAW" />
+
+    <ScrollView showsVerticalScrollIndicator={false}>
       <Text style={styles.title}>Withdraw From...</Text>
       
       <View style={styles.walletContainer}>
@@ -25,13 +27,16 @@ const Withdraw = ({ navigation }) => {
           </View> 
 
          <View style={styles.amountContainer2}> 
-         <Text style={styles.nairaSign}>₦</Text><Text style={styles.walletBalance}>7500</Text><Text style={styles.decimal}>.25</Text>
+         <Text style={styles.nairaSign}>₦</Text>
+         <Text style={styles.walletBalance}>7500</Text>
+         <Text style={styles.nairaSign}>25</Text>
          </View>
          <Text style={styles.walletMessage}>Withdraw for <Text style={{color: '#43FF8E'}}>free</Text> anytime</Text>
-        <TouchableOpacity style={styles.withdrawButton} onPress={() => setModalVisible(true)}>
-          <Text style={styles.withdrawText}>Withdraw</Text>
-        </TouchableOpacity>
-        <WithdrawModal navigation={navigation} modalVisible={modalVisible} setModalVisible={setModalVisible} />
+ 
+        <WithdrawModal 
+        navigation={navigation} 
+        withdrawModalVisible={withdrawModalVisible} 
+        setWithdrawModalVisible={setWithdrawModalVisible} />
 
         </View>
       
@@ -47,13 +52,13 @@ const Withdraw = ({ navigation }) => {
           </View> 
 
          <View style={styles.amountContainer2}> 
-         <Text style={styles.nairaSign}>₦</Text><Text style={styles.walletBalance}>250,000</Text><Text style={styles.decimal}>.00</Text>
+         <Text style={styles.nairaSign}>₦</Text>
+         <Text style={styles.walletBalance}>250,000</Text>
+         <Text style={styles.nairaSign}>00</Text>
          </View>
          <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>2.5%</Text> fee.
 </Text>
-        <TouchableOpacity style={styles.withdrawButton}>
-          <Text style={styles.withdrawText}>Withdraw</Text>
-        </TouchableOpacity>
+       
         
         </View>
       
@@ -68,19 +73,19 @@ const Withdraw = ({ navigation }) => {
           </View> 
 
          <View style={styles.amountContainer2}> 
-         <Text style={styles.nairaSign}>₦</Text><Text style={styles.walletBalance}>3,650,200</Text><Text style={styles.decimal}>.00</Text>
+         <Text style={styles.nairaSign}>₦</Text>
+         <Text style={styles.walletBalance}>3,650,200</Text>
+         <Text style={styles.nairaSign}>00</Text>
          </View>
          <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>5%</Text> fee.
 </Text>
-        <TouchableOpacity style={styles.withdrawButton}>
-          <Text style={styles.withdrawText}>Withdraw</Text>
-        </TouchableOpacity>
-        
         </View>
-      
       </View>
     
-     
+      <TouchableOpacity style={styles.withdrawButton2} onPress={() => setWithdrawModalVisible(true)}>
+          <Ionicons name="arrow-down-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
+          <Text style={styles.withdrawText2}>Withdraw</Text>
+        </TouchableOpacity>
       
       <Divider />
      
@@ -88,7 +93,6 @@ const Withdraw = ({ navigation }) => {
       <SafeAreaView style={styles.transactionContainer}>
       <Text style={styles.todoList}>Withdrawal Transactions</Text>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.transactionsContainer}>
           <View style={styles.transactionItem}>
             <Ionicons
@@ -182,10 +186,10 @@ const Withdraw = ({ navigation }) => {
             </View>
           </View>
           </View>
-          </ScrollView>
     </SafeAreaView>
 
-    </View>
+    </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -254,20 +258,15 @@ const styles = StyleSheet.create({
   },
 
   nairaSign: {
-    fontSize: 30,
+    fontSize: 25,
     fontFamily: 'karla',
     marginTop: 10,
       color: 'silver',
+      letterSpacing: -2,
     
     },
 
-    decimal: {
-      fontSize: 25,
-      fontFamily: 'karla',
-      marginTop: 25,
-        color: 'silver',
-      
-      },
+   
 
   walletMessage: {
     color: '#fff',
@@ -275,7 +274,7 @@ const styles = StyleSheet.create({
     fontFamily: 'karla',
     letterSpacing: -0.3,
     marginLeft: 5,
-    marginTop: 9,
+    marginTop: 20,
   },
 
   withdrawButton: {
@@ -419,6 +418,23 @@ marginTop: -15,
 
 
 
+  withdrawButton2: {
+    marginTop: 10,
+    flexDirection: 'row',
+    backgroundColor: '#4C28BC',
+    width: 140,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    marginBottom: 5,
+    alignSelf: 'center'
+  },
+  withdrawText2: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'ProductSans',
+  },
 
   
   todoList: {

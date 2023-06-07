@@ -74,15 +74,34 @@ const handleAlertIconTap = () => {
   }, 25000); // Hide the text after 15 seconds
 };
 
+
+const closeModal = () => {
+  setAddCardModalVisible(false);
+};
+
    return (
     <>
+
+
+    
     <Modal
       animationType="slide"
       transparent={true}
       visible={addCardModalVisible}
       onRequestClose={() => setAddCardModalVisible(false)}
     >
-      <View style={styles.modalContainer}>
+
+<TouchableOpacity
+  style={styles.modalContainer}
+  activeOpacity={1}
+  onPress={closeModal}
+  
+>
+  <TouchableOpacity
+    activeOpacity={1}
+    style={styles.modalContent}
+    onPress={() => {}}
+  >
      
         <View style={styles.modalContent}>
          <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
@@ -91,76 +110,88 @@ const handleAlertIconTap = () => {
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          Set up your cards so you can perform faster transactions. 
-          
-{'\n'}{'\n'}An initial charge of NGN 50 will be made and returned back as savings to confirm your card.
+An initial charge of NGN 50 will be made and returned back as savings to confirm your card.</Text>
 
-{'\n'}{'\n'}{'\n'}<Text style={{fontFamily: 'proxima'}}>            Bank                               Enter Card Number</Text>
-          </Text>
+<View>
+    <Text style={styles.labelText}>Bank</Text>
+    <View style={styles.fieldContainer3}>
+      <SelectDropdown
+        data={dropdownOptions}
+        onSelect={handleSelect}
+        buttonTextAfterSelection={(selectedItem) => selectedItem}
+        rowTextForSelection={(item) => item}
+        buttonStyle={{ borderRadius: 10, fontFamily: 'karla', width: '85%', marginBottom: 20, }}
+        dropdownStyle={{ fontFamily: 'karla' }}
+        rowStyle={{ alignSelf: 'flex-start', fontFamily: 'karla' }}
+        rowTextStyle={{ textAlign: 'left', fontSize: 16, color: 'black', fontFamily: 'ProductSans' }}
+        defaultButtonText="Select Bank" // Placeholder text
+        buttonTextStyle={{ color: 'black', fontSize: 16, fontFamily: 'karla', letterSpacing: -0.6 }} // Style for the placeholder text
+      />
+  </View>
 
-        <View flexDirection='row' alignSelf='center'>
-         
-        <View style={styles.dropdown}> 
-        <SelectDropdown
-      data={dropdownOptions}
-      onSelect={handleSelect}
-      buttonTextAfterSelection={(selectedItem) => selectedItem}
-      rowTextForSelection={(item) => item}
-      buttonStyle={{ borderRadius: 10, fontFamily: 'karla' }}
-      dropdownStyle={{ fontFamily: 'karla' }}
-      rowStyle={{ alignSelf: 'flex-start', fontFamily: 'karla' }}
-      rowTextStyle={{ textAlign: 'left', fontSize: 16, color: 'black', fontFamily: 'ProductSans'}}
-      defaultButtonText="Select Bank" // Placeholder text
-      buttonTextStyle={{ color: 'black', fontSize: 16, fontFamily: 'karla', marginRight: 70, letterSpacing: -0.6, }} // Style for the placeholder text
-    />
-            </View>
+</View>
 
-
-          <TextInput
+  <View style={styles.fieldContainer2}>
+    <Text style={styles.labelText2}>Card Number</Text>
+    <View style={styles.inputContainer}>
+      <TextInput
         style={styles.amountInput}
         placeholder="1234  5678  9101  1121"
         keyboardType="numeric"
         maxLength={19} // Maximum length including spaces
         onChangeText={handleAmountChange}
         value={amount}
-        /> 
-            </View>
+      />
+    </View>
+</View>
+
+
+
+
+
+
+    <View style={styles.pickContainer}>
+  <View style={styles.fieldContainer}>
+    <Text style={styles.labelText}>Expiry</Text>
+    <TextInput
+      style={styles.amountInput2}
+      placeholder="MM/YY"
+      keyboardType="numeric"
+      maxLength={5}
+      onChangeText={handleExpiryChange}
+      value={expiry}
+    />
+  </View>
+
+  <View style={styles.fieldContainer}>
+  <View flexDirection='row'>
+    <Text style={styles.labelText}>CVV</Text>
+ <Pressable onPress={handleAlertIconTap}>
+    <Ionicons name="alert-circle-outline" size={16} color="black" style={styles.alertIcon} />
+  </Pressable>
+  </View>
+  <TextInput
+    style={styles.amountInput2}
+    placeholder="1 2 3"
+    keyboardType="numeric"
+    onChangeText={handleCVVChange}
+    value={cvv}
+  />
+</View>
 
 
   
-  <Text style={{fontFamily: 'proxima', marginBottom: 7, marginTop: 7, marginLeft: 40, alignSelf: 'flex-start'}}>Expiry                      CVV                           PIN</Text>
-  <View style={styles.pickContainer}>
-
-  <TextInput
-  style={styles.amountInput2}
-  placeholder="MM/YY"
-  keyboardType="numeric"
-  maxLength={5}
-  onChangeText={handleExpiryChange}
-  value={expiry}
-/>  
-
-  <TextInput
-style={styles.amountInput2}
-placeholder="1 2 3"
-keyboardType="numeric"
-onChangeText={handleCVVChange}
-value={cvv}
-/>
-<Pressable onPress={handleAlertIconTap}>
-<Ionicons name="alert-circle-outline" size={16} color="black" marginTop={-25} marginLeft={-90} position='absolute'/>
-</Pressable>
-
- 
-<TextInput
-  style={styles.amountInput2}
-  placeholder="* * * *"
-  keyboardType="numeric"
-  secureTextEntry={true}
-/>
-
-
+  <View style={styles.fieldContainer}>
+    <Text style={styles.labelText}>PIN</Text>
+    <TextInput
+      style={styles.amountInput2}
+      placeholder="* * * *"
+      keyboardType="numeric"
+      secureTextEntry={true}
+    />
+  </View>
 </View>
+
 
 {showCVVText && (
         <View style={{width: '80%', position: 'absolute', marginTop: 360}}>
@@ -181,9 +212,11 @@ value={cvv}
                 </TouchableOpacity>           
               </View>
         </View>
-      </View>
 
+    </TouchableOpacity>           
+    </TouchableOpacity>           
     </Modal>
+
 
     </>
   );
@@ -199,7 +232,6 @@ const styles = {
   modalContent: {
     backgroundColor: '#F6F3FF',
     width: '100%',
-    flex: 0.67,
     alignItems: 'center',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
@@ -222,25 +254,9 @@ const styles = {
     marginHorizontal: 30,
     marginTop: 5,
     marginLeft: 15,
-
+    marginBottom: 30,
   },
    
-
-
-  amountInput: {
-    color: 'black',
-    fontFamily: 'ProductSans',
-    backgroundColor: '#fff',
-    height: 50,
-    width: 200,
-    padding: 10,
-    marginTop: 5,
-    fontSize: 16,
-    letterSpacing: 1,
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-  },
-
   
   
   dropdown: {
@@ -254,13 +270,6 @@ const styles = {
   },
 
 
-  pickContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignSelf: 'flex-start',
-    marginLeft: 30,
-    width: '50%',
-  },
   pickerContainer: {
     flexDirection: 'row',
     width: '50%',
@@ -268,38 +277,106 @@ const styles = {
   picker: {
     flex: 1,
     height: 100,
+  }, 
+
+
+fieldContainer3: {
+  width: '100%',
+},
+
+
+
+labelText2: {
+  fontFamily: 'proxima',
+  marginBottom: 7,
+  textAlign: 'left',
+},
+
+fieldContainer2: {
+  alignSelf: 'center',
+  width: '85%',
+},
+
+inputContainer: {
+  width: '100%',
+  alignSelf: 'flex-start',
+},
+
+amountInput: {
+  color: 'black',
+  fontFamily: 'ProductSans',
+  backgroundColor: '#fff',
+  height: 50,
+  padding: 10,
+  marginTop: 1,
+  fontSize: 16,
+  letterSpacing: 2,
+  borderRadius: 5,
+  width: '100%',
+},
+
+
+  pickContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignSelf: 'center',
+    paddingHorizontal: 15,
+    width: '100%',
+    maxWidth: 390,
+    marginTop: 20,
   },
+  
+  fieldContainer: {
+    alignItems: 'flex-start',
+    width: '28%',
+  },
+  
+  labelText: {
+    fontFamily: 'proxima',
+    marginLeft: 3,
+    marginBottom: 5,
+    textAlign: 'left',
+  },
+  
   amountInput2: {
     color: 'black',
     fontFamily: 'ProductSans',
     backgroundColor: '#fff',
     height: 35,
-    width: '50%',
+    width: "110%",
     textAlign: 'left',
     padding: 10,
     fontSize: 15,
     letterSpacing: 1,
     borderRadius: 4,
     marginTop: 1,
-    marginRight: 25,
+    marginRight: 15,
   },
+  
+  alertIcon: {
+    marginLeft: 4,
+  },
+  
+  
   buttonsContainer: {
     flexDirection: 'row',
-    marginTop: 65,
+    marginTop: 20,
     position: 'relative',
+    marginBottom: 30,
+
 
   },
 
   primaryButton: {
-    marginTop: 5,
+    marginTop: 20,
     flexDirection: 'row',
     backgroundColor: '#4C28BC',
-    width: 140,
-    height: 40,
+    width: '85%',
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    marginBottom: 5,
+    marginBottom: 30,
   
   },
   primaryButtonText: {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
+import { View, Text, SafeAreaView, ScrollView, Pressable, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ProgressBar } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -18,23 +18,21 @@ const Card = ({ navigation, firstName }) => {
       </TouchableOpacity>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>BANK AND CARD SETTINGS</Text>
-        <TouchableOpacity style={styles.person}> 
-            <Ionicons name="person-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('More', component={Profile} )}/>
-          </TouchableOpacity>
-      <TouchableOpacity style={styles.bell}>
+       
+      <TouchableOpacity style={styles.bell} onPress={() => navigation.navigate('Notifications')}>
             <Ionicons name="notifications-outline" size={22} color="#4C28BC" />
           </TouchableOpacity>
         </View>
     </View>
 
       <View flexDirection='row' alignSelf='center' padding={5} alignContents='space-between'>
-        <TouchableOpacity style={styles.cardContainer}>
+        <View style={styles.cardContainer}>
           <Text style={styles.title}>My Cards</Text>
-          </TouchableOpacity>
+          </View>
         
-      <TouchableOpacity style={styles.bankContainer} onPress={() => navigation.navigate('Bank')}>
+      <Pressable style={styles.bankContainer} onPress={() => navigation.navigate('Bank')}>
         <Text style={styles.title2}>My Bank Accounts</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <View style={styles.propertyContainer}>
@@ -182,27 +180,26 @@ const styles = StyleSheet.create({
     color: 'black',
 
     },
-   
-  buttonsContainer: {
-    flexDirection: 'row',
-    marginTop: 715,
-    position: 'absolute',
-    alignSelf: 'center'
-
-  },
-
-  primaryButton: {
-    marginTop: 5,
-    flexDirection: 'row',
-    backgroundColor: '#4C28BC',
-    width: 175,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 10,
-    marginBottom: 5,
-  
-  },
+    buttonsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      position: 'absolute',
+      bottom: 30,
+      left: 0,
+      right: 0,
+    },
+    
+    primaryButton: {
+      flexDirection: 'row',
+      backgroundColor: '#4C28BC',
+      width: '85%',
+      height: 50,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 10,
+      marginBottom: 5,
+    },
+     
   primaryButtonText: {
     color: '#fff',
     fontSize: 18,
