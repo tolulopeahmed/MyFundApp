@@ -3,20 +3,23 @@ import { Modal, Text, Image, View, TextInput, TouchableOpacity } from 'react-nat
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
+import AddCardModal from '../menu/AddCardModal';
 
 const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVisible }) => {
   const [frequency, setFrequency] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
   const [amount, setAmount] = useState('');
+  const [addCardModalVisible, setAddCardModalVisible] = useState(true); // define modalVisible state
+
 
   const handleAmountChange = (value) => {
     setAmount(value);
   }
 
-  const handleBackButtonPress = useCallback(() => {
-    setQuickSaveModalVisible(false);
-  }, [setQuickSaveModalVisible]);
-
+  const handleAddCard = () => {
+    navigation.navigate('Card');
+    setAddCardModalVisible(true);
+  }
 
   const closeModal = () => {
     setQuickSaveModalVisible(false);
@@ -54,12 +57,17 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
             {'\n'}QuickSave...
           </Text>
         
-          <TextInput
-        style={styles.amountInput}
-        placeholder="Amount (e.g. 20000)"
-        keyboardType="numeric"
-        onChangeText={(value) => handleAmountChange(value)}
-      />
+          <View style={styles.inputContainer2}>
+  <Text style={styles.nairaSign}>₦</Text>
+  <TextInput
+    style={styles.amountInput}
+    placeholder="Amount (e.g. 20000)"
+    keyboardType="numeric"
+    onChangeText={(value) => handleAmountChange(value)}
+  />
+</View>
+
+
           <Text style={styles.modalSubText2} alignSelf='flex-start'>using...</Text>
 
           <View style={styles.inputContainer}>
@@ -112,11 +120,19 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
 
       
       <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.navigate('Card')}>
+                <TouchableOpacity style={styles.primaryButton} onPress={handleAddCard}>
                   <Text style={styles.primaryButtonText}>Add Card Now</Text>
                 </TouchableOpacity>
 
-            
+           
+        {addCardModalVisible && (
+      <AddCardModal
+        navigation={navigation}
+        addCardModalVisible={addCardModalVisible}
+        setAddCardModalVisible={setAddCardModalVisible}
+      />
+    )}
+
               </View>
     </View>
   </>
@@ -270,21 +286,30 @@ const styles = {
     borderRadius: 10,
   },
 
-  amountInput: {
-    color: 'black',
-    textAlign: 'left',
-    marginLeft: -5,
-    fontFamily: 'karla',
+  inputContainer2: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 10,
     height: 50,
-    width: "80%",
-    padding: 10,
+    width: '80%',
     marginTop: 5,
-    borderRadius: 10,
+  },
+  nairaSign: {
+    fontSize: 16,
+    marginLeft: 15,
+    marginRight: 0,
+  },
+  amountInput: {
+    flex: 1,
+    color: 'black',
+    fontFamily: 'karla',
     fontSize: 16,
     letterSpacing: -0.3,
+    padding: 10,
   },
+  
+  
 
   dropdown: {
     height: 45,

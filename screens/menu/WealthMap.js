@@ -16,12 +16,7 @@ const WealthMap = ({ navigation, firstName }) => {
       </TouchableOpacity>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>MY WEALTHMAP</Text>
-        <TouchableOpacity style={styles.person}> 
-            <Ionicons name="person-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('More', component={Profile} )}/>
-          </TouchableOpacity>
-      <TouchableOpacity style={styles.bell}>
-            <Ionicons name="notifications-outline" size={22} color="#4C28BC" />
-          </TouchableOpacity>
+     
         </View>
     </View>
 

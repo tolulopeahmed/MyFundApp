@@ -18,14 +18,11 @@ const Card = ({ navigation, firstName }) => {
       </TouchableOpacity>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>BANK AND CARD SETTINGS</Text>
-       
-      <TouchableOpacity style={styles.bell} onPress={() => navigation.navigate('Notifications')}>
-            <Ionicons name="notifications-outline" size={22} color="#4C28BC" />
-          </TouchableOpacity>
+      
         </View>
     </View>
 
-      <View flexDirection='row' alignSelf='center' padding={5} alignContents='space-between'>
+      <View flexDirection='row' alignSelf='center' padding={5} >
         <View style={styles.cardContainer}>
           <Text style={styles.title}>My Cards</Text>
           </View>
@@ -92,17 +89,7 @@ const styles = StyleSheet.create({
     letterSpacing: 3,
     },
 
-    person: {
-        borderWidth: 1.5,
-        padding: 4.5,
-        borderRadius: 80,
-        borderColor: '#4C28BC',
-        height: 35,
-        width: 35,
-        alignSelf: 'center',
-        alignItems: 'center',
-        alignContent: 'center'
-    },
+  
 
     bell: {
         marginLeft: 6,
@@ -114,7 +101,6 @@ const styles = StyleSheet.create({
         borderRadius: 80,
         alignSelf: 'center',
         alignItems: 'center',
-        alignContent: 'center'
     },
 
   
@@ -148,7 +134,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginTop: 5,
     marginBottom: 5,
-    alignContents: 'center',
   },
 
    

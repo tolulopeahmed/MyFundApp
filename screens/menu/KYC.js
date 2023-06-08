@@ -5,6 +5,9 @@ import Divider from '../components/Divider';
 import { MaterialIcons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
 import * as ImagePicker from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
+
+
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -20,31 +23,28 @@ const KYC = ({ navigation, firstName }) => {
     const [cardType, setCardType] = useState(null);
     const [relationshipWithNextOfKin, setRelationshipWithNextOfKin] = useState(null);
 
-    const { launchImageLibrary } = ImagePicker;
     const [selectedImage, setSelectedImage] = useState(null);
 
-
-    const openImagePicker = () => {
-      const options = {
-        title: 'Select ID Image',
-        mediaType: 'photo',
-        maxWidth: 300,
-        maxHeight: 300,
-        quality: 1,
-      };
+    const openImagePicker = async () => {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (permissionResult.granted === false) {
+        alert('Permission to access camera roll is required!');
+        return;
+      }
     
-      ImagePicker.launchImageLibrary({}, (response) => {
-        if (response.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (response.error) {
-          console.log('ImagePicker Error: ', response.error);
-        } else if (response.customButton) {
-          console.log('User tapped custom button: ', response.customButton);
-        } else {
-          setSelectedImage(response);
-        }
+      const result = await launchImageLibrary({
+        mediaType: 'photo',
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
       });
+      
+    
+      if (!result.cancelled) {
+        setSelectedImage(result.uri);
+      }
     };
+    
        
     
     
@@ -110,12 +110,6 @@ const KYC = ({ navigation, firstName }) => {
       </TouchableOpacity>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>UPDATE KYC</Text>
-        <TouchableOpacity style={styles.person}> 
-            <Ionicons name="person-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('More', component={Profile} )}/>
-          </TouchableOpacity>
-      <TouchableOpacity style={styles.bell}>
-            <Ionicons name="notifications-outline" size={22} color="#4C28BC" />
-          </TouchableOpacity>
         </View>
     </View>
 
@@ -295,15 +289,15 @@ const KYC = ({ navigation, firstName }) => {
   </View>
 </View>
 
-<TouchableOpacity onPress={openImagePicker}>
-    {selectedImage ? (
-
-      <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
-    ) : (
-      <Text style={styles.uploadText}>Upload ID</Text>
-    )}
-  </TouchableOpacity>
-
+<View style={styles.imageContainer}>
+{selectedImage ? (
+        <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
+      ) : (
+        <TouchableOpacity style={styles.uploadButton} onPress={openImagePicker}>
+          <Text style={styles.uploadText}>Upload ID</Text>
+        </TouchableOpacity>
+      )}
+</View>
 
       
 
@@ -469,6 +463,42 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
 
+    imageContainer: {
+      width: screenWidth * 0.85,
+      height: 180,
+      borderWidth: 0.5,
+      borderRadius: 9,
+      borderColor: 'grey',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignSelf: 'center',
+      marginVertical: 5,
+      marginLeft: 20,
+    },
+    uploadButton: {
+      flexDirection: 'row',
+      borderColor: 'silver',
+      backgroundColor: 'white',
+      height: 40,
+      width: '40%',
+      padding: 10,
+      borderWidth: 0.5,
+      borderRadius: 9,
+      justifyContent: 'center', // Center horizontally
+      alignItems: 'center', // Center vertically
+    },
+    uploadText: {
+      fontSize: 16,
+      fontFamily: 'karla',
+      color: 'grey',
+      alignSelf: 'center', // Center the text within the button
+    },
+    selectedImage: {
+      width: '80%',
+      height: 200,
+      borderRadius: 5,
+      borderWidth: 0.1,
+    },
    
   buttonsContainer: {
     flexDirection: 'row',

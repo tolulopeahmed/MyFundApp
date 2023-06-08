@@ -42,16 +42,11 @@ const Bank = ({ navigation, initialBankRecords}) => {
       </TouchableOpacity>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>BANK AND CARD SETTINGS</Text>
-        <TouchableOpacity style={styles.person}> 
-            <Ionicons name="person-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('More', component={Profile} )}/>
-          </TouchableOpacity>
-      <TouchableOpacity style={styles.bell}>
-            <Ionicons name="notifications-outline" size={22} color="#4C28BC" />
-          </TouchableOpacity>
+     
         </View>
     </View>
 
-      <View flexDirection='row' alignSelf='center' padding={5} alignContents='space-between'>
+      <View flexDirection='row' alignSelf='center' padding={5} >
         <Pressable style={styles.cardContainer} onPress={() => navigation.navigate('Card')}>
             <Text style={styles.title}>My Cards</Text>
             </Pressable>
@@ -127,31 +122,6 @@ const styles = StyleSheet.create({
     letterSpacing: 3,
     },
 
-    person: {
-        borderWidth: 1.5,
-        padding: 4.5,
-        borderRadius: 80,
-        borderColor: '#4C28BC',
-        height: 35,
-        width: 35,
-        alignSelf: 'center',
-        alignItems: 'center',
-        alignContent: 'center'
-    },
-
-    bell: {
-        marginLeft: 6,
-        borderWidth: 1.5,
-        borderColor: '#4C28BC',
-        padding: 4.5,
-        height: 35,
-        width: 35,
-        borderRadius: 80,
-        alignSelf: 'center',
-        alignItems: 'center',
-        alignContent: 'center'
-    },
-
   
     bankContainer: {
         borderWidth: 0.8,
@@ -183,7 +153,6 @@ const styles = StyleSheet.create({
         color: '#fff',
         marginTop: 5,
         marginBottom: 5,
-        alignContents: 'center',
       },
     
        

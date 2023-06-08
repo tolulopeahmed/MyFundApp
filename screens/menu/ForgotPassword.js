@@ -55,7 +55,7 @@ const ForgotPassword = ({ navigation }) => {
               <Text style={styles.modalHeader}>Password Reset</Text>
               <Text style={styles.modalSubText}>Click the reset link we just sent to your email address to create a new password. Afterwards, tap OK to login with your new password</Text>
               <Animated.View style={[styles.checkmarkContainer, { opacity: animation }]}>
-              <Ionicons name="checkmark-circle-outline" size={170} color="green" marginBottom={20} marginTop={20}/>
+              <Ionicons name="sync-outline" size={170} color="#4C28BC" marginBottom={20} marginTop={20}/>
               </Animated.View>
 
               <View style={styles.buttonsContainer}>

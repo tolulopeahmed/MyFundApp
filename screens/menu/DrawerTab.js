@@ -32,7 +32,6 @@ const DrawerTab = ({ navigation, firstName }) => {
         <Drawer.Screen
           name="MainTab"
           component={MainTab}
-          initialParams={{ setProfileImageUri }}
         />
       </Drawer.Navigator>
       {isSidebarOpen && (

@@ -29,8 +29,14 @@ const FAQ = ({ navigation }) => {
       {
         id: 5,
         question: 'What is the charge on withdrawals?',
-        answer: "Withdrawal from Wallet is free. Immediate withdrawal from Savings and Sponsorship Investment, however, attracts a break fee of 2.5% and 5% respectively. If however you don't want to be charged, the waiting period is 90 days.",
+        answer: "Withdrawal from Wallet to any account is free. Immediate withdrawal from Savings and Sponsorship Investment, however, attracts a break fee of 2.5% and 5% respectively. If however you don't want to be charged, the waiting period is 90 days.",
       },
+      {
+        id: 6,
+        question: 'How much do I get on Referrals?',
+        answer: "You earn up to 5% on all property sales that are completed by your referral.",
+      },
+    
     // Add more questions and answers as needed
   ];
 
@@ -172,10 +178,11 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    position: 'absolute',
+    position: 'relative',
     bottom: 30,
     left: 0,
     right: 0,
+    marginTop: 40,
   },
   
   primaryButton: {

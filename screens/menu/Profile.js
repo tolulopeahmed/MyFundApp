@@ -7,6 +7,7 @@ import Divider from '../components/Divider';
 import SavingsGoalModal from './SavingsGoalModal';
 import ProfileEditModal from './ProfileEditModal';
 
+
 const Profile = ({ navigation, setProfileImageUri, }) => {
   const [imageUri, setImageUri] = useState(null);
   const [enableFingerprint, setEnableFingerprint] = useState(false);
@@ -36,7 +37,7 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
         aspect: [1, 1],
         quality: 1,
         });
-      if (!result.cancelled) {
+      if (!result.canceled) {
         setImageUri(result.uri);
         setProfileImageUri(result.uri);
 
@@ -189,25 +190,25 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
 <View>
 <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => setGoalModalVisible(true)}>
-          <Ionicons name="save-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Ionicons name="save" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Savings Goal Settings</Text>
         </TouchableOpacity>
         </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Card')}>
-          <Ionicons name="card-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Ionicons name="card" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Bank and Card Settings</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('KYC')}>
-          <Ionicons name="document-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
-          <Text style={styles.buttonText}>Fill KYC Form</Text>
+          <Ionicons name="document" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Text style={styles.buttonText}>Update KYC</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button}>
-          <Ionicons name="wallet-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Ionicons name="wallet" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Redeem Points</Text>
         </TouchableOpacity>
       </View>
@@ -221,7 +222,7 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button}>
-          <Ionicons name="chatbubbles-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Ionicons name="chatbubbles" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Chat Admin</Text>
         </TouchableOpacity>
       </View>
@@ -230,13 +231,13 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button}>
-          <Ionicons name="star-half-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Ionicons name="star" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Rate MyFund</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleLogout}>
-          <Ionicons name="exit-outline" size={24} color="brown" style={{ marginRight: 15 }}/>
+          <Ionicons name="exit" size={24} color="brown" style={{ marginRight: 15 }}/>
           <Text color='brown' style={styles.buttonText}>Log Out</Text>
         </TouchableOpacity>
       </View>

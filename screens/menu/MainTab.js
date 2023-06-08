@@ -1,16 +1,14 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet } from 'react-native';
 
 import Home from './Home';
 import Save from './Save';
 import Invest from './Invest';
 import Withdraw from './Withdraw';
 import Profile from './Profile';
-import Header from '../components/Header';
 
 const Tab = createBottomTabNavigator();
-
 
 const Dot = ({ color }) => (
   <View
@@ -73,7 +71,6 @@ const MainTab = ({ navigation }) => {
       <Tab.Screen name="Withdraw" component={Withdraw} />
       <Tab.Screen name="More..." component={Profile} />
     </Tab.Navigator>
-
   );
 };
 

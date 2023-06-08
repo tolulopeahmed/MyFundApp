@@ -32,13 +32,13 @@ const Notifications = ({ navigation, firstName }) => {
 
   const [messages, setMessages] = useState([
     {
-      id: 1,
+      id: 4,
       type: 'message',
       description: 'Great job! You\'ve made progress and reached stage 6 out of 9 on your journey to financial freedom.',
       date: '05 Mar, 2023, 11:30am',
     },
     {
-      id: 2,
+      id: 5,
       type: 'message',
       description: 'Congratulations! You have received a bonus in your wallet for being one of the top savers for the month of July.',
       date: '05 August, 2023, 12:00pm',

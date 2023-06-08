@@ -4,7 +4,6 @@ import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
 
-
 const bankOptions = [
     { id: 1, name: 'Access Bank', code: '044' },
     { id: 2, name: 'Citibank', code: '023' },
