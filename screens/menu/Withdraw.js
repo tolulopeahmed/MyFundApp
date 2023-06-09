@@ -11,6 +11,9 @@ const Withdraw = ({ navigation }) => {
   const balance = 7500.25; // replace with actual balance
   const savingsBalance = 250000.50;
 
+ 
+
+
   return (
     <SafeAreaView style={styles.container}>
           <Header navigation={navigation} headerText="WITHDRAW" />

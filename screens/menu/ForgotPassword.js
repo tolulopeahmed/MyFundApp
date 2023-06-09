@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet,Image,animation,TouchableOpacity,TextInput,Modal,Animated,} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import logo from '../login/logo..png';
@@ -6,14 +6,28 @@ import Divider from '../components/Divider';
 
 const ForgotPassword = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [email, setEmail] = useState('');
+  const [isResetButtonDisabled, setIsResetButtonDisabled] = useState(true);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+
+
+  const handleEmailChange = (text) => {
+    setEmail(text);
+    setIsResetButtonDisabled(!text.includes('@'));
+  };
 
 
   const handleConfirm = () => {
-    setModalVisible(true);
+    if (isResetButtonDisabled) {
+      setShowErrorMessage(true);
+    } else {
+      setShowErrorMessage(false);
+      setModalVisible(true);
+    }
   };
+  
 
- 
-
+  
   return (
     <>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -31,16 +45,26 @@ const ForgotPassword = ({ navigation }) => {
 
           </Text>
         </View>
-        <View style={styles.inputContainer}>
-          <TextInput style={styles.input} placeholder="Enter Your Email Address" />
-          <View style={styles.passwordInputContainer}>
-           </View>
+   
+            <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter Your Email Address"
+              value={email}
+              onChangeText={handleEmailChange}
+            />
+          
+            <View style={styles.passwordInputContainer}></View>
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleConfirm}>
-            <Text style={styles.loginButtonText}>RESET</Text>
-          </TouchableOpacity>
-     
-        </View>
+            <TouchableOpacity
+              style={[styles.loginButton, isResetButtonDisabled && styles.disabledButton]}
+              onPress={handleConfirm}
+              disabled={isResetButtonDisabled}
+            >
+              <Text style={styles.loginButtonText}>RESET</Text>
+            </TouchableOpacity>
+          </View>
+
 
    <Divider/>
 
@@ -131,48 +155,12 @@ const styles = StyleSheet.create({
     width: '80%',
     backgroundColor: 'white',
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 25,
     paddingLeft: 15,
     paddingRight: 5,
   },
-  passwordInputContainer: {
-    position: 'relative',
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '80%',
-  },
-  passwordInput: {
-    flex: 1,
-    fontSize: 17,
-    height: 45,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    marginBottom: 15,
-    paddingLeft: 15,
-    paddingRight: 40,
-  },
-  passwordToggle: {
-    position: 'absolute',
-    right: 10,
-    top: 14,
-  },
-  forgotPasswordText: {
-    fontSize: 13,
-    fontFamily: 'karla',
-    color: '#4C28BC',
-    textAlign: 'right',
-    marginLeft: 216,
-    marginBottom: 25,
-  },
-  fingerprintContainer: {},
-  fingerprintText: {
-    marginTop: 5,
-    marginBottom: 20,
-    fontSize: 9,
-    fontFamily: 'karla',
-    color: 'grey',
-    textAlign: 'center',
-  },
+  
+  
   loginButton: {
     backgroundColor: '#4C28BC',
     width: '80%',
@@ -180,103 +168,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 15,
-    marginBottom: 4,
+    marginBottom: 15,
     marginTop: 10,
-    marginRight: 10,
+  },
+  disabledButton: {
+    backgroundColor: 'grey',
   },
   loginButtonText: {
     color: '#fff',
     fontSize: 16,
     fontFamily: 'proxima',
   },
-  createAccountTextContainer: {
-    fontSize: 16,
-    fontFamily: 'karla',
-    color: 'black',
-    textAlign: 'center',
-    marginHorizontal: 40,
-  },
-  createAccountText: {
-    fontSize: 13,
-    fontFamily: 'karla',
-    color: 'black',
-    textAlign: 'center',
-    marginHorizontal: 10,
+
+  errorMessage: {
+    color: 'red',
+    fontSize: 12,
     marginTop: 5,
-    letterSpacing: -0.2,
-  },
-  createAccount: {
-    fontSize: 14,
-    fontFamily: 'karla',
-    color: '#4C28BC',
     textAlign: 'center',
-    marginHorizontal: 40,
-    marginTop: 5,
   },
+  
+ 
+  
   divider: {
     width: '90%',
     marginTop: 10,
     height: 1,
     backgroundColor: 'silver',
   },
-  orLoginText: {
-    fontSize: 10,
-    marginTop: 16,
-    color: 'grey',
-    fontFamily: 'karla',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 17,
-    marginBottom: 17,
-  },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    //backgroundColor: '#DB4437',
-    borderRadius: 20,
-    paddingVertical: 1,
-    paddingHorizontal: 10,
-    width: '25%',
-    height: 30,
-    backgroundColor: '#9D8CD7',
-    marginRight: 5,
-  },
-  googleButtonText: {
-    color: 'white',
-    fontSize: 15,
-    marginLeft: 10,
-    fontFamily: 'karla',
-    textAlign: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 5,
-  },
-  linkedinButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    //backgroundColor: '#DB4437',
-    borderRadius: 20,
-    paddingVertical: 1,
-    paddingHorizontal: 10,
-    width: '30%',
-    height: 30,
-    backgroundColor: '#9D8CD7',
-  },
-  linkedinButtonText: {
-    color: 'white',
-    fontSize: 15,
-    marginLeft: 10,
-    fontFamily: 'karla',
-    textAlign: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 5,
-  },
+  
+  
+
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',

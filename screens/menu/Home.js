@@ -466,24 +466,26 @@ savingsContainer: {
 
 quickSaveButtonContainer: {
   position: 'absolute',
-  bottom: -5,
+  bottom: 15,
   right: 10,
 },
 
 quickSaveButton: {
-backgroundColor: '#9D8CD7',
-borderRadius: 8,
-paddingVertical: 4,
-paddingHorizontal: 9,
-marginLeft: 260,
-marginBottom: 20,
-
+  backgroundColor: '#9D8CD7',
+  borderRadius: 8,
+  paddingVertical: 4,
+  paddingHorizontal: 9,
+  alignSelf: 'flex-end',
+  flexDirection: 'row',
+  alignItems: 'center',
 },
 quickSaveText: {
-fontSize: 14,
-color: "white",
-fontFamily: 'ProductSans',
+  fontSize: 14,
+  color: 'white',
+  fontFamily: 'ProductSans',
+  alignSelf: 'center',
 },
+
 navigatorContainer: {
 flexDirection: 'row',
 justifyContent: 'center',

@@ -6,7 +6,7 @@ import Divider from '../components/Divider';
 import WithdrawModal from './WithdrawModal';
 
 const Wallet = ({ navigation, firstName }) => {
-  const [isWithdrawModalVisible, setIsWithdrawModalVisible] = useState(false);
+  const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
 
 
   
@@ -51,7 +51,7 @@ const Wallet = ({ navigation, firstName }) => {
       <View>
           <TouchableOpacity
            style={styles.withdrawButton}
-           onPress={() => setIsWithdrawModalVisible(true)}
+           onPress={() => setWithdrawModalVisible(true)}
          >
           
           <Ionicons name="arrow-down-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
@@ -161,11 +161,12 @@ const Wallet = ({ navigation, firstName }) => {
           </View>
           </ScrollView>
     </SafeAreaView>
-    {isWithdrawModalVisible && (
-  <WithdrawModal
-    modalVisible={isWithdrawModalVisible}
-    setModalVisible={setIsWithdrawModalVisible}
-  />
+   
+    {withdrawModalVisible && (
+   <WithdrawModal 
+   navigation={navigation} 
+   withdrawModalVisible={withdrawModalVisible} 
+   setWithdrawModalVisible={setWithdrawModalVisible} />
 )}
 
 </ScrollView>
