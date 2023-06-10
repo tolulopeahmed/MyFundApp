@@ -47,8 +47,9 @@ const CreateAccount = ({ navigation }) => {
   };
   
   const validatePhoneNumber = (phoneNumber) => {
-    setValidPhoneNumber(phoneNumber && phoneNumber.length <= 11);
+    setValidPhoneNumber(phoneNumber && /^\d+$/.test(phoneNumber) && phoneNumber.length <= 11);
   };
+  
     
 
   const togglePasswordVisibility = () => {
@@ -67,7 +68,7 @@ const CreateAccount = ({ navigation }) => {
           </View>
           <View style={styles.textContainer}>
             <Text style={styles.header}>Create Account</Text>
-            <Text style={styles.subText}>Join thousands of landlords to learn how to become one yourself with MyFund.</Text>
+            <Text style={styles.subText}>Earn up to 20% p.a. every January and July. Own peroperties and earn a lifetime rental income on MyFund</Text>
           </View>
           <View style={styles.inputContainer}>
             <View style={styles.inputWrapper}>

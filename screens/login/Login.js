@@ -53,8 +53,7 @@ const Login = ({ navigation }) => {
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Welcome Back</Text>
           <Text style={styles.subText}>
-            Have you earned your first rent yet? To do so, you need get your first property. That’s why you’re here.
-            Jump right back in!
+          Earn up to 20% p.a. every January and July. Own peroperties and earn a lifetime rental income on MyFund. Jump right back in!
           </Text>
         </View>
 
