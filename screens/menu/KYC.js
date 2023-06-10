@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
 import * as ImagePicker from 'react-native-image-picker';
 import { launchImageLibrary } from 'react-native-image-picker';
+import Constants from 'expo-constants';
 
 
 
@@ -469,6 +470,7 @@ const styles = StyleSheet.create({
       borderWidth: 0.5,
       borderRadius: 9,
       borderColor: 'grey',
+      backgroundColor: "#DCD1FF",
       justifyContent: 'center',
       alignItems: 'center',
       alignSelf: 'center',
@@ -478,7 +480,7 @@ const styles = StyleSheet.create({
     uploadButton: {
       flexDirection: 'row',
       borderColor: 'silver',
-      backgroundColor: 'white',
+      backgroundColor: '#F5F1FF',
       height: 40,
       width: '40%',
       padding: 10,
@@ -490,7 +492,7 @@ const styles = StyleSheet.create({
     uploadText: {
       fontSize: 16,
       fontFamily: 'karla',
-      color: 'grey',
+      color: '#4C28BC',
       alignSelf: 'center', // Center the text within the button
     },
     selectedImage: {

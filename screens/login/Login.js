@@ -1,12 +1,23 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet,Image,animation,TouchableOpacity,TextInput,Modal,Animated,} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import logo from './logo..png';
 
 const Login = ({ navigation }) => {
-  const [modalVisible, setModalVisible] = useState(false);
   const [firstName, setFirstName] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Added toggle state
+  const [modalVisible, setModalVisible] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [validEmail, setValidEmail] = useState(true);
+  const [validPassword, setValidPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+
+
+  useEffect(() => {
+    // Check if both email and password are valid
+    setIsFormValid(validEmail && validPassword);
+  }, [validEmail, validPassword]);
 
 
   const handleConfirm = () => {
@@ -19,6 +30,14 @@ const Login = ({ navigation }) => {
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const validateEmail = (email) => {
+    setValidEmail(email.includes('@'));
+  };
+
+  const validatePassword = (password) => {
+    setValidPassword(password.length >= 8);
   };
 
   return (
@@ -38,15 +57,30 @@ const Login = ({ navigation }) => {
             Jump right back in!
           </Text>
         </View>
+
+
         <View style={styles.inputContainer}>
-          <TextInput style={styles.input} placeholder="Email or Phone Number" />
-          
-          <View style={styles.passwordInputContainer}>
-            <TextInput
-              style={styles.passwordInput}
-              placeholder="Password"
-              secureTextEntry={!showPassword}
-            />
+          <TextInput
+          style={[styles.input, !validEmail && styles.invalidInput]}
+          placeholder="Email Address"
+          value={email}
+          onChangeText={(text) => {
+            setEmail(text);
+            validateEmail(text);
+          }}
+        />       
+
+        <View style={styles.passwordInputContainer}>
+          <TextInput
+            style={[styles.passwordInput, !validPassword && styles.invalidInput]}
+            placeholder="Password"
+            secureTextEntry={!showPassword}
+            value={password}
+            onChangeText={(text) => {
+              setPassword(text);
+              validatePassword(text);
+            }}
+          />
             <TouchableOpacity style={styles.passwordToggle} onPress={togglePasswordVisibility}>
               <Ionicons
                 name={showPassword ? 'eye-outline' : 'eye-off-outline'}
@@ -67,9 +101,17 @@ const Login = ({ navigation }) => {
             <Image source={require('./fingerprint.png')} style={styles.image} />
             <Text style={styles.fingerprintText}>Press and Hold</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.loginButton} onPress={handleConfirm}>
+
+
+          <TouchableOpacity
+            style={[styles.loginButton, !isFormValid && styles.disabledLoginButton]}
+            onPress={handleConfirm}
+            disabled={!isFormValid}
+          >
             <Text style={styles.loginButtonText}>LOG IN</Text>
           </TouchableOpacity>
+
+
           <TouchableOpacity
             style={styles.createAccountTextContainer}
             onPress={() => navigation.navigate('CreateAccount')}
@@ -178,7 +220,14 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingLeft: 15,
     paddingRight: 5,
+    borderWidth: 1,
+    borderColor: 'green'    
   },
+
+  invalidInput: {
+    borderColor: 'red',
+  },
+
   passwordInputContainer: {
     position: 'relative',
     flexDirection: 'row',
@@ -194,6 +243,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     paddingLeft: 15,
     paddingRight: 40,
+    borderWidth: 1,
+    borderColor: 'green'    
   },
   passwordToggle: {
     position: 'absolute',
@@ -217,6 +268,11 @@ const styles = StyleSheet.create({
     color: 'grey',
     textAlign: 'center',
   },
+
+  disabledLoginButton: {
+    backgroundColor: 'grey',
+  },
+
   loginButton: {
     backgroundColor: '#4C28BC',
     width: '80%',

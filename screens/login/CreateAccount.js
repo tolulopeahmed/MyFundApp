@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, Dimensions, TouchableOpacity, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -6,12 +6,50 @@ const { width, height } = Dimensions.get('window');
 
 const CreateAccount = ({ navigation }) => {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
-  const [userInfo, setUserInfo] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    mobileNumber: '',
-  });
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [email, setEmail] = useState('');
+  const [validEmail, setValidEmail] = useState(true);
+  const [firstName, setFirstName] = useState('');
+  const [validFirstName, setValidFirstName] = useState(true);
+  const [lastName, setLastName] = useState('');
+  const [validLastName, setValidLastName] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [validPhoneNumber, setValidPhoneNumber] = useState(true);
+  const [password, setPassword] = useState('');
+  const [validPassword, setValidPassword] = useState(true);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [validConfirmPassword, setValidConfirmPassword] = useState(true);
+
+  useEffect(() => {
+    // Check if both email and password are valid
+    setIsFormValid(validEmail && validPassword && validConfirmPassword && validFirstName && validLastName && validPhoneNumber);
+  }, [validEmail, validPassword, validConfirmPassword, validFirstName, validLastName, validPhoneNumber]);
+
+
+  const validateEmail = (email) => {
+    setValidEmail(email.includes('@'));
+  };
+
+  const validatePassword = (password) => {
+    setValidPassword(password.length >= 8);
+  };
+
+  const validateConfirmPassword = (confirmPassword) => {
+    setValidConfirmPassword(confirmPassword === password);
+  };
+
+  const validateFirstName = (firstName) => {
+    setValidFirstName(firstName && /^[a-zA-Z0-9]+$/.test(firstName));
+  };
+  
+  const validateLastName = (lastName) => {
+    setValidLastName(lastName && /^[a-zA-Z0-9]+$/.test(lastName));
+  };
+  
+  const validatePhoneNumber = (phoneNumber) => {
+    setValidPhoneNumber(phoneNumber && phoneNumber.length <= 11);
+  };
+    
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!isPasswordVisible);
@@ -34,58 +72,119 @@ const CreateAccount = ({ navigation }) => {
           <View style={styles.inputContainer}>
             <View style={styles.inputWrapper}>
               <Ionicons name='person-outline' marginBottom={8} size={20} color="grey" padding={8} />
-              <TextInput style={styles.input} placeholder="First Name" 
-                onChangeText={(text) => setUserInfo({ ...userInfo, firstName: text })}
+              <TextInput 
+              style={[styles.input, !validFirstName && styles.invalidInput]} 
+              placeholder="First Name"
+              value={firstName}
+              onChangeText={(text) => {
+                setFirstName(text);
+                validateFirstName(text);
+              }}  
                 />
             </View>
+
+
             <View style={styles.inputWrapper}>
               <Ionicons name='person-outline' marginBottom={8} size={20} color="grey" padding={8} />
-              <TextInput style={styles.input} placeholder="Last Name" 
-                onChangeText={(text) => setUserInfo({ ...userInfo, lastName: text })}
+              <TextInput 
+              style={[styles.input, !validLastName && styles.invalidInput]} 
+              placeholder="Last Name"
+              value={lastName}
+              onChangeText={(text) => {
+                setLastName(text);
+                validateLastName(text);
+              }}  
                 />
             </View>
+
             <View style={styles.inputWrapper}>
               <Ionicons name='at-outline' marginBottom={8} size={20} color="grey" padding={8} />
-              <TextInput style={styles.input} placeholder="Email Address" keyboardType="email-address" 
-                onChangeText={(text) => setUserInfo({ ...userInfo, email: text })}
+              <TextInput 
+              style={[styles.input, !validEmail && styles.invalidInput]} 
+              placeholder="Email Address (e.g. name@mail.com)" 
+              keyboardType="email-address"
+              value={email}
+              onChangeText={(text) => {
+                setEmail(text);
+                validateEmail(text);
+              }} 
                 />
             </View>
+
+
             <View style={styles.inputWrapper}>
-              <Ionicons name='call-outline' marginBottom={8} size={20} color="grey" padding={8} />
-              <TextInput style={styles.input} placeholder="Phone Number" keyboardType="phone-pad" 
-                onChangeText={(text) => setUserInfo({ ...userInfo, mobileNumber: text })}
-                />
-            </View>
+            <Ionicons name='call-outline' marginBottom={8} size={20} color="grey" padding={8} />
+            <TextInput
+              style={[styles.input, !validPhoneNumber && styles.invalidInput]}
+              placeholder="Phone Number (e.g. 08034567890)"
+              keyboardType="phone-pad"
+              value={phoneNumber}
+              onChangeText={(text) => {
+                setPhoneNumber(text);
+                validatePhoneNumber(text);
+              }}
+              prefix="+234"
+            />
+          </View>
+
+
+
             <View style={styles.inputWrapper}>
               <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
                 <Ionicons name={isPasswordVisible ? 'eye' : 'eye-off'} size={20} color="grey" marginBottom={8} padding={8} />
               </TouchableOpacity>
               <TextInput
-                style={styles.input}
-                placeholder="Password"
+                style={[styles.input, !validPassword && styles.invalidInput]}
+                placeholder="Password (at least 8 characters)"
                 secureTextEntry={!isPasswordVisible}
                 keyboardType="default"
+                value={password}
+              onChangeText={(text) => {
+              setPassword(text);
+              validatePassword(text);
+            }}
               />
             </View>
+
+
             <View style={styles.inputWrapper}>
               <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
                 <Ionicons name={isPasswordVisible ? 'eye' : 'eye-off'} size={20} color="grey" marginBottom={8} padding={8} />
               </TouchableOpacity>
               <TextInput
-                style={styles.input}
+                style={[styles.input, !validConfirmPassword && styles.invalidInput]}
                 placeholder="Confirm Password"
                 secureTextEntry={!isPasswordVisible}
                 keyboardType="default"
+                value={confirmPassword}
+              onChangeText={(text) => {
+              setConfirmPassword(text);
+              validateConfirmPassword(text);
+            }}
               />
             </View>
+
+
             <View style={styles.inputWrapper}>
               <Ionicons name='person-add-outline' marginBottom={9} size={20} color="grey" padding={8} />
-              <TextInput style={styles.input} placeholder="Referral Phone/Username (optional)" keyboardType="phone-pad" />
+              <TextInput style={styles.input} 
+              placeholder="Referral Phone/Username (optional)" 
+              keyboardType="phone-pad" />
             </View>
           </View>
-          <TouchableOpacity style={styles.createAccountButton} onPress={() => navigation.navigate('Confirmation', { userInfo })}>
+
+
+
+          <TouchableOpacity 
+          style={[styles.createAccountButton, !isFormValid && styles.disabledLoginButton]}
+          onPress={() => navigation.navigate('Confirmation')}
+          disabled={!isFormValid}
+          >
             <Text style={styles.createAccountButtonText}>CREATE ACCOUNT</Text>
           </TouchableOpacity>
+
+
+
           <TouchableOpacity style={styles.loginTextContainer} onPress={() => navigation.navigate('Login')}>
             <Text style={styles.loginText}>Already have an account? <Text style={styles.login}>Log in</Text></Text>
           </TouchableOpacity>
@@ -171,12 +270,18 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 15,
-    height: 37,
+    height: 40,
     width: '80%',
     backgroundColor: 'white',
     borderRadius: 10,
     marginBottom: 10,
-    paddingLeft: 14,    
+    paddingLeft: 14,
+    borderWidth: 1,
+    borderColor: 'green'    
+  },
+
+  invalidInput: {
+    borderColor: 'red',
   },
 
   inputWrapper: {
@@ -201,6 +306,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'proxima',
   },
+
+  disabledLoginButton: {
+    backgroundColor: 'grey',
+  },
+
+
   loginTextContainer: {
     fontSize: 16,
     fontFamily: 'karla',
