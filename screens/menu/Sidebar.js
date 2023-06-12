@@ -76,7 +76,7 @@ const Sidebar = ({ navigation, firstName, profileImageUri }) => {
           <Ionicons name="settings-outline" size={18} color="silver" style={{ marginRight: 15 }} />
           <Text style={styles.subMenuText}>Settings</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Chat')}>
           <Ionicons name="chatbubbles-outline" size={18} color="silver" style={{ marginRight: 15 }} />
           <Text style={styles.subMenuText}>Chat Admin</Text>
         </TouchableOpacity>

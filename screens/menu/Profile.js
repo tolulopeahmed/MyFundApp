@@ -221,7 +221,7 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Chat')}>
           <Ionicons name="chatbubbles" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Chat Admin</Text>
         </TouchableOpacity>

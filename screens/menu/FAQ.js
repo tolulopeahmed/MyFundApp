@@ -82,7 +82,7 @@ const FAQ = ({ navigation }) => {
       </ScrollView>
       
       <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton} >
+                <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.navigate('Chat')}>
                 <Ionicons name="chatbubbles-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
                 <Text style={styles.primaryButtonText}>Chat Admin Instead</Text>
                 </TouchableOpacity>
