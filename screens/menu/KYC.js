@@ -4,16 +4,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider';
 import { MaterialIcons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
-import * as ImagePicker from 'react-native-image-picker';
-import { launchImageLibrary } from 'react-native-image-picker';
-import Constants from 'expo-constants';
-
+import * as ImagePicker from 'expo-image-picker';
 
 
 const screenWidth = Dimensions.get('window').width;
-
-
-
 
 
 const KYC = ({ navigation, firstName }) => {
@@ -23,33 +17,39 @@ const KYC = ({ navigation, firstName }) => {
     const [yearlyIncome, setYearlyIncome] = useState(null);
     const [cardType, setCardType] = useState(null);
     const [relationshipWithNextOfKin, setRelationshipWithNextOfKin] = useState(null);
-
     const [selectedImage, setSelectedImage] = useState(null);
+    const [showImage, setShowImage] = useState(false);
 
-    const openImagePicker = async () => {
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (permissionResult.granted === false) {
-        alert('Permission to access camera roll is required!');
-        return;
+    useEffect(() => {
+      requestMediaLibraryPermissions();
+    }, []);
+  
+    const requestMediaLibraryPermissions = async () => {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Permission to access the media library is required!');
       }
-    
-      const result = await launchImageLibrary({
-        mediaType: 'photo',
+    };
+  
+    const openImagePicker = async () => {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
       });
-      
     
-      if (!result.cancelled) {
-        setSelectedImage(result.uri);
-      }
+      if (!result.canceled) {
+        setSelectedImage(result.assets[0].uri);
+        setShowImage(true);
+      }      
     };
     
-       
+    const removeImage = () => {
+      setSelectedImage(null);
+      setShowImage(false);
+    };
     
-    
-
     const onGenderSelect = (index, value) => {
         setSelectedGender(value);
       };
@@ -119,7 +119,7 @@ const KYC = ({ navigation, firstName }) => {
       <View style={styles.propertyContainer}>
         <Ionicons name="shield-checkmark-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}> KYC (Know Your Customer) guidelines by CBN are meant to prevent your account from being used, intentionally or unintentionally, by criminal elements for money laundering activities.
+        <Text style={styles.propertyText}>KYC (Know Your Customer) guidelines by CBN are meant to prevent your account from being used, intentionally or unintentionally, by criminal elements for money laundering activities.
 </Text>
       </View>
       </View>
@@ -231,9 +231,54 @@ const KYC = ({ navigation, firstName }) => {
 <TextInput style={styles.input} placeholder="MOTHER'S MAIDEN NAME" keyboardType="email-address" />
         </View>
 
+        
+        <View style={styles.inputWrapper}>
+  <MaterialIcons name='badge' marginBottom={9} size={20} color="grey" padding={8} />
+  <View style={styles.dropdown}>
+    {/* Identification Card Type */}
+    <SelectDropdown
+      data={cardTypeOptions}
+      onSelect={(index, value) => setCardType(value)}
+      defaultIndex={null}
+      defaultButtonText={
+        <>
+          <Ionicons name="chevron-down" size={16} color="black" /> IDENTIFICATION TYPE
+        </>
+      }
+      buttonTextAfterSelection={(selectedItem) => selectedItem}
+      buttonStyle={styles.dropdownButton}
+      dropdownStyle={styles.dropdown}
+      rowStyle={styles.dropdownRow}
+      rowTextStyle={styles.dropdownRowText}
+      buttonTextStyle={styles.placeholderText}
+    />
+  </View>
+</View>
+
+<View style={styles.imageContainer}>
+  {showImage ? (
+    <>
+      <TouchableOpacity style={styles.closeButton} onPress={removeImage}>
+        <Ionicons name="trash-outline" size={24} color="red" />
+      </TouchableOpacity>
+      <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
+    </>
+  ) : (
+    <TouchableOpacity style={styles.uploadButton} onPress={openImagePicker}>
+      <Ionicons name="arrow-up-outline" size={24} color="#4C28BC" marginRight={10}/>
+      <Text style={styles.uploadText}>Upload ID</Text>
+    </TouchableOpacity>
+  )}
+</View>
+
+
+
+
+        <Divider />
+
         <View style={styles.inputWrapper}>
         <Ionicons name='people-outline' marginBottom={9} size={20} color="grey" padding={8}/>
-<TextInput style={styles.input} placeholder="NEXT OF KIN" keyboardType="phone-pad" />
+<TextInput style={styles.input} placeholder="NAME OF NEXT OF KIN" keyboardType="email-address" />
         </View>
 
         <View style={styles.inputWrapper}>
@@ -265,40 +310,6 @@ const KYC = ({ navigation, firstName }) => {
       
 
 
-        <Divider />
-
-        <View style={styles.inputWrapper}>
-  <MaterialIcons name='badge' marginBottom={9} size={20} color="grey" padding={8} />
-  <View style={styles.dropdown}>
-    {/* Identification Card Type */}
-    <SelectDropdown
-      data={cardTypeOptions}
-      onSelect={(index, value) => setCardType(value)}
-      defaultIndex={null}
-      defaultButtonText={
-        <>
-          <Ionicons name="chevron-down" size={16} color="black" /> IDENTIFICATION TYPE
-        </>
-      }
-      buttonTextAfterSelection={(selectedItem) => selectedItem}
-      buttonStyle={styles.dropdownButton}
-      dropdownStyle={styles.dropdown}
-      rowStyle={styles.dropdownRow}
-      rowTextStyle={styles.dropdownRowText}
-      buttonTextStyle={styles.placeholderText}
-    />
-  </View>
-</View>
-
-<View style={styles.imageContainer}>
-{selectedImage ? (
-        <Image source={{ uri: selectedImage }} style={styles.selectedImage} />
-      ) : (
-        <TouchableOpacity style={styles.uploadButton} onPress={openImagePicker}>
-          <Text style={styles.uploadText}>Upload ID</Text>
-        </TouchableOpacity>
-      )}
-</View>
 
       
 
@@ -465,11 +476,12 @@ const styles = StyleSheet.create({
     },
 
     imageContainer: {
-      width: screenWidth * 0.85,
-      height: 180,
-      borderWidth: 0.5,
+      width: screenWidth * 0.80,
+      height: 200,
+      borderWidth: 2,
+      borderStyle: 'dashed', // Add this line
       borderRadius: 9,
-      borderColor: 'grey',
+      borderColor: '#4C28BC',
       backgroundColor: "#DCD1FF",
       justifyContent: 'center',
       alignItems: 'center',
@@ -477,6 +489,14 @@ const styles = StyleSheet.create({
       marginVertical: 5,
       marginLeft: 20,
     },
+    
+    selectedImage: {
+      width: '100%',
+      height: '100%',
+      resizeMode: 'cover',
+      borderRadius: 9,
+    },
+    
     uploadButton: {
       flexDirection: 'row',
       borderColor: 'silver',
@@ -495,11 +515,12 @@ const styles = StyleSheet.create({
       color: '#4C28BC',
       alignSelf: 'center', // Center the text within the button
     },
-    selectedImage: {
-      width: '80%',
-      height: 200,
-      borderRadius: 5,
-      borderWidth: 0.1,
+   
+    closeButton: {
+      position: 'absolute',
+      top: 10,
+      right: 10,
+      zIndex: 1,
     },
    
   buttonsContainer: {

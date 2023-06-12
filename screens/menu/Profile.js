@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Switch, StyleSheet, ScrollView, Pressable, SafeAreaView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, Linking, Switch, StyleSheet, ScrollView, Pressable, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -9,7 +9,7 @@ import ProfileEditModal from './ProfileEditModal';
 
 
 const Profile = ({ navigation, setProfileImageUri, }) => {
-  const [imageUri, setImageUri] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [enableFingerprint, setEnableFingerprint] = useState(false);
   const [showMyFundInDollars, setShowMyFundInDollars] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
@@ -22,6 +22,10 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
     email: 'name@gmail.com',
   });
   
+  const handleRateMyFund = () => {
+    const buyNowUrl = 'https://bit.ly/Vback';
+    Linking.openURL(buyNowUrl);
+  };
 
   const updateProfile = (updatedInfo) => {
     setProfile(updatedInfo);
@@ -36,14 +40,13 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,
-        });
+      });
       if (!result.canceled) {
-        setImageUri(result.uri);
-        setProfileImageUri(result.uri);
-
+        setSelectedImage(result.assets[0].uri);
       }
     }
   };
+  
 
   const darkModeStyles = StyleSheet.create({
     container: {
@@ -97,12 +100,22 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
   <View style={styles.leftContainer}>
     <View style={styles.imageContainer}>
       <Pressable>
-        {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.image} onPress={handlePickImage} />
+              {selectedImage ? (
+          <Image source={{ uri: selectedImage }} style={styles.image} />
         ) : (
-          <Ionicons name="person-circle" size={160} color="silver" onPress={handlePickImage} />
+          <Ionicons name="person-circle" size={175} color="silver" marginBottom={-10}/>
         )}
+        {selectedImage && (
+          <Pressable style={styles.editIconContainer} onPress={handlePickImage}>
+            <MaterialIcons name="edit" size={20} color="#4C28BC" />
+          </Pressable>
+        )}
+         <Pressable style={styles.editIconContainer} onPress={handlePickImage}>
+            <MaterialIcons name="edit" size={20} color="#fff" />
+          </Pressable>
       </Pressable>
+
+
     </View>
     <Text style={styles.nameText}>{profile.firstName}</Text>
     <Text style={styles.usernameText}>{profile.email}</Text>
@@ -110,13 +123,9 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
 
   <View style={styles.rightContainer}>
   <View style={styles.buttonsContainer1}>
-  <TouchableOpacity style={styles.secondaryButton} onPress={handlePickImage}>
-  <MaterialIcons name="edit" size={14} color="#4C28BC" style={{ marginRight: 7 }}/>
-    <Text style={styles.secondaryButtonText}>Picture</Text>
-  </TouchableOpacity>
   <TouchableOpacity style={styles.primaryButton} onPress={handleEditProfile}>
-  <MaterialIcons name="edit" size={14} color="white" style={{ marginRight: 7 }}/>
-    <Text style={styles.primaryButtonText}>Profile</Text>
+  <MaterialIcons name="edit" size={14} color="white" marginLeft={10}/>
+    <Text style={styles.primaryButtonText}>Edit Profile</Text>
   </TouchableOpacity>
   </View>
     <Text style={styles.infoText}>Full Name</Text>
@@ -206,12 +215,7 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
           <Text style={styles.buttonText}>Update KYC</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
-          <Ionicons name="wallet" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
-          <Text style={styles.buttonText}>Redeem Points</Text>
-        </TouchableOpacity>
-      </View>
+ 
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FAQ')}>
@@ -230,7 +234,7 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
       
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleRateMyFund}>
           <Ionicons name="star" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Rate MyFund</Text>
         </TouchableOpacity>
@@ -324,18 +328,34 @@ icon: {
   },
 
   imageContainer: {
+    marginBottom: 10,
     alignItems: 'flex-start',
     backgroundColor: '#F5F1FF',
+    resizeMode: 'cover',
+    borderRadius: 150,
+    width: 160,
+    height: 160,
   },
 
   image: {
-    marginTop: 6,
+    marginTop: 10,
     width: 160,
     height: 160,
     borderRadius: 80,
     borderWidth: 3,
     borderColor: 'white',
   },
+
+  editIconContainer: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    backgroundColor: '#4C28BC',
+    borderRadius: 20,
+    padding: 5,
+    elevation: 2,
+  },
+
   nameText: {
     fontFamily: 'proxima',
     fontSize: 28,
@@ -444,7 +464,6 @@ icon: {
   primaryButton: {
     flexDirection: 'row',
     backgroundColor: '#4C28BC',
-    flex: 0.4,
     height: 25,
     alignItems: 'center',
     justifyContent: 'center',
@@ -456,6 +475,7 @@ icon: {
     color: '#fff',
     fontSize: 14,
     fontFamily: 'ProductSans',
+    paddingHorizontal: 10,
   },
 
   

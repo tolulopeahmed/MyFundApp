@@ -7,6 +7,7 @@ const { width, height } = Dimensions.get('window');
 const CreateAccount = ({ navigation }) => {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isFormTouched, setIsFormTouched] = useState(false); // New state variable
   const [email, setEmail] = useState('');
   const [validEmail, setValidEmail] = useState(true);
   const [firstName, setFirstName] = useState('');
@@ -22,38 +23,47 @@ const CreateAccount = ({ navigation }) => {
 
   useEffect(() => {
     // Check if both email and password are valid
-    setIsFormValid(validEmail && validPassword && validConfirmPassword && validFirstName && validLastName && validPhoneNumber);
-  }, [validEmail, validPassword, validConfirmPassword, validFirstName, validLastName, validPhoneNumber]);
+    setIsFormValid(validEmail && validPassword && validConfirmPassword && validFirstName && validLastName && validPhoneNumber &&
+      isFormTouched);
+  }, [validEmail, validPassword, validConfirmPassword, validFirstName, validLastName, validPhoneNumber,
+    isFormTouched]);
 
 
   const validateEmail = (email) => {
     setValidEmail(email.includes('@'));
+    setIsFormTouched(true); // Set the form touched when field value changes
   };
 
   const validatePassword = (password) => {
     setValidPassword(password.length >= 8);
+    setIsFormTouched(true); // Set the form touched when field value changes
   };
 
   const validateConfirmPassword = (confirmPassword) => {
     setValidConfirmPassword(confirmPassword === password);
+    setIsFormTouched(true); // Set the form touched when field value changes
   };
 
   const validateFirstName = (firstName) => {
     setValidFirstName(firstName && /^[a-zA-Z0-9]+$/.test(firstName));
+    setIsFormTouched(true); // Set the form touched when field value changes
   };
   
   const validateLastName = (lastName) => {
     setValidLastName(lastName && /^[a-zA-Z0-9]+$/.test(lastName));
+    setIsFormTouched(true); // Set the form touched when field value changes
   };
   
   const validatePhoneNumber = (phoneNumber) => {
     setValidPhoneNumber(phoneNumber && /^\d+$/.test(phoneNumber) && phoneNumber.length <= 11);
+    setIsFormTouched(true); // Set the form touched when field value changes
   };
   
     
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!isPasswordVisible);
+    setIsFormTouched(true); // Set the form touched when field value changes
   };
 
   return (

@@ -1,22 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, Image, Linking, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faHouseCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import BuyPropertyModal from './BuyPropertyModal'
-import Profile from './Profile'
 
 
 const Resources = ({navigation}) => {
     const [modalVisible, setModalVisible] = useState(false);
 
-    // in the Save component
-  const handleActivateAutoSave = () => {
-    setModalVisible(true);
-    setAutoSave(true);
-  };
-
-  const handleBuyNowClick = () => {
+    const handleBuyNowClick = () => {
     const buyNowUrl = 'https://bit.ly/f9steps';
     Linking.openURL(buyNowUrl);
   };

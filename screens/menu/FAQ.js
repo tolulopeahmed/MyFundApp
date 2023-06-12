@@ -9,7 +9,7 @@ const FAQ = ({ navigation }) => {
     {
       id: 1,
       question: 'What exactly is MyFund?',
-      answer: 'MyFund is a fintech platform that helps you save your money towards buying properties for a lifetime rental income. But in the meantime you earn dividends on your savings every January and July.',
+      answer: 'MyFund is a fintech platform that helps you save your money towards buying properties for a lifetime rental income. But in the meantime, you earn up to 20% p.a. dividends on your money every January and July.',
     },
     {
       id: 2,
@@ -19,12 +19,12 @@ const FAQ = ({ navigation }) => {
     {
         id: 3,
         question: "If I've cumulatively saved up to N60,000 in my Savings, can I move it to Investment?",
-        answer: "Yes. you're encouraged to do so or a multiple of it especially since it gives 20% ROI compared to 10% from Savings. This also means you'll start making your savings afresh.",
+        answer: "Yes. you're encouraged to do so especially because it gives 20% ROI (compared to 10% on your Savings). Simply click the WITHDRAW button and follow the prompt.",
       },
       {
         id: 4,
         question: 'What is Onwership Investment?',
-        answer: "It means buying a property to own for rental income. We're building hostels and housing across campuses and high traffic areas in the country. The ongoing investment plan is at Harmony Estate, opposite the Federal University of Agriculture Abeokuta (FUNAAB), Ogun State...with 41 apartments. Others under construction.",
+        answer: "It means buying a property to own for rental income. We're setting up rental properties in high traffic areas across the country for you to own a part of. The ongoing investment plan is at Harmony Estate, opposite the Federal University of Agriculture Abeokuta (FUNAAB), Ogun State (41 apartments). Simply go to Invest > Ownership Investment and select Buy Now!",
       },
       {
         id: 5,

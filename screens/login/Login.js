@@ -12,12 +12,15 @@ const Login = ({ navigation }) => {
   const [validPassword, setValidPassword] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [isFormTouched, setIsFormTouched] = useState(false);
+
 
 
   useEffect(() => {
-    // Check if both email and password are valid
-    setIsFormValid(validEmail && validPassword);
-  }, [validEmail, validPassword]);
+    // Check if both email and password are valid and form has been touched
+    setIsFormValid(validEmail && validPassword && isFormTouched);
+  }, [validEmail, validPassword, isFormTouched]);
+  
 
 
   const handleConfirm = () => {
@@ -67,19 +70,23 @@ const Login = ({ navigation }) => {
             setEmail(text);
             validateEmail(text);
           }}
-        />       
+          onBlur={() => setIsFormTouched(true)}
+        />
+     
 
         <View style={styles.passwordInputContainer}>
           <TextInput
-            style={[styles.passwordInput, !validPassword && styles.invalidInput]}
-            placeholder="Password"
-            secureTextEntry={!showPassword}
-            value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-              validatePassword(text);
-            }}
-          />
+          style={[styles.passwordInput, !validPassword && styles.invalidInput]}
+          placeholder="Password"
+          secureTextEntry={!showPassword}
+          value={password}
+          onChangeText={(text) => {
+            setPassword(text);
+            validatePassword(text);
+          }}
+          onBlur={() => setIsFormTouched(true)}
+        />
+
             <TouchableOpacity style={styles.passwordToggle} onPress={togglePasswordVisibility}>
               <Ionicons
                 name={showPassword ? 'eye-outline' : 'eye-off-outline'}
