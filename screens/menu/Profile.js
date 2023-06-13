@@ -11,7 +11,7 @@ import ProfileEditModal from './ProfileEditModal';
 const Profile = ({ navigation, setProfileImageUri, }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [enableFingerprint, setEnableFingerprint] = useState(false);
-  const [showMyFundInDollars, setShowMyFundInDollars] = useState(true);
+  const [showBalances, setShowBalances] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
   const [profileEditModalVisible, setProfileEditModalVisible] = useState(false); // define modalVisible state
@@ -169,13 +169,13 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
         />
       </View>
       <View style={styles.settingContainer}>
-        <Text style={styles.settingText}>Show MyFund in Dollars</Text>
+        <Text style={styles.settingText}>Show/Hide Balances</Text>
         <Switch
           trackColor={{ false: 'grey', true: '#4C28BC' }}
-          thumbColor={showMyFundInDollars ? '#8976FF' : 'silver'}
+          thumbColor={showBalances ? '#8976FF' : 'silver'}
           ios_backgroundColor="#3e3e3e"
-          onValueChange={() => setShowMyFundInDollars(!showMyFundInDollars)}
-          value={showMyFundInDollars}
+          onValueChange={() => setShowBalances(!showBalances)}
+          value={showBalances}
         />
       </View>
       <View style={styles.settingContainer}>

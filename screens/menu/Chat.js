@@ -84,7 +84,7 @@ const Chat = ({ navigation }) => {
           <Ionicons name="arrow-back-outline" size={30} color="#4C28BC" />
         </TouchableOpacity>
         <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>ADMIN</Text>
+          <Text style={styles.headerText}>CHAT ADMIN</Text>
           <TouchableOpacity onPress={() => navigation.navigate('FAQ')}>
             <Ionicons name="ios-information-circle-outline" size={24} color="silver" />
           </TouchableOpacity>
@@ -198,6 +198,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 10,
     marginTop: 10,
+    
   },
   propertyText: {
     flex: 1,

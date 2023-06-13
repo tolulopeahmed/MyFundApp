@@ -50,12 +50,17 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
             {'\n'}QuickInvest...
           </Text>
         
-          <TextInput
-        style={styles.amountInput}
-        placeholder="Amount (e.g. 20000)"
-        keyboardType="numeric"
-        onChangeText={(value) => handleAmountChange(value)}
-      />
+          <View style={styles.inputContainer2}>
+  <Text style={styles.nairaSign}>₦</Text>
+  <TextInput
+    style={styles.amountInput}
+    placeholder="Amount (e.g. 20000)"
+    keyboardType="numeric"
+    onChangeText={(value) => handleAmountChange(value)}
+  />
+</View>
+
+
           <Text style={styles.modalSubText2} alignSelf='flex-start'>using...</Text>
 
           <View style={styles.inputContainer}>
@@ -266,20 +271,29 @@ const styles = {
     borderRadius: 10,
   },
 
-  amountInput: {
-    color: 'black',
-    textAlign: 'left',
-    marginLeft: -5,
-    fontFamily: 'karla',
+  inputContainer2: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 10,
     height: 50,
-    width: "80%",
-    padding: 10,
+    width: '80%',
     marginTop: 5,
-    borderRadius: 10,
+  },
+
+  nairaSign: {
+    fontSize: 16,
+    marginLeft: 15,
+    marginRight: 0,
+  },
+
+  amountInput: {
+    flex: 1,
+    color: 'black',
+    fontFamily: 'karla',
     fontSize: 16,
     letterSpacing: -0.3,
+    padding: 10,
   },
 
   dropdown: {

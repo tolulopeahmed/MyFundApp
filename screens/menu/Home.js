@@ -40,7 +40,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
      
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
-        <Text style={styles.propertyText}>You need $9,500.75 to acquire your next property. Keep growing your funds until your rental income is more than your expenses.</Text>
+        <Text style={styles.propertyText}>Enjoy 10% p.a. on yours Savings and 20% p.a. on Sponsorship Investments every January and July, {'\n'}and Lifetime rental income on Ownership Investment every year.</Text>
       </View>
 
 
@@ -346,6 +346,7 @@ marginHorizontal: 20,
 alignItems: 'center',
 borderRadius: 10,
 marginTop: 10,
+marginBottom: 4,
 flexWrap: 'wrap', // Adjust container size based on the text inside
 },
 propertyIcon: {

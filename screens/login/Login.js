@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet,Image,animation,TouchableOpacity,TextInput,Modal,Animated,} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as LocalAuthentication from 'expo-local-authentication';
 import logo from './logo..png';
 
 const Login = ({ navigation }) => {
@@ -29,6 +30,17 @@ const Login = ({ navigation }) => {
       setModalVisible(false);
       navigation.navigate('DrawerTab', { firstName });
     }, 1000);
+  };
+
+  const handleFingerprintLogin = async () => {
+    try {
+      const { success } = await LocalAuthentication.authenticateAsync();
+      if (success) {
+        handleConfirm();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -103,11 +115,10 @@ const Login = ({ navigation }) => {
           </TouchableOpacity>
           </View>
          
-          <TouchableOpacity style={styles.fingerprintContainer} onLongPress={handleConfirm}>
+          <TouchableOpacity style={styles.fingerprintContainer} onPress={handleFingerprintLogin}>
             <Image source={require('./fingerprint.png')} style={styles.image} />
-            <Text style={styles.fingerprintText}>Press and Hold</Text>
+            <Text style={styles.fingerprintText}>Tap to use Fingerprint</Text>
           </TouchableOpacity>
-
 
           <TouchableOpacity
             style={[styles.loginButton, !isFormValid && styles.disabledLoginButton]}
@@ -265,7 +276,11 @@ const styles = StyleSheet.create({
     marginLeft: '50%',
     marginBottom: 25,
   },
-  fingerprintContainer: {},
+  fingerprintContainer: {
+    alignItems: 'center', // Align content to the center horizontally
+    justifyContent: 'center', // Align content to the center vertically
+  },
+  
   fingerprintText: {
     marginTop: 5,
     marginBottom: 20,
@@ -273,6 +288,7 @@ const styles = StyleSheet.create({
     fontFamily: 'karla',
     color: 'grey',
     textAlign: 'center',
+    alignSelf: 'center'
   },
 
   disabledLoginButton: {
