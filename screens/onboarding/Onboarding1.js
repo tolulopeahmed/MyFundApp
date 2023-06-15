@@ -12,7 +12,7 @@ const Onboarding1 = ({ navigation }) => {
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.header}>SAVE</Text>
-        <Text style={styles.subText}>Develop the saving habit to reach your first millions</Text>
+        <Text style={styles.subText}>Earn <Text style={{fontFamily: 'proxima'}}>20% p.a. every 6 months</Text> and develop the saving habit to reach millions.</Text>
       </View>
     
     </View>

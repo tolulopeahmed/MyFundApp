@@ -53,7 +53,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          Manually move funds from your local bank acount into your Savings Account with a few taps.  {'\n'}
+          Manually move funds from your local bank acount into your Savings Account with a few taps. <Text style={{fontFamily: 'proxima'}}>(@10% p.a.)</Text> {'\n'}
             {'\n'}QuickSave...
           </Text>
         
@@ -100,7 +100,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
 
 
                 <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton}>
+                <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.navigate('Success')}>
                 <Image source={require('./paystack.png')} style={styles.image} />
                   <Text style={styles.primaryButtonText}>Continue</Text>
                 </TouchableOpacity>

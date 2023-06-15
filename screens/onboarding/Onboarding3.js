@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
-import { PrimaryButton, SecondaryButton } from '../components/MainButtons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -12,7 +11,7 @@ const Onboarding3 = ({ navigation }) => {
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.header}>EARN RENT</Text>
-        <Text style={styles.subText}>Earn rental income every year for life as the landlord.</Text>
+        <Text style={styles.subText}>Earn <Text style={{fontFamily: 'proxima'}}>rental income for life</Text> every year as the landlord.</Text>
       </View>
   
     </View>

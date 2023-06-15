@@ -46,7 +46,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          Manually move funds from your local bank acount into your Sponsorship Investment Account with a few taps.  {'\n'}
+          Manually move funds from your local bank acount into your Sponsorship Investment Account with a few taps. <Text style={{fontFamily: 'proxima'}}>(@20% p.a.) </Text> {'\n'}
             {'\n'}QuickInvest...
           </Text>
         
@@ -54,7 +54,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
   <Text style={styles.nairaSign}>₦</Text>
   <TextInput
     style={styles.amountInput}
-    placeholder="Amount (e.g. 20000)"
+    placeholder="Amount (e.g. 60000)"
     keyboardType="numeric"
     onChangeText={(value) => handleAmountChange(value)}
   />

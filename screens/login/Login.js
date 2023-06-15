@@ -68,7 +68,7 @@ const Login = ({ navigation }) => {
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Welcome Back</Text>
           <Text style={styles.subText}>
-          Earn up to 20% p.a. every January and July. Own peroperties and earn a lifetime rental income on MyFund. Jump right back in!
+          Earn up to <Text style={{fontFamily: 'proxima'}}>20% p.a. </Text>every January and July. Own properties and earn a <Text style={{fontFamily: 'proxima'}}>lifetime rental income </Text>on MyFund. Jump right back in!
           </Text>
         </View>
 
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Align content to the center horizontally
     justifyContent: 'center', // Align content to the center vertically
   },
-  
+
   fingerprintText: {
     marginTop: 5,
     marginBottom: 20,

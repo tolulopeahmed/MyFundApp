@@ -12,7 +12,7 @@ const Onboarding2 = ({ navigation }) => {
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.header}>BUY PROPERTIES</Text>
-        <Text style={styles.subText}>Buy and own a fraction of any of our hostels across the country</Text>
+        <Text style={styles.subText}>Buy and <Text style={{fontFamily: 'proxima'}}>own a fraction</Text> of any of our hostels across the country.</Text>
       </View>
  
     </View>

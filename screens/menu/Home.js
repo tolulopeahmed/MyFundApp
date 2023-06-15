@@ -40,7 +40,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
      
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
-        <Text style={styles.propertyText}>Enjoy 10% p.a. on yours Savings and 20% p.a. on Sponsorship Investments every January and July, {'\n'}and Lifetime rental income on Ownership Investment every year.</Text>
+        <Text style={styles.propertyText}>Enjoy 10% p.a. on Savings and <Text style={{fontFamily: 'proxima'}}>20% p.a. on Investments every January and July</Text>, and lifetime rental income on Ownership Investment every year. Keep growing your funds.</Text>
       </View>
 
 
@@ -71,6 +71,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
   </TouchableOpacity>
 </View>
     </View>
+       
 
     <View style={styles.savingsContainer}>
         <View style={styles.savingsLine1}>
@@ -91,19 +92,29 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
 </View>
     </View>
 
-    {quickInvestModalVisible && (
-  <QuickInvestModal
-  navigation={navigation}
-  quickInvestModalVisible={quickInvestModalVisible} 
-  setQuickInvestModalVisible={setQuickInvestModalVisible}
-  />
-)}
-
 
     <View style={styles.savingsContainer}>
         <View style={styles.savingsLine1}>
+          <Ionicons name="home-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
+          <Text style={styles.greyText}>TOTAL PROPERTIES ACQUIRED    
+          <Text style={styles.rateText}>    @yearly rent</Text> </Text>
+        </View>
+        <View style={styles.amountContainer}>
+        <Text style={styles.savingsAmount}>02</Text>
+        </View>
+
+        <View style={styles.quickSaveButtonContainer}>
+  <TouchableOpacity style={styles.quickSaveButton} onPress={() => setPropertyModalVisible(true)}>
+    <Text style={styles.quickSaveText}>Buy Properties</Text>
+  </TouchableOpacity>
+</View>
+    </View>
+
+      
+    <View style={styles.savingsContainer}>
+        <View style={styles.savingsLine1}>
           <Ionicons name="wallet-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
-          <Text style={styles.greyText}>WALLET    
+          <Text style={styles.greyText}>TOTAL WALLET    
           <Text style={styles.rateText}> (My Earnings)</Text> </Text>
         </View>
         <View style={styles.amountContainer}>
@@ -119,40 +130,11 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
 </View>
     </View>
 
-    {withdrawModalVisible && (
-    <WithdrawModal 
-        navigation={navigation} 
-        withdrawModalVisible={withdrawModalVisible} 
-        setWithdrawModalVisible={setWithdrawModalVisible} />
-    )}
-
-    <View style={styles.savingsContainer}>
-        <View style={styles.savingsLine1}>
-          <Ionicons name="home-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
-          <Text style={styles.greyText}>ACQUIRED PROPERTIES    
-          <Text style={styles.rateText}>    @yearly rent</Text> </Text>
-        </View>
-        <View style={styles.amountContainer}>
-        <Text style={styles.savingsAmount}>02</Text>
-        </View>
-
-        <View style={styles.quickSaveButtonContainer}>
-  <TouchableOpacity style={styles.quickSaveButton} onPress={() => setPropertyModalVisible(true)}>
-    <Text style={styles.quickSaveText}>Buy Properties</Text>
-  </TouchableOpacity>
-</View>
-    </View>
-
-    {propertyModalVisible && (
-  <BuyPropertyModal 
-      navigation={navigation} 
-      propertyModalVisible={propertyModalVisible} 
-      setPropertyModalVisible={setPropertyModalVisible} />
-      )}
-
+  
     </Swiper>
 
         
+
 
     {quickSaveModalVisible && (
         <QuickSaveModal
@@ -161,7 +143,32 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
   setQuickSaveModalVisible={setQuickSaveModalVisible}
   />
     )}
-       
+
+    
+{quickInvestModalVisible && (
+  <QuickInvestModal
+  navigation={navigation}
+  quickInvestModalVisible={quickInvestModalVisible} 
+  setQuickInvestModalVisible={setQuickInvestModalVisible}
+  />
+)}
+
+
+{propertyModalVisible && (
+  <BuyPropertyModal 
+      navigation={navigation} 
+      propertyModalVisible={propertyModalVisible} 
+      setPropertyModalVisible={setPropertyModalVisible} />
+      )}
+
+{withdrawModalVisible && (
+    <WithdrawModal 
+        navigation={navigation} 
+        withdrawModalVisible={withdrawModalVisible} 
+        setWithdrawModalVisible={setWithdrawModalVisible} />
+    )}
+
+    
       
       <View style={styles.todoContainer}>
       <Text style={styles.todoList}>To-Do List</Text>
@@ -179,7 +186,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
 
         </View>
         <View>
-        <TouchableOpacity style={styles.todoButton}>
+        <TouchableOpacity style={styles.todoButton} onPress={() => navigation.navigate('Success')}>
           <Ionicons name="person-add-outline" size={24} color="#000" style={{ marginRight: 15 }} />
           <Text style={styles.todoText}>Refer and Earn</Text>
         </TouchableOpacity>
