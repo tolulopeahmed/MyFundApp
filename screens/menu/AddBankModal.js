@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Modal, Text, Button, View, TextInput, TouchableOpacity } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -71,7 +70,7 @@ const bankOptions = [
   ];
   
 
-  const AddBankModal = ({ navigation, addBankModalVisible, setAddBankModalVisible, initialBankRecords, setBankRecords }) => {
+  const AddBankModal = ({ addBankModalVisible, setAddBankModalVisible, addBankRecord }) => {
     const [accountNumber, setAccountNumber] = useState('');
     const [selectedBank, setSelectedBank] = useState('');
   
@@ -80,11 +79,14 @@ const bankOptions = [
     };
   
     const handleProceed = () => {
-      const newBankRecord = { bank: selectedBank, accountNumber };
-      const updatedBankRecords = [...initialBankRecords, newBankRecord];
-      setBankRecords(updatedBankRecords);
+      const newBankRecord = {
+        bank: selectedBank,
+        accountNumber: accountNumber.trim(),
+      };
+  
+      addBankRecord(newBankRecord);
       setAccountNumber('');
-      setAddBankModalVisible(false);
+      setSelectedBank('');
     };
   
     const closeModal = () => {

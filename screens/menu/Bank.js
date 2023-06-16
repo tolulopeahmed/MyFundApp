@@ -14,7 +14,17 @@ const Bank = ({ navigation, initialBankRecords}) => {
     );
     setBankRecords(updatedBankRecords);
   };
+
+  const addBankRecord = (bankRecord) => {
+    if (!bankRecord || typeof bankRecord !== 'object') {
+      console.error('Invalid bank record:', bankRecord);
+      return;
+    }
   
+    const updatedBankRecords = [bankRecord, ...bankRecords];
+    setBankRecords(updatedBankRecords);
+    setAddBankModalVisible(false);
+  };
 
   const renderBankAccounts = () => {
     if (!Array.isArray(bankRecords)) {
@@ -76,6 +86,7 @@ const Bank = ({ navigation, initialBankRecords}) => {
                 addBankModalVisible={addBankModalVisible}
                 setAddBankModalVisible={setAddBankModalVisible}
                 initialBankRecords={initialBankRecords}
+                addBankRecord={addBankRecord}
                 setBankRecords={setBankRecords}
                 deleteBankRecord={deleteBankRecord}
               />

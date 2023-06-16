@@ -179,7 +179,7 @@ const CreateAccount = ({ navigation }) => {
             <View style={styles.inputWrapper}>
               <Ionicons name='person-add-outline' marginBottom={9} size={20} color="grey" padding={8} />
               <TextInput style={styles.input} 
-              placeholder="Referral Phone/Username (optional)" 
+              placeholder="Referral email (optional)" 
               keyboardType="phone-pad" />
             </View>
           </View>

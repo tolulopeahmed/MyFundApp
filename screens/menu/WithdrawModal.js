@@ -57,13 +57,17 @@ const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisib
           <Divider />
 
          <View style={styles.sectionContainer}> 
+
           <Text style={styles.modalSubText}>Amount</Text>
+          <View style={styles.inputContainer2}>
+          <Text style={styles.nairaSign}>₦</Text>
           <TextInput
         style={styles.amountInput}
-        placeholder="How much do you want to withdraw?"
+        placeholder="e.g. 20000"
         keyboardType="numeric"
         onChangeText={(value) => handleAmountChange(value)}
       />
+      </View>
       </View>
 
 
@@ -133,10 +137,8 @@ const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisib
                 <Ionicons name="arrow-down-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
                   <Text style={styles.primaryButtonText}>Withdraw Now</Text>
                 </TouchableOpacity>
-
-            
-
               </View>
+              
         </View>
         </TouchableOpacity>
         </TouchableOpacity>
@@ -195,7 +197,20 @@ const styles = {
     marginTop: 5,
   },
 
- 
+  inputContainer2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    height: 50,
+    width: '93%',
+    marginTop: 5,
+  },
+  nairaSign: {
+    fontSize: 16,
+    marginLeft: 15,
+    marginRight: 0,
+  },
 
   autoSaveSetting: {
     fontSize: 17,
@@ -251,8 +266,7 @@ const styles = {
     height: 50,
     width: "108%",
     padding: 10,
-    marginTop: 5,
-    fontSize: 18,
+    fontSize: 17,
     letterSpacing: -0.3,
   },
 

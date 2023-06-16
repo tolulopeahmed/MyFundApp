@@ -35,7 +35,7 @@ const Card = ({ navigation, firstName }) => {
       <View style={styles.propertyContainer}>
         <Ionicons name="card-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}>Set up your cards so you can perform faster transactions</Text>
+        <Text style={styles.propertyText}>Set up your cards so you can perform faster transactions including AutoSave and AutoInvest</Text>
       </View>
       </View>
       

@@ -247,7 +247,11 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
       </View>
       </View>
       
-      <Divider />
+      <View marginTop={10}>
+        <Divider />
+        </View>
+
+
       <Text style={styles.credits}>MyFund</Text><Text style={{fontSize: 10,     marginBottom: 22, textAlign: 'center', fontFamily: 'karla'}}>version 1.0.0</Text>
 
     </ScrollView>
