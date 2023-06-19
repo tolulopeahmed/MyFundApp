@@ -25,6 +25,7 @@ import FAQ from './screens/menu/FAQ';
 import ForgotPassword from './screens/menu/ForgotPassword';
 import Chat from './screens/menu/Chat'
 import Success from './screens/components/Success';
+import ReferAndEarn from './screens/menu/ReferAndEarn';
 
 const Stack = createStackNavigator();
 
@@ -87,6 +88,7 @@ const App = ({ styles, darkModeStyles, }) => {
         <Stack.Screen name="FAQ" component={FAQ} />
         <Stack.Screen name="Chat" component={Chat} />
         <Stack.Screen name="Success" component={Success} />
+        <Stack.Screen name="ReferAndEarn" component={ReferAndEarn} />
 
 
 

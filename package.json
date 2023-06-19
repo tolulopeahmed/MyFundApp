@@ -11,6 +11,7 @@
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-native-fontawesome": "^0.3.0",
+    "@react-native-clipboard/clipboard": "^1.11.2",
     "@react-native-community/datetimepicker": "6.7.3",
     "@react-native-picker/picker": "2.4.8",
     "@react-navigation/bottom-tabs": "^6.5.7",
@@ -29,6 +30,7 @@
     "react": "18.2.0",
     "react-native": "0.71.8",
     "react-native-appearance": "^0.3.4",
+    "react-native-clipboard": "^0.0.5",
     "react-native-datepicker": "^1.7.2",
     "react-native-document-picker": "^9.0.1",
     "react-native-file-picker": "^0.0.21",
@@ -49,7 +51,8 @@
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "13.4.0",
     "react-native-swiper": "^1.6.0",
-    "react-native-swiper-flatlist": "^3.2.2"
+    "react-native-swiper-flatlist": "^3.2.2",
+    "expo-clipboard": "~4.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -161,21 +161,13 @@ const styles = StyleSheet.create({
     width: 5,
     height: 5,
     borderRadius: 5,
-    marginLeft: 3,
-    marginRight: 3,
-    marginTop: 3,
-    marginBottom: 3,
   },
   activeDot: {
     backgroundColor: '#4C28BC', // Customize the color of the active dot
     width: 10,
     height: 4,
     borderRadius: 5,
-    marginLeft: 3,
-    marginRight: 3,
-    marginTop: 3,
-    marginBottom: 3,
-  },
+   },
 
   paginationContainer: {
     bottom: 1, // Adjust the value as per your requirement

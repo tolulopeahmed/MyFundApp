@@ -186,7 +186,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
 
         </View>
         <View>
-        <TouchableOpacity style={styles.todoButton} onPress={() => navigation.navigate('Success')}>
+        <TouchableOpacity style={styles.todoButton} onPress={() => navigation.navigate('ReferAndEarn')}>
           <Ionicons name="person-add-outline" size={24} color="#000" style={{ marginRight: 15 }} />
           <Text style={styles.todoText}>Refer and Earn</Text>
         </TouchableOpacity>
@@ -217,12 +217,12 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="cash-outline"
+              name="checkmark-circle"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickSave</Text>
+              <Text style={styles.transactionDescription}>Referral Reward</Text>
               <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
             </View>
             <View>
@@ -231,7 +231,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="wallet-outline"
+              name="arrow-down-outline"
               size={25}
               style={styles.transactionIcon}
             />
@@ -264,12 +264,12 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="cash-outline"
+              name="ellipsis-horizontal-circle-outline"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickSave</Text>
+              <Text style={styles.transactionDescription}>Referral Reward</Text>
               <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
             </View>
             <View>
@@ -278,7 +278,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="wallet-outline"
+              name="arrow-down-outline"
               size={25}
               style={styles.transactionIcon}
             />
