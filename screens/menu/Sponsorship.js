@@ -57,6 +57,7 @@ const Sponsorship = ({ navigation, firstName }) => {
         </View>
        
        <View style={styles.autoSaveContainer}>
+       <Ionicons name="car-outline" size={20} color="#fff" style={{ marginRight: 5, marginTop: -2 }} />
         <Text style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]}>
     {autoSave ? 'AutoInvest is ON' : 'AutoInvest is OFF'}
         </Text>
@@ -134,13 +135,13 @@ const Sponsorship = ({ navigation, firstName }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="wallet-outline"
+              name="arrow-down-outline"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
               <Text style={styles.transactionDescription}>
-                Withdrawal From Investment
+                Withdrawal from Investment
               </Text>
               <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
             </View>
@@ -181,13 +182,13 @@ const Sponsorship = ({ navigation, firstName }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="wallet-outline"
+              name="arrow-down-outline"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
               <Text style={styles.transactionDescription}>
-                Withdrawal From Investment
+                Withdrawal from Investment
               </Text>
               <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
             </View>

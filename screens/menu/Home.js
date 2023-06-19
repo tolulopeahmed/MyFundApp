@@ -171,10 +171,10 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
     
       
       <View style={styles.todoContainer}>
-      <Text style={styles.todoList}>To-Do List</Text>
+      <Text style={styles.todoList}>Quick Actions</Text>
         <View style={styles.todoList1}>
           <TouchableOpacity style={styles.todoButton} onPress={() => handleActivateAutoSave()}>
-          <Ionicons name="save-outline" size={24} color="#000" style={{ marginRight: 15 }} />
+          <Ionicons name="car-outline" size={24} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
           <Text style={styles.todoText}>Turn On AutoSave</Text>
         </TouchableOpacity>
 
@@ -187,7 +187,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
         </View>
         <View>
         <TouchableOpacity style={styles.todoButton} onPress={() => navigation.navigate('ReferAndEarn')}>
-          <Ionicons name="person-add-outline" size={24} color="#000" style={{ marginRight: 15 }} />
+          <Ionicons name="person-add-outline" size={23} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
           <Text style={styles.todoText}>Refer and Earn</Text>
         </TouchableOpacity>
         </View>
@@ -544,7 +544,7 @@ toDoListIcon: {
 marginRight: 10,
 },
 todoText: {
-  marginTop: 5,
+  marginTop: 3,
 fontSize: 16,
 fontFamily: 'karla',
 color: 'grey',

@@ -42,7 +42,7 @@ const AutoSaveModal = ({ autoSaveModalVisible, setAutoSaveModalVisible }) => {
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          Autosave allows you to set an amount to automatically debit from your local bank account to your MyFund account.
+          AutoSave allows you to set an amount to automatically debit your local bank account to credit your MyFund Savings account.
           </Text>
         
           <View style={styles.inputContainer}>

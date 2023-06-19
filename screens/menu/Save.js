@@ -87,7 +87,8 @@ const Save = ({ navigation, firstName }) => {
 
        
        <View style={styles.autoSaveContainer}>
-        <Text style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]}>
+       <Ionicons name="car-outline" size={20} color="#fff" style={{ marginRight: 5, marginTop: -2 }} />
+ <Text style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]}>
     {autoSave ? 'AutoSave is ON' : 'AutoSave is OFF'}
         </Text>
             <Switch
