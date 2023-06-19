@@ -104,7 +104,7 @@ const Withdraw = ({ navigation }) => {
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>Withdrawal From Wallet</Text>
+              <Text style={styles.transactionDescription}>Withdrawal from Wallet</Text>
               <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
             </View>
             <View>
@@ -118,7 +118,7 @@ const Withdraw = ({ navigation }) => {
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>Withdraw From Savings</Text>
+              <Text style={styles.transactionDescription}>Withdraw from Savings</Text>
               <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
             </View>
             <View>
@@ -133,7 +133,7 @@ const Withdraw = ({ navigation }) => {
             />
             <View style={styles.transactionText}>
               <Text style={styles.transactionDescription}>
-                Withdrawal From Saving
+                Withdrawal from Savings
               </Text>
               <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
             </View>
@@ -151,7 +151,7 @@ const Withdraw = ({ navigation }) => {
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>AutoSave</Text>
+              <Text style={styles.transactionDescription}>Withdrawal from Wallet</Text>
               <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
             </View>
             <View>
@@ -165,7 +165,7 @@ const Withdraw = ({ navigation }) => {
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickSave</Text>
+              <Text style={styles.transactionDescription}>Withdrawal from Investment</Text>
               <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
             </View>
             <View>
@@ -180,7 +180,7 @@ const Withdraw = ({ navigation }) => {
             />
             <View style={styles.transactionText}>
               <Text style={styles.transactionDescription}>
-                Withdrawal From Saving
+                Withdrawal from Savings
               </Text>
               <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
             </View>

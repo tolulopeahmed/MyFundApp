@@ -40,7 +40,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
      
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
-        <Text style={styles.propertyText}>Enjoy 10% p.a. on Savings and <Text style={{fontFamily: 'proxima'}}>20% p.a. on Investments every January and July</Text>, and lifetime rental income on Ownership Investment every year. Keep growing your funds.</Text>
+        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: "#4C28BC" }}>MyFund: </Text>Enjoy 10% p.a. on Savings and <Text style={{fontFamily: 'proxima'}}>20% p.a. on Investments every January and July</Text>, and lifetime rental income on Ownership Investment every year. Keep growing your funds.</Text>
       </View>
 
 

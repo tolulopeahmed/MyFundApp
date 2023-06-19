@@ -41,7 +41,7 @@ const Sponsorship = ({ navigation, firstName }) => {
       <View style={styles.propertyContainer}>
         <MaterialIcons name="trending-up" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}>Earn up to <Text style={{color: 'green'}}>20% p.a.</Text> sponsoring any of our National Hostel Project. Multiples of 60,000.</Text>
+        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Better Than Savings: </Text>Earn up to <Text style={{color: 'green', fontFamily: 'proxima'}}>20% p.a. every January and July </Text> sponsoring any of our National Hostel Project. Multiples of 60,000.</Text>
       </View>
       </View>
       

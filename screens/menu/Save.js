@@ -45,7 +45,7 @@ const Save = ({ navigation, firstName }) => {
               <Ionicons name="wallet-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
               <View style={styles.progressBarContainer}>
                 <Text style={styles.propertyText}>
-                  <Text style={{ fontFamily: 'proxima' }}>Savings Goal: </Text>
+                  <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Savings Goal: </Text>
                   You need to be saving
                   <Text style={styles.goalText}> 41,666.7</Text> to achieve your goal of
                   <Text style={styles.goalText}> 1,000,000 </Text>
@@ -64,7 +64,7 @@ const Save = ({ navigation, firstName }) => {
               <Ionicons name="arrow-up-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
               <View style={styles.progressBarContainer}>
                 <Text style={styles.propertyText}>
-                  <Text style={{ fontFamily: 'proxima' }}>Top Saver: </Text>
+                  <Text style={{ fontFamily: 'proxima', color: '#4C28BC'}}>Top Saver: </Text>
                   You're currently 65% from being the top saver of the month. Keep growing your funds to qualify.
                 </Text>
                 <ProgressBar progress={0.65} color="#4C28BC" height={6} style={styles.progressBar} />
