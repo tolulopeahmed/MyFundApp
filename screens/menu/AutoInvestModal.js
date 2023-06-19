@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
 
 
-const AutoInvestModal = ({ modalVisible, setModalVisible }) => {
+const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible }) => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
@@ -17,22 +17,22 @@ const AutoInvestModal = ({ modalVisible, setModalVisible }) => {
       duration: 1500,
       useNativeDriver: true,
     }).start(() => {
-      setModalVisible(false);
+      setAutoInvestModalVisible(false);
       navigation.navigate('Sponsorship');
       setAnimation(new Animated.Value(0));
     });
   };
   
   const closeModal = () => {
-    setModalVisible(false);
+    setAutoInvestModalVisible(false);
   };
 
   return (
     <Modal
       animationType="slide"
       transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}
+      visible={autoInvestModalVisible}
+      onRequestClose={() => setAutoInvestModalVisible(false)}
     >
 <TouchableOpacity
   style={styles.modalContainer}

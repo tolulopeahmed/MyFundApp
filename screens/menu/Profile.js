@@ -16,8 +16,8 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
   const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
   const [profileEditModalVisible, setProfileEditModalVisible] = useState(false); // define modalVisible state
   const [profile, setProfile] = useState({
-    firstName: 'Tolulope',
-    lastName: 'Oladimeji',
+    firstName: 'firstName',
+    lastName: 'lastName',
     mobileNumber: '+2348012345678',
     email: 'name@gmail.com',
   });

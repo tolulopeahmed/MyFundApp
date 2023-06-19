@@ -34,7 +34,7 @@ const Sidebar = ({ navigation, firstName, profileImageUri }) => {
 
         <View style={styles.profileInfo}>
           <Text style={styles.firstName}>Hi</Text>
-          <Text style={styles.username}>Tolulope</Text>
+          <Text style={styles.username}>User</Text>
         </View>
       </View>
       <View style={styles.menuItemsContainer}>

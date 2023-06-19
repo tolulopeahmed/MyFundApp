@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const Notifications = ({ navigation, firstName }) => {
@@ -73,7 +73,7 @@ const Notifications = ({ navigation, firstName }) => {
 
     
       <View flexDirection='row' alignSelf='center' padding={5} alignContents='space-between'>
-      <TouchableOpacity
+      <Pressable
   style={[
     styles.cardContainer,
     selectedTab === 'All' && { backgroundColor: '#4C28BC' },
@@ -83,9 +83,9 @@ const Notifications = ({ navigation, firstName }) => {
   <Text style={[styles.title2, selectedTab === 'All' && { color: '#fff' }]}>
     All
   </Text>
-</TouchableOpacity>
+</Pressable>
 
-<TouchableOpacity
+<Pressable
   style={[
     styles.cardContainer,
     selectedTab === 'Transactions' && { backgroundColor: '#4C28BC' },
@@ -100,9 +100,9 @@ const Notifications = ({ navigation, firstName }) => {
   >
     Transactions
   </Text>
-</TouchableOpacity>
+</Pressable>
 
-<TouchableOpacity
+<Pressable
   style={[
     styles.cardContainer,
     selectedTab === 'Messages' && { backgroundColor: '#4C28BC' },
@@ -114,7 +114,7 @@ const Notifications = ({ navigation, firstName }) => {
   >
     Messages
   </Text>
-</TouchableOpacity>
+</Pressable>
 
       </View>
 

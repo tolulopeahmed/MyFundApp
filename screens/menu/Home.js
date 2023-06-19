@@ -9,11 +9,13 @@ import Swiper from 'react-native-swiper';
 import QuickInvestModal from '../components/QuickInvestModal';
 import WithdrawModal from './WithdrawModal';
 import BuyPropertyModal from './BuyPropertyModal';
+import AutoInvestModal from './AutoInvestModal';
 
 const Home = ({ navigation, firstName, transactionAmount }) => {
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
   const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [autoInvestModalVisible, setAutoInvestModalVisible] = useState(false);
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
   const [propertyModalVisible, setPropertyModalVisible] = useState(false);
 
@@ -28,6 +30,10 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
 
   const handleActivateAutoSave = () => {
     setModalVisible(true);
+  };
+
+  const handleActivateAutoInvest = () => {
+    setAutoInvestModalVisible(true);
   };
 
   return (
@@ -67,6 +73,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
 
         <View style={styles.quickSaveButtonContainer}>
   <TouchableOpacity style={styles.quickSaveButton} onPress={() => handleQuickSave()}>
+  <Ionicons name="save-outline" size={16} color="#fff" style={{ marginRight: 5 }} />
     <Text style={styles.quickSaveText}>QuickSave</Text>
   </TouchableOpacity>
 </View>
@@ -87,7 +94,8 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
 
         <View style={styles.quickSaveButtonContainer}>
   <TouchableOpacity style={styles.quickSaveButton} onPress={handleQuickInvest}>
-    <Text style={styles.quickSaveText}>QuickInvest</Text>
+  <Ionicons name="trending-up-outline" size={16} color="#fff" style={{ marginRight: 5 }} />
+<Text style={styles.quickSaveText}>QuickInvest</Text>
   </TouchableOpacity>
 </View>
     </View>
@@ -105,7 +113,8 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
 
         <View style={styles.quickSaveButtonContainer}>
   <TouchableOpacity style={styles.quickSaveButton} onPress={() => setPropertyModalVisible(true)}>
-    <Text style={styles.quickSaveText}>Buy Properties</Text>
+  <Ionicons name="home-outline" size={16} color="#fff" style={{ marginRight: 5 }} />
+<Text style={styles.quickSaveText}>Buy Properties</Text>
   </TouchableOpacity>
 </View>
     </View>
@@ -125,7 +134,8 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
 
         <View style={styles.quickSaveButtonContainer}>
   <TouchableOpacity style={styles.quickSaveButton} onPress={() => setWithdrawModalVisible(true)}>
-    <Text style={styles.quickSaveText}>Withdraw</Text>
+  <Ionicons name="arrow-down-outline" size={16} color="#fff" style={{ marginRight: 5 }} />
+<Text style={styles.quickSaveText}>Withdraw</Text>
   </TouchableOpacity>
 </View>
     </View>
@@ -185,7 +195,22 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
         )}
 
         </View>
-        <View>
+
+        <View style={styles.todoList1}>
+          <TouchableOpacity style={styles.todoButton} onPress={() => handleActivateAutoInvest()}>
+          <Ionicons name="car-sport-outline" size={24} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
+          <Text style={styles.todoText}>Turn On AutoInvest</Text>
+        </TouchableOpacity>
+
+        {autoInvestModalVisible && (
+   <AutoInvestModal 
+        autoInvestModalVisible={autoInvestModalVisible} 
+        setAutoInvestModalVisible={setAutoInvestModalVisible} />
+        )}
+
+        </View>
+
+        <View style={styles.todoList1}>
         <TouchableOpacity style={styles.todoButton} onPress={() => navigation.navigate('ReferAndEarn')}>
           <Ionicons name="person-add-outline" size={23} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
           <Text style={styles.todoText}>Refer and Earn</Text>
@@ -201,6 +226,22 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.transactionsContainer}>
+
+        <View style={styles.transactionItem}>
+            <Ionicons
+              name="save-outline"
+              size={25}
+              style={styles.transactionIcon}
+            />
+            <View style={styles.transactionText}>
+              <Text style={styles.transactionDescription}>QuickSave</Text>
+              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
+            </View>
+            <View>
+            <Text style={styles.transactionAmount}>+1000.00</Text>
+            </View>
+          </View>
+
           <View style={styles.transactionItem}>
             <Ionicons
               name="car-outline"
@@ -215,6 +256,75 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
             <Text style={styles.transactionAmount}>+300.50</Text>
             </View>
           </View>
+
+          <View style={styles.transactionItem}>
+            <Ionicons
+              name="trending-up-outline"
+              size={25}
+              style={styles.transactionIcon}
+            />
+            <View style={styles.transactionText}>
+              <Text style={styles.transactionDescription}>QuickInvest</Text>
+              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
+            </View>
+            <View>
+            <Text style={styles.transactionAmount}>+1000.00</Text>
+            </View>
+          </View>
+
+          <View style={styles.transactionItem}>
+            <Ionicons
+              name="car-sport-outline"
+              size={25}
+              style={styles.transactionIcon}
+            />
+            <View style={styles.transactionText}>
+              <Text style={styles.transactionDescription}>AutoInvest</Text>
+              <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
+            </View>
+            <View>
+            <Text style={styles.transactionAmount}>+300.50</Text>
+            </View>
+          </View>
+
+          <View style={styles.transactionItem}>
+            <Ionicons
+              name="arrow-down-outline"
+              size={25}
+              style={styles.transactionIcon}
+            />
+            <View style={styles.transactionText}>
+              <Text style={styles.transactionDescription}>
+                Withdrawal from Savings
+              </Text>
+              <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
+            </View>
+            <View style={styles.transactionAmountContainer}>
+            <Text style={styles.negativeAmount}>-500.00</Text>
+            </View>
+          </View>
+
+
+
+          </View>
+          {/* Add more transaction items here */}
+          <View style={styles.transactionsContainer}>
+        
+          <View style={styles.transactionItem}>
+            <Ionicons
+              name="ellipsis-horizontal-circle-outline"
+              size={25}
+              style={styles.transactionIcon}
+            />
+            <View style={styles.transactionText}>
+              <Text style={styles.transactionDescription}>Pending Referral Reward</Text>
+              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
+            </View>
+            <View>
+            <Text style={styles.transactionAmount}>+1000.00</Text>
+            </View>
+          </View>
+
           <View style={styles.transactionItem}>
             <Ionicons
               name="checkmark-circle"
@@ -229,6 +339,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
             <Text style={styles.transactionAmount}>+1000.00</Text>
             </View>
           </View>
+
           <View style={styles.transactionItem}>
             <Ionicons
               name="arrow-down-outline"
@@ -237,7 +348,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
             />
             <View style={styles.transactionText}>
               <Text style={styles.transactionDescription}>
-                Withdrawal From Saving
+                Withdrawal from Investment
               </Text>
               <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
             </View>
@@ -245,51 +356,20 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
             <Text style={styles.negativeAmount}>-500.00</Text>
             </View>
           </View>
-          </View>
-          {/* Add more transaction items here */}
-          <View style={styles.transactionsContainer}>
+
           <View style={styles.transactionItem}>
             <Ionicons
-              name="car-outline"
+              name="home-outline"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>AutoSave</Text>
-              <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
+              <Text style={styles.transactionDescription}>FUNNAB</Text>
+              <Text style={styles.transactionDate}>05 Jun, 2023</Text>
             </View>
-            <View>
-            <Text style={styles.transactionAmount}>+300.50</Text>
-            </View>
-          </View>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="ellipsis-horizontal-circle-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>Referral Reward</Text>
-              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+1000.00</Text>
-            </View>
-          </View>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="arrow-down-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>
-                Withdrawal From Saving
-              </Text>
-              <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
-            </View>
-            <View style={styles.transactionAmountContainer}>
-            <Text style={styles.negativeAmount}>-500.00</Text>
+            <View flexDirection='row' alignContent='space-between'>
+            <Text style={styles.transactionAmount2}>5000000           </Text>
+            <Text style={styles.transactionAmount}>200000</Text>
             </View>
           </View>
           </View>
@@ -537,8 +617,8 @@ todoList:{
 todoList1: {
 flexDirection: 'row',
 alignItems: 'center',
-marginBottom: 10,
-marginTop:10,
+marginBottom: 5,
+marginTop:5,
 },
 toDoListIcon: {
 marginRight: 10,
@@ -638,6 +718,15 @@ transactionDate: {
 },
 transactionAmount: {
   color: 'green',
+  fontSize: 23,
+  fontFamily: 'karla',
+  letterSpacing: -1,
+  marginTop: 10,
+  textAlign: 'right',
+},
+
+transactionAmount2: {
+  color: '#4C28BC',
   fontSize: 23,
   fontFamily: 'karla',
   letterSpacing: -1,

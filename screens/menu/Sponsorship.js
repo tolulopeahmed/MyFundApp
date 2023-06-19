@@ -57,7 +57,7 @@ const Sponsorship = ({ navigation, firstName }) => {
         </View>
        
        <View style={styles.autoSaveContainer}>
-       <Ionicons name="car-outline" size={20} color="#fff" style={{ marginRight: 5, marginTop: -2 }} />
+       <Ionicons name="car-sport-outline" size={20} color="#fff" style={{ marginRight: 5, marginTop: -2 }} />
         <Text style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]}>
     {autoSave ? 'AutoInvest is ON' : 'AutoInvest is OFF'}
         </Text>
@@ -107,7 +107,7 @@ const Sponsorship = ({ navigation, firstName }) => {
         <View style={styles.transactionsContainer}>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="car-outline"
+              name="car-sport-outline"
               size={25}
               style={styles.transactionIcon}
             />
@@ -121,7 +121,7 @@ const Sponsorship = ({ navigation, firstName }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="cash-outline"
+              name="trending-up-outline"
               size={25}
               style={styles.transactionIcon}
             />
@@ -154,7 +154,7 @@ const Sponsorship = ({ navigation, firstName }) => {
           <View style={styles.transactionsContainer}>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="car-outline"
+              name="car-sport-outline"
               size={25}
               style={styles.transactionIcon}
             />
@@ -168,7 +168,7 @@ const Sponsorship = ({ navigation, firstName }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="cash-outline"
+              name="trending-up-outline"
               size={25}
               style={styles.transactionIcon}
             />
