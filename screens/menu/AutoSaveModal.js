@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider'
 
-const AutoSaveModal = ({ autoSaveModalVisible, setAutoSaveModalVisible }) => {
+const AutoSaveModal = ({ autoSaveModalVisible, setAutoSaveModalVisible, autoSave, setAutoSave }) => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
@@ -14,6 +14,14 @@ const AutoSaveModal = ({ autoSaveModalVisible, setAutoSaveModalVisible }) => {
     setAutoSaveModalVisible(false);
   };
   
+  const handleConfirmAutoSave = () => {
+    setAutoSave(true);
+    setAutoSaveModalVisible(false);
+  };
+  
+  
+ 
+
 
 
   return (
@@ -90,7 +98,7 @@ const AutoSaveModal = ({ autoSaveModalVisible, setAutoSaveModalVisible }) => {
             
             </View>
           <View style={styles.buttonsContainer}>
-          <TouchableOpacity style={styles.primaryButton} onPress={() => setAutoSaveModalVisible(false)}>
+          <TouchableOpacity style={styles.primaryButton} onPress={handleConfirmAutoSave}>
     <Text style={styles.primaryButtonText}>Activate Now</Text>
   </TouchableOpacity>
 

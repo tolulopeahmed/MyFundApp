@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState }from 'react';
 import { View, Text, StyleSheet, Pressable, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
 import Divider from '../components/Divider';
 import Swiper from 'react-native-swiper';
-
+import QuickInvestModal from '../components/QuickInvestModal';
 
 const images = [
   require('./sponsorship.png'),
@@ -15,6 +15,11 @@ const images = [
 
 
 const Invest = ({ navigation, firstName }) => {
+  const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
+
+  const handleQuickInvest = () => {
+    setQuickInvestModalVisible(true);
+  };
 
   const handleImagePress = (index) => {
     switch (index) {
@@ -65,8 +70,8 @@ const Invest = ({ navigation, firstName }) => {
 
       <View>
         <Text style={styles.title2}>Build Your Portfolio </Text>
-        <Text style={styles.subText}>Earn up to <Text style={{color:'green', fontFamily: 'proxima'}}>20% </Text>in Sponsorship Investments. {'\n'}
-        Earn <Text style={{color:'green', fontFamily: 'proxima'}}>Lifetime rent </Text> via the Ownership Investments.</Text>
+        <Text style={styles.subText}>Sponsorship Investments: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>20% p.a. </Text>every January & July. {'\n'}
+        Ownership Investments: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>Lifetime rent </Text> every year</Text>
         <Divider />
 
         <View style={{ flexDirection: 'row' }}>
@@ -74,7 +79,7 @@ const Invest = ({ navigation, firstName }) => {
             <Ionicons name="person-outline" size={40} color="#4C28BC" alignItems='center' marginTop={5} />
             <Text style={{ padding: 3, marginTop: 2, fontSize: 17, fontFamily: 'proxima', textAlign: 'center', color: '#4C28BC' }}>Sponsorship Investment</Text>
             <Text style={{ marginTop: 4, fontSize: 12, fontFamily: 'karla', textAlign: 'center', }}>Earn up to <Text color='red'>20% per anum</Text> sponsoring our National Hostel Project. Paid every January and July</Text>
-            <TouchableOpacity style={styles.quickInvestButton} onPress={() => navigation.navigate('Sponsorship')}>
+            <TouchableOpacity style={styles.quickInvestButton} onPress={handleQuickInvest}>
               <Ionicons name="add-outline" size={24} color="#fff" />
               <Text style={styles.quickInvestText}>QuickInvest</Text>
             </TouchableOpacity>
@@ -91,6 +96,13 @@ const Invest = ({ navigation, firstName }) => {
           </TouchableOpacity>
         </View>
 
+        {quickInvestModalVisible && (
+  <QuickInvestModal
+  navigation={navigation}
+  quickInvestModalVisible={quickInvestModalVisible} 
+  setQuickInvestModalVisible={setQuickInvestModalVisible}
+  />
+)}
 
       </View>
       <Divider />

@@ -7,17 +7,17 @@ import QuickInvestModal from '../components/QuickInvestModal';
 import Divider from '../components/Divider';
 
 const Sponsorship = ({ navigation, firstName }) => {
-  const [autoSave, setAutoSave] = React.useState(false);
+  const [autoInvest, setAutoInvest] = React.useState(false);
   const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [autoInvestModalVisible, setAutoInvestModalVisible] = useState(false);
 
   const handleQuickInvest = () => {
     setQuickInvestModalVisible(true);
   };
 
-  const handleActivateAutoSave = () => {
-  setModalVisible(true);
-  setAutoSave(true);
+  const handleActivateAutoInvest = () => {
+  setAutoInvestModalVisible(true);
+  setAutoInvest(true);
 };
 
   
@@ -58,24 +58,30 @@ const Sponsorship = ({ navigation, firstName }) => {
        
        <View style={styles.autoSaveContainer}>
        <Ionicons name="car-sport-outline" size={20} color="#fff" style={{ marginRight: 5, marginTop: -2 }} />
-        <Text style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]}>
-    {autoSave ? 'AutoInvest is ON' : 'AutoInvest is OFF'}
+        <Text style={[styles.autoSaveText, autoInvest ? styles.greenText : styles.grayText]}>
+    {autoInvest ? 'AutoInvest is ON' : 'AutoInvest is OFF'}
         </Text>
             <Switch
-          title="Open Modal" onPress={() => setModalVisible(true)}
+          title="Open Modal" onPress={() => setAutoInvestModalVisible(true)}
           style={styles.switch}
             trackColor={{ false: 'grey', true: '#0AA447' }}
-            thumbColor={autoSave ? '#43FF8E' : 'silver'}
+            thumbColor={autoInvest ? '#43FF8E' : 'silver'}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={() => handleActivateAutoSave()}
-            value={autoSave}
+            onValueChange={() => handleActivateAutoInvest()}
+            value={autoInvest}
           />
-        <AutoInvestModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
+
+{autoInvestModalVisible && (
+        <AutoInvestModal
+        navigation={navigation}
+        autoInvestModalVisible={autoInvestModalVisible} 
+        setAutoInvestModalVisible={setAutoInvestModalVisible} />
+        )}
+
         </View>
 
-
         <View style={styles.autoSaveSettingContainer}>
-            {autoSave && <Text style={styles.autoSaveSetting}>@$20/month
+            {autoInvest && <Text style={styles.autoSaveSetting}>@$20/month
             <Ionicons name="checkmark" size={17} color="#0AA447" />          
 
             </Text>}

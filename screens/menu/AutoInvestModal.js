@@ -49,7 +49,7 @@ const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible }) 
       <View style={styles.modalContent}>
          <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
              <Text style={styles.modalHeader} >Activate AutoInvest</Text>
-             <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setModalVisible(false)}/>
+             <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setAutoInvestModalVisible(false)}/>
          </View>
           <Divider />
 

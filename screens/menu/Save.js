@@ -7,20 +7,41 @@ import Swiper from 'react-native-swiper';
 import QuickSaveModal from '../components/QuickSaveModal';
 import Divider from '../components/Divider';
 import Header from '../components/Header';
+import DeactivateAutoSaveModal from './DeactivateAutoSaveModal';
 
 const Save = ({ navigation, firstName }) => {
-  const [autoSave, setAutoSave] = React.useState(false);
+  const [autoSave, setAutoSave] = useState(false);
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [autoSaveModalVisible, setAutoSaveModalVisible] = useState(false);
+  const [deactivateAutoSaveModalVisible, setDeactivateAutoSaveModalVisible] = useState(false);
 
   const handleQuickSave = () => {
     setQuickSaveModalVisible(true);
   };
 
   const handleActivateAutoSave = () => {
-  setModalVisible(true);
-  setAutoSave(true);
-};
+    if (!autoSave) {
+      setAutoSaveModalVisible(true);
+    } else {
+      setAutoSave(false);
+      setDeactivateAutoSaveModalVisible(true);
+    }
+  };
+  
+  const handleDeactivateAutoSave = () => {
+    setDeactivateAutoSaveModalVisible(true);
+  };
+
+  const handleConfirmAutoSave = () => {
+    setAutoSave(true);
+    setAutoSaveModalVisible(false);
+  };
+
+  const handleConfirmDeactivateAutoSave = () => {
+    setAutoSave(false);
+    setDeactivateAutoSaveModalVisible(false);
+  };
+  
 
   
   return (
@@ -87,20 +108,35 @@ const Save = ({ navigation, firstName }) => {
 
        
        <View style={styles.autoSaveContainer}>
-       <Ionicons name="car-outline" size={20} color="#fff" style={{ marginRight: 5, marginTop: -2 }} />
+        <Ionicons name="car-outline" size={20} color="#fff" style={{ marginRight: 5, marginTop: -2 }} />
  <Text style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]}>
     {autoSave ? 'AutoSave is ON' : 'AutoSave is OFF'}
         </Text>
+
             <Switch
-          title="Open Modal" onPress={() => setModalVisible(true)}
+          title="Open Modal" 
           style={styles.switch}
             trackColor={{ false: 'grey', true: '#0AA447' }}
             thumbColor={autoSave ? '#43FF8E' : 'silver'}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={() => handleActivateAutoSave()}
+            onValueChange={handleActivateAutoSave}
             value={autoSave}
           />
-        <AutoSaveModal autoSaveModalVisible={modalVisible} setAutoSaveModalVisible={setModalVisible} />
+        <AutoSaveModal
+        autoSave={autoSave}
+        setAutoSave={setAutoSave}
+        autoSaveModalVisible={autoSaveModalVisible}
+        setAutoSaveModalVisible={setAutoSaveModalVisible}
+        onConfirm={handleConfirmAutoSave}
+      />
+
+        
+        <DeactivateAutoSaveModal
+          deactivateAutoSaveModalVisible={deactivateAutoSaveModalVisible}
+          setDeactivateAutoSaveModalVisible={setDeactivateAutoSaveModalVisible}
+          onConfirm={handleConfirmDeactivateAutoSave}
+        />
+
         </View>
     </View>
 
