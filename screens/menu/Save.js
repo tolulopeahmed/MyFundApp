@@ -23,7 +23,6 @@ const Save = ({ navigation, firstName }) => {
     if (!autoSave) {
       setAutoSaveModalVisible(true);
     } else {
-      setAutoSave(false);
       setDeactivateAutoSaveModalVisible(true);
     }
   };
@@ -38,8 +37,8 @@ const Save = ({ navigation, firstName }) => {
   };
 
   const handleConfirmDeactivateAutoSave = () => {
-    setAutoSave(false);
     setDeactivateAutoSaveModalVisible(false);
+    setAutoSave(false);
   };
   
 
@@ -132,6 +131,8 @@ const Save = ({ navigation, firstName }) => {
 
         
         <DeactivateAutoSaveModal
+          autoSave={autoSave}
+          setAutoSave={setAutoSave}
           deactivateAutoSaveModalVisible={deactivateAutoSaveModalVisible}
           setDeactivateAutoSaveModalVisible={setDeactivateAutoSaveModalVisible}
           onConfirm={handleConfirmDeactivateAutoSave}

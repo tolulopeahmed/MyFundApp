@@ -3,7 +3,8 @@ import { Modal, Text, StyleSheet, View, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider';
 
-const DeactivateAutoSaveModal = ({ deactivateAutoSaveModalVisible, setDeactivateAutoSaveModalVisible }) => {
+const DeactivateAutoSaveModal = ({ deactivateAutoSaveModalVisible, setDeactivateAutoSaveModalVisible, setAutoSave }) => {
+
 
   const closeModal = () => {
     setDeactivateAutoSaveModalVisible(false);
@@ -12,6 +13,7 @@ const DeactivateAutoSaveModal = ({ deactivateAutoSaveModalVisible, setDeactivate
   const handleConfirmDeactivateAutoSave = () => {
     setAutoSave(false);
     setDeactivateAutoSaveModalVisible(false);
+
   };
   
 
