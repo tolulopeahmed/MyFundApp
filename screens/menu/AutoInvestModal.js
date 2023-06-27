@@ -5,22 +5,15 @@ import { Ionicons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
 
 
-const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible }) => {
+const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible, setAutoInvest }) => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
   
 
-  const handleActivate = () => {
-    Animated.timing(animation, {
-      toValue: 1,
-      duration: 1500,
-      useNativeDriver: true,
-    }).start(() => {
-      setAutoInvestModalVisible(false);
-      navigation.navigate('Sponsorship');
-      setAnimation(new Animated.Value(0));
-    });
+  const handleConfirmAutoInvest = () => {
+    setAutoInvest(true);
+    setAutoInvestModalVisible(false);
   };
   
   const closeModal = () => {
@@ -102,7 +95,7 @@ const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible }) 
             
             </View>
           <View style={styles.buttonsContainer}>
-  <TouchableOpacity style={styles.primaryButton} onPress={() => setModalVisible(false)}>
+  <TouchableOpacity style={styles.primaryButton} onPress={handleConfirmAutoInvest}>
     <Text style={styles.primaryButtonText}>Activate Now</Text>
   </TouchableOpacity>
 

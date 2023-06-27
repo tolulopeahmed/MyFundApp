@@ -5,19 +5,35 @@ import AutoInvestModal from './AutoInvestModal';
 import { MaterialIcons } from '@expo/vector-icons';
 import QuickInvestModal from '../components/QuickInvestModal';
 import Divider from '../components/Divider';
+import DeactivateAutoInvestModal from './DeactivateAutoInvestModal';
 
 const Sponsorship = ({ navigation, firstName }) => {
   const [autoInvest, setAutoInvest] = React.useState(false);
   const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
   const [autoInvestModalVisible, setAutoInvestModalVisible] = useState(false);
+  const [deactivateAutoInvestModalVisible, setDeactivateAutoInvestModalVisible] = useState(false);
 
   const handleQuickInvest = () => {
     setQuickInvestModalVisible(true);
   };
 
-  const handleActivateAutoInvest = () => {
-  setAutoInvestModalVisible(true);
-  setAutoInvest(true);
+const handleActivateAutoInvest = () => {
+  if (!autoInvest) {
+    setAutoInvestModalVisible(true);
+  } else {
+    setDeactivateAutoInvestModalVisible(true);
+  }
+};
+
+
+const handleConfirmAutoInvest = () => {
+  setAutoSave(true);
+  setAutoInvestModalVisible(false);
+};
+
+const handleConfirmDeactivateAutoInvest = () => {
+  setDeactivateAutoInvestModalVisible(false);
+  setAutoInvest(false);
 };
 
   
@@ -57,25 +73,41 @@ const Sponsorship = ({ navigation, firstName }) => {
         </View>
        
        <View style={styles.autoSaveContainer}>
-       <Ionicons name="car-sport-outline" size={20} color="#fff" style={{ marginRight: 5, marginTop: -2 }} />
+       <Ionicons name="car-sport-outline" size={20} marginRight={5} marginTop={-3} style={[styles.autoSaveText, autoInvest ? styles.greenText : styles.grayText]} />
         <Text style={[styles.autoSaveText, autoInvest ? styles.greenText : styles.grayText]}>
     {autoInvest ? 'AutoInvest is ON' : 'AutoInvest is OFF'}
         </Text>
+
+
             <Switch
-          title="Open Modal" onPress={() => setAutoInvestModalVisible(true)}
+          title="Open Modal" 
           style={styles.switch}
             trackColor={{ false: 'grey', true: '#0AA447' }}
             thumbColor={autoInvest ? '#43FF8E' : 'silver'}
             ios_backgroundColor="#3e3e3e"
-            onValueChange={() => handleActivateAutoInvest()}
+            onValueChange={handleActivateAutoInvest}
             value={autoInvest}
           />
 
 {autoInvestModalVisible && (
         <AutoInvestModal
-        navigation={navigation}
+        autoInvest={autoInvest}
+        setAutoInvest={setAutoInvest}
         autoInvestModalVisible={autoInvestModalVisible} 
-        setAutoInvestModalVisible={setAutoInvestModalVisible} />
+        setAutoInvestModalVisible={setAutoInvestModalVisible} 
+        onConfirm={handleConfirmAutoInvest}
+
+        />
+        )}
+
+{deactivateAutoInvestModalVisible && (
+<DeactivateAutoInvestModal
+          autoInvest={autoInvest}
+          setAutoInvest={setAutoInvest}
+          deactivateAutoInvestModalVisible={deactivateAutoInvestModalVisible}
+          setDeactivateAutoInvestModalVisible={setDeactivateAutoInvestModalVisible}
+          onConfirm={handleConfirmDeactivateAutoInvest}
+        />
         )}
 
         </View>

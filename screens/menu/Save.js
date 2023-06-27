@@ -27,9 +27,6 @@ const Save = ({ navigation, firstName }) => {
     }
   };
   
-  const handleDeactivateAutoSave = () => {
-    setDeactivateAutoSaveModalVisible(true);
-  };
 
   const handleConfirmAutoSave = () => {
     setAutoSave(true);
@@ -107,7 +104,7 @@ const Save = ({ navigation, firstName }) => {
 
        
        <View style={styles.autoSaveContainer}>
-        <Ionicons name="car-outline" size={20} color="#fff" style={{ marginRight: 5, marginTop: -2 }} />
+       <Ionicons name="car-sport-outline" size={20} marginRight={5} marginTop={-3} style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]} />
  <Text style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]}>
     {autoSave ? 'AutoSave is ON' : 'AutoSave is OFF'}
         </Text>
