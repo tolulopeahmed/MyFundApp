@@ -181,7 +181,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
     
       
       <View style={styles.todoContainer}>
-      <Text style={styles.todoList}>Quick Actions</Text>
+      <Text style={styles.todoList}>QUICK ACTIONS</Text>
         <View style={styles.todoList1}>
           <TouchableOpacity style={styles.todoButton} onPress={() => handleActivateAutoSave()}>
           <Ionicons name="car-outline" size={24} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
@@ -222,7 +222,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
       <SafeAreaView style={styles.transactionContainer}>
       <Divider />
 
-      <Text style={styles.recentTransaction}>Recent Transactions</Text>
+      <Text style={styles.recentTransaction}>RECENT TRANSACTIONS</Text>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.transactionsContainer}>
@@ -657,20 +657,20 @@ height: 50,
 
 todoList: {
   marginTop: 2,
-  fontSize: 18,
-  color: 'black',
-   fontFamily: 'ProductSansBold',
-   
+  color: 'grey',
+  fontFamily: 'karla',
+  letterSpacing: 2,
+  marginBottom: 2,
 },
 
 
 recentTransaction: {
-  marginTop: 2,
   marginLeft:20,
-  fontSize: 18,
-  color: 'black',
-   fontFamily: 'ProductSansBold',
-   
+  marginTop: 2,
+  color: 'grey',
+  fontFamily: 'karla',
+  letterSpacing: 2,
+  marginBottom: 2,   
 },
 transactionContainer: {
   marginTop: 25,

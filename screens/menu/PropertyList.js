@@ -57,7 +57,7 @@ const handleActivateAutoSave = () => {
         </TouchableOpacity>
 
       <SafeAreaView style={styles.transactionContainer}>
-      <Text style={styles.todoList}>Acquired Properties</Text>
+      <Text style={styles.todoList}>ACQUIRED PROPERTIES</Text>
 
       <View style={styles.containerHead}>
       <View style={styles.column}>
@@ -377,12 +377,12 @@ const styles = StyleSheet.create({
     todoList: {
       marginTop: 2,
       marginLeft:20,
-      fontSize: 18,
-      color: 'black',
-       fontFamily: 'ProductSansBold',
-       marginBottom:10,
-
+      color: 'grey',
+      fontFamily: 'karla',
+      letterSpacing: 2,
+      marginBottom: 10,
     },
+    
 
     containerHead: {
         backgroundColor: '#fff',

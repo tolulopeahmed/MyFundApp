@@ -140,7 +140,7 @@ const handleConfirmDeactivateAutoInvest = () => {
 
       <Divider />
 
-      <Text style={styles.todoList}>Investment Transactions</Text>
+      <Text style={styles.todoList}>INVESTMENT TRANSACTIONS</Text>
 
         <View style={styles.transactionsContainer}>
           <View style={styles.transactionItem}>
@@ -503,11 +503,12 @@ const styles = StyleSheet.create({
     todoList: {
       marginTop: 2,
       marginLeft:20,
-      fontSize: 18,
-      color: 'black',
-       fontFamily: 'ProductSansBold',
-       
+      color: 'grey',
+      fontFamily: 'karla',
+      letterSpacing: 2,
+      marginBottom: 2,
     },
+    
 
     transactionContainer: {
       marginTop: 100,

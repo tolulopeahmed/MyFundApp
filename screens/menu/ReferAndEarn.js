@@ -96,7 +96,7 @@ const ReferAndEarn = ({ navigation, firstName }) => {
       </View>
 
       <View style={styles.transactionContainer}>
-        <Text style={styles.todoList}>Referral List</Text>
+        <Text style={styles.todoList}>REFERRAL LIST</Text>
 
         <View style={styles.containerHead}>
           <View style={styles.column}>
@@ -278,12 +278,13 @@ const styles = StyleSheet.create({
   },
   todoList: {
     marginTop: 2,
-    marginLeft: 20,
-    fontSize: 18,
-    color: 'black',
-    fontFamily: 'ProductSansBold',
+    marginLeft:20,
+    color: 'grey',
+    fontFamily: 'karla',
+    letterSpacing: 2,
     marginBottom: 10,
   },
+  
   containerHead: {
     backgroundColor: '#fff',
     flexDirection: 'row',

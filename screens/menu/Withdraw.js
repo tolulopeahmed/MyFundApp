@@ -94,7 +94,7 @@ const Withdraw = ({ navigation }) => {
      
      
       <SafeAreaView style={styles.transactionContainer}>
-      <Text style={styles.todoList}>Withdrawal Transactions</Text>
+      <Text style={styles.todoList}>WITHDRAWAL TRANSACTIONS</Text>
 
         <View style={styles.transactionsContainer}>
           <View style={styles.transactionItem}>
@@ -441,13 +441,14 @@ marginTop: -15,
 
   
   todoList: {
-    marginBottom: 10,
+    marginTop: 2,
     marginLeft:20,
-    fontSize: 18,
-    color: 'black',
-     fontFamily: 'ProductSansBold',
-     
+    color: 'grey',
+    fontFamily: 'karla',
+    letterSpacing: 2,
+    marginBottom: 2,
   },
+  
 
   transactionContainer: {
     marginTop: 1,
