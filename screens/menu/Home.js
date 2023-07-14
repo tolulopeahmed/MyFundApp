@@ -1,25 +1,29 @@
-import React, { useEffect, useState} from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import React, { useContext, useEffect, useState} from 'react';
+import { View, Text, Pressable, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Header from '../components/Header';
 import Divider from '../components/Divider';
 import Swiper from 'react-native-swiper';
 import Title from '../components/Title';
+import ImageContext from './ImageContext';
 
-const Home = ({ navigation, route }) => {
+
+const Home = ({ navigation, route, }) => {
   const [autoSave, setAutoSave] = useState(false);
   const [greeting, setGreeting] = useState('');
+  const { profileImageUri } = useContext(ImageContext);
+
 
   useEffect(() => {
     const currentHour = new Date().getHours();
     let newGreeting;
 
     if (currentHour < 12) {
-      newGreeting = 'Good Morning';
-    } else if (currentHour < 18) {
-      newGreeting = 'Good Afternoon';
+      newGreeting = 'Good Morning!';
+    } else if (currentHour < 17) {
+      newGreeting = 'Good Afternoon!';
     } else {
-      newGreeting = 'Good Evening';
+      newGreeting = 'Good Evening!';
     }
 
     setGreeting(newGreeting);
@@ -55,8 +59,21 @@ const Home = ({ navigation, route }) => {
 
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 
-      <Title>{greeting}</Title>
-     
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+  <View>
+    <Title>Tolulope,</Title>
+    <Text style={styles.propertyText} marginLeft={25} marginTop={-10} marginBottom={10}>{greeting}</Text>
+  </View>
+  <Pressable marginRight={20} onPress={() => navigation.navigate('More...')}>
+    {profileImageUri ? (
+      <Image source={{ uri: profileImageUri }} style={styles.profileImage} />
+    ) : (
+      <Ionicons name="person-circle-outline" size={80} color="silver" />
+    )}
+  </Pressable>
+</View>
+
+
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
         <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: "#4C28BC" }}>MyFund: </Text>Enjoy 10% p.a. on Savings and <Text style={{fontFamily: 'proxima'}}>20% p.a. on Investments every January and July</Text>, and lifetime rental income on Ownership Investment every year. Keep growing your funds.</Text>
@@ -410,6 +427,15 @@ headerText: {
 profileIcons: {
 flexDirection: 'row',
 },
+profileImage: {
+  width: 80,
+  height: 80,
+  borderRadius: 67,
+  marginRight: 5,
+  marginLeft: -10,
+  borderWidth: 0.5,
+  resizeMode: 'center'
+  },
 propertyContainer: {
 flexDirection: 'row',
 backgroundColor: '#DCD1FF',

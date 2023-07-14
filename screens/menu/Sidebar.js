@@ -1,12 +1,11 @@
-import React, {useState} from 'react';
+import React, {useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider';
 import QuickSaveModal from '../components/QuickSaveModal';
 
 
-
-const Sidebar = ({ navigation, firstName, profileImageUri }) => {
+const Sidebar = ({ navigation, firstName, }) => {
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
 
 
@@ -25,11 +24,8 @@ const Sidebar = ({ navigation, firstName, profileImageUri }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.profileContainer}>
 
-      {profileImageUri ? (
-          <Image source={{ uri: profileImageUri }} style={styles.profileImage} />
-        ) : (
-          <Ionicons name="person-circle-outline" size={120} color="grey" />
-        )}
+      <Image source={require('../images/logo5.1.png')} style={styles.image} />
+
 
 
         <View style={styles.profileInfo}>
@@ -105,15 +101,15 @@ const styles = StyleSheet.create({
     marginTop: 55,
 
   },
-  profileImage: {
+  image: {
     width: 110,
     height: 110,
     borderRadius: 67,
-    marginRight: 13,
+    marginRight: 5,
     marginLeft: -10,
     borderWidth: 0.5,
-    borderColor: 'grey',
-  },
+    resizeMode: 'center'
+    },
   profileInfo: {
     flexDirection: 'column',
     justifyContent: 'center',

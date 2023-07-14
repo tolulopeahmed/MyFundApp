@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Modal, TextInput, TouchableOpacity, ScrollView, Text, StyleSheet, Image, Keyboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
@@ -29,6 +29,9 @@ const Chat = ({ navigation }) => {
   const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
 
+  const scrollViewRef = useRef(null);
+
+
   useEffect(() => {
     // Request permission for accessing the device's image library
     (async () => {
@@ -51,6 +54,13 @@ const Chat = ({ navigation }) => {
     setMessageText('');
     setAttachmentImage(null);
   };
+
+  useEffect(() => {
+    // Auto-scroll to the bottom of the chat when a new message is added
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true });
+    }
+  }, [messages]);
 
   const pickImage = async () => {
     setIsImagePickerOpen(true);
@@ -93,16 +103,20 @@ const Chat = ({ navigation }) => {
         </View>
       </View>
 
+      <ScrollView 
+      style={styles.container} 
+      showsVerticalScrollIndicator={false}
+      ref={scrollViewRef}
+      onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+      >
+
       <Title>Chat Admin</Title>
 
-      <ScrollView>
         <View style={styles.propertyContainer}>
           <Ionicons name="chatbubbles-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
-          <View style={styles.progressBarContainer}>
             <Text style={styles.propertyText}>
               Kindly consult us during our working hours (Mondays - Fridays: 9am-5pm, Saturdays & Public holidays: 10am-4pm). You can also leave us a message and we will reply once we come back online. Thank you.
             </Text>
-          </View>
         </View>
 
         <Divider />

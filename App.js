@@ -26,6 +26,7 @@ import ForgotPassword from './screens/menu/ForgotPassword';
 import Chat from './screens/menu/Chat'
 import Success from './screens/components/Success';
 import ReferAndEarn from './screens/menu/ReferAndEarn';
+import { ImageProvider } from './screens/menu/ImageContext';
 
 const Stack = createStackNavigator();
 
@@ -63,8 +64,9 @@ const App = ({ styles, darkModeStyles, }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-
+        <ImageProvider>
     <NavigationContainer>
+
       <Stack.Navigator
         initialRouteName="OnboardingScreens"
         screenOptions={{ headerShown: false }}
@@ -96,6 +98,8 @@ const App = ({ styles, darkModeStyles, }) => {
 
       </Stack.Navigator>
     </NavigationContainer>
+    </ImageProvider>
+
     </SafeAreaView>
 
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, Linking, Switch, StyleSheet, ScrollView, Pressable, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
@@ -6,9 +6,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
 import SavingsGoalModal from './SavingsGoalModal';
 import ProfileEditModal from './ProfileEditModal';
+import ImageContext from './ImageContext';
 
 
-const Profile = ({ navigation, setProfileImageUri, }) => {
+const Profile = ({ navigation, }) => {
+  const { profileImageUri, setProfileImageUri } = useContext(ImageContext);
   const [selectedImage, setSelectedImage] = useState(null);
   const [enableFingerprint, setEnableFingerprint] = useState(false);
   const [showBalances, setShowBalances] = useState(true);
@@ -42,8 +44,10 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
         quality: 1,
       });
       if (!result.canceled) {
-        setSelectedImage(result.assets[0].uri);
-      }
+        const selectedAsset = result.assets[0]; // Access the first selected asset from the "assets" array
+      setSelectedImage(selectedAsset.uri); // Use the "uri" property of the selected asset
+      setProfileImageUri(selectedAsset.uri); // Update the profile image URI in the context
+    }
     }
   };
   
@@ -99,20 +103,20 @@ const Profile = ({ navigation, setProfileImageUri, }) => {
   <View flexDirection='row'>
   <View style={styles.leftContainer}>
     <View style={styles.imageContainer}>
-      <Pressable>
-              {selectedImage ? (
+    <Pressable>
+        {selectedImage ? (
           <Image source={{ uri: selectedImage }} style={styles.image} />
         ) : (
-          <Ionicons name="person-circle" size={175} color="silver" marginBottom={-10}/>
+          <Ionicons name="person-circle" size={175} color="silver" marginBottom={-10} />
         )}
         {selectedImage && (
           <Pressable style={styles.editIconContainer} onPress={handlePickImage}>
             <MaterialIcons name="edit" size={20} color="#4C28BC" />
           </Pressable>
         )}
-         <Pressable style={styles.editIconContainer} onPress={handlePickImage}>
-            <MaterialIcons name="edit" size={20} color="#fff" />
-          </Pressable>
+        <Pressable style={styles.editIconContainer} onPress={handlePickImage}>
+          <MaterialIcons name="edit" size={20} color="#fff" />
+        </Pressable>
       </Pressable>
 
 
