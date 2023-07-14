@@ -32,6 +32,7 @@ const Stack = createStackNavigator();
 const App = ({ styles, darkModeStyles, }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+  
 
 
   useEffect(() => {

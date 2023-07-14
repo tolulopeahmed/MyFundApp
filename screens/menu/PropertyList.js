@@ -3,7 +3,7 @@ import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Swi
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHouseCircleCheck } from '@fortawesome/free-solid-svg-icons';import { ProgressBar } from 'react-native-paper';
-
+import Title from '../components/Title';
 
 const PropertyList = ({ navigation, firstName }) => {
   const [autoSave, setAutoSave] = React.useState(false);
@@ -34,11 +34,11 @@ const handleActivateAutoSave = () => {
         </View>
     </View>
 
-      <Text style={styles.title}>My Properties</Text>
+      <Title>My Properties</Title>
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}>Earn <Text style={{color: '#4C28BC'}}>rental income for life </Text> by buying a fraction of our hostels. Next property progress...</Text>
+        <Text style={styles.propertyText}>The properties you've bought will appear here and <Text style={{color: '#4C28BC'}}>the yearly rental income</Text>. Buy more to earn more. For special package deals, kindly contact admin</Text>
       </View>
       </View>
       
@@ -175,17 +175,6 @@ const styles = StyleSheet.create({
     },
 
   
-  title: {
-    fontSize: 20,
-    marginLeft: 25,
-    fontFamily: 'proxima',
-    color: '#4C28BC',
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 20,
-    
-  },
-
     welcomeText: {
      color: '#4C28BC',
      fontFamily: 'ProductSansBold',

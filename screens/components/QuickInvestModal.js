@@ -54,7 +54,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
   <Text style={styles.nairaSign}>₦</Text>
   <TextInput
     style={styles.amountInput}
-    placeholder="Amount (e.g. 60000)"
+    placeholder="Amount (e.g. 100000)"
     keyboardType="numeric"
     onChangeText={(value) => handleAmountChange(value)}
   />

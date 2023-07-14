@@ -3,6 +3,8 @@ import { View, Modal, TextInput, TouchableOpacity, ScrollView, Text, StyleSheet,
 import { Ionicons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
 import * as ImagePicker from 'expo-image-picker';
+import Title from '../components/Title';
+import SectionTitle from '../components/SectionTitle';
 
 // EmojiPicker component
 const EmojiPicker = ({ onSelectEmoji }) => {
@@ -91,6 +93,8 @@ const Chat = ({ navigation }) => {
         </View>
       </View>
 
+      <Title>Chat Admin</Title>
+
       <ScrollView>
         <View style={styles.propertyContainer}>
           <Ionicons name="chatbubbles-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
@@ -102,6 +106,8 @@ const Chat = ({ navigation }) => {
         </View>
 
         <Divider />
+
+        <SectionTitle>CONVERSATION WITH MYFUND</SectionTitle>
 
         {messages.map((message, index) => (
           <View key={index} style={message.fromAdmin ? styles.adminMessage : styles.userMessage}>

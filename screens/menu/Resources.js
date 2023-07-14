@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, Linking, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Title from '../components/Title';
 
 
 const Resources = ({navigation}) => {
@@ -40,7 +41,7 @@ const Resources = ({navigation}) => {
       </View>
   </View>              
   
-  <Text style={styles.title}>Wealth Leadership Academy Resources</Text>
+<Title>WLA Resources</Title>
 
       <ScrollView style={styles.container}>
 

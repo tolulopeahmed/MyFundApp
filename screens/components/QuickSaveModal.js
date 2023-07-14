@@ -3,7 +3,7 @@ import { Modal, Text, Image, View, TextInput, TouchableOpacity } from 'react-nat
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
-import AddCardModal from '../menu/AddCardModal';
+
 
 const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVisible }) => {
   const [frequency, setFrequency] = useState('');
@@ -16,10 +16,9 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
     setAmount(value);
   }
 
-  const handleAddCard = () => {
-    navigation.navigate('Card');
-    setAddCardModalVisible(true);
-  }
+  const handleAddCard= () => {
+    navigation.navigate('Card', { addCardModalVisible: true });
+  };
 
   const closeModal = () => {
     setQuickSaveModalVisible(false);
@@ -123,16 +122,6 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                 <TouchableOpacity style={styles.primaryButton} onPress={handleAddCard}>
                   <Text style={styles.primaryButtonText}>Add Card Now</Text>
                 </TouchableOpacity>
-
-           
-        {addCardModalVisible && (
-      <AddCardModal
-        navigation={navigation}
-        addCardModalVisible={addCardModalVisible}
-        setAddCardModalVisible={setAddCardModalVisible}
-      />
-    )}
-
               </View>
     </View>
   </>

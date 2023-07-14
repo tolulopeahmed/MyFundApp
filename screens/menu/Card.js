@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, Pressable, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { ProgressBar } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
 import AddCardModal from './AddCardModal';
+import SectionTitle from '../components/SectionTitle';
 
-const Card = ({ navigation, firstName }) => {
+
+const Card = ({ navigation, route }) => {
   const [addCardModalVisible, setAddCardModalVisible] = useState(false); // define modalVisible state
 
+
+  useEffect(() => {
+    if (route.params?.addCardModalVisible) {
+      setAddCardModalVisible(true);
+    }
+  }, [route.params]);
   
   return (
     <View style={styles.container}>
@@ -34,12 +41,10 @@ const Card = ({ navigation, firstName }) => {
 
       <View style={styles.propertyContainer}>
         <Ionicons name="card-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
-        <View style={styles.progressBarContainer}> 
         <Text style={styles.propertyText}>Set up your cards so you can perform faster transactions including AutoSave and AutoInvest</Text>
       </View>
-      </View>
       
-    
+    <SectionTitle>LIST OF CARDS</SectionTitle>
 
       <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.primaryButton} onPress={() => setAddCardModalVisible(true)}>
@@ -154,6 +159,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderRadius: 10,
     marginTop: 10,
+    marginBottom: 10,
+
   },
  
   propertyText: {

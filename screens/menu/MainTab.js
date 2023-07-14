@@ -1,6 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet } from 'react-native';
+import { useState } from 'react';
 
 import Home from './Home';
 import Save from './Save';
@@ -31,6 +32,8 @@ const TabBarIcon = ({ focused, iconName, color, label }) => (
 );
 
 const MainTab = ({ navigation }) => {
+  const [autoSave, setAutoSave] = useState(false);
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -65,8 +68,8 @@ const MainTab = ({ navigation }) => {
         tabBarStyle: styles.tabStyle,
       })}
     >
-      <Tab.Screen name="MyFund" component={Home} />
-      <Tab.Screen name="Save" component={Save} />
+      <Tab.Screen name="MyFund" component={Home} autoSave={autoSave} />
+      <Tab.Screen name="Save" component={Save} autoSave={autoSave} setAutoSave={setAutoSave} />
       <Tab.Screen name="Invest" component={Invest} />
       <Tab.Screen name="Withdraw" component={Withdraw} />
       <Tab.Screen name="More..." component={Profile} />

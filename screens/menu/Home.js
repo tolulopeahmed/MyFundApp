@@ -1,39 +1,52 @@
-import React, { useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Header from '../components/Header';
-import QuickSaveModal from '../components/QuickSaveModal';
-import AutoSaveModal from './AutoSaveModal';
 import Divider from '../components/Divider';
 import Swiper from 'react-native-swiper';
-import QuickInvestModal from '../components/QuickInvestModal';
-import WithdrawModal from './WithdrawModal';
-import BuyPropertyModal from './BuyPropertyModal';
-import AutoInvestModal from './AutoInvestModal';
+import Title from '../components/Title';
 
-const Home = ({ navigation, firstName, transactionAmount }) => {
-  const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
-  const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [autoInvestModalVisible, setAutoInvestModalVisible] = useState(false);
-  const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
-  const [propertyModalVisible, setPropertyModalVisible] = useState(false);
+const Home = ({ navigation, route }) => {
+  const [autoSave, setAutoSave] = useState(false);
+  const [greeting, setGreeting] = useState('');
 
- 
+  useEffect(() => {
+    const currentHour = new Date().getHours();
+    let newGreeting;
+
+    if (currentHour < 12) {
+      newGreeting = 'Good Morning';
+    } else if (currentHour < 18) {
+      newGreeting = 'Good Afternoon';
+    } else {
+      newGreeting = 'Good Evening';
+    }
+
+    setGreeting(newGreeting);
+  }, []);
+
   const handleQuickSave = () => {
-    setQuickSaveModalVisible(true);
+    navigation.navigate('Save', { quickSaveModalVisible: true });
   };
 
   const handleQuickInvest = () => {
-    setQuickInvestModalVisible(true);
+    navigation.navigate('Sponsorship', { quickInvestModalVisible: true });
   };
 
   const handleActivateAutoSave = () => {
-    setModalVisible(true);
+    navigation.navigate('Save', { autoSaveModalVisible: true });
+  };
+  
+  const handleActivateAutoInvest = () => {
+    navigation.navigate('Sponsorship', { autoInvestModalVisible: true });
   };
 
-  const handleActivateAutoInvest = () => {
-    setAutoInvestModalVisible(true);
+  const handleBuyProperty = () => {
+    navigation.navigate('Ownership');
+  };
+
+  const handleWithdraw = () => {
+    navigation.navigate('Withdraw', { withdrawModalVisible: true });
   };
 
   return (
@@ -42,7 +55,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
 
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 
-      <Text style={styles.welcome}><Text style={styles.welcomeText}>Welcome</Text> <Text style={styles.firstNameText}>[firstName],</Text></Text>
+      <Title>{greeting}</Title>
      
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
@@ -112,7 +125,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
         </View>
 
         <View style={styles.quickSaveButtonContainer}>
-  <TouchableOpacity style={styles.quickSaveButton} onPress={() => setPropertyModalVisible(true)}>
+  <TouchableOpacity style={styles.quickSaveButton} onPress={handleBuyProperty}>
   <Ionicons name="home-outline" size={16} color="#fff" style={{ marginRight: 5 }} />
 <Text style={styles.quickSaveText}>Buy Properties</Text>
   </TouchableOpacity>
@@ -133,7 +146,7 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
         </View>
 
         <View style={styles.quickSaveButtonContainer}>
-  <TouchableOpacity style={styles.quickSaveButton} onPress={() => setWithdrawModalVisible(true)}>
+  <TouchableOpacity style={styles.quickSaveButton} onPress={handleWithdraw}>
   <Ionicons name="arrow-down-outline" size={16} color="#fff" style={{ marginRight: 5 }} />
 <Text style={styles.quickSaveText}>Withdraw</Text>
   </TouchableOpacity>
@@ -143,71 +156,48 @@ const Home = ({ navigation, firstName, transactionAmount }) => {
   
     </Swiper>
 
-        
-
-
-    {quickSaveModalVisible && (
-        <QuickSaveModal
-  navigation={navigation}
-  quickSaveModalVisible={quickSaveModalVisible} 
-  setQuickSaveModalVisible={setQuickSaveModalVisible}
-  />
-    )}
-
-    
-{quickInvestModalVisible && (
-  <QuickInvestModal
-  navigation={navigation}
-  quickInvestModalVisible={quickInvestModalVisible} 
-  setQuickInvestModalVisible={setQuickInvestModalVisible}
-  />
-)}
-
-
-{propertyModalVisible && (
-  <BuyPropertyModal 
-      navigation={navigation} 
-      propertyModalVisible={propertyModalVisible} 
-      setPropertyModalVisible={setPropertyModalVisible} />
-      )}
-
-{withdrawModalVisible && (
-    <WithdrawModal 
-        navigation={navigation} 
-        withdrawModalVisible={withdrawModalVisible} 
-        setWithdrawModalVisible={setWithdrawModalVisible} />
-    )}
-
+      
     
       
       <View style={styles.todoContainer}>
       <Text style={styles.todoList}>QUICK ACTIONS</Text>
-        <View style={styles.todoList1}>
-          <TouchableOpacity style={styles.todoButton} onPress={() => handleActivateAutoSave()}>
-          <Ionicons name="car-outline" size={24} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
-          <Text style={styles.todoText}>Turn On AutoSave</Text>
-        </TouchableOpacity>
+        
+      {!autoSave && (
+      <View style={styles.todoList1}>
+        <TouchableOpacity 
+        style={styles.todoButton} 
+        onPress={handleActivateAutoSave}
+        disabled={autoSave}
+        >
+          <Ionicons
+              name="car-outline"
+              size={24}
+              color={autoSave ? 'green' : 'black'}
+              style={{ marginRight: 10, marginLeft: 10 }}
+            />
+            <Text style={styles.todoText}>
+              {autoSave ? 'AutoSave is ON' : 'Turn On AutoSave'}
+            </Text>
+          </TouchableOpacity>
+      </View>
+    )}
 
-        {modalVisible && (
-   <AutoSaveModal 
-        autoSaveModalVisible={modalVisible} 
-        setAutoSaveModalVisible={setModalVisible} />
-        )}
-
-        </View>
-
+{autoSave && (
+        <Save
+          navigation={navigation}
+          route={route}
+          autoSave={autoSave}
+          setAutoSave={setAutoSave}
+        />
+      )}
+        
         <View style={styles.todoList1}>
           <TouchableOpacity style={styles.todoButton} onPress={() => handleActivateAutoInvest()}>
           <Ionicons name="car-sport-outline" size={24} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
           <Text style={styles.todoText}>Turn On AutoInvest</Text>
         </TouchableOpacity>
 
-        {autoInvestModalVisible && (
-   <AutoInvestModal 
-        autoInvestModalVisible={autoInvestModalVisible} 
-        setAutoInvestModalVisible={setAutoInvestModalVisible} />
-        )}
-
+       
         </View>
 
         <View style={styles.todoList1}>
@@ -396,25 +386,20 @@ alignItems: 'center',
 marginHorizontal: 20,
 marginVertical: 10,
 },
-welcome: {
-fontSize: 20,
-marginHorizontal: 20,
-marginTop: 10,
-},
-welcomeText: {
-  fontSize: 20,
-    marginLeft: 25,
-    fontFamily: 'proxima',
-    color: '#4C28BC',
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 20,
+
+
+title: {
+  fontSize: 35,
+  marginLeft: 25,
+  fontFamily: 'proxima',
+  color: '#4C28BC',
+  marginTop: 5,
+  marginBottom: 5,
+  marginLeft: 20,
+  letterSpacing: -1,    
 },
 
-firstNameText:{
- fontFamily: 'karla',
- fontSize: 18,
-},
+
 headerText: {
   marginTop: 10,
   fontFamily: 'karla',
@@ -432,7 +417,6 @@ padding: 15,
 marginHorizontal: 20,
 alignItems: 'center',
 borderRadius: 10,
-marginTop: 10,
 marginBottom: 4,
 flexWrap: 'wrap', // Adjust container size based on the text inside
 },
@@ -672,6 +656,7 @@ recentTransaction: {
   letterSpacing: 2,
   marginBottom: 2,   
 },
+
 transactionContainer: {
   marginTop: 25,
   flex: 1,

@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider'
 
-const AutoSaveModal = ({ autoSaveModalVisible, setAutoSaveModalVisible, autoSave, setAutoSave }) => {
+const AutoSaveModal = ({ autoSaveModalVisible, setAutoSave, setAutoSaveModalVisible}) => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
   const [paymentOption, setPaymentOption] = useState('');

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AutoSaveModal from './AutoSaveModal';
@@ -8,13 +8,30 @@ import QuickSaveModal from '../components/QuickSaveModal';
 import Divider from '../components/Divider';
 import Header from '../components/Header';
 import DeactivateAutoSaveModal from './DeactivateAutoSaveModal';
+import Title from '../components/Title';
 
-const Save = ({ navigation, firstName }) => {
-  const [autoSave, setAutoSave] = useState(false);
+
+const Save = ({ navigation, route }) => {
+  const [ autoSave, setAutoSave] = useState(false);
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
   const [autoSaveModalVisible, setAutoSaveModalVisible] = useState(false);
   const [deactivateAutoSaveModalVisible, setDeactivateAutoSaveModalVisible] = useState(false);
 
+  useEffect(() => {
+    setAutoSave(autoSave);
+  }, [autoSave]);
+
+
+  useEffect(() => {
+    if (route.params?.autoSaveModalVisible) {
+      setAutoSaveModalVisible(true);
+    } else  if (route.params?.quickSaveModalVisible) {
+      setQuickSaveModalVisible(true);
+    }
+  }, [route.params]);
+
+ 
+  
   const handleQuickSave = () => {
     setQuickSaveModalVisible(true);
   };
@@ -25,28 +42,30 @@ const Save = ({ navigation, firstName }) => {
     } else {
       setDeactivateAutoSaveModalVisible(true);
     }
-  };
-  
+  };  
 
   const handleConfirmAutoSave = () => {
     setAutoSave(true);
     setAutoSaveModalVisible(false);
+    navigation.setParams({ autoSave: true });
   };
+  
 
   const handleConfirmDeactivateAutoSave = () => {
     setDeactivateAutoSaveModalVisible(false);
     setAutoSave(false);
+    navigation.setParams({ autoSave: true });
   };
   
 
   
   return (
     <View style={styles.container}>
-      <Header navigation={navigation} headerText='SAVE'/>
+     <Header navigation={navigation} headerText='SAVE'/>
 
   <ScrollView showsVerticalScrollIndicator={false}>
 
-      <Text style={styles.title}>Save</Text>
+      <Title>Save</Title>
 
       <View style={styles.swiper}>
       <Swiper
@@ -61,7 +80,8 @@ const Save = ({ navigation, firstName }) => {
             <View style={styles.propertyContainer}>
               <Ionicons name="wallet-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
               <View style={styles.progressBarContainer}>
-                <Text style={styles.propertyText}>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                  <Text style={styles.propertyText}>
                   <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Savings Goal: </Text>
                   You need to be saving
                   <Text style={styles.goalText}> 41,666.7</Text> to achieve your goal of
@@ -72,6 +92,7 @@ const Save = ({ navigation, firstName }) => {
                   <Text style={styles.goalText}> 25%</Text>
                   <Text style={styles.restText}> to success. Well done!</Text>
                 </Text>
+                </ScrollView>
                 <ProgressBar progress={0.25} color="#4C28BC" height={6} style={styles.progressBar} />
               </View>
             </View>
@@ -104,7 +125,7 @@ const Save = ({ navigation, firstName }) => {
 
        
        <View style={styles.autoSaveContainer}>
-       <Ionicons name="car-sport-outline" size={20} marginRight={5} marginTop={-3} style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]} />
+       <Ionicons name="car-outline" size={20} marginRight={5} marginTop={-3} style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]} />
  <Text style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]}>
     {autoSave ? 'AutoSave is ON' : 'AutoSave is OFF'}
         </Text>
@@ -140,12 +161,14 @@ const Save = ({ navigation, firstName }) => {
 
 
     
-    <View style={styles.autoSaveSettingContainer}>
-            {autoSave && <Text style={styles.autoSaveSetting}>@N30000/month
-            <Ionicons name="checkmark" size={17} color="#0AA447" />          
-
-            </Text>}
-            </View> 
+    {autoSave && (
+        <View style={styles.autoSaveSettingContainer}>
+          <Text style={styles.autoSaveSetting}>
+            @N30000/month   
+            <Ionicons name="checkmark-circle" size={20}  color="#0AA447" />
+          </Text>
+        </View>
+      )}
 
 
         <View style={styles.quickSaveButtonContainer}>
@@ -266,6 +289,7 @@ const Save = ({ navigation, firstName }) => {
     </SafeAreaView>
     </ScrollView>
 
+
     </View>
   );
 };
@@ -332,16 +356,7 @@ const styles = StyleSheet.create({
     },
 
   
-  title: {
-    fontSize: 20,
-    marginLeft: 25,
-    fontFamily: 'proxima',
-    color: '#4C28BC',
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 20,
-    
-  },
+
   swiper: {
     height: 110, 
     width:'100%'

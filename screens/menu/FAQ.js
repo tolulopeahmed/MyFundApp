@@ -18,8 +18,8 @@ const FAQ = ({ navigation }) => {
     },
     {
         id: 3,
-        question: "If I've cumulatively saved up to N60,000 in my Savings, can I move it to Investment?",
-        answer: "Yes. you're encouraged to do so especially because it gives 20% ROI (compared to 10% on your Savings). Simply click the WITHDRAW button and follow the prompt.",
+        question: "If I've cumulatively saved up to N100,000 in my Savings, can I move it to Investment?",
+        answer: "Yes. you're encouraged to do so especially because it gives 20% ROI (compared to 10% on your Savings). Simply click the WITHDRAW button and follow the prompt to move your accumulated funds from Savings to Sponsorship Investment.",
       },
       {
         id: 4,

@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import Divider from '../components/Divider';
 import Swiper from 'react-native-swiper';
 import QuickInvestModal from '../components/QuickInvestModal';
+import Title from '../components/Title';
 
 const images = [
   require('./sponsorship.png'),
@@ -18,7 +19,7 @@ const Invest = ({ navigation, firstName }) => {
   const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
 
   const handleQuickInvest = () => {
-    setQuickInvestModalVisible(true);
+    navigation.navigate('Sponsorship', { quickInvestModalVisible: true });
   };
 
   const handleImagePress = (index) => {
@@ -42,7 +43,7 @@ const Invest = ({ navigation, firstName }) => {
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 
       
-      <Text style={styles.title}>Select Type of Investment</Text>
+      <Title>Invest</Title>
 
       <View style={styles.swiper}>
          <Swiper
@@ -69,7 +70,7 @@ const Invest = ({ navigation, firstName }) => {
       
 
       <View>
-        <Text style={styles.title2}>Build Your Portfolio </Text>
+        <Text style={styles.title2}>Choose Type of Investment</Text>
         <Text style={styles.subText}>Sponsorship Investments: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>20% p.a. </Text>every January & July. {'\n'}
         Ownership Investments: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>Lifetime rent </Text> every year</Text>
         <Divider />
@@ -119,16 +120,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F1FF',
   },
 
-  title: {
-    fontSize: 20,
-    marginLeft: 25,
-    fontFamily: 'proxima',
-    color: '#4C28BC',
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 20,  
-    letterSpacing: -0.4,  
-  },
+
 
   title2: {
     fontSize: 20,

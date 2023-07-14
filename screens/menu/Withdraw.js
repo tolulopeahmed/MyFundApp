@@ -1,17 +1,22 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
-import WithdrawModal from './WithdrawModal'
+import WithdrawModal from './WithdrawModal';
+import Title from '../components/Title';
 
-const Withdraw = ({ navigation }) => {
+const Withdraw = ({ navigation, route }) => {
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false); // define modalVisible state
 
   const balance = 7500.25; // replace with actual balance
   const savingsBalance = 250000.50;
 
- 
+  useEffect(() => {
+    if (route.params?.withdrawModalVisible) {
+      setWithdrawModalVisible(true);
+    }
+  }, [route.params]);
 
 
   return (
@@ -19,7 +24,8 @@ const Withdraw = ({ navigation }) => {
           <Header navigation={navigation} headerText="WITHDRAW" />
 
     <ScrollView showsVerticalScrollIndicator={false}>
-      <Text style={styles.title}>Withdraw From...</Text>
+
+      <Title>Withdraw</Title>
       
       <View style={styles.walletContainer}>
         <View style={styles.walletDetails}>
@@ -200,17 +206,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F1FF',
-  },
-
-  title: {
-    fontSize: 20,
-    marginLeft: 25,
-    fontFamily: 'proxima',
-    color: '#4C28BC',
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 20,  
-    letterSpacing: -0.4,  
   },
 
   walletContainer: {

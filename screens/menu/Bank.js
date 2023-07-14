@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, Pressable, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { MaterialIcons } from '@expo/vector-icons';
-import AddBankModal from './AddBankModal'
+import AddBankModal from './AddBankModal';
+import SectionTitle from '../components/SectionTitle';
 
 const Bank = ({ navigation, initialBankRecords}) => {
   const [addBankModalVisible, setAddBankModalVisible] = useState(false); // define modalVisible state
@@ -68,11 +69,11 @@ const Bank = ({ navigation, initialBankRecords}) => {
 
       <View style={styles.propertyContainer}>
         <MaterialIcons name="account-balance" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
-        <View style={styles.progressBarContainer}> 
         <Text style={styles.propertyText}>Set up your bank accounts so you can perform faster withdrawals locally.</Text>
       </View>
-      </View>
       
+      <SectionTitle>LIST OF BANK ACCOUNTS</SectionTitle>
+
          
       <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.primaryButton} onPress={() => setAddBankModalVisible(true)}>
@@ -184,6 +185,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         borderRadius: 10,
         marginTop: 10,
+        marginBottom: 10,
       },
      
       propertyText: {

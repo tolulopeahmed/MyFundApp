@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Title from '../components/Title';
 
 
 const WealthMap = ({ navigation, firstName }) => {
@@ -24,7 +25,7 @@ const WealthMap = ({ navigation, firstName }) => {
 
 
 
-      <Text style={styles.title}>My Current Financial Status</Text>
+      <Title>My WealthMap</Title>
       <View style={styles.propertyContainer}>
         <Ionicons name="cellular-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 

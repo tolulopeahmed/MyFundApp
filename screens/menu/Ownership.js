@@ -4,17 +4,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHouseCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import BuyPropertyModal from './BuyPropertyModal'
-import Profile from './Profile'
+import Title from '../components/Title';
+
 
 
 const Ownership = ({navigation}) => {
     const [propertyModalVisible, setPropertyModalVisible] = useState(false);
 
-    // in the Save component
-  const handleActivateAutoSave = () => {
-    setModalVisible(true);
-    setAutoSave(true);
-  };
+    
 
   return (
     <>
@@ -27,10 +24,9 @@ const Ownership = ({navigation}) => {
       </View>
   </View>              
   
-  <Text style={styles.title}>Fractional Ownership Investment</Text>
-
       <ScrollView style={styles.container}>
 
+      <Title>Own</Title>
 
 
             <View style={styles.itemContainer}>
@@ -196,19 +192,6 @@ bell: {
     alignContent: 'center'
 },
 
- 
-  title: {
-    fontSize: 20,
-    marginLeft: 25,
-    fontFamily: 'proxima',
-    color: '#4C28BC',
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 20,  
-    letterSpacing: -0.4,  
-    backgroundColor: '#F5F1FF',
-
-  },
 
   itemContainer: {
     flex: 1,

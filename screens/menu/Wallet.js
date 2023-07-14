@@ -4,11 +4,15 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Header from '../components/Header';
 import Divider from '../components/Divider';
 import WithdrawModal from './WithdrawModal';
+import Title from '../components/Title';
+
 
 const Wallet = ({ navigation, firstName }) => {
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
 
-
+  const handleWithdraw = () => {
+    navigation.navigate('Withdraw', { withdrawModalVisible: true });
+  };
   
   return (
     <View style={styles.container}>
@@ -24,7 +28,7 @@ const Wallet = ({ navigation, firstName }) => {
     </View>
 
 <ScrollView showsVerticalScrollIndicator={false}>
-      <Text style={styles.title}>Wallet</Text>
+      <Title>Wallet</Title>
       
       <View style={styles.propertyContainer}>
         <Ionicons name="wallet-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
@@ -51,7 +55,7 @@ const Wallet = ({ navigation, firstName }) => {
       <View>
           <TouchableOpacity
            style={styles.withdrawButton}
-           onPress={() => setWithdrawModalVisible(true)}
+           onPress={handleWithdraw}
          >
           
           <Ionicons name="arrow-down-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
@@ -235,16 +239,6 @@ bell: {
 },
 
 
-title: {
-fontSize: 20,
-marginLeft: 25,
-fontFamily: 'proxima',
-color: '#4C28BC',
-marginTop: 5,
-marginBottom: 5,
-marginLeft: 20,
-
-},
 
 
   profileIcons: {

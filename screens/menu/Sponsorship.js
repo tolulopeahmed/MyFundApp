@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AutoInvestModal from './AutoInvestModal';
@@ -6,12 +6,22 @@ import { MaterialIcons } from '@expo/vector-icons';
 import QuickInvestModal from '../components/QuickInvestModal';
 import Divider from '../components/Divider';
 import DeactivateAutoInvestModal from './DeactivateAutoInvestModal';
+import Title from '../components/Title';
 
-const Sponsorship = ({ navigation, firstName }) => {
+const Sponsorship = ({ navigation, route }) => {
   const [autoInvest, setAutoInvest] = React.useState(false);
   const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
   const [autoInvestModalVisible, setAutoInvestModalVisible] = useState(false);
   const [deactivateAutoInvestModalVisible, setDeactivateAutoInvestModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (route.params?.autoInvestModalVisible) {
+      setAutoInvestModalVisible(true);
+    } else if (route.params?.quickInvestModalVisible) {
+        setQuickInvestModalVisible(true);
+    }
+  }, [route.params]);
+
 
   const handleQuickInvest = () => {
     setQuickInvestModalVisible(true);
@@ -53,11 +63,11 @@ const handleConfirmDeactivateAutoInvest = () => {
     <ScrollView showsVerticalScrollIndicator={false}>
 
 
-      <Text style={styles.title}>Sponsorship Investment</Text>
+      <Title>Sponsor</Title>
       <View style={styles.propertyContainer}>
         <MaterialIcons name="trending-up" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Better Than Savings: </Text>Earn up to <Text style={{color: 'green', fontFamily: 'proxima'}}>20% p.a. every January and July </Text> sponsoring any of our National Hostel Project. Multiples of 60,000.</Text>
+        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Better Than Savings: </Text>Earn up to <Text style={{color: 'green', fontFamily: 'proxima'}}>20% p.a. every January and July </Text>sponsoring any of our National Hostel Projects. Multiples of 100,000.</Text>
       </View>
       </View>
       
@@ -304,16 +314,7 @@ const styles = StyleSheet.create({
     },
 
   
-  title: {
-    fontSize: 20,
-    marginLeft: 25,
-    fontFamily: 'proxima',
-    color: '#4C28BC',
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 20,
-    
-  },
+  
   
   propertyContainer: {
     alignItems: 'center',
