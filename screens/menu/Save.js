@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
+import React, { useEffect, useContext, useState } from 'react';
+import { View, Text, SafeAreaView, ImageBackground, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AutoSaveModal from './AutoSaveModal';
 import { ProgressBar } from 'react-native-paper';
@@ -9,19 +9,16 @@ import Divider from '../components/Divider';
 import Header from '../components/Header';
 import DeactivateAutoSaveModal from './DeactivateAutoSaveModal';
 import Title from '../components/Title';
-
+import Subtitle from '../components/Subtitle';
+import { AutoSaveContext } from '../components/AutoSaveContext';
 
 const Save = ({ navigation, route }) => {
-  const [ autoSave, setAutoSave] = useState(false);
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
   const [autoSaveModalVisible, setAutoSaveModalVisible] = useState(false);
   const [deactivateAutoSaveModalVisible, setDeactivateAutoSaveModalVisible] = useState(false);
+  const { autoSave, setAutoSave } = useContext(AutoSaveContext)
 
-  useEffect(() => {
-    setAutoSave(autoSave);
-  }, [autoSave]);
-
-
+  
   useEffect(() => {
     if (route.params?.autoSaveModalVisible) {
       setAutoSaveModalVisible(true);
@@ -47,14 +44,12 @@ const Save = ({ navigation, route }) => {
   const handleConfirmAutoSave = () => {
     setAutoSave(true);
     setAutoSaveModalVisible(false);
-    navigation.setParams({ autoSave: true });
   };
   
 
   const handleConfirmDeactivateAutoSave = () => {
     setDeactivateAutoSaveModalVisible(false);
     setAutoSave(false);
-    navigation.setParams({ autoSave: true });
   };
   
 
@@ -66,6 +61,8 @@ const Save = ({ navigation, route }) => {
   <ScrollView showsVerticalScrollIndicator={false}>
 
       <Title>Save</Title>
+      <Subtitle>Earn 10% p.a. every January and July</Subtitle>
+
 
       <View style={styles.swiper}>
       <Swiper
@@ -112,8 +109,12 @@ const Save = ({ navigation, route }) => {
         </Swiper>
         </View>
       
-<View style={styles.savingsContainer}>
-        <View style={styles.savingsLine1}>
+        <ImageBackground
+  source={require('./icb2.png')}
+  style={styles.savingsContainer}
+  imageStyle={styles.backgroundImage}
+  >
+            <View style={styles.savingsLine1}>
           <Ionicons name="save-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
           <Text style={styles.greyText}>Total Savings    <Text style={styles.rateText}>@10% p.a.</Text> </Text>
         </View>
@@ -157,7 +158,7 @@ const Save = ({ navigation, route }) => {
         />
 
         </View>
-    </View>
+    </ImageBackground>
 
 
     
@@ -173,7 +174,7 @@ const Save = ({ navigation, route }) => {
 
         <View style={styles.quickSaveButtonContainer}>
           <TouchableOpacity style={styles.quickSaveButton} onPress={handleQuickSave}>
-          <Ionicons name="add-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
+          <Ionicons name="save-outline" size={22} color="#fff" style={{ marginRight: 4 }} />
           <Text style={styles.quickSaveText}>QuickSave</Text>
         </TouchableOpacity>
         </View>
@@ -210,7 +211,7 @@ const Save = ({ navigation, route }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="cash-outline"
+              name="save-outline"
               size={25}
               style={styles.transactionIcon}
             />
@@ -224,7 +225,7 @@ const Save = ({ navigation, route }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="wallet-outline"
+              name="arrow-down-outline"
               size={25}
               style={styles.transactionIcon}
             />
@@ -257,7 +258,7 @@ const Save = ({ navigation, route }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="cash-outline"
+              name="save-outline"
               size={25}
               style={styles.transactionIcon}
             />
@@ -271,7 +272,7 @@ const Save = ({ navigation, route }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="wallet-outline"
+              name="arrow-down-outline"
               size={25}
               style={styles.transactionIcon}
             />
@@ -462,6 +463,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 150,
     },
+
+    
+backgroundImage: {
+  flex: 1,
+  resizeMode: 'cover',
+  borderTopLeftRadius: 10,
+  borderTopRightRadius: 10,
+},
+
 
     savingsLine1: {
       flexDirection: 'row',

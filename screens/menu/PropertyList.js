@@ -4,16 +4,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHouseCircleCheck } from '@fortawesome/free-solid-svg-icons';import { ProgressBar } from 'react-native-paper';
 import Title from '../components/Title';
+import Subtitle from '../components/Subtitle';
 
 const PropertyList = ({ navigation, firstName }) => {
-  const [autoSave, setAutoSave] = React.useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  // in the Save component
-const handleActivateAutoSave = () => {
-  setModalVisible(true);
-  setAutoSave(true);
-};
 
   
   return (
@@ -35,6 +28,9 @@ const handleActivateAutoSave = () => {
     </View>
 
       <Title>My Properties</Title>
+      <Subtitle>Buy more or sell your acquired properties</Subtitle>
+
+
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 

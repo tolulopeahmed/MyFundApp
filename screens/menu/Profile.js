@@ -215,7 +215,7 @@ const Profile = ({ navigation, }) => {
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('KYC')}>
-          <Ionicons name="document" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Ionicons name="shield-checkmark" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Update KYC</Text>
         </TouchableOpacity>
       </View>

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
+import React, { useEffect, useContext, useState } from 'react';
+import { View, Text, SafeAreaView, ImageBackground, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AutoInvestModal from './AutoInvestModal';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -7,12 +7,15 @@ import QuickInvestModal from '../components/QuickInvestModal';
 import Divider from '../components/Divider';
 import DeactivateAutoInvestModal from './DeactivateAutoInvestModal';
 import Title from '../components/Title';
+import Subtitle from '../components/Subtitle';
+import { AutoInvestContext } from '../components/AutoInvestContext';
 
 const Sponsorship = ({ navigation, route }) => {
-  const [autoInvest, setAutoInvest] = React.useState(false);
+// const [autoInvest, setAutoInvest] = React.useState(false);
   const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
   const [autoInvestModalVisible, setAutoInvestModalVisible] = useState(false);
   const [deactivateAutoInvestModalVisible, setDeactivateAutoInvestModalVisible] = useState(false);
+  const { autoInvest, setAutoInvest } = useContext(AutoInvestContext);
 
   useEffect(() => {
     if (route.params?.autoInvestModalVisible) {
@@ -64,6 +67,10 @@ const handleConfirmDeactivateAutoInvest = () => {
 
 
       <Title>Sponsor</Title>
+      <Subtitle>Earn 20% p.a. every 6 months with multiples of N100,000</Subtitle>
+
+
+
       <View style={styles.propertyContainer}>
         <MaterialIcons name="trending-up" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
@@ -71,8 +78,12 @@ const handleConfirmDeactivateAutoInvest = () => {
       </View>
       </View>
       
-      <View style={styles.savingsContainer}>
-        <View style={styles.savingsLine1}>
+      <ImageBackground
+  source={require('./icb2.png')}
+  style={styles.savingsContainer}
+  imageStyle={styles.backgroundImage}
+  >        
+  <View style={styles.savingsLine1}>
           <Ionicons name="trending-up-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
           <Text style={styles.greyText}>Total Investment    <Text style={styles.rateText}>@15-20% p.a.</Text> </Text>
         </View>
@@ -131,11 +142,11 @@ const handleConfirmDeactivateAutoInvest = () => {
 
         <View>
           <TouchableOpacity style={styles.quickSaveButton} onPress={handleQuickInvest}>
-          <Ionicons name="add-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
+          <Ionicons name="trending-up-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
           <Text style={styles.quickSaveText}>QuickInvest</Text>
         </TouchableOpacity>
         </View>
-      </View>
+      </ImageBackground>
 
       {quickInvestModalVisible && (
   <QuickInvestModal
@@ -390,6 +401,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 150,
     },
+
+    
+backgroundImage: {
+  flex: 1,
+  resizeMode: 'cover',
+  borderTopLeftRadius: 10,
+  borderTopRightRadius: 10,
+},
+
     savingsLine1: {
       flexDirection: 'row',
     color: '#8E8E93',

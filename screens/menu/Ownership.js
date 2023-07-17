@@ -5,6 +5,7 @@ import { faHouseCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import BuyPropertyModal from './BuyPropertyModal'
 import Title from '../components/Title';
+import Subtitle from '../components/Subtitle';
 
 
 
@@ -27,6 +28,8 @@ const Ownership = ({navigation}) => {
       <ScrollView style={styles.container}>
 
       <Title>Own</Title>
+      <Subtitle>Buy properties and earn lifetime rental income</Subtitle>
+
 
 
             <View style={styles.itemContainer}>

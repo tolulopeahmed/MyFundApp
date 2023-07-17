@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Header from '../components/Header';
 import Divider from '../components/Divider';
 import WithdrawModal from './WithdrawModal';
 import Title from '../components/Title';
+import Subtitle from '../components/Subtitle';
 
 
 const Wallet = ({ navigation, firstName }) => {
@@ -28,12 +28,15 @@ const Wallet = ({ navigation, firstName }) => {
     </View>
 
 <ScrollView showsVerticalScrollIndicator={false}>
+
       <Title>Wallet</Title>
-      
+      <Subtitle>Your wallet ID is your email address</Subtitle>
+
+
       <View style={styles.propertyContainer}>
         <Ionicons name="wallet-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}>Withdraw from your Wallet at any time into your bank account</Text>
+        <Text style={styles.propertyText}>Withdraw from your Wallet at any time into your bank account or give your wallet ID to other MyFund users to receive gift funds from them.</Text>
       </View>
       </View>
       
@@ -73,12 +76,12 @@ const Wallet = ({ navigation, firstName }) => {
         <View style={styles.transactionsContainer}>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="car-outline"
+              name="checkmark-circle"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>AutoSave</Text>
+              <Text style={styles.transactionDescription}>pelumi@gmail.com</Text>
               <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
             </View>
             <View>
@@ -87,12 +90,12 @@ const Wallet = ({ navigation, firstName }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="cash-outline"
+              name="checkmark-circle"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickSave</Text>
+              <Text style={styles.transactionDescription}>timothy@yahoo.co.uk</Text>
               <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
             </View>
             <View>
@@ -101,13 +104,13 @@ const Wallet = ({ navigation, firstName }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="wallet-outline"
+              name="arrow-down-outline"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
               <Text style={styles.transactionDescription}>
-                Withdrawal From Saving
+                Withdrawal From Wallet
               </Text>
               <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
             </View>
@@ -120,12 +123,12 @@ const Wallet = ({ navigation, firstName }) => {
           <View style={styles.transactionsContainer}>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="car-outline"
+              name="checkmark-circle"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>AutoSave</Text>
+              <Text style={styles.transactionDescription}>adeyemijohn@gmail.com</Text>
               <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
             </View>
             <View>
@@ -134,12 +137,12 @@ const Wallet = ({ navigation, firstName }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="cash-outline"
+              name="checkmark-circle"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickSave</Text>
+              <Text style={styles.transactionDescription}>patrickmundi@gmail.com</Text>
               <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
             </View>
             <View>
@@ -148,13 +151,13 @@ const Wallet = ({ navigation, firstName }) => {
           </View>
           <View style={styles.transactionItem}>
             <Ionicons
-              name="wallet-outline"
+              name="arrow-down-outline"
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
               <Text style={styles.transactionDescription}>
-                Withdrawal From Saving
+                Withdrawal From Wallet
               </Text>
               <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
             </View>

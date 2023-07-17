@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
 import WithdrawModal from './WithdrawModal';
 import Title from '../components/Title';
+import Subtitle from '../components/Subtitle';
 
 const Withdraw = ({ navigation, route }) => {
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false); // define modalVisible state
@@ -26,9 +27,15 @@ const Withdraw = ({ navigation, route }) => {
     <ScrollView showsVerticalScrollIndicator={false}>
 
       <Title>Withdraw</Title>
+      <Subtitle>Move funds between accounts or to your bank</Subtitle>
+
       
-      <View style={styles.walletContainer}>
-        <View style={styles.walletDetails}>
+      <ImageBackground
+  source={require('./icb2.png')}
+  style={styles.walletContainer}
+  imageStyle={styles.backgroundImage}
+  >
+            <View style={styles.walletDetails}>
        
      <View flexDirection='row' marginTop={-8}>  
      <Ionicons name="md-wallet-outline" size={21} color="silver" />
@@ -47,13 +54,16 @@ const Withdraw = ({ navigation, route }) => {
         withdrawModalVisible={withdrawModalVisible} 
         setWithdrawModalVisible={setWithdrawModalVisible} />
 
-        </View>
-      
-      </View>
+        </View>      
+      </ImageBackground>
       
 
-      <View style={styles.walletContainer}>
-        <View style={styles.walletDetails}>
+      <ImageBackground
+  source={require('./scb.png')}
+  style={styles.walletContainer}
+  imageStyle={styles.backgroundImage}
+  >        
+    <View style={styles.walletDetails}>
        
      <View flexDirection='row' marginTop={-8}>  
      <Ionicons name="md-save-outline" size={21} color="silver" />
@@ -67,14 +77,17 @@ const Withdraw = ({ navigation, route }) => {
          </View>
          <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>2.5%</Text> fee.
 </Text>
-       
-        
-        </View>
-      
-      </View>
+              
+        </View>      
+      </ImageBackground>
 
-      <View style={styles.walletContainer}>
-        <View style={styles.walletDetails}>
+
+      <ImageBackground
+  source={require('./icb2.png')}
+  style={styles.walletContainer}
+  imageStyle={styles.backgroundImage}
+  >        
+  <View style={styles.walletDetails}>
        
      <View flexDirection='row' marginTop={-8}>  
      <Ionicons name="md-trending-up-outline" size={21} color="silver" />
@@ -89,7 +102,9 @@ const Withdraw = ({ navigation, route }) => {
          <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>5%</Text> fee.
 </Text>
         </View>
-      </View>
+      </ImageBackground>
+
+
     
       <TouchableOpacity style={styles.withdrawButton2} onPress={() => setWithdrawModalVisible(true)}>
           <Ionicons name="arrow-down-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
@@ -214,10 +229,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#4C28BC',
     marginHorizontal: 20,
     borderRadius: 10,
-    marginTop: 4,
+    marginTop: 5,
     marginBottom: 10,
     alignItems: 'center',
     height: 120,
+  },
+
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
 
   amountContainer:{

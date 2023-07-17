@@ -1,17 +1,20 @@
 import React, { useContext, useEffect, useState} from 'react';
-import { View, Text, Pressable, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Image } from 'react-native';
+import { View, Text, Pressable, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, Image, ImageBackground } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Header from '../components/Header';
 import Divider from '../components/Divider';
 import Swiper from 'react-native-swiper';
 import Title from '../components/Title';
+import Subtitle from '../components/Subtitle';
 import ImageContext from './ImageContext';
-
+import { AutoSaveContext } from '../components/AutoSaveContext';
+import { AutoInvestContext } from '../components/AutoInvestContext';
 
 const Home = ({ navigation, route, }) => {
-  const [autoSave, setAutoSave] = useState(false);
   const [greeting, setGreeting] = useState('');
   const { profileImageUri } = useContext(ImageContext);
+  const { autoSave } = useContext(AutoSaveContext)
+  const { autoInvest } = useContext(AutoInvestContext)
 
 
   useEffect(() => {
@@ -19,11 +22,11 @@ const Home = ({ navigation, route, }) => {
     let newGreeting;
 
     if (currentHour < 12) {
-      newGreeting = 'Good Morning!';
+      newGreeting = 'Good Morning! Welcome to MyFund';
     } else if (currentHour < 17) {
-      newGreeting = 'Good Afternoon!';
+      newGreeting = 'Good Afternoon! Welcome to MyFund';
     } else {
-      newGreeting = 'Good Evening!';
+      newGreeting = 'Good Evening! Welcome to MyFund';
     }
 
     setGreeting(newGreeting);
@@ -61,8 +64,10 @@ const Home = ({ navigation, route, }) => {
 
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
   <View>
+    
     <Title>Tolulope,</Title>
-    <Text style={styles.propertyText} marginLeft={25} marginTop={-10} marginBottom={10}>{greeting}</Text>
+    <Subtitle>{greeting}</Subtitle>
+
   </View>
   <Pressable marginRight={20} onPress={() => navigation.navigate('More...')}>
     {profileImageUri ? (
@@ -76,7 +81,7 @@ const Home = ({ navigation, route, }) => {
 
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
-        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: "#4C28BC" }}>MyFund: </Text>Enjoy 10% p.a. on Savings and <Text style={{fontFamily: 'proxima'}}>20% p.a. on Investments every January and July</Text>, and lifetime rental income on Ownership Investment every year. Keep growing your funds.</Text>
+        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: "#4C28BC" }}></Text>Enjoy 10% p.a. on Savings, 20% p.a. on Investments <Text style={{fontFamily: 'proxima'}}>every January and July</Text>, and lifetime yearly rental income when you buy properties. Keep growing your funds.</Text>
       </View>
 
 
@@ -89,8 +94,12 @@ const Home = ({ navigation, route, }) => {
   activeDot={<View style={styles.activeDot} />}
   paginationStyle={styles.paginationContainer}
 >
-      <View style={styles.savingsContainer}>
-        <View style={styles.savingsLine1}>
+  <ImageBackground
+  source={require('./scb.png')}
+  style={styles.savingsContainer}
+  imageStyle={styles.backgroundImage}
+  >
+            <View style={styles.savingsLine1}>
           <Ionicons name="save-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
           <Text style={styles.greyText}>TOTAL SAVINGS    
           <Text style={styles.rateText}>    @10% p.a.</Text> </Text>
@@ -107,10 +116,14 @@ const Home = ({ navigation, route, }) => {
     <Text style={styles.quickSaveText}>QuickSave</Text>
   </TouchableOpacity>
 </View>
-    </View>
+    </ImageBackground>
        
 
-    <View style={styles.savingsContainer}>
+    <ImageBackground
+  source={require('./icb.png')}
+  style={styles.savingsContainer}
+  imageStyle={styles.backgroundImage}
+  >
         <View style={styles.savingsLine1}>
           <Ionicons name="trending-up-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
           <Text style={styles.greyText}>TOTAL INVESTMENTS    
@@ -128,11 +141,15 @@ const Home = ({ navigation, route, }) => {
 <Text style={styles.quickSaveText}>QuickInvest</Text>
   </TouchableOpacity>
 </View>
-    </View>
+    </ImageBackground>
 
 
-    <View style={styles.savingsContainer}>
-        <View style={styles.savingsLine1}>
+    <ImageBackground
+  source={require('./scb.png')}
+  style={styles.savingsContainer}
+  imageStyle={styles.backgroundImage}
+  >        
+  <View style={styles.savingsLine1}>
           <Ionicons name="home-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
           <Text style={styles.greyText}>TOTAL PROPERTIES ACQUIRED    
           <Text style={styles.rateText}>    @yearly rent</Text> </Text>
@@ -147,11 +164,15 @@ const Home = ({ navigation, route, }) => {
 <Text style={styles.quickSaveText}>Buy Properties</Text>
   </TouchableOpacity>
 </View>
-    </View>
+    </ImageBackground>
 
       
-    <View style={styles.savingsContainer}>
-        <View style={styles.savingsLine1}>
+    <ImageBackground
+  source={require('./icb2.png')}
+  style={styles.savingsContainer}
+  imageStyle={styles.backgroundImage}
+  >
+            <View style={styles.savingsLine1}>
           <Ionicons name="wallet-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
           <Text style={styles.greyText}>TOTAL WALLET    
           <Text style={styles.rateText}> (My Earnings)</Text> </Text>
@@ -168,7 +189,7 @@ const Home = ({ navigation, route, }) => {
 <Text style={styles.quickSaveText}>Withdraw</Text>
   </TouchableOpacity>
 </View>
-    </View>
+    </ImageBackground>
 
   
     </Swiper>
@@ -178,43 +199,78 @@ const Home = ({ navigation, route, }) => {
       
       <View style={styles.todoContainer}>
       <Text style={styles.todoList}>QUICK ACTIONS</Text>
-        
-      {!autoSave && (
+      
       <View style={styles.todoList1}>
-        <TouchableOpacity 
-        style={styles.todoButton} 
+      <TouchableOpacity
+        style={[styles.todoButton, autoSave && styles.disabledButton]}
         onPress={handleActivateAutoSave}
         disabled={autoSave}
-        >
-          <Ionicons
+      >
+        {autoSave ? (
+          <>
+            <Ionicons
               name="car-outline"
               size={24}
-              color={autoSave ? 'green' : 'black'}
+              color="green"
               style={{ marginRight: 10, marginLeft: 10 }}
             />
-            <Text style={styles.todoText}>
-              {autoSave ? 'AutoSave is ON' : 'Turn On AutoSave'}
-            </Text>
-          </TouchableOpacity>
+            <Text style={styles.disabledText}>AutoSave is ON</Text>
+            <Ionicons
+              name="checkmark-circle"
+              size={24}
+              color="green"
+              style={{ marginRight: 10, marginLeft: 10 }}
+            />
+          </>
+        ) : (
+          <>
+            <Ionicons
+              name="car-outline"
+              size={24}
+              color="black"
+              style={{ marginRight: 10, marginLeft: 10 }}
+            />
+            <Text style={styles.todoText}>Turn ON AutoSave</Text>
+          </>
+        )}
+      </TouchableOpacity>
       </View>
-    )}
 
-{autoSave && (
-        <Save
-          navigation={navigation}
-          route={route}
-          autoSave={autoSave}
-          setAutoSave={setAutoSave}
-        />
-      )}
         
         <View style={styles.todoList1}>
-          <TouchableOpacity style={styles.todoButton} onPress={() => handleActivateAutoInvest()}>
-          <Ionicons name="car-sport-outline" size={24} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
-          <Text style={styles.todoText}>Turn On AutoInvest</Text>
-        </TouchableOpacity>
-
-       
+        <TouchableOpacity
+        style={[styles.todoButton, autoInvest && styles.disabledButton]}
+        onPress={handleActivateAutoInvest}
+        disabled={autoInvest}
+      >
+        {autoInvest ? (
+          <>
+            <Ionicons
+              name="car-sport-outline"
+              size={24}
+              color="green"
+              style={{ marginRight: 10, marginLeft: 10 }}
+            />
+            <Text style={styles.disabledText}>AutoInvest is ON</Text>
+            <Ionicons
+              name="checkmark-circle"
+              size={24}
+              color="green"
+              style={{ marginRight: 10, marginLeft: 10 }}
+            />
+          </>
+        ) : (
+          <>
+            <Ionicons
+              name="car-sport-outline"
+              size={24}
+              color="black"
+              style={{ marginRight: 10, marginLeft: 10 }}
+            />
+            <Text style={styles.todoText}>Turn ON AutoInvest</Text>
+          </>
+        )}
+      </TouchableOpacity>
         </View>
 
         <View style={styles.todoList1}>
@@ -223,7 +279,17 @@ const Home = ({ navigation, route, }) => {
           <Text style={styles.todoText}>Refer and Earn</Text>
         </TouchableOpacity>
         </View>
+
+        <View style={styles.todoList1}>
+        <TouchableOpacity style={styles.todoButton} onPress={() => navigation.navigate('KYC')}>
+          <Ionicons name="shield-checkmark-outline" size={23} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
+          <Text style={styles.todoText}>Update KYC</Text>
+        </TouchableOpacity>
+        </View>
+
       </View>
+
+   
     
     
       <SafeAreaView style={styles.transactionContainer}>
@@ -444,6 +510,7 @@ marginHorizontal: 20,
 alignItems: 'center',
 borderRadius: 10,
 marginBottom: 4,
+marginTop: 5,
 flexWrap: 'wrap', // Adjust container size based on the text inside
 },
 propertyIcon: {
@@ -457,7 +524,7 @@ fontFamily: 'karla',
 },
 
 swiperContainer: {
-  height: 150,
+  height: 160,
 },
 dot: {
   backgroundColor: 'rgba(0, 0, 0, 0.2)', // Customize the color of the inactive dots
@@ -489,7 +556,14 @@ savingsContainer: {
   borderRadius: 10,
   marginTop: 5,
   alignItems: 'center',
-  height: 150,
+  height: 160,
+},
+
+backgroundImage: {
+  flex: 1,
+  resizeMode: 'cover',
+  borderTopLeftRadius: 10,
+  borderTopRightRadius: 10,
 },
 
   savingsLine1: {
@@ -616,6 +690,24 @@ todoButton: {
   borderRadius: 9,
 },
 
+disabledButton: {
+  flexDirection: 'row',
+  borderColor: 'silver',
+  backgroundColor: '#D6D6D6',
+  height: 40,
+  width: '100%',
+  padding: 6,
+  borderWidth: 1,
+  borderRadius: 9,
+},
+
+disabledText: {
+  marginTop: 3,
+fontSize: 16,
+fontFamily: 'karla',
+color: 'green',
+},
+
 todoList:{
   marginTop: 2,
   fontSize: 18,
@@ -684,7 +776,7 @@ recentTransaction: {
 },
 
 transactionContainer: {
-  marginTop: 25,
+  marginTop: 5,
   flex: 1,
     },
 

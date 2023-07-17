@@ -37,7 +37,7 @@ const DeactivateAutoSaveModal = ({ deactivateAutoSaveModalVisible, setDeactivate
         >
           <View style={styles.modalContent}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 30 }}>
-              <Text style={styles.modalHeader}>Deactivate AutoSave</Text>
+              <Text style={styles.modalHeader}>Deactivate AutoSave?</Text>
               <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25}   onPress={closeModal}/>
             </View>
             <Divider />
@@ -49,7 +49,7 @@ const DeactivateAutoSaveModal = ({ deactivateAutoSaveModalVisible, setDeactivate
             </View>
             <View style={styles.buttonsContainer}>
               <TouchableOpacity style={styles.primaryButton} onPress={handleConfirmDeactivateAutoSave}>
-                <Text style={styles.primaryButtonText}>Yes, Deactivate</Text>
+                <Text style={styles.primaryButtonText}>Yes, Deactivate!</Text>
               </TouchableOpacity>
             </View>
           </View>

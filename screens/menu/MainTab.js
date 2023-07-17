@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet } from 'react-native';
 import { useState } from 'react';
 import { ImageProvider } from './ImageContext';
-
+import { AutoSaveProvider } from '../components/AutoSaveContext';
 
 import Home from './Home';
 import Save from './Save';
@@ -38,6 +38,7 @@ const MainTab = ({ navigation }) => {
 
   return (
     <ImageProvider>
+      <AutoSaveProvider>
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
@@ -77,6 +78,7 @@ const MainTab = ({ navigation }) => {
       <Tab.Screen name="Withdraw" component={Withdraw} />
       <Tab.Screen name="More..." component={Profile} />
     </Tab.Navigator>
+    </AutoSaveProvider>
     </ImageProvider>
   );
 };

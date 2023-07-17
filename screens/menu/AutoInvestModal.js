@@ -48,7 +48,7 @@ const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible, se
 
           <Text style={styles.modalSubText}>
             AutoInvest allows you to set an amount to automatically debit from your local bank account
-            to your MyFund account for up to <Text style={{color: 'green'}}>20% ROI p.a.</Text> Minimum: 60,000
+            to your MyFund account for up to <Text style={{color: 'green', fontFamily: 'proxima'}}>20% ROI p.a.</Text> Minimum: N100,000
           </Text>
           <View style={styles.inputContainer}>
           <Text style={styles.autoSaveSetting}>AutoInvest Settings</Text>

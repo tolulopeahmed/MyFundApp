@@ -6,6 +6,7 @@ import Divider from '../components/Divider';
 import Swiper from 'react-native-swiper';
 import QuickInvestModal from '../components/QuickInvestModal';
 import Title from '../components/Title';
+import Subtitle from '../components/Subtitle';
 
 const images = [
   require('./sponsorship.png'),
@@ -44,6 +45,8 @@ const Invest = ({ navigation, firstName }) => {
 
       
       <Title>Invest</Title>
+      <Subtitle>Sponsor or Buy</Subtitle>
+
 
       <View style={styles.swiper}>
          <Swiper
@@ -71,8 +74,8 @@ const Invest = ({ navigation, firstName }) => {
 
       <View>
         <Text style={styles.title2}>Choose Type of Investment</Text>
-        <Text style={styles.subText}>Sponsorship Investments: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>20% p.a. </Text>every January & July. {'\n'}
-        Ownership Investments: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>Lifetime rent </Text> every year</Text>
+        <Text style={styles.subText}>SPONSOR: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>20% p.a. </Text>every January & July. {'\n'}
+        OWN: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>Lifetime rent </Text> every year</Text>
         <Divider />
 
         <View style={{ flexDirection: 'row' }}>
@@ -81,7 +84,7 @@ const Invest = ({ navigation, firstName }) => {
             <Text style={{ padding: 3, marginTop: 2, fontSize: 17, fontFamily: 'proxima', textAlign: 'center', color: '#4C28BC' }}>Sponsorship Investment</Text>
             <Text style={{ marginTop: 4, fontSize: 12, fontFamily: 'karla', textAlign: 'center', }}>Earn up to <Text color='red'>20% per anum</Text> sponsoring our National Hostel Project. Paid every January and July</Text>
             <TouchableOpacity style={styles.quickInvestButton} onPress={handleQuickInvest}>
-              <Ionicons name="add-outline" size={24} color="#fff" />
+              <Ionicons name="trending-up-outline" size={24} color="#fff" />
               <Text style={styles.quickInvestText}>QuickInvest</Text>
             </TouchableOpacity>
           </TouchableOpacity>

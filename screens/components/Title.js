@@ -7,7 +7,7 @@ const Title = ({ children }) => {
 
 const styles = StyleSheet.create({
   title: {
-    fontSize: 50,
+    fontSize: 46,
     marginLeft: 25,
     fontFamily: 'proxima',
     color: '#4C28BC',

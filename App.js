@@ -27,6 +27,7 @@ import Chat from './screens/menu/Chat'
 import Success from './screens/components/Success';
 import ReferAndEarn from './screens/menu/ReferAndEarn';
 import { ImageProvider } from './screens/menu/ImageContext';
+import { AutoInvestProvider } from './screens/components/AutoInvestContext';
 
 const Stack = createStackNavigator();
 
@@ -65,6 +66,7 @@ const App = ({ styles, darkModeStyles, }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
         <ImageProvider>
+        <AutoInvestProvider>
     <NavigationContainer>
 
       <Stack.Navigator
@@ -98,6 +100,7 @@ const App = ({ styles, darkModeStyles, }) => {
 
       </Stack.Navigator>
     </NavigationContainer>
+    </AutoInvestProvider>
     </ImageProvider>
 
     </SafeAreaView>

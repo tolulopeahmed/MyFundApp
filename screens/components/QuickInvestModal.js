@@ -13,6 +13,10 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
     setAmount(value);
   }
 
+  const handleAddCard= () => {
+    navigation.navigate('Card', { addCardModalVisible: true });
+  };
+
  
   const closeModal = () => {
     setQuickInvestModalVisible(false);
@@ -46,7 +50,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          Manually move funds from your local bank acount into your Sponsorship Investment Account with a few taps. <Text style={{fontFamily: 'proxima'}}>(@20% p.a.) </Text> {'\n'}
+          Manually move multiples of N100,000 from your local bank acount into your Sponsorship Investment Account with a few taps to enjoy <Text style={{fontFamily: 'proxima'}}>20% p.a. ROI. </Text> {'\n'}
             {'\n'}QuickInvest...
           </Text>
         
@@ -113,7 +117,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
 
       
       <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.navigate('Card')}>
+                <TouchableOpacity style={styles.primaryButton} onPress={handleAddCard}>
                   <Text style={styles.primaryButtonText}>Add Card Now</Text>
                 </TouchableOpacity>
 
