@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     marginBottom: 5,
-    fontFamily: 'karla'
+//    fontFamily: 'karla',
   },
   whiteText: {
     color: '#FFFFFF',

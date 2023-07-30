@@ -57,10 +57,6 @@ const App = ({ styles, darkModeStyles, }) => {
      return <Splash />;
   }
 
-  setTimeout(() => {
-    setIsLoading(false);
-  }, 2000);
-
 
 
   return (

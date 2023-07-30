@@ -20,8 +20,10 @@
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.3.16",
     "expo": "~48.0.10",
+    "expo-app-loading": "^2.1.1",
+    "expo-clipboard": "~4.1.2",
     "expo-dev-client": "~2.2.1",
-    "expo-font": "^11.1.1",
+    "expo-font": "~11.1.1",
     "expo-image-picker": "~14.1.1",
     "expo-local-authentication": "~13.3.0",
     "expo-status-bar": "~1.4.4",
@@ -52,7 +54,7 @@
     "react-native-svg": "13.4.0",
     "react-native-swiper": "^1.6.0",
     "react-native-swiper-flatlist": "^3.2.2",
-    "expo-clipboard": "~4.1.2"
+    "expo-splash-screen": "~0.18.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

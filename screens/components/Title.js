@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     marginLeft: 25,
     fontFamily: 'proxima',
     color: '#4C28BC',
-    marginTop: 5,
+    marginTop: 10,
     marginBottom: 5,
     marginLeft: 20,
     letterSpacing: -2,
