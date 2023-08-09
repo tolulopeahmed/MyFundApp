@@ -1,5 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.utils import timezone
+import random
+import string
+from django.conf import settings
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.template.loader import render_to_string
+
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -29,6 +38,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=15)
     referral = models.CharField(max_length=40, blank=True, null=True)
     otp = models.CharField(max_length=6, blank=True, null=True)
+    reset_token = models.CharField(max_length=64, null=True, blank=True)
+    reset_token_expires = models.DateTimeField(null=True, blank=True)
 
 
     is_active = models.BooleanField(default=True)
@@ -42,3 +53,21 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+
+    def generate_reset_token(self):
+        token = ''.join(random.choices(string.ascii_letters + string.digits, k=64))
+        self.reset_token = token
+        self.reset_token_expires = timezone.now() + timezone.timedelta(hours=1)
+        self.save()
+        
+    def send_password_reset_email(self):
+        subject = "Password Reset for MyFund"
+        reset_url = reverse('reset-password')
+        reset_url += f'?token={self.reset_token}'
+        message = render_to_string('password_reset_email.html', {'reset_url': reset_url})
+        from_email = settings.EMAIL_HOST_USER
+        recipient_list = [self.email]
+        send_mail(subject, message, from_email, recipient_list)
+
+

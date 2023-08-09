@@ -67,6 +67,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Excluding CSRF middleware for password reset endpoints
+CSRF_EXCLUDE_URLS = [
+    '/api/request-password-reset/',
+    '/api/reset-password/',
+]
+
 ROOT_URLCONF = 'myfundproject.urls'
 
 TEMPLATES = [

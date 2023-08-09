@@ -13,6 +13,14 @@ from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from rest_framework.views import APIView
 from django.contrib.auth import logout
+from django.shortcuts import render, redirect
+
+
+from django.utils import timezone
+from .models import CustomUser
+
+from django.contrib.auth import get_user_model
+
 
 
 
@@ -84,9 +92,47 @@ class CustomObtainAuthToken(ObtainAuthToken):
         user = token.user
         return Response({'token': token.key, 'user_id': user.id})
 
+
+
+
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         logout(request)
         return Response({"detail": "Logged out successfully."}, status=status.HTTP_200_OK)
+    
+
+
+CustomUser = get_user_model()
+
+@api_view(['POST'])
+@csrf_exempt
+def request_password_reset(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = CustomUser.objects.get(email=email)
+            user.generate_reset_token()
+            user.send_password_reset_email()
+        except CustomUser.DoesNotExist:
+            pass  # Do nothing if user is not found
+    return render(request, 'password_reset_request.html')
+
+@api_view(['POST'])
+@csrf_exempt
+def reset_password(request):
+    if request.method == 'POST':
+        token = request.POST.get('token')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        try:
+            user = CustomUser.objects.get(reset_token=token, reset_token_expires__gte=timezone.now())
+            if password == confirm_password:
+                user.set_password(password)
+                user.reset_token = None
+                user.reset_token_expires = None
+                user.save()
+        except CustomUser.DoesNotExist:
+            pass  # Do nothing if token is invalid or expired
+    return render(request, 'password_reset_confirm.html')
