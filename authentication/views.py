@@ -137,10 +137,12 @@ def reset_password(request):
             try:
                 user = CustomUser.objects.get(reset_token=token, reset_token_expires__gte=timezone.now())
                 if password == confirm_password:
+                    print("Updating password...")
                     user.set_password(password)
                     user.reset_token = None
                     user.reset_token_expires = None
                     user.save()
+                    print("Password update completed")
                     return JsonResponse({'message': 'Password reset successful'})
                 else:
                     return JsonResponse({'error': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
