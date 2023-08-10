@@ -88,10 +88,14 @@ def test_email(request):
 
 class CustomObtainAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
-        response = super(CustomObtainAuthToken, self).post(request, *args, **kwargs)
-        token = Token.objects.get(key=response.data['token'])
-        user = token.user
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        
         return Response({'token': token.key, 'user_id': user.id})
+
 
 
 
@@ -130,8 +134,8 @@ def request_password_reset(request):
 def reset_password(request):
     if request.method == 'POST':
         token = request.GET.get('token')  # Get the token from URL parameters
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
+        password = request.data.get('password')  # Retrieve from request data
+        confirm_password = request.data.get('confirm_password')  # Retrieve from request data
         
         if token:  # Check if token is provided
             try:

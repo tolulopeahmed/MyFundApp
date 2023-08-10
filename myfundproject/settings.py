@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'authentication',
     ]
 
@@ -51,10 +52,6 @@ REST_FRAMEWORK = {
     ),
 }
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # Default authentication backend
-    'path.to.YourCustomEmailBackend',  # Replace with the actual path to your custom email backend
-]
 
 
 SIMPLE_JWT = {
