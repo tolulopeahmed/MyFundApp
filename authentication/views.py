@@ -3,24 +3,27 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.core.mail import send_mail
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import AllowAny
-from .serializers import SignupSerializer, ConfirmOTPSerializer
+from rest_framework.decorators import (
+    api_view, authentication_classes, permission_classes
+)
+from rest_framework.permissions import (
+    IsAuthenticated, AllowAny
+)
+from .serializers import (
+    SignupSerializer, ConfirmOTPSerializer, UserSerializer
+)
 import random
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from rest_framework.views import APIView
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse
-
 from django.utils import timezone
 from .models import CustomUser
-
 from django.contrib.auth import get_user_model
+
 
 
 
@@ -156,3 +159,22 @@ def reset_password(request):
             return JsonResponse({'error': 'Token not provided'}, status=status.HTTP_400_BAD_REQUEST)
     
     return JsonResponse({'error': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_profile(request):
+    user = request.user
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_profile(request):
+    user = request.user
+    serializer = UserSerializer(user, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

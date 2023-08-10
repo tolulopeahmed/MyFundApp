@@ -9,4 +9,6 @@ urlpatterns = [
     path('test-email/', views.test_email, name='test-email'), #Use this to test if your email sending functionality is working.
     path('request-password-reset/', views.request_password_reset, name='request-password-reset'),
     path('reset-password/', views.reset_password, name='reset-password'),
+    path('api/get-profile/', views.get_profile),
+    path('api/update-profile/', views.update_profile),
 ]

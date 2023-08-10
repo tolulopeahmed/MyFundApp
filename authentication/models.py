@@ -42,6 +42,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     otp = models.CharField(max_length=6, blank=True, null=True)
     reset_token = models.CharField(max_length=64, null=True, blank=True)
     reset_token_expires = models.DateTimeField(null=True, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
 
 
     is_active = models.BooleanField(default=True)
