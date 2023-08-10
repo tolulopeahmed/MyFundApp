@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import JsonResponse
 
 from django.utils import timezone
 from .models import CustomUser
@@ -123,20 +124,29 @@ def request_password_reset(request):
 
     return Response({'detail': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['POST'])
 @csrf_exempt
 def reset_password(request):
     if request.method == 'POST':
-        token = request.POST.get('token')
+        token = request.GET.get('token')  # Get the token from URL parameters
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
-        try:
-            user = CustomUser.objects.get(reset_token=token, reset_token_expires__gte=timezone.now())
-            if password == confirm_password:
-                user.set_password(password)
-                user.reset_token = None
-                user.reset_token_expires = None
-                user.save()
-        except CustomUser.DoesNotExist:
-            pass  # Do nothing if token is invalid or expired
-    return render(request, 'password_reset_confirm.html')
+        
+        if token:  # Check if token is provided
+            try:
+                user = CustomUser.objects.get(reset_token=token, reset_token_expires__gte=timezone.now())
+                if password == confirm_password:
+                    user.set_password(password)
+                    user.reset_token = None
+                    user.reset_token_expires = None
+                    user.save()
+                    return JsonResponse({'message': 'Password reset successful'})
+                else:
+                    return JsonResponse({'error': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
+            except CustomUser.DoesNotExist:
+                return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return JsonResponse({'error': 'Token not provided'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    return JsonResponse({'error': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
