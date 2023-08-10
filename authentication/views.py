@@ -14,7 +14,7 @@ from django.conf import settings
 from rest_framework.views import APIView
 from django.contrib.auth import logout
 from django.shortcuts import render, redirect
-
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.utils import timezone
 from .models import CustomUser
@@ -110,14 +110,18 @@ CustomUser = get_user_model()
 @csrf_exempt
 def request_password_reset(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        email = request.data.get('email')
+
         try:
             user = CustomUser.objects.get(email=email)
             user.generate_reset_token()
             user.send_password_reset_email()
-        except CustomUser.DoesNotExist:
-            pass  # Do nothing if user is not found
-    return render(request, 'password_reset_request.html')
+            
+            return Response({'detail': 'Password reset email sent successfully.'})
+        except ObjectDoesNotExist:
+            return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    return Response({'detail': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 @csrf_exempt

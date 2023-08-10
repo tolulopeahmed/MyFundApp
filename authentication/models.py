@@ -7,6 +7,8 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+from django.utils.html import strip_tags
 
 
 
@@ -63,11 +65,20 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         
     def send_password_reset_email(self):
         subject = "Password Reset for MyFund"
-        reset_url = reverse('reset-password')
-        reset_url += f'?token={self.reset_token}'
-        message = render_to_string('password_reset_email.html', {'reset_url': reset_url})
+        reset_url = "https://tolulopeahmed.github.io/password-reset-confirmation/?token=" + self.reset_token
+        context = {
+            'first_name': self.first_name,
+            'reset_url': reset_url,
+        }
+        
+        text_message = strip_tags(render_to_string('password_reset_email.txt', context))
+        html_message = render_to_string('password_reset_email.html', context)
+        
         from_email = settings.EMAIL_HOST_USER
         recipient_list = [self.email]
-        send_mail(subject, message, from_email, recipient_list)
+        
+        msg = EmailMultiAlternatives(subject, text_message, from_email, recipient_list)
+        msg.attach_alternative(html_message, "text/html")
+        msg.send()
 
 
