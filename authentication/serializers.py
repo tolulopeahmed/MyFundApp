@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import CustomUser
 
+
 class SignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
@@ -21,6 +22,8 @@ class ConfirmOTPSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    is_confirmed = serializers.BooleanField(read_only=True)
+
 
     class Meta:
         model = CustomUser
@@ -37,11 +40,25 @@ class UserSerializer(serializers.ModelSerializer):
         )
         return user
     
+from django.contrib.auth import authenticate
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
+    def validate(self, data):
+        email = data.get('email')
+        password = data.get('password')
+
+        # Retrieve user using case-insensitive email match
+        user = authenticate(request=self.context.get('request'), email__iexact=email, password=password)
+
+        if user:
+            if not user.is_active:
+                raise serializers.ValidationError("User account is not active.")
+            return user
+        else:
+            raise serializers.ValidationError("Invalid email or password.")
 
 
 class PasswordResetRequestSerializer(serializers.Serializer):
@@ -50,4 +67,13 @@ class PasswordResetRequestSerializer(serializers.Serializer):
 class PasswordResetSerializer(serializers.Serializer):
     token = serializers.CharField()
     password = serializers.CharField()
+
+
+
+from rest_framework import serializers
+
+class UserProfileUpdateSerializer(serializers.Serializer):
+    first_name = serializers.CharField(max_length=30, required=False)
+    last_name = serializers.CharField(max_length=30, required=False)
+    phone_number = serializers.CharField(max_length=15, required=False)
 

@@ -15,6 +15,7 @@ from datetime import timedelta
 import os
 
 
+SSL_PORT = 8443  # You can choose any available port number
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +30,7 @@ SECRET_KEY = 'django-insecure-rct_mdzr=x!99kwy+xy1$#x=5_+!_-dynu%z&!jx_-qkj7*%*%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', '10.10.4.14','localhost', '192.168.226.34', '192.168.176.34', '10.10.4.174', '192.168.84.34', '10.10.4.174' ]
 
 
 # Application definition
@@ -44,13 +45,19 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'authentication',
+    'corsheaders',
+    #'sslserver',
+
     ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    # Other settings...
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    ],
+    'DEFAULT_TOKEN_EXPIRE_TIME': 60 * 60 * 24,  # Default is 1 day in seconds
 }
+
 
 
 
@@ -68,7 +75,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    'https://tolulopeahmed.github.io',
+    'https://192.168.226.34:8000',
+]
+
 
 # Excluding CSRF middleware for password reset endpoints
 CSRF_EXCLUDE_URLS = [
@@ -173,3 +188,19 @@ APPEND_SLASH = True
 EMAIL_TEMPLATES = {
     'password_reset': 'authentication/email_templates/password_reset_email.html',
 }
+
+AUTHENTICATION_BACKENDS = [
+    'authentication.authentication_backends.EmailBackend',  # Replace 'path.to' with the actual path
+    # ...
+]
+
+#Use myfundmobile.com cert and key here...
+#SSL_KEY = os.path.join(BASE_DIR, 'backend', 'key.pem')
+#SSL_CERT = os.path.join(BASE_DIR, 'backend', 'cert.pem')
+
+
+#Configure Django to use HTTPS by default
+#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#SESSION_COOKIE_SECURE = True
+#CSRF_COOKIE_SECURE = True
+#SECURE_SSL_REDIRECT = True

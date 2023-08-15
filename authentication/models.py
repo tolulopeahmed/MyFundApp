@@ -9,6 +9,9 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.utils.html import strip_tags
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 
 
 
@@ -43,6 +46,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     reset_token = models.CharField(max_length=64, null=True, blank=True)
     reset_token_expires = models.DateTimeField(null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    is_confirmed = models.BooleanField(default=False)
 
 
     is_active = models.BooleanField(default=True)
@@ -81,5 +85,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         msg = EmailMultiAlternatives(subject, text_message, from_email, recipient_list)
         msg.attach_alternative(html_message, "text/html")
         msg.send()
+
+
+
+
 
 

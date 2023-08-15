@@ -23,13 +23,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from .models import CustomUser
 from django.contrib.auth import get_user_model
-
-
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.authentication import TokenAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from .serializers import UserProfileUpdateSerializer
 
 
 
 @api_view(['POST'])
-@permission_classes([])
+@permission_classes([AllowAny])
 @csrf_exempt
 def signup(request):
     serializer = SignupSerializer(data=request.data)
@@ -47,24 +50,32 @@ def signup(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['POST'])
-# @permission_classes([IsAuthenticated])  # Require authentication for this view
-@permission_classes([AllowAny])  # Allow any user (authenticated or not) to test
+@permission_classes([AllowAny])
 @csrf_exempt
 def confirm_otp(request):
     serializer = ConfirmOTPSerializer(data=request.data)
     if serializer.is_valid():
         otp = serializer.validated_data['otp']
-        user = request.user  # Assuming the user is authenticated
 
-        if user.otp == otp:
-            user.is_active = True  # Confirm the account
-            user.save()
-            return Response({'message': 'Account confirmed successfully.'}, status=status.HTTP_200_OK)
+        try:
+            user = CustomUser.objects.get(otp=otp)
+            if user.is_active:
+                return Response({'message': 'Account already confirmed.'}, status=status.HTTP_400_BAD_REQUEST)
             
-            # If OTP doesn't match
-        return Response({'message': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+            user.is_active = True
+            user.save()
+            print("Account confirmed successfully.")
+            return Response({'message': 'Account confirmed successfully.'}, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            print("Invalid OTP.")
+            return Response({'message': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 def generate_otp():
     return ''.join(random.choices('0123456789', k=6))
@@ -75,6 +86,28 @@ def send_otp_email(user, otp):
     from_email = settings.EMAIL_HOST_USER  # Replace with your sender email
     recipient_list = [user.email]
     send_mail(subject, message, from_email, recipient_list)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+@csrf_exempt
+def confirm_otp(request):
+    serializer = ConfirmOTPSerializer(data=request.data)
+    if serializer.is_valid():
+        otp = serializer.validated_data['otp']
+
+        try:
+            user = CustomUser.objects.get(otp=otp, is_confirmed=False)  # Only confirm if not already confirmed
+            user.is_confirmed = True
+            user.save()
+            return Response({'message': 'Account confirmed successfully.'}, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            return Response({'message': 'Invalid OTP or account already confirmed.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 
 def test_email(request):
@@ -93,23 +126,43 @@ class CustomObtainAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        
-        return Response({'token': token.key, 'user_id': user.id})
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'user_id': user.id,
+        })
 
 
-
-
+from rest_framework.permissions import AllowAny
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]  # Allow any user to access this endpoint
 
     def post(self, request):
         logout(request)
         return Response({"detail": "Logged out successfully."}, status=status.HTTP_200_OK)
-    
+
+
+
+class OTPVerificationView(APIView):
+    def post(self, request, *args, **kwargs):
+        received_otp = request.data.get('otp')
+        user = request.user  # Assuming the user is authenticated
+
+        if user.otp == received_otp and not user.otp_verified:
+            # OTP matches and is not yet verified
+            user.otp_verified = True
+            user.save()
+            return Response({'success': True})
+        else:
+            return Response({'success': False})
+
+
+
 
 
 CustomUser = get_user_model()
@@ -162,19 +215,45 @@ def reset_password(request):
 
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_profile(request):
-    user = request.user
-    serializer = UserSerializer(user)
-    return Response(serializer.data)
 
-@api_view(['PATCH'])
+@api_view(['GET'])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
-def update_profile(request):
+def get_user_profile(request):
+    print("Headers:", request.headers)
+    print("Data:", request.data)
+    print("Token:", request.auth)  # Print the token to verify it's being extracted
+    
+    if request.user.is_authenticated:
+        print("Authenticated user:", request.user)
+    else:
+        print("User not authenticated.")
+        
     user = request.user
-    serializer = UserSerializer(user, data=request.data, partial=True)
+    profile_data = {
+        "firstName": user.first_name,
+        "lastName": user.last_name,
+        "mobileNumber": user.phone_number,
+        "email": user.email,
+        # ... other fields you want to include
+    }
+    return Response(profile_data)
+
+            
+
+
+@api_view(['PUT'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def update_user_profile(request):
+    user = request.user
+
+    serializer = UserProfileUpdateSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        user.first_name = serializer.validated_data.get('first_name', user.first_name)
+        user.last_name = serializer.validated_data.get('last_name', user.last_name)
+        user.phone_number = serializer.validated_data.get('phone_number', user.phone_number)
+        user.save()
+        return Response({'message': 'Profile updated successfully.'}, status=status.HTTP_200_OK)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
