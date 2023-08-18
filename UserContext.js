@@ -18,7 +18,6 @@ export const UserProvider = ({ children }) => {
         });
 
   
-
   useEffect(() => {
     const retrieveAuthToken = async () => {
       try {
@@ -57,7 +56,7 @@ export const UserProvider = ({ children }) => {
             });
         }
       } catch (error) {
-        console.error('Error retrieving auth token:', error);
+        console.error('Error retrieving auth token (not API error):', error);
       }
     };
   
