@@ -6,19 +6,24 @@ import Divider from '../components/Divider';
 import Swiper from 'react-native-swiper';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
-import ImageContext from './ImageContext';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { AutoInvestContext } from '../components/AutoInvestContext';
 import { useUserContext } from '../../UserContext';
+import SectionTitle from '../components/SectionTitle';
+import ImageContext from './ImageContext';
 
 const Home = ({ navigation}) => {
   const [greeting, setGreeting] = useState('');
-  const { profileImageUri } = useContext(ImageContext);
   const { autoSave } = useContext(AutoSaveContext)
   const { autoInvest } = useContext(AutoInvestContext)
   const { userInfo } = useUserContext();
+  const { profileImageUri } = useContext(ImageContext);
 
 
+  useEffect(() => {
+    console.log('Profile Image URI in context:', userInfo.profileImageUri);
+  }, [userInfo.profileImageUri]);
+  
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -34,6 +39,10 @@ const Home = ({ navigation}) => {
 
     setGreeting(newGreeting);
   }, []);
+
+
+
+  
 
   const handleQuickSave = () => {
     navigation.navigate('Save', { quickSaveModalVisible: true });
@@ -75,13 +84,17 @@ const Home = ({ navigation}) => {
     <Subtitle>{greeting}</Subtitle>
 
   </View>
-  <Pressable marginRight={20} onPress={() => navigation.navigate('More...')}>
-    {profileImageUri ? (
-      <Image source={{ uri: profileImageUri }} style={styles.profileImage} />
-    ) : (
-      <Ionicons name="person-circle-outline" size={80} color="silver" />
-    )}
-  </Pressable>
+  
+  <Pressable marginRight={15} marginTop={5} onPress={() => navigation.navigate('More...')}>
+      {profileImageUri ? (
+        <Image source={{ uri: profileImageUri }} style={styles.profileImage} />
+      ) : userInfo.profileImageUri ? (
+        <Image source={{ uri: userInfo.profileImageUri }} style={styles.profileImage} />
+      ) : (
+        <Ionicons name="person-circle" size={80} color="silver" />
+      )}
+    </Pressable>
+
 </View>
 
 
@@ -91,7 +104,8 @@ const Home = ({ navigation}) => {
       </View>
 
 
-     
+      <SectionTitle>MY ACCOUNTS</SectionTitle>
+
       <Swiper
   style={styles.swiperContainer}
   autoplay
@@ -200,11 +214,10 @@ const Home = ({ navigation}) => {
   
     </Swiper>
 
-      
-    
-      
+      <View style={{marginTop: 20}}>
+    <SectionTitle>QUICK ACTIONS</SectionTitle>
+    </View>
       <View style={styles.todoContainer}>
-      <Text style={styles.todoList}>QUICK ACTIONS</Text>
       
       <View style={styles.todoList1}>
       <TouchableOpacity
@@ -301,7 +314,7 @@ const Home = ({ navigation}) => {
       <SafeAreaView style={styles.transactionContainer}>
       <Divider />
 
-      <Text style={styles.recentTransaction}>RECENT TRANSACTIONS</Text>
+<SectionTitle>RECENT TRANSACTIONS</SectionTitle>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.transactionsContainer}>
@@ -515,8 +528,8 @@ padding: 15,
 marginHorizontal: 20,
 alignItems: 'center',
 borderRadius: 10,
-marginBottom: 4,
-marginTop: 5,
+marginBottom: 15,
+marginTop: 0,
 flexWrap: 'wrap', // Adjust container size based on the text inside
 },
 propertyIcon: {
@@ -531,6 +544,7 @@ fontFamily: 'karla',
 
 swiperContainer: {
   height: 160,
+  
 },
 dot: {
   backgroundColor: 'rgba(0, 0, 0, 0.2)', // Customize the color of the inactive dots
@@ -681,7 +695,7 @@ backgroundColor: 'silver',
 todoContainer: {
 borderRadius: 10,
 marginHorizontal: 20,
-marginTop: 20,
+marginTop: 1,
 
 },
 

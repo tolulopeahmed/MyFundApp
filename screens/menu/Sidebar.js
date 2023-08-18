@@ -3,10 +3,11 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from 'rea
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider';
 import QuickSaveModal from '../components/QuickSaveModal';
+import { useUserContext } from '../../UserContext';
 
-
-const Sidebar = ({ navigation, firstName, }) => {
+const Sidebar = ({ navigation, }) => {
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
+  const { userInfo } = useUserContext();
 
 
   const handleLogout = () => {
@@ -30,7 +31,7 @@ const Sidebar = ({ navigation, firstName, }) => {
 
         <View style={styles.profileInfo}>
           <Text style={styles.firstName}>Hi</Text>
-          <Text style={styles.username}>User</Text>
+          <Text style={styles.username}>{userInfo?.firstName}</Text>
         </View>
       </View>
       <View style={styles.menuItemsContainer}>

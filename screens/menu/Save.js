@@ -12,7 +12,7 @@ import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { useUserContext } from '../../UserContext';
-
+import SectionTitle from '../components/SectionTitle';
 
 const Save = ({ navigation, route }) => {
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
@@ -112,6 +112,8 @@ const Save = ({ navigation, route }) => {
         </Swiper>
         </View>
       
+        <SectionTitle>MY SAVINGS</SectionTitle>
+
         <ImageBackground
   source={require('./icb2.png')}
   style={styles.savingsContainer}

@@ -1,8 +1,9 @@
 import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import * as Font from 'expo-font';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Splash from './screens/Splash';
 import OnboardingScreens from './screens/onboarding/OnboardingScreens';
@@ -39,7 +40,7 @@ const App = ({ styles, darkModeStyles, }) => {
 
 
   useEffect(() => {
-    async function loadFonts() {
+      async function loadFonts() {
       await Font.loadAsync({
         'karla': require('./screens/fonts/Karla-Regular.ttf'),
         'karla-italic': require('./screens/fonts/Karla-Italic.ttf'),
@@ -69,8 +70,11 @@ const App = ({ styles, darkModeStyles, }) => {
     <NavigationContainer>
 
       <Stack.Navigator
-        initialRouteName="OnboardingScreens"
-        screenOptions={{ headerShown: false }}
+       initialRouteName="OnboardingScreens"
+        screenOptions={{
+          headerShown: false,
+          ...TransitionPresets.SlideFromRightIOS, // Apply slide push animation
+        }}
       >
         <Stack.Screen name="OnboardingScreens" component={OnboardingScreens} />
         <Stack.Screen name="CreateAccount" component={CreateAccount} />

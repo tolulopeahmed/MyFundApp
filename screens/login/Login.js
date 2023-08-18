@@ -7,6 +7,8 @@ import axios from 'axios';
 import { CommonActions } from '@react-navigation/native';
 import { ipAddress } from '../../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Audio } from 'expo-av';
+
 
 const Login = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,6 +28,17 @@ const Login = ({ navigation }) => {
     setIsFormValid(validEmail && validPassword && isFormTouched);
   }, [validEmail, validPassword, isFormTouched]);
   
+  const playLoginSound = async () => {
+    const soundObject = new Audio.Sound();
+
+    try {
+      await soundObject.loadAsync(require('./warm_login.mp3'));
+      await soundObject.playAsync();
+    } catch (error) {
+      console.log('Error playing sound:', error);
+    }
+  };
+
 
   const handleLogin = async () => {
     setIsLoggingIn(true);
@@ -39,15 +52,12 @@ const Login = ({ navigation }) => {
       setIsLoggingIn(false);
   
       if (response.status === 200) {
-        const { access, refresh, user_id } = response.data; // Destructure tokens and user_id
+        const { access, refresh, user_id } = response.data;
   
         if (access && refresh) {
-          // Save the access token to AsyncStorage
           await AsyncStorage.setItem('authToken', access);
-  
-          // Save the user_id to AsyncStorage (if needed)
           await AsyncStorage.setItem('userId', user_id.toString());
-  
+
           setModalVisible(false);
           navigation.dispatch(
             CommonActions.reset({
@@ -55,31 +65,33 @@ const Login = ({ navigation }) => {
               routes: [{ name: 'DrawerTab' }],
             })
           );
+      
+              // Play the login sound
+              playLoginSound();
+
+
         } else {
-          // Handle case where tokens are missing
           console.log('Tokens missing in response:', response.data);
         }
       } else if (response.status === 400) {
-        // Wrong username or password
-        Alert.alert('Wrong username or password', 'Please try again.');
-        console.log('Login failed:', response.data);
+        // Check if the response contains specific error details
+        if (response.data && response.data.non_field_errors) {
+          Alert.alert('Login Error', 'Wrong username or password. Please try again.');
+        } else {
+          Alert.alert('Login Error', 'An error occurred while logging in. Please try again later.');
+          console.log('Login failed:', response.data);
+        }
       } else {
-        // Other login error
-        Alert.alert(
-          'Login Error',
-          'An error occurred while logging in. Please try again later.'
-        );
+        Alert.alert('Login Error', 'An error occurred while logging in. Please try again later.');
         console.log('Login failed:', response.data);
       }
     } catch (error) {
       setIsLoggingIn(false);
-      Alert.alert(
-        'Login Error',
-        'An error occurred while logging in. Please try again later.'
-      );
+      Alert.alert('Login Error', 'Wrong username or password. Please try again.');
       console.log('Login error:', error);
     }
   };
+  
   
   
   
@@ -370,7 +382,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 15,
-    marginBottom: 4,
+    marginBottom: 54,
     marginTop: 10,
     marginRight: 10,
   },

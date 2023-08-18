@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Modal, Text, ActivityIndicator, View, TextInput, TouchableOpacity, Stylesheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Modal, Text, Alert, ActivityIndicator, View, TextInput, TouchableOpacity, Stylesheet } from 'react-native';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';  // Import axios for making API requests
@@ -11,46 +11,80 @@ const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVis
   const [lastName, setLastName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [updatingProfile, setUpdatingProfile] = useState(false);
-  const { userInfo } = useUserContext(); // Get the userInfo from the context
+  const { userInfo, setUserInfo } = useUserContext();
 
-  
   
   const handleUpdateProfile = async () => {
     const updatedProfile = {
-      firstName,
-      lastName,
-      mobileNumber,
+      first_name: firstName,
+      last_name: lastName,
+      phone_number: mobileNumber,
     };
   
-    setUpdatingProfile(true); // Set the updatingProfile state to true while the API call is being made
+    setUpdatingProfile(true);
   
     try {
-      // Make an API call to update the user's profile
-      const response = await axios.put(
-        `${ipAddress}/update_user_profile/`,
+      const response = await axios.patch(
+        `${ipAddress}/api/update-user-profile/`,
         updatedProfile,
         {
           headers: {
-            Authorization: `Bearer ${userInfo.token}`, // Access the token from UserContext
+            Authorization: `Bearer ${userInfo.token}`,
           },
         }
       );
   
       if (response.status === 200) {
-        // Update was successful
-        setProfile(updatedProfile); // Update the profile state with the new values
-        onClose(updatedProfile); // Call the onClose function and pass the updated profile data
-        setProfileEditModalVisible(false); // Close the modal
-      } else {
-        // Handle error cases
-        console.log('Profile update failed:', response.data);
-      }
+        if (response.status === 200) {
+          // Update the userInfo using the setUserInfo function from the context
+          setUserInfo(prevUserInfo => ({
+            ...prevUserInfo,
+            first_name: updatedProfile.first_name,
+            last_name: updatedProfile.last_name,
+            phone_number: updatedProfile.phone_number,
+          }));
+      
+          Alert.alert('Success', 'Profile updated successfully. Please login again to update. Do you want to do that now?', [
+            {
+              text: 'Yes, Logout',
+              onPress: async () => {
+                try {
+                  // Make an API call to log the user out
+                  const logoutResponse = await axios.post(`${ipAddress}/api/logout/`);
+      
+                  if (logoutResponse.status === 200) {
+                    // Successfully logged out
+                    navigation.reset({
+                      index: 0,
+                      routes: [{ name: 'Login' }],
+                    });
+                  }
+                } catch (error) {
+                  console.log('Logout error:', error);
+                }
+              },
+            },
+            {
+              text: 'No, Later',
+              onPress: () => {
+                onClose();
+                setProfileEditModalVisible(false);
+              },
+            },
+          ]);
+        } else {
+          console.log('Profile update failed:', response.data);
+        }
+      };
     } catch (error) {
       console.log('Profile update error:', error);
     } finally {
-      setUpdatingProfile(false); // Set updatingProfile back to false regardless of success or failure
+      setUpdatingProfile(false);
     }
   };
+  
+  
+
     
 
     const closeModal = () => {

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-
 import MainTab from './MainTab';
 import Sidebar from './Sidebar';
+import { UserProvider } from '../../UserContext';
+
 
 const Drawer = createDrawerNavigator();
 
@@ -21,7 +22,7 @@ const DrawerTab = ({ navigation, firstName }) => {
 
   return (
     <View style={styles.container}>
-      
+      <UserProvider>
       <Drawer.Navigator
   drawerContent={(props) => <Sidebar {...props} firstName={firstName} profileImageUri={profileImageUri} />}
   drawerStyle={{ width: '80%' }}
@@ -41,6 +42,7 @@ const DrawerTab = ({ navigation, firstName }) => {
           onTouchStart={() => setIsSidebarOpen(false)}
         />
       )}
+      </UserProvider>
     </View>
   );
 };

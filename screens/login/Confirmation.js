@@ -2,18 +2,20 @@ import React, { useRef, useState} from 'react';
 import { View, Text, animation, StyleSheet, Image, TouchableOpacity, TextInput, Modal, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import MyFundLogo from './logo..png';
-import SavingsGoalModal from '../menu/SavingsGoalModal';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRoute } from '@react-navigation/native';
 
 
   const Confirmation = ({ navigation }) => {
     const [error, setError] = useState(""); // Declare the error state
     const inputRefs = useRef([]);
+    const route = useRoute();
+    const { email, password } = route.params;
 
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
   const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
   const [isConfirmButtonEnabled, setIsConfirmButtonEnabled] = useState(false);
 
@@ -53,17 +55,7 @@ import { ipAddress } from '../../constants';
   
   
   
-  
-  
-  
-  
-    
-  
-
-      
-      
-      
-  const handleConfirm = async () => {
+  const handleConfirm = async (email) => {
     const otpCode = otpValues.reduce((accumulator, value) => accumulator + value, '');
     console.log('Sending OTP:', otpCode);
   
@@ -77,11 +69,38 @@ import { ipAddress } from '../../constants';
       if (response.status === 200) {
         if (response.data && response.data.message === 'Account confirmed successfully.') {
           console.log('OTP Verification Successful');
-          setModalVisible(true);
-          setTimeout(() => {
-            setModalVisible(false);
-            navigation.navigate('DrawerTab');
-          }, 1500);
+  
+          try {
+            const loginResponse = await axios.post(`${ipAddress}/api/login/`, {
+              username: email,
+              password: password, // If needed
+            });
+  
+            if (loginResponse.status === 200) {
+              const { access, refresh, user_id } = loginResponse.data;
+  
+              if (access && refresh) {
+                await AsyncStorage.setItem('authToken', access);
+                await AsyncStorage.setItem('userId', user_id.toString());
+  
+                console.log('OTP Verification Successful');
+                setModalVisible(true);
+                setTimeout(() => {
+                  setModalVisible(false);
+                  navigation.navigate('DrawerTab');
+                }, 1500);
+                
+              } else {
+                console.log('Tokens missing in response:', loginResponse.data);
+              }
+            } else {
+              console.log('Login API Error:', loginResponse.data);
+              setError("An error occurred while logging in. Please try again later.");
+            }
+          } catch (loginError) {
+            console.error('Login API Error:', loginError);
+            setError("An error occurred while logging in. Please try again later.");
+          }
         } else {
           console.log('OTP Verification Failed');
           setError("Wrong OTP entered. Please check and try again.");
@@ -101,8 +120,8 @@ import { ipAddress } from '../../constants';
     }
   };
   
-      
-      
+  
+  
     
     
     
@@ -191,7 +210,7 @@ import { ipAddress } from '../../constants';
 
       <TouchableOpacity
         style={[styles.confirmCodeButton, !isConfirmButtonEnabled && styles.disabledConfirmCodeButton]}
-        onPress={handleConfirm}
+        onPress={() => handleConfirm(email)}
         disabled={!isConfirmButtonEnabled}
       >
         <Text style={styles.confirmCodeButtonText}>CONFIRM CODE</Text>
@@ -218,7 +237,6 @@ import { ipAddress } from '../../constants';
         </View>
       </Modal>
 
-      <SavingsGoalModal navigation={navigation} goalModalVisible={goalModalVisible} setGoalModalVisible={setGoalModalVisible} />
 
     </View>
   );

@@ -7,12 +7,17 @@ import { ipAddress } from './constants';
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [userInfo, setUserInfo] = useState({
-    firstName: '',
-    lastName: '',
-    mobileNumber: '',
-    email: '',
-  });
+    const [profileImageUri, setProfileImageUri] = useState('');
+    const [userInfo, setUserInfo] = useState({
+            firstName: '',
+            lastName: '',
+            mobileNumber: '',
+            email: '',
+            profileImageUrl: '', // Initialize with an empty string or default image URL
+            token: '', // Initialize with an empty string
+        });
+
+  
 
   useEffect(() => {
     const retrieveAuthToken = async () => {
@@ -20,40 +25,116 @@ export const UserProvider = ({ children }) => {
         const token = await AsyncStorage.getItem('authToken');
         if (token !== null) {
           console.log('Retrieved Token:', token);
-          // Now you have the token, proceed with the API request
+          setUserInfo(prevUserInfo => ({
+            ...prevUserInfo,
+            token,
+          }));
+  
+          // Fetch user profile data after retrieving the token
           axios
-            .get(`${ipAddress}/api/get_user_profile/`, {
+            .get(`${ipAddress}/api/get-user-profile/`, {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
             })
-            .then(response => {
-              console.log('API Response:', response.data);
-              const profileData = response.data;
-              setUserInfo({ ...profileData, token }); // Update the userInfo state with the fetched data and token
+            .then(profileResponse => {
+              console.log('API Response:', profileResponse.data);
+              const profileData = profileResponse.data;
+  
+              // Set user info in UserContext
+              setUserInfo(prevUserInfo => ({
+                ...prevUserInfo,
+                ...profileData,
+                profileImageUrl: profileData.profile_picture,
+              }));
+
+              setProfileImageUri(profileData.profile_picture);
+
             })
-            .catch(error => {
-              console.error('API Error:', error);
-              if (error.response && error.response.status === 401) {
-                alert('Authentication failed. Please log in again.');
-              } else {
-                alert('Error fetching user profile');
-              }
+            .catch(profileError => {
+              console.error('API Error:', profileError);
+              alert('Error fetching user profile');
             });
-        } else {
-          console.log('No token found');
-          // Handle case where no token is found
         }
       } catch (error) {
         console.error('Error retrieving auth token:', error);
       }
     };
-
+  
     retrieveAuthToken();
   }, []);
+  
+
+
+
+  useEffect(() => {
+    if (userInfo.token) {
+      axios
+        .get(`${ipAddress}/api/get-user-profile/`, {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        })
+        .then(response => {
+          console.log('API Response:', response.data);
+          const profileData = response.data;
+
+          // Set user info in UserContext
+          setUserInfo(prevUserInfo => ({
+            ...prevUserInfo,
+            ...profileData,
+            profileImageUrl: profileData.profile_picture, // Set the profileImageUrl based on the API response
+          }));
+        
+     
+        })
+        .catch(error => {
+          console.error('API Error:', error);
+          if (error.response && error.response.status === 401) {
+            alert('Authentication failed. Please log in again.');
+          } else {
+            alert('Error fetching user profile');
+          }
+        });
+    }
+  }, [userInfo.token]);
+  
+  const updateProfileImageUri = (newUri) => {
+    setProfileImageUri(newUri);
+  };
+  
+
+
+  // Add a function to update user profile
+  const updateUserProfile = (updatedProfile) => {
+    setUserInfo(prevUserInfo => ({
+      ...prevUserInfo,
+      firstName: updatedProfile.first_name,
+      lastName: updatedProfile.last_name,
+      mobileNumber: updatedProfile.phone_number,
+      profileImageUrl: updatedProfile.profile_picture, // Update the profile image URL
+    }));
+  };
+
+  
+ 
+
+  useEffect(() => {
+    console.log('Profile Image URL in context:', userInfo.profileImageUrl);
+  }, [userInfo.profileImageUrl]);
+  
+  
 
   return (
-    <UserContext.Provider value={{ userInfo }}>
+    <UserContext.Provider 
+        value={{ 
+            userInfo,
+            setUserInfo,
+            profileImageUri,
+            updateUserProfile,
+            updateProfileImageUri,
+        }}
+    >
       {children}
     </UserContext.Provider>
   );

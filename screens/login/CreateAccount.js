@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, Dimensions, TouchableOpacity, Keyboard, TextInput } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, SafeAreaView, ScrollView, Image, Dimensions, TouchableOpacity, Keyboard, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
@@ -27,10 +27,24 @@ const CreateAccount = ({ navigation }) => {
 
   useEffect(() => {
         // Check if both email and password are valid
-    setIsFormValid(validEmail && validPassword && validConfirmPassword && validFirstName && validLastName && validPhoneNumber &&
-      isFormTouched);
-  }, [validEmail, validPassword, validConfirmPassword, validFirstName, validLastName, validPhoneNumber,
-    isFormTouched]);
+        setIsFormValid(
+          validEmail &&
+          validPassword &&
+          validConfirmPassword &&
+          validFirstName &&
+          validLastName &&
+          validPhoneNumber &&
+          isFormTouched
+        );
+      }, [
+        validEmail,
+        validPassword,
+        validConfirmPassword,
+        validFirstName,
+        validLastName,
+        validPhoneNumber,
+        isFormTouched,
+      ]);
 
 
   const validateEmail = (email) => {
@@ -66,44 +80,63 @@ const CreateAccount = ({ navigation }) => {
 
 
 
- const handleSignup = async () => {
-  try {
-    setIsCreatingAccount(true);  // Set to true when account creation begins
-    const response = await axios.post(`${ipAddress}/api/signup/`, {
-      email: email.toLowerCase(),
-      password: password,
-      first_name: firstName,
-      last_name: lastName,
-      phone_number: phoneNumber,
-      referral: referralValue, // Add this if you're collecting referral data
-    });
-
-    if (response.status === 201) {
-      setIsCreatingAccount(false);  // Set back to false on successful signup
-      navigation.navigate('Confirmation');
-    } else {
-      // Handle other response statuses or errors
-      console.log('Signup failed with status:', response.status);
-      // You can add more specific error handling here based on the response status
-    }
-  } catch (error) {
-    setIsCreatingAccount(false);  // Set back to false on error
-    console.error('An error occurred during signup:', error);
-
-    if (error.response) {
-      console.log('Response data:', error.response.data);
-      console.log('Response status:', error.response.status);
-
-      if (error.response.status === 400 && error.response.data.email) {
-        // Handle the case where the user already exists
-        alert('A MyFund user is already using this email. Kindly use another email to create your account.');
+  const handleSignup = async () => {
+    try {
+      setIsCreatingAccount(true);  // Set to true when account creation begins
+      const response = await axios.post(`${ipAddress}/api/signup/`, {
+        email: email.toLowerCase(),
+        password: password,
+        first_name: firstName,
+        last_name: lastName,
+        phone_number: phoneNumber,
+        referral: referralValue, // Add this if you're collecting referral data
+      });
+  
+      if (response.status === 201) {
+        setIsCreatingAccount(false);  // Set back to false on successful signup
+        navigation.navigate('Confirmation', {
+          email: email.toLowerCase(),
+          password: password,
+        });
       } else {
-        // Handle other errors
+        // Handle other response statuses or errors
+        console.log('Signup failed with status:', response.status);
+        // You can add more specific error handling here based on the response status
         alert('Signup failed. Please check your details and try again.');
       }
+    } catch (error) {
+      setIsCreatingAccount(false);  // Set back to false on error
+      console.error('An error occurred during signup:', error);
+  
+      if (error.response) {
+        console.log('Response data:', error.response.data);
+        console.log('Response status:', error.response.status);
+  
+        if (error.response.status === 400) {
+          if (error.response.data.email) {
+            // Handle the case where the user already exists
+            alert('A MyFund user is already using this email. Kindly use another email to create your account.');
+          } else if (
+            !error.response.data.first_name ||
+            !error.response.data.last_name ||
+            !error.response.data.email ||
+            !error.response.data.password ||
+            !error.response.data.phone_number
+          ) {
+            // Handle the case where required fields are missing
+            alert('Please fill in all required fields to create your account.');
+          } else {
+            // Handle other errors
+            alert('Signup failed. Please check your details and try again.');
+          }
+        } else {
+          // Handle other errors
+          alert('Signup failed. Please check your details and try again.');
+        }
+      }
     }
-  }
-};
+  };
+  
 
 
 
@@ -229,10 +262,16 @@ const CreateAccount = ({ navigation }) => {
             }}
             disabled={!isFormValid || isCreatingAccount}  // Disable the button while account is being created
           >
-            <Text style={styles.createAccountButtonText}>
-              {isCreatingAccount ? "Creating Account..." : "CREATE ACCOUNT"}  {/* Update the text */}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              {isCreatingAccount ? (
+                <ActivityIndicator color="white" size="small" /> // Show the activity indicator
+              ) : null}
+              <Text style={styles.createAccountButtonText}>
+                {isCreatingAccount ? "  Creating Account..." : "CREATE ACCOUNT"}  {/* Update the text */}
+              </Text>
+            </View>
           </TouchableOpacity>
+
 
 
 

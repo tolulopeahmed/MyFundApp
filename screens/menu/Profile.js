@@ -10,6 +10,7 @@ import ImageContext from './ImageContext';
 import axios from 'axios';  // Import axios for making API requests
 import { ipAddress } from '../../constants';
 import { useUserContext } from '../../UserContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = ({ navigation, }) => {
   const { profileImageUri, setProfileImageUri } = useContext(ImageContext);
@@ -19,12 +20,17 @@ const Profile = ({ navigation, }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
   const [profileEditModalVisible, setProfileEditModalVisible] = useState(false); // define modalVisible state
-  const { userInfo } = useUserContext(); // Use the userInfo from the context
   const [profile, setProfile] = useState(userInfo); // Initialize with user's existing profile info
+  const { userInfo, } = useUserContext(); // Destructure userInfo and the updateProfileImageUri function
 
+  console.log('Profile Image URL from context:', userInfo.profileImageUrl);
 
+ 
+  useEffect(() => {
+    setProfileImageUri(userInfo.profileImageUrl);
+  }, [userInfo.profileImageUrl]);
 
-
+  
   
   const handleRateMyFund = () => {
     const buyNowUrl = 'https://bit.ly/Vback';
@@ -34,20 +40,62 @@ const Profile = ({ navigation, }) => {
 
   const handlePickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  
     if (status === 'granted') {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
-      });
-      if (!result.canceled) {
-        const selectedAsset = result.assets[0]; // Access the first selected asset from the "assets" array
-      setSelectedImage(selectedAsset.uri); // Use the "uri" property of the selected asset
-      setProfileImageUri(selectedAsset.uri); // Update the profile image URI in the context
-    }
+      try {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 1,
+        });
+  
+        if (!result.canceled) {
+          const selectedAsset = result.assets[0];
+  
+          const formData = new FormData();
+          formData.append('profile_picture', {
+            uri: selectedAsset.uri,
+            name: 'profile_picture.jpg',
+            type: 'image/jpeg',
+          });
+  
+          try {
+            const response = await axios.patch(
+              `${ipAddress}/api/profile-picture-update/`,
+              formData,
+              {
+                headers: {
+                  Authorization: `Bearer ${userInfo.token}`,
+                  'Content-Type': 'multipart/form-data',
+                },
+              }
+            );
+  
+            if (response.status === 200) {
+              Alert.alert('Success', 'Profile picture updated successfully');
+              console.log('New profile image URI:', selectedAsset.uri);
+
+              setSelectedImage(selectedAsset.uri); // Update the selectedImage state
+              setProfileImageUri(selectedAsset.uri); // Update the profileImageUri here
+             
+              await AsyncStorage.setItem('profileImageUri', selectedAsset.uri);
+              
+            } else {
+              Alert.alert('Error', response.data.message); // Assuming the API returns an error message in the 'message' field
+            }
+          } catch (error) {
+            Alert.alert('Error', 'An error occurred while updating the profile picture');
+          }
+        }
+      } catch (error) {
+        Alert.alert('Error', 'Failed to access the image library');
+      }
+    } else {
+      Alert.alert('Permission Denied', 'You need to grant permission to access the image library');
     }
   };
+    
   
 
 
@@ -78,6 +126,8 @@ const Profile = ({ navigation, }) => {
           onPress: async () => {
             try {
               // Make an API call to log the user out
+              await AsyncStorage.removeItem('authToken');
+
               const response = await axios.post(`${ipAddress}/api/logout/`);
     
               if (response.status === 200) {
@@ -100,8 +150,6 @@ const Profile = ({ navigation, }) => {
     );
   };
   
-
-
 
 
   const handleEditProfile = () => {
@@ -141,25 +189,32 @@ const Profile = ({ navigation, }) => {
 
   <View flexDirection='row'>
   <View style={styles.leftContainer}>
-    <View style={styles.imageContainer}>
-    <Pressable>
-        {selectedImage ? (
-          <Image source={{ uri: selectedImage }} style={styles.image} />
-        ) : (
-          <Ionicons name="person-circle" size={175} color="silver" marginBottom={-10} />
-        )}
-        {selectedImage && (
-          <Pressable style={styles.editIconContainer} onPress={handlePickImage}>
-            <MaterialIcons name="edit" size={20} color="#4C28BC" />
-          </Pressable>
-        )}
-        <Pressable style={styles.editIconContainer} onPress={handlePickImage}>
+  <View style={styles.imageContainer}>
+  <Pressable onPress={handlePickImage}>
+    
+  <Image
+  source={
+    selectedImage
+      ? { uri: profileImageUri }
+      : profileImageUri
+      ? { uri:  userInfo.profileImageUrl}
+      : <Ionicons name="person-circle" size={120} color="silver" /> // You can replace this with your default image
+  }
+  style={styles.image}
+/>
+
+    
+      <View style={styles.editIconContainer}>
+        <Pressable onPress={handlePickImage}>
           <MaterialIcons name="edit" size={20} color="#fff" />
         </Pressable>
-      </Pressable>
+      </View>
+    
+  </Pressable>
+</View>
 
 
-    </View>
+
     <Text style={styles.nameText}>{userInfo.firstName}</Text>
     <Text style={styles.usernameText}>{userInfo.email}</Text>
   </View>

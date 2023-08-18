@@ -9,6 +9,8 @@ import DeactivateAutoInvestModal from './DeactivateAutoInvestModal';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoInvestContext } from '../components/AutoInvestContext';
+import SectionTitle from '../components/SectionTitle';
+
 
 const Sponsorship = ({ navigation, route }) => {
 // const [autoInvest, setAutoInvest] = React.useState(false);
@@ -78,6 +80,8 @@ const handleConfirmDeactivateAutoInvest = () => {
       </View>
       </View>
       
+      <SectionTitle>MY SPONSORSHIP INVESTMENT</SectionTitle>
+
       <ImageBackground
   source={require('./icb2.png')}
   style={styles.savingsContainer}
@@ -335,7 +339,8 @@ const styles = StyleSheet.create({
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
-    marginTop: 5,
+    marginTop: 1,
+    marginBottom: 10,
   },
   
   propertyText: {
@@ -397,7 +402,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#4C28BC',
     marginHorizontal: 20,
     borderRadius: 10,
-    marginTop: 20,
+    marginTop: 5,
     alignItems: 'center',
     height: 150,
     },

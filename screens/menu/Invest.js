@@ -7,6 +7,8 @@ import Swiper from 'react-native-swiper';
 import QuickInvestModal from '../components/QuickInvestModal';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
+import SectionTitle from '../components/SectionTitle';
+
 
 const images = [
   require('./sponsorship.png'),
@@ -78,7 +80,9 @@ const Invest = ({ navigation, firstName }) => {
         OWN: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>Lifetime rent </Text> every year</Text>
         <Divider />
 
-        <View style={{ flexDirection: 'row' }}>
+        <SectionTitle>AVAILABLE INVESTMENTS</SectionTitle>
+
+        <View style={{ flexDirection: 'row', marginTop: 10, }}>
           <TouchableOpacity onPress={() => navigation.navigate('Sponsorship')} style={{ backgroundColor: '#E0D7FF', flex: 1, padding: 7, alignItems: 'center', marginLeft: 20, marginRight: 5, borderRadius: 10, height: 230}}>
             <Ionicons name="person-outline" size={40} color="#4C28BC" alignItems='center' marginTop={5} />
             <Text style={{ padding: 3, marginTop: 2, fontSize: 17, fontFamily: 'proxima', textAlign: 'center', color: '#4C28BC' }}>Sponsorship Investment</Text>
@@ -110,6 +114,9 @@ const Invest = ({ navigation, firstName }) => {
 
       </View>
       <Divider />
+
+      <SectionTitle>OTHER INVESTMENT OPPORTUNITIES</SectionTitle>
+
 
       </ScrollView>
     </View>

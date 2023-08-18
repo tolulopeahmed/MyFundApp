@@ -5,7 +5,7 @@ import Divider from '../components/Divider';
 import WithdrawModal from './WithdrawModal';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
-
+import SectionTitle from '../components/SectionTitle';
 
 const Wallet = ({ navigation, firstName }) => {
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
@@ -30,16 +30,18 @@ const Wallet = ({ navigation, firstName }) => {
 <ScrollView showsVerticalScrollIndicator={false}>
 
       <Title>Wallet</Title>
-      <Subtitle>Your wallet ID is your email address</Subtitle>
+      <Subtitle>Your wallet ID is your unique email address</Subtitle>
 
 
       <View style={styles.propertyContainer}>
         <Ionicons name="wallet-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}>Withdraw from your Wallet at any time into your bank account or give your wallet ID to other MyFund users to receive gift funds from them.</Text>
+        <Text style={styles.propertyText}>Withdraw from your Wallet at any time into your bank account or give your <Text style={{fontFamily: 'proxima'}}>wallet ID </Text> to other MyFund users to receive gift funds from them.</Text>
       </View>
       </View>
       
+      <SectionTitle>MY EARNINGS</SectionTitle>
+
       <View style={styles.savingsContainer}>
         <View style={styles.savingsLine1}>
           <Ionicons name="wallet-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
@@ -70,7 +72,7 @@ const Wallet = ({ navigation, firstName }) => {
 <Divider/>
 
       <SafeAreaView style={styles.transactionContainer}>
-      <Text style={styles.todoList}>Wallet Transactions</Text>
+      <SectionTitle>WALLET TRANSACTIONS</SectionTitle>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.transactionsContainer}>
@@ -258,7 +260,8 @@ bell: {
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
-    marginTop: 5,
+    marginTop: 1,
+    marginBottom: 10,
   },
   
   propertyText: {
@@ -317,7 +320,7 @@ bell: {
     backgroundColor: '#4C28BC',
     marginHorizontal: 20,
     borderRadius: 10,
-    marginTop: 20,
+    marginTop: 5,
     alignItems: 'center',
     height: 150,
     },
