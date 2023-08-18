@@ -1,5 +1,8 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('signup/', views.signup, name='signup'),
@@ -11,7 +14,12 @@ urlpatterns = [
     path('reset-password/', views.reset_password, name='reset-password'),
 
     # Profile-related APIs
-    path('get_user_profile/', views.get_user_profile, name='get_user_profile'),
-    path('update_user_profile/', views.update_user_profile, name='update_user_profile'),
+    path('get-user-profile/', views.get_user_profile, name='get-user-profile'),
+    path('update-user-profile/', views.update_user_profile, name='update-user-profile'),
+    path('profile-picture-update/', views.profile_picture_update, name='profile-picture-update'),
 
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

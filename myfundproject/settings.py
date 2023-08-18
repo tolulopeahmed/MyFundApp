@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-rct_mdzr=x!99kwy+xy1$#x=5_+!_-dynu%z&!jx_-qkj7*%*%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '10.10.4.14','localhost', '192.168.226.34', '192.168.176.34', '10.10.4.174', '192.168.84.34', '10.10.4.174' ]
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.206.34','192.168.138.34','localhost', '192.168.226.34', '192.168.176.34', '10.10.4.174', '192.168.84.34', '10.10.4.174' ]
 
 
 # Application definition
@@ -59,6 +59,8 @@ REST_FRAMEWORK = {
 }
 
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 SIMPLE_JWT = {
@@ -170,16 +172,16 @@ AUTH_USER_MODEL = 'authentication.CustomUser'
 
 # EMAIL SETTINGS
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'myfundmobile.com'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True  # Use SSL for secure connection
 
 # For SMTP authentication
-EMAIL_HOST_USER = 'myfundmobile@gmail.com'
-EMAIL_HOST_PASSWORD = 'tazzaiqtjidojsop'
+EMAIL_HOST_USER = 'info@myfundmobile.com'
+EMAIL_HOST_PASSWORD = 'Reproduce1..'
 
 # Other settings
-DEFAULT_FROM_EMAIL = 'myfundmobile@gmail.com'  # Set the default sender email address
+DEFAULT_FROM_EMAIL = 'MyFund <info@myfundmobile.com>'  # Set the default sender email address
 
 APPEND_SLASH = True
 

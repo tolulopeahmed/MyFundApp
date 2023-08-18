@@ -3,21 +3,20 @@ from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser
 
 class CustomUserAdmin(UserAdmin):
-    model = CustomUser
-    list_display = ['email', 'first_name', 'last_name', 'phone_number', 'is_staff', 'is_superuser']
+    list_display = ('email', 'first_name', 'last_name', 'phone_number', 'profile_picture', 'is_staff', 'is_active')
+    list_filter = ('is_staff', 'is_active')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal Info', {'fields': ('first_name', 'last_name', 'phone_number', 'referral')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
-        ('Important dates', {'fields': ('last_login',)}),
+        ('Personal Info', {'fields': ('first_name', 'last_name', 'phone_number', 'profile_picture', 'referral')}),
+        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')}),
     )
     add_fieldsets = (
-        (None, {'fields': ('email', 'password1', 'password2')}),
-        ('Personal Info', {'fields': ('first_name', 'last_name', 'phone_number', 'referral')}),
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'password1', 'password2'),
+        }),
     )
-    filter_horizontal = []
+    search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
-    list_filter = ('is_staff', 'is_superuser', 'is_active')
 
 admin.site.register(CustomUser, CustomUserAdmin)

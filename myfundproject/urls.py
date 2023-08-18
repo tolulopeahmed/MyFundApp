@@ -3,7 +3,8 @@ from django.urls import path, include
 from django.http import HttpResponse
 from django.template import loader
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 def welcome(request):
     template = loader.get_template('welcome.html')
@@ -18,3 +19,7 @@ urlpatterns = [
     path('', welcome, name='welcome'), 
 
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

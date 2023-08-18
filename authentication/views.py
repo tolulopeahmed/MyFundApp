@@ -4,7 +4,8 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from django.core.mail import send_mail
 from rest_framework.response import Response
 from rest_framework.decorators import (
-    api_view, authentication_classes, permission_classes
+    api_view, authentication_classes, permission_classes, api_view, 
+    permission_classes, parser_classes
 )
 from rest_framework.permissions import (
     IsAuthenticated, AllowAny
@@ -23,11 +24,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from .models import CustomUser
 from django.contrib.auth import get_user_model
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.authentication import TokenAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import UserProfileUpdateSerializer
+from rest_framework.permissions import IsAuthenticated
+from .serializers import ProfilePictureUpdateSerializer
+from rest_framework.parsers import FileUploadParser
+from datetime import datetime
+from django.utils.safestring import mark_safe
 
 
 
@@ -81,11 +85,47 @@ def generate_otp():
     return ''.join(random.choices('0123456789', k=6))
 
 def send_otp_email(user, otp):
-    subject = "OTP Code for MyFund"
-    message = f"Your MyFund OTP code is: {otp}"
-    from_email = settings.EMAIL_HOST_USER  # Replace with your sender email
+    subject = "[OTP] Did you just signup?"
+
+    current_year = datetime.now().year  # Get the current year
+
+    logo_url = "https://drive.google.com/uc?export=view&id=1MorbW_xLg4k2txNQdhUnBVxad8xeni-N"
+
+    message = f"""
+    <p><img src="{logo_url}" alt="MyFund Logo" style="display: block; margin: 0 auto; max-width: 100px; height: auto;"></p>
+
+    <p>Hi {user.first_name}, </p>
+
+    <p>We heard you'd like a shiny new MyFund account. Use the One-Time-Password (OTP) below to complete your signup. This code is valid only for 20 minutes, so chop-chop!</p>
+
+    <h1 style="text-align: center; font-size: 24px;">{otp}</h1>
+
+    <p>If you did not request to create a MyFund account, kindly ignore this email. Otherwise, buckle up, you're in for a treat!</p>
+
+    <p>Cheers!<br>Your friends at MyFund</p>
+
+    
+    ...
+    <p>Save, Buy Properties, Earn Rent<br>
+    13, Gbajabiamila Street, Ayobo, Lagos.<br>
+    www.myfundmobile.com</p>
+
+    <p>MyFund ©{current_year}</p>
+
+
+    """
+
+    from_email = settings.EMAIL_HOST_USER
     recipient_list = [user.email]
-    send_mail(subject, message, from_email, recipient_list)
+
+    send_mail(subject, mark_safe(message), from_email, recipient_list, html_message=mark_safe(message))
+
+
+
+
+
+
+
 
 
 @api_view(['POST'])
@@ -235,25 +275,56 @@ def get_user_profile(request):
         "lastName": user.last_name,
         "mobileNumber": user.phone_number,
         "email": user.email,
-        # ... other fields you want to include
+        "profile_picture": user.profile_picture.url,  # Include the profile picture URL
     }
     return Response(profile_data)
 
             
 
 
-@api_view(['PUT'])
+@api_view(['PATCH'])
 @authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 def update_user_profile(request):
     user = request.user
+    first_name = request.data.get('first_name')
+    last_name = request.data.get('last_name')
+    phone_number = request.data.get('phone_number')
 
-    serializer = UserProfileUpdateSerializer(data=request.data)
+    if first_name:
+        user.first_name = first_name
+    if last_name:
+        user.last_name = last_name
+    if phone_number:
+        user.phone_number = phone_number
+
+    user.save()
+    return Response({'message': 'Profile updated successfully.'}, status=status.HTTP_200_OK)
+
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def profile_picture_update(request):
+    user = request.user
+    serializer = ProfilePictureUpdateSerializer(user, data=request.data, partial=True)
+    
     if serializer.is_valid():
-        user.first_name = serializer.validated_data.get('first_name', user.first_name)
-        user.last_name = serializer.validated_data.get('last_name', user.last_name)
-        user.phone_number = serializer.validated_data.get('phone_number', user.phone_number)
-        user.save()
-        return Response({'message': 'Profile updated successfully.'}, status=status.HTTP_200_OK)
-    else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        
+        # Get the updated user instance
+        updated_user = CustomUser.objects.get(id=user.id)
+        
+        # Create a dictionary with the updated user information
+        updated_user_data = {
+            "firstName": updated_user.first_name,
+            "lastName": updated_user.last_name,
+            "mobileNumber": updated_user.phone_number,
+            "email": updated_user.email,
+            "profile_picture": updated_user.profile_picture.url,
+        }
+        
+        return Response({'message': 'Profile picture updated successfully.', 'user': updated_user_data})
+    
+    return Response(serializer.errors, status=400)
+
+

@@ -70,10 +70,24 @@ class PasswordResetSerializer(serializers.Serializer):
 
 
 
-from rest_framework import serializers
 
-class UserProfileUpdateSerializer(serializers.Serializer):
-    first_name = serializers.CharField(max_length=30, required=False)
-    last_name = serializers.CharField(max_length=30, required=False)
-    phone_number = serializers.CharField(max_length=15, required=False)
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'phone_number']
+
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        instance.save()
+        return instance
+
+
+
+class ProfilePictureUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['profile_picture']
+
+
 
