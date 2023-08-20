@@ -8,9 +8,24 @@ import { UserProvider } from '../../UserContext';
 
 const Drawer = createDrawerNavigator();
 
-const DrawerTab = ({ navigation, firstName }) => {
+const DrawerTab = ({ navigation, firstName, route }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [profileImageUri, setProfileImageUri] = useState(null);
+
+  
+  useEffect(() => {
+    // Check if the user is a first-time signup and came from the Confirmation Screen
+    if (route.name === 'Confirmation') {
+      // Set the SavingsGoalModal to be visible
+      setGoalModalVisible(true);
+      setTimeout(() => {
+        // Navigate to the correct "More..." screen after 3 seconds
+        navigation.navigate('More...');
+      }, 3000); // 3 seconds delay
+    }
+  }, [route]);
+  
+
 
   useEffect(() => {
     console.log('profileImageUri:', profileImageUri);

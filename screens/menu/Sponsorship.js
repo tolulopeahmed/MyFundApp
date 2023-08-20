@@ -76,7 +76,7 @@ const handleConfirmDeactivateAutoInvest = () => {
       <View style={styles.propertyContainer}>
         <MaterialIcons name="trending-up" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Better Than Savings: </Text>Earn up to <Text style={{color: 'green', fontFamily: 'proxima'}}>20% p.a. every January and July </Text>sponsoring any of our National Hostel Projects. Multiples of 100,000.</Text>
+        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Better Than Savings: </Text>Earn up to <Text style={{color: 'green', fontFamily: 'proxima'}}>20% p.a. every January and July </Text>sponsoring any of our National Hostel Projects. Multiples of ₦100,000.</Text>
       </View>
       </View>
       

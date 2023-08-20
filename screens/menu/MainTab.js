@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, StyleSheet } from 'react-native';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ImageProvider } from './ImageContext';
 import { AutoSaveProvider } from '../components/AutoSaveContext';
 import { UserProvider } from '../../UserContext';
@@ -34,8 +34,23 @@ const TabBarIcon = ({ focused, iconName, color, label }) => (
   </View>
 );
 
-const MainTab = ({ navigation }) => {
+const MainTab = ({ navigation, route }) => {
   const [autoSave, setAutoSave] = useState(false);
+ 
+  useEffect(() => {
+    // Check if the user is a first-time signup and came from the Confirmation Screen
+    if (route.name === 'Confirmation') {
+      // Set the SavingsGoalModal to be visible
+      setGoalModalVisible(true);
+      
+      setTimeout(() => {
+        // Navigate to the correct "More..." screen after 3 seconds
+        navigation.navigate('More...');
+      }, 3000); // 3 seconds delay
+    }
+  }, [route]);
+  
+  
 
   return (
     <UserProvider>

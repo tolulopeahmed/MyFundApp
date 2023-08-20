@@ -12,17 +12,41 @@ import { useUserContext } from '../../UserContext';
 import SectionTitle from '../components/SectionTitle';
 import ImageContext from './ImageContext';
 
-const Home = ({ navigation}) => {
+const Home = ({ navigation, route}) => {
   const [greeting, setGreeting] = useState('');
   const { autoSave } = useContext(AutoSaveContext)
   const { autoInvest } = useContext(AutoInvestContext)
-  const { userInfo } = useUserContext();
+  const { userInfo} = useUserContext();
+  const [displayedProfileImage, setDisplayedProfileImage] = useState(null);
   const { profileImageUri } = useContext(ImageContext);
 
 
   useEffect(() => {
-    console.log('Profile Image URI in context:', userInfo.profileImageUri);
-  }, [userInfo.profileImageUri]);
+    const timeout = setTimeout(() => {
+        if (
+            userInfo.savings_goal_amount === null ||
+            userInfo.time_period === null ||
+            userInfo.preferred_asset === null
+        ) {
+          navigation.navigate('More...', { goalModalVisible: true });
+        }
+    }, 2000); // Delay of 2000 milliseconds (2 seconds)
+
+    return () => clearTimeout(timeout); // Clear the timeout on component unmount
+}, [userInfo]);
+
+
+
+
+
+  useEffect(() => {
+    if (profileImageUri) {
+      setDisplayedProfileImage(profileImageUri);
+    } else if (displayedProfileImage) {
+      setDisplayedProfileImage(userInfo.profileImageUrl);
+    }
+  }, [profileImageUri, displayedProfileImage]);
+
   
 
   useEffect(() => {
@@ -80,20 +104,27 @@ const Home = ({ navigation}) => {
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
   <View>
     
-  <Title>Hi {userInfo?.firstName},</Title>
+  <Title>Hi {userInfo?.firstName ? `${userInfo.firstName},` : ''}</Title>
     <Subtitle>{greeting}</Subtitle>
 
   </View>
   
-  <Pressable marginRight={15} marginTop={5} onPress={() => navigation.navigate('More...')}>
-      {profileImageUri ? (
-        <Image source={{ uri: profileImageUri }} style={styles.profileImage} />
-      ) : userInfo.profileImageUri ? (
-        <Image source={{ uri: userInfo.profileImageUri }} style={styles.profileImage} />
-      ) : (
-        <Ionicons name="person-circle" size={80} color="silver" />
-      )}
-    </Pressable>
+  <Pressable
+  marginRight={15}
+  marginTop={5}
+  onPress={() => navigation.navigate('More...')}
+  style={styles.profileContainer} // Add this style to the container
+>
+  <View style={styles.profileImageContainer}>
+    {displayedProfileImage && (
+      <Image source={{ uri: displayedProfileImage }} style={styles.profileImage} />
+    )}
+    {!displayedProfileImage && (
+      <Ionicons name="person-circle" size={80} color="silver" />
+    )}
+  </View>
+</Pressable>
+
 
 </View>
 

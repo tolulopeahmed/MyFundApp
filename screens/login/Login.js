@@ -39,58 +39,61 @@ const Login = ({ navigation }) => {
     }
   };
 
+const handleLogin = async () => {
+  setIsLoggingIn(true);
 
-  const handleLogin = async () => {
-    setIsLoggingIn(true);
-  
-    try {
-      const response = await axios.post(`${ipAddress}/api/login/`, {
-        username: email.toLowerCase(),
-        password: password,
-      });
-  
-      setIsLoggingIn(false);
-  
-      if (response.status === 200) {
-        const { access, refresh, user_id } = response.data;
-  
-        if (access && refresh) {
-          await AsyncStorage.setItem('authToken', access);
-          await AsyncStorage.setItem('userId', user_id.toString());
+  try {
+    // Attempt to make the login request
+    const response = await axios.post(`${ipAddress}/api/login/`, {
+      username: email.toLowerCase(),
+      password: password,
+    });
 
-          setModalVisible(false);
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{ name: 'DrawerTab' }],
-            })
-          );
-      
-              // Play the login sound
-              playLoginSound();
+    setIsLoggingIn(false);
 
+    if (response.status === 200) {
+      const { access, refresh, user_id } = response.data;
 
-        } else {
-          console.log('Tokens missing in response:', response.data);
-        }
-      } else if (response.status === 400) {
-        // Check if the response contains specific error details
-        if (response.data && response.data.non_field_errors) {
-          Alert.alert('Login Error', 'Wrong username or password. Please try again.');
-        } else {
-          Alert.alert('Login Error', 'An error occurred while logging in. Please try again later.');
-          console.log('Login failed:', response.data);
-        }
+      if (access && refresh) {
+        await AsyncStorage.setItem('authToken', access);
+        await AsyncStorage.setItem('userId', user_id.toString());
+
+        setModalVisible(false);
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'DrawerTab' }],
+          })
+        );
+
+        // Play the login sound
+        playLoginSound();
+      } else {
+        console.log('Tokens missing in response:', response.data);
+      }
+    } else if (response.status === 400) {
+      // Check if the response contains specific error details
+      if (response.data && response.data.non_field_errors) {
+        Alert.alert('Login Error', 'Wrong username or password. Please try again.');
       } else {
         Alert.alert('Login Error', 'An error occurred while logging in. Please try again later.');
         console.log('Login failed:', response.data);
       }
-    } catch (error) {
-      setIsLoggingIn(false);
+    } else {
+      Alert.alert('Login Error', 'An error occurred while logging in. Please try again later.');
+      console.log('Login failed:', response.data);
+    }
+  } catch (error) {
+    setIsLoggingIn(false);
+    if (error.message === 'Network Error') {
+      Alert.alert('Connection Error', 'Please check your internet connection and try again.');
+    } else {
       Alert.alert('Login Error', 'Wrong username or password. Please try again.');
       console.log('Login error:', error);
     }
-  };
+  }
+};
+
   
   
   

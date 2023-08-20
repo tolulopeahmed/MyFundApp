@@ -19,9 +19,24 @@ const Save = ({ navigation, route }) => {
   const [autoSaveModalVisible, setAutoSaveModalVisible] = useState(false);
   const [deactivateAutoSaveModalVisible, setDeactivateAutoSaveModalVisible] = useState(false);
   const { autoSave, setAutoSave } = useContext(AutoSaveContext)
-  const { userInfo } = useUserContext();
+  const { userInfo } = useUserContext(); // Assume userInfo includes savings goal data
+  const { savingsGoal } = useUserContext();
 
   
+  // Calculate the percentage
+  const percentage = (currentAmount) => {
+    const goalAmount = parseFloat(userInfo.savings_goal_amount);
+    return (currentAmount / goalAmount) * 100;
+  };
+
+  const roundToNearestThousand = (value) => {
+    return Math.round(value / 1000) * 1000;
+  };
+
+  const formatWithCommas = (number) => {
+    return number.toLocaleString();
+  };
+
   useEffect(() => {
     if (route.params?.autoSaveModalVisible) {
       setAutoSaveModalVisible(true);
@@ -82,14 +97,15 @@ const Save = ({ navigation, route }) => {
               <View style={styles.progressBarContainer}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <Text style={styles.propertyText}>
-                  <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Savings Goal: </Text>
-                  You need to be saving
-                  <Text style={styles.goalText}> 41,666.7</Text> to achieve your goal of
-                  <Text style={styles.goalText}> 1,000,000 </Text>
-                  in
-                  <Text style={styles.goalText}> 2</Text>
+                  <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Your Savings Goal: </Text>
+                  You need to be saving 
+                  <Text style={styles.goalText}> ₦{formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount / (userInfo.time_period * 12)))}
+                  </Text> to achieve your goal of
+                  <Text style={styles.goalText}> ₦{formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount))} </Text>
+                  for your <Text style={styles.goalText}>{userInfo.preferred_asset}</Text> investment in
+                  <Text style={styles.goalText}> {userInfo.time_period}</Text>
                   <Text style={styles.restText}> years. And you're currently</Text>
-                  <Text style={styles.goalText}> 25%</Text>
+                  <Text style={styles.goalText}> {percentage(0)}%</Text>
                   <Text style={styles.restText}> to success. Well done!</Text>
                 </Text>
                 </ScrollView>
@@ -103,7 +119,7 @@ const Save = ({ navigation, route }) => {
               <View style={styles.progressBarContainer}>
                 <Text style={styles.propertyText}>
                   <Text style={{ fontFamily: 'proxima', color: '#4C28BC'}}>Top Saver: </Text>
-                  You're currently 65% from being the top saver of the month. Keep growing your funds to qualify.
+                  You're currently 65% from being the top saver of the month. Top Savers earn extra points, bonuses, rewards, and cash every month. Keep growing your funds to qualify.
                 </Text>
                 <ProgressBar progress={0.65} color="#4C28BC" height={6} style={styles.progressBar} />
               </View>
@@ -364,7 +380,7 @@ const styles = StyleSheet.create({
   
 
   swiper: {
-    height: 110, 
+    height: 125, 
     width:'100%'
   },
 
@@ -402,7 +418,6 @@ const styles = StyleSheet.create({
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
-    marginTop: 5,
   },
   
   propertyText: {
@@ -444,9 +459,9 @@ const styles = StyleSheet.create({
     goalText:{
       flex: 1,
       fontSize: 14,
-      fontFamily: 'karla',
+      fontFamily: 'nexa',
       letterSpacing: -0.2,
-     color: '#4C28BC',
+      color: 'black',
 
     },
     restText:{

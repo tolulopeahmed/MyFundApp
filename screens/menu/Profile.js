@@ -12,7 +12,7 @@ import { ipAddress } from '../../constants';
 import { useUserContext } from '../../UserContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Profile = ({ navigation, }) => {
+const Profile = ({ navigation, route }) => {
   const { profileImageUri, setProfileImageUri } = useContext(ImageContext);
   const [selectedImage, setSelectedImage] = useState(null);
   const [enableFingerprint, setEnableFingerprint] = useState(false);
@@ -20,17 +20,24 @@ const Profile = ({ navigation, }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
   const [profileEditModalVisible, setProfileEditModalVisible] = useState(false); // define modalVisible state
-  const [profile, setProfile] = useState(userInfo); // Initialize with user's existing profile info
-  const { userInfo, } = useUserContext(); // Destructure userInfo and the updateProfileImageUri function
+  const [profile, setProfile] = useState({});
+  const { userInfo, updateProfileImageUri } = useUserContext();
 
   console.log('Profile Image URL from context:', userInfo.profileImageUrl);
 
  
   useEffect(() => {
-    setProfileImageUri(userInfo.profileImageUrl);
+    if (userInfo.profileImageUrl) {
+      setProfileImageUri(userInfo.profileImageUrl);
+    }
   }, [userInfo.profileImageUrl]);
 
   
+  useEffect(() => {
+    if (route.params?.goalModalVisible) {
+        setGoalModalVisible(true);
+    }
+}, [route.params?.goalModalVisible]);
   
   const handleRateMyFund = () => {
     const buyNowUrl = 'https://bit.ly/Vback';
@@ -77,8 +84,9 @@ const Profile = ({ navigation, }) => {
               console.log('New profile image URI:', selectedAsset.uri);
 
               setSelectedImage(selectedAsset.uri); // Update the selectedImage state
-              setProfileImageUri(selectedAsset.uri); // Update the profileImageUri here
-             
+              updateProfileImageUri(selectedAsset.uri); // Use the provided function
+              setProfileImageUri(selectedAsset.uri); // Update the context
+
               await AsyncStorage.setItem('profileImageUri', selectedAsset.uri);
               
             } else {
@@ -111,7 +119,6 @@ const Profile = ({ navigation, }) => {
     },
   });
 
-
   const handleLogout = () => {
     Alert.alert(
       'Confirm Logout',
@@ -127,18 +134,37 @@ const Profile = ({ navigation, }) => {
             try {
               // Make an API call to log the user out
               await AsyncStorage.removeItem('authToken');
-
-              const response = await axios.post(`${ipAddress}/api/logout/`);
-    
-              if (response.status === 200) {
-                // Successfully logged out
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: 'Login' }],
-                });
-              } else {
-                // Handle error cases
-                console.log('Logout failed:', response.data);
+  
+              try {
+                // Attempt to send a logout request
+                const response = await axios.post(`${ipAddress}/api/logout/`);
+                
+                if (response.status === 200) {
+                  // Successfully logged out
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }],
+                  });
+                } else {
+                  // Handle error cases
+                  console.log('Logout failed:', response.data);
+                }
+              } catch (error) {
+                // Handle logout request error
+                console.log('Logout request error:', error);
+  
+                // Check if the error is due to a network issue
+                if (error.message === 'Network Error') {
+                  Alert.alert(
+                    'Logout Failed',
+                    'There was a problem logging you out. Please check your internet connection and try again.',
+                    [
+                      {
+                        text: 'OK',
+                      },
+                    ]
+                  );
+                }
               }
             } catch (error) {
               console.log('Logout error:', error);
@@ -195,13 +221,15 @@ const Profile = ({ navigation, }) => {
   <Image
   source={
     selectedImage
-      ? { uri: profileImageUri }
-      : profileImageUri
-      ? { uri:  userInfo.profileImageUrl}
-      : <Ionicons name="person-circle" size={120} color="silver" /> // You can replace this with your default image
+      ? { uri: selectedImage }
+      : userInfo.profileImageUrl
+      ? { uri: userInfo.profileImageUrl }
+      : require('./Profile1.png')
   }
   style={styles.image}
 />
+
+
 
     
       <View style={styles.editIconContainer}>
@@ -247,6 +275,7 @@ const Profile = ({ navigation, }) => {
  profileEditModalVisible={profileEditModalVisible}
  setProfileEditModalVisible={setProfileEditModalVisible}
  onClose={handleProfileEditModalClose} // Pass the onClose function
+ setUserData={setUserData} // Pass setUserData as a prop
  />
 
 )}

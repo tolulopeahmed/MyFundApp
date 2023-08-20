@@ -5,13 +5,11 @@ import MyFundLogo from './logo..png';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRoute } from '@react-navigation/native';
 
 
-  const Confirmation = ({ navigation }) => {
+  const Confirmation = ({ navigation, route }) => {
     const [error, setError] = useState(""); // Declare the error state
     const inputRefs = useRef([]);
-    const route = useRoute();
     const { email, password } = route.params;
 
 

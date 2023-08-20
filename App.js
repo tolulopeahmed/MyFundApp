@@ -43,9 +43,10 @@ const App = ({ styles, darkModeStyles, }) => {
       async function loadFonts() {
       await Font.loadAsync({
         'karla': require('./screens/fonts/Karla-Regular.ttf'),
+        'nexa': require('./screens/fonts/Nexa-Regular.otf'),
         'karla-italic': require('./screens/fonts/Karla-Italic.ttf'),
         'proxima': require('./screens/fonts/Proxima-Nova-Bold.otf'),
-        'productSans': require('./screens/fonts/ProductSans-Black.ttf'),
+        'productSansBlack': require('./screens/fonts/ProductSans-Black.ttf'),
         'ProductSans': require('./screens/fonts/ProductSans-Regular.ttf'),
         'ProductSansBold': require('./screens/fonts/ProductSans-Black.ttf')
       });
