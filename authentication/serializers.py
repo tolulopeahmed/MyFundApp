@@ -91,3 +91,7 @@ class ProfilePictureUpdateSerializer(serializers.ModelSerializer):
 
 
 
+class SavingsGoalUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['preferred_asset', 'savings_goal_amount', 'time_period']

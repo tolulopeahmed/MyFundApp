@@ -21,8 +21,10 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
-        user.set_password(password)
+        user.set_password(password)        
         user.save(using=self._db)
+
+
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
@@ -47,6 +49,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     reset_token_expires = models.DateTimeField(null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     is_confirmed = models.BooleanField(default=False)
+
+    preferred_asset = models.CharField(max_length=50, blank=True, null=True)
+    savings_goal_amount = models.DecimalField(max_digits=11, decimal_places=2, blank=True, null=True)
+    time_period = models.PositiveIntegerField(blank=True, null=True)
+
+    is_first_time_signup = models.BooleanField(default=True)
 
 
     is_active = models.BooleanField(default=True)

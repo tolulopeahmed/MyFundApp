@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    # Authentication APIs
     path('signup/', views.signup, name='signup'),
     path('confirm-otp/', views.confirm_otp, name='confirm-otp'),
     path('login/', views.CustomObtainAuthToken.as_view(), name='login'),
@@ -18,6 +19,9 @@ urlpatterns = [
     path('update-user-profile/', views.update_user_profile, name='update-user-profile'),
     path('profile-picture-update/', views.profile_picture_update, name='profile-picture-update'),
 
+    # Savings-related APIs
+    path('update-savings-goal/', views.update_savings_goal, name='update-savings-goal'),
+    
 ]
 
 

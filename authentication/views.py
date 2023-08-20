@@ -1,4 +1,4 @@
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from django.core.mail import send_mail
@@ -275,7 +275,10 @@ def get_user_profile(request):
         "lastName": user.last_name,
         "mobileNumber": user.phone_number,
         "email": user.email,
-        "profile_picture": user.profile_picture.url,  # Include the profile picture URL
+        "profile_picture": user.profile_picture.url if user.profile_picture else None,
+        'preferred_asset': user.preferred_asset,
+        'savings_goal_amount': user.savings_goal_amount,
+        'time_period': user.time_period,
     }
     return Response(profile_data)
 
@@ -328,3 +331,23 @@ def profile_picture_update(request):
     return Response(serializer.errors, status=400)
 
 
+
+
+from .serializers import SavingsGoalUpdateSerializer
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_savings_goal(request):
+    user = request.user
+
+    serializer = SavingsGoalUpdateSerializer(user, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+
+        # Set is_first_time_signup flag to False after first login
+        if user.is_first_time_signup:
+            user.is_first_time_signup = False
+            user.save()
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

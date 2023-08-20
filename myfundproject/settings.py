@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-rct_mdzr=x!99kwy+xy1$#x=5_+!_-dynu%z&!jx_-qkj7*%*%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.206.34','192.168.138.34','localhost', '192.168.226.34', '192.168.176.34', '10.10.4.174', '192.168.84.34', '10.10.4.174' ]
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.116.34','192.168.138.34','localhost', '192.168.226.34', '192.168.176.34', '10.10.4.174', '192.168.84.34', '10.10.4.174' ]
 
 
 # Application definition
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'authentication',
     'corsheaders',
-    #'sslserver',
+   # 'sslserver',
 
     ]
 
@@ -83,7 +83,9 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     'https://tolulopeahmed.github.io',
-    'https://192.168.226.34:8000',
+    'https://10.10.4.82:8443',
+    'https://www.myfundmobile.com',  # Add your domain here
+
 ]
 
 
@@ -197,12 +199,26 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 #Use myfundmobile.com cert and key here...
-#SSL_KEY = os.path.join(BASE_DIR, 'backend', 'key.pem')
-#SSL_CERT = os.path.join(BASE_DIR, 'backend', 'cert.pem')
+# SSL_KEY = os.path.join(BASE_DIR, 'key.pem')
+# SSL_CERT = os.path.join(BASE_DIR, 'cert.pem')
+
+# SSL settings
+# HTTPS_SUPPORT = True
+# if HTTPS_SUPPORT:
+#     os.environ['HTTPS'] = "on"
+#     os.environ['wsgi.url_scheme'] = 'https'
+#     os.environ['DJANGO_SECURE_SSL_REDIRECT'] = 'True'
+#     os.environ['SSL_CERT_FILE'] = SSL_CERT  # Set the SSL certificate file
+#     os.environ['SSL_KEY_FILE'] = SSL_KEY    # Set the SSL key file
 
 
 #Configure Django to use HTTPS by default
-#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-#SESSION_COOKIE_SECURE = True
-#CSRF_COOKIE_SECURE = True
-#SECURE_SSL_REDIRECT = True
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_SSL_REDIRECT = True
+
+
+# SECURE_HSTS_SECONDS = 31536000  # 1 year
+# SECURE_HSTS_PRELOAD = True
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True

@@ -3,6 +3,8 @@ from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser
 
 class CustomUserAdmin(UserAdmin):
+    list_display = UserAdmin.list_display + ('preferred_asset', 'savings_goal_amount', 'time_period')
+
     list_display = ('email', 'first_name', 'last_name', 'phone_number', 'profile_picture', 'is_staff', 'is_active')
     list_filter = ('is_staff', 'is_active')
     fieldsets = (
@@ -18,5 +20,8 @@ class CustomUserAdmin(UserAdmin):
     )
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
+
+
+
 
 admin.site.register(CustomUser, CustomUserAdmin)
