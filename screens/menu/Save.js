@@ -98,13 +98,13 @@ const Save = ({ navigation, route }) => {
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <Text style={styles.propertyText}>
                   <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Your Savings Goal: </Text>
-                  You need to be saving 
+                  You should be saving 
                   <Text style={styles.goalText}> ₦{formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount / (userInfo.time_period * 12)))}
-                  </Text> to achieve your goal of
+                  </Text>/month to reach
                   <Text style={styles.goalText}> ₦{formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount))} </Text>
                   for your <Text style={styles.goalText}>{userInfo.preferred_asset}</Text> investment in
                   <Text style={styles.goalText}> {userInfo.time_period}</Text>
-                  <Text style={styles.restText}> years. And you're currently</Text>
+                  <Text style={styles.restText}> years. And you're now</Text>
                   <Text style={styles.goalText}> {percentage(0)}%</Text>
                   <Text style={styles.restText}> to success. Well done!</Text>
                 </Text>

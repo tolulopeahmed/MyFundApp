@@ -172,7 +172,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
                 onValueChange={(value) => setFrequency(value)}
               >
                 <Picker.Item color='blue' label="Select Asset" value="Select Asset" />
-                <Picker.Item label="Real Estate" value="Real Estate" />
+                <Picker.Item label="Real Estate (MyFund Hostels)" value="Real Estate" />
                 <Picker.Item label="Paper Assets" value="Paper Assets" />
               </Picker>
             </View>

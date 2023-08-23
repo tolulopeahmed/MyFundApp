@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Modal, TextInput, TouchableOpacity, ScrollView, Text, StyleSheet, Image, Keyboard } from 'react-native';
+import { View, Modal, ImageBackground, TextInput, TouchableOpacity, ScrollView, Text, StyleSheet, Image, Keyboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
 import * as ImagePicker from 'expo-image-picker';
 import Title from '../components/Title';
 import SectionTitle from '../components/SectionTitle';
+import { ipAddress } from '../../constants';
+import axios from 'axios';
+import { useUserContext } from '../../UserContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Subtitle from '../components/Subtitle';
 
 // EmojiPicker component
 const EmojiPicker = ({ onSelectEmoji }) => {
@@ -28,8 +33,9 @@ const Chat = ({ navigation }) => {
   const [previewImage, setPreviewImage] = useState(null);
   const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
-
+  const { userInfo } = useUserContext();
   const scrollViewRef = useRef(null);
+  const [fetchInterval, setFetchInterval] = useState(null);
 
 
   useEffect(() => {
@@ -42,7 +48,8 @@ const Chat = ({ navigation }) => {
     })();
   }, []);
 
-  const sendMessage = () => {
+
+  const sendMessage = async () => {
     const timestamp = new Date().toLocaleTimeString();
     const newMessage = {
       text: messageText,
@@ -50,10 +57,111 @@ const Chat = ({ navigation }) => {
       timestamp,
       image: attachmentImage ? attachmentImage.uri : null,
     };
+  
+    // Update the state immediately with the new message
     setMessages([...messages, newMessage]);
     setMessageText('');
     setAttachmentImage(null);
+  
+    try {
+      const formData = new FormData();
+      formData.append('content', messageText); // Include the text content
+      formData.append('recipient_id', 1); // Admin's ID
+      formData.append('sender_id', userInfo.id); // User's ID
+      if (attachmentImage) {
+        formData.append('image', {
+          uri: attachmentImage.uri,
+          type: 'image/jpeg', // Adjust the MIME type accordingly
+          name: 'attachment.jpg', // You can provide a name for the attachment
+        });
+      }
+  
+      const response = await axios.post(
+        `${ipAddress}/api/send-message/1/`, // Assuming 1 is the admin's ID
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`,
+            'Content-Type': 'multipart/form-data', // Specify content type for image attachment
+          },
+        }
+      );
+  
+      console.log('Message sent successfully:', response.data);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
+  
+  
+
+  
+
+  
+  const fetchMessages = async () => {
+    try {
+      const recipient_id = 1; // User or admin's ID, depending on the recipient
+      const response = await axios.get(
+        `${ipAddress}/api/get-messages/${recipient_id}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+  
+      // Assuming the API response structure matches the structure of your state
+      const newMessages = response.data;
+      setMessages(newMessages);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  };
+  
+
+
+
+  // Renamed fetchNewMessages to fetchMessages
+  useEffect(() => {
+    fetchMessages(); // Fetch messages immediately
+    // Set up a polling interval to fetch new messages every 10 seconds
+    const intervalId = setInterval(fetchMessages, 1 * 60 * 1000); // Adjust the interval as needed
+    setFetchInterval(intervalId);
+
+    // Clean up the interval when the component unmounts
+    return () => {
+      if (fetchInterval) {
+        clearInterval(fetchInterval);
+      }
+    };
+  }, []);
+
+
+
+  useEffect(() => {
+    // Load messages from AsyncStorage and fetch from server
+    const loadMessages = async () => {
+      try {
+        const storedMessages = await AsyncStorage.getItem('chatMessages');
+        if (storedMessages) {
+          setMessages(JSON.parse(storedMessages));
+        }
+
+        // Fetch messages from server
+        fetchMessages();
+      } catch (error) {
+        console.error('Error loading messages:', error);
+      }
+    };
+
+    loadMessages();
+  }, []);
+
+  
+
+
+
+  
 
   useEffect(() => {
     // Auto-scroll to the bottom of the chat when a new message is added
@@ -103,37 +211,58 @@ const Chat = ({ navigation }) => {
         </View>
       </View>
 
+      <Title>Message Admin</Title>
+      <Subtitle>Leave us a message here and we'll get back to you ASAP</Subtitle>
+
       <ScrollView 
       style={styles.container} 
       showsVerticalScrollIndicator={false}
       ref={scrollViewRef}
       onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
       >
+              <ImageBackground
+                  source={require('./icb2.png')}
+                  style={styles.propertyContainer}
+                  imageStyle={styles.backgroundImage}
+                  >
+                  <Ionicons name="chatbubbles-outline" size={34} color="#fff" style={{ marginRight: 15 }} />
+                  <Text style={styles.propertyText}>
+                    Kindly consult us during our working hours (Mondays - Fridays: 9am-5pm, Saturdays & Public holidays: 10am-4pm). You can also leave us a message and we will reply once we come back online. Thank you.
+                  </Text>
+                </ImageBackground>
 
-      <Title>Chat Admin</Title>
-
-        <View style={styles.propertyContainer}>
-          <Ionicons name="chatbubbles-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
-            <Text style={styles.propertyText}>
-              Kindly consult us during our working hours (Mondays - Fridays: 9am-5pm, Saturdays & Public holidays: 10am-4pm). You can also leave us a message and we will reply once we come back online. Thank you.
-            </Text>
-        </View>
 
         <Divider />
 
         <SectionTitle>CONVERSATION WITH MYFUND</SectionTitle>
 
         {messages.map((message, index) => (
-          <View key={index} style={message.fromAdmin ? styles.adminMessage : styles.userMessage}>
-            <Text style={styles.messageText}>{message.text}</Text>
-            {message.image && (
-              <TouchableOpacity onPress={() => openPreview(message.image)}>
-                <Image source={{ uri: message.image }} style={styles.attachmentImage} />
-              </TouchableOpacity>
-            )}
-            <Text style={styles.timestamp}>{message.timestamp}</Text>
-          </View>
-        ))}
+                <View
+                  key={index}
+                  style={
+                    message.sender_id === 1 // Assuming 1 is the admin's ID
+                      ? styles.adminMessage
+                      : styles.userMessage
+                  }
+                >
+                  <Text style={styles.messageText}>{message.content}</Text>
+                  {/* Render the image if available */}
+                  {message.image && (
+                    <TouchableOpacity
+                      onPress={() => openPreview(message.image)}
+                    >
+                      <Image
+                        source={{ uri: message.image }}
+                        style={styles.attachmentImage}
+                      />
+                    </TouchableOpacity>
+                  )}
+                  <Text style={styles.timestamp}>
+                    {message.timestamp}
+                  </Text>
+                </View>
+              ))}
+
       </ScrollView>
 
       <View style={styles.inputContainer}>
@@ -209,35 +338,54 @@ const styles = StyleSheet.create({
     fontFamily: 'karla',
     letterSpacing: 3,
   },
-  propertyContainer: {
-    alignItems: 'center',
-    paddingHorizontal: 13,
-    flexDirection: 'row',
-    backgroundColor: '#DCD1FF',
-    padding: 15,
+
+  
+  savingsContainer: {
+    flexDirection: 'column',
+    backgroundColor: '#4C28BC',
     marginHorizontal: 20,
     borderRadius: 10,
-    marginTop: 10,
+    marginTop: 5,
+    alignItems: 'center',
+    height: 150,
+    },
+
+    propertyContainer: {
+      alignItems: 'center',
+      paddingHorizontal: 13,
+      flexDirection: 'row',
+      backgroundColor: '#DCD1FF',
+      padding: 15,
+      marginHorizontal: 20,
+      borderRadius: 10,
+    },
+  
+
     
-  },
+backgroundImage: {
+  flex: 1,
+  resizeMode: 'cover',
+  borderTopLeftRadius: 10,
+  borderTopRightRadius: 10,
+},
   propertyText: {
     flex: 1,
     fontSize: 14,
     fontWeight: 'regular',
     fontFamily: 'karla',
     letterSpacing: -0.4,
-    color: 'black',
+    color: '#fff',
     marginRight: 25,
     letterSpacing: -0.5,
   },
   adminMessage: {
-    backgroundColor: '#4B4B4D',
+    backgroundColor: 'green',
     borderBottomRightRadius: 10,
     borderBottomLeftRadius: 10,
     borderTopRightRadius: 10,
     padding: 10,
     alignSelf: 'flex-start',
-    marginRLeft: 20,
+    marginLeft: 20,
     margin: 5,
   },
   userMessage: {

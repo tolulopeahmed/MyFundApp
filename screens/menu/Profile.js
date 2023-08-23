@@ -134,7 +134,14 @@ const Profile = ({ navigation, route }) => {
             try {
               // Make an API call to log the user out
               await AsyncStorage.removeItem('authToken');
-  
+                // Remove chatMessages
+                const keys = await AsyncStorage.getAllKeys();
+                for (const key of keys) {
+                  if (key.startsWith('chatMessages')) {
+                    await AsyncStorage.removeItem(key);
+                  }
+                }
+
               try {
                 // Attempt to send a logout request
                 const response = await axios.post(`${ipAddress}/api/logout/`);
@@ -355,7 +362,7 @@ const Profile = ({ navigation, route }) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Chat')}>
           <Ionicons name="chatbubbles" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
-          <Text style={styles.buttonText}>Chat Admin</Text>
+          <Text style={styles.buttonText}>Message Admin</Text>
         </TouchableOpacity>
       </View>
 

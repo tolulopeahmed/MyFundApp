@@ -17,6 +17,7 @@ export const UserProvider = ({ children }) => {
   const [profileImageUri, setProfileImageUri] = useState('');
   const [userInfo, setUserInfo] = useState({
     is_first_time_signup: false, // Initialize with false
+    id: '', // Add the 'id' field to store the user's ID
 
     firstName: '',
     lastName: '',
@@ -61,9 +62,11 @@ export const UserProvider = ({ children }) => {
               setUserInfo(prevUserInfo => ({
                 ...prevUserInfo,
                 ...profileData,
+                id: profileData.id, // Include the user's ID
                 profileImageUrl: profileData.profile_picture
                   ? ipAddress + profileData.profile_picture
                   : null, // Handle no profile picture case
+
               }));
   
               setSavingsGoal({
