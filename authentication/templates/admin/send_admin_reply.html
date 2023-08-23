@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+    <div id="content-main">
+        <h1>Send Admin Reply</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="default" name="_send_admin_reply">Send Reply</button>
+        </form>
+    </div>
+{% endblock %}

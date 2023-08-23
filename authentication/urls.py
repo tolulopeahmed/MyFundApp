@@ -2,7 +2,9 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-
+from django.urls import re_path
+from .consumers import ChatConsumer
+from django.contrib import admin
 
 urlpatterns = [
     # Authentication APIs
@@ -21,9 +23,15 @@ urlpatterns = [
 
     # Savings-related APIs
     path('update-savings-goal/', views.update_savings_goal, name='update-savings-goal'),
-    
+
+    # Admin-related APIs
+    path('send-message/<int:recipient_id>/', views.send_message, name='send-message'),
+    path('get-messages/<int:recipient_id>/', views.get_messages, name='get-messages'),
+    path('send-admin-reply/<int:message_id>/', views.send_admin_reply, name='send-admin-reply'),
+    path('admin/authentication/message/<int:message_id>/reply/', views.reply_to_message, name='admin-reply-to-message'),
+    ]
+
+
+websocket_urlpatterns = [
+    re_path(r'ws/chat/$', ChatConsumer.as_asgi()),
 ]
-
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

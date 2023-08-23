@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import CustomUser
+from .models import CustomUser, Message
+
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -95,3 +96,20 @@ class SavingsGoalUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['preferred_asset', 'savings_goal_amount', 'time_period']
+
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = '__all__'
+
+
+class OutgoingMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = '__all__'  # Or list the specific fields you want to include
+
+class IncomingMessageSerializer(serializers.Serializer):
+    content = serializers.CharField()
+    # Add other fields as needed

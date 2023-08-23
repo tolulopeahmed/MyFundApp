@@ -22,8 +22,7 @@ from django.contrib.auth import logout
 from django.shortcuts import render, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
-from .models import CustomUser
-from django.contrib.auth import get_user_model
+from authentication.models import CustomUser
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import UserProfileUpdateSerializer
@@ -55,28 +54,28 @@ def signup(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-@csrf_exempt
-def confirm_otp(request):
-    serializer = ConfirmOTPSerializer(data=request.data)
-    if serializer.is_valid():
-        otp = serializer.validated_data['otp']
+# @api_view(['POST'])
+# @permission_classes([AllowAny])
+# @csrf_exempt
+# def confirm_otp(request):
+#     serializer = ConfirmOTPSerializer(data=request.data)
+#     if serializer.is_valid():
+#         otp = serializer.validated_data['otp']
 
-        try:
-            user = CustomUser.objects.get(otp=otp)
-            if user.is_active:
-                return Response({'message': 'Account already confirmed.'}, status=status.HTTP_400_BAD_REQUEST)
+#         try:
+#             user = CustomUser.objects.get(otp=otp)
+#             if user.is_active:
+#                 return Response({'message': 'Account already confirmed.'}, status=status.HTTP_400_BAD_REQUEST)
             
-            user.is_active = True
-            user.save()
-            print("Account confirmed successfully.")
-            return Response({'message': 'Account confirmed successfully.'}, status=status.HTTP_200_OK)
-        except CustomUser.DoesNotExist:
-            print("Invalid OTP.")
-            return Response({'message': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+#             user.is_active = True
+#             user.save()
+#             print("Account confirmed successfully.")
+#             return Response({'message': 'Account confirmed successfully.'}, status=status.HTTP_200_OK)
+#         except CustomUser.DoesNotExist:
+#             print("Invalid OTP.")
+#             return Response({'message': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -205,7 +204,6 @@ class OTPVerificationView(APIView):
 
 
 
-CustomUser = get_user_model()
 
 @api_view(['POST'])
 @csrf_exempt
@@ -351,3 +349,133 @@ def update_savings_goal(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+from .serializers import MessageSerializer  # Create a serializer for AdminMessage if needed
+from .models import Message
+from django.contrib.auth import get_user_model
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from rest_framework.parsers import MultiPartParser
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser])
+def send_message(request, recipient_id):
+    user = request.user
+    content = request.data.get('content')
+    image = request.data.get('image')
+
+    try:
+        recipient = get_user_model().objects.get(id=recipient_id)
+    except get_user_model().DoesNotExist:
+        return Response({'error': 'Recipient not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if not content and not image:
+        return Response({'error': 'Message content or image is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    message = Message.objects.create(sender=user, recipient=recipient, content=content, image=image)
+
+    message_data = {
+        'type': 'chat.message',
+        'message': {
+            'content': message.content,
+            'image': message.image.url if message.image else None,
+            'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            'sender_id': message.sender.id,
+        }
+    }
+
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f'chat_{recipient_id}',
+        message_data
+    )
+
+    return Response({'success': True})
+
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_messages(request, recipient_id):
+    user = request.user
+    recipient = get_user_model().objects.get(id=recipient_id)
+
+    # Retrieve messages from the database
+    messages = Message.objects.filter(sender__in=[user, recipient], recipient__in=[user, recipient]).order_by('timestamp')
+
+    # Serialize messages and create a list of message data
+    message_data_list = []
+    for message in messages:
+        message_data = {
+            'content': message.content,
+            'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            'sender_id': message.sender.id,
+            'image': message.image.url if message.image else None,  # Include the image URL if available
+        }
+        message_data_list.append(message_data)
+
+    return Response(message_data_list)
+
+
+
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def send_admin_reply(request, message_id):
+    admin_user = request.user
+    content = request.data.get('content')
+
+    try:
+        message = Message.objects.get(id=message_id)
+        if message.recipient != admin_user:
+            return Response({'error': 'You are not authorized to reply to this message'}, status=status.HTTP_403_FORBIDDEN)
+
+    except Message.DoesNotExist:
+        return Response({'error': 'Message not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    if not content:
+        return Response({'error': 'Message content is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Create a new message for the admin's reply
+    reply_message = Message.objects.create(sender=admin_user, recipient=message.sender, content=content)
+
+    return Response({'success': True})
+
+
+
+
+
+
+
+
+
+from django.contrib import messages
+from django.urls import reverse
+
+def reply_to_message(request, message_id):
+    # Logic to handle replying to a message
+    if request.method == 'POST':
+        # Process the reply message and save it to the database
+        reply_content = request.POST.get('content')  # Get the reply content from the form
+        if reply_content:
+            # Process the reply content and save it to the database
+            # For example, you can create a new message instance and save it
+            
+            messages.success(request, 'Reply message sent successfully.')
+            return redirect(reverse('admin:authentication_message_changelist'))
+        else:
+            messages.error(request, 'Reply content cannot be empty.')
+            return redirect(reverse('admin:authentication_message_changelist'))
+    
+    # Render a form to reply to the message
+    context = {
+        'message_id': message_id,
+    }
+    return render(request, 'admin/message/reply_message.html', context)
+

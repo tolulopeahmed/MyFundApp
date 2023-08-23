@@ -96,6 +96,23 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 
+from django.db import models
+from django.contrib.auth import get_user_model
+
+class Message(models.Model):
+    sender = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='sent_messages')
+    recipient = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='received_messages')
+    content = models.TextField()
+    image = models.ImageField(upload_to='chat_images/', null=True, blank=True)  # Add this line for the image field
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"From {self.sender} to {self.recipient}: {self.content}"
+
+
 
 
 
