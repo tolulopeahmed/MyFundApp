@@ -1,10 +1,17 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
 from .consumers import ChatConsumer
 from django.contrib import admin
+from rest_framework.routers import DefaultRouter
+from .views import BankAccountViewSet
+
+
+router = DefaultRouter()
+router.register(r'bank-accounts', views.BankAccountViewSet, basename='bank-account')
+
 
 urlpatterns = [
     # Authentication APIs
@@ -29,6 +36,12 @@ urlpatterns = [
     path('get-messages/<int:recipient_id>/', views.get_messages, name='get-messages'),
     path('send-admin-reply/<int:message_id>/', views.send_admin_reply, name='send-admin-reply'),
     path('admin/authentication/message/<int:message_id>/reply/', views.reply_to_message, name='admin-reply-to-message'),
+    
+    # Bank-related APIs
+    path('api/', include(router.urls)),
+    path('add-bank-account/', views.add_bank_account, name='add-bank-account'),
+    path('delete-bank-account/<str:account_number>/', views.delete_bank_account, name='delete-bank-account'),
+
     ]
 
 

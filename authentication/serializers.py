@@ -113,3 +113,12 @@ class OutgoingMessageSerializer(serializers.ModelSerializer):
 class IncomingMessageSerializer(serializers.Serializer):
     content = serializers.CharField()
     # Add other fields as needed
+
+
+
+
+from .models import BankAccount
+class BankAccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BankAccount
+        fields = '__all__'

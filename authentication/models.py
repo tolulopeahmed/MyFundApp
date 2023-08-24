@@ -116,3 +116,26 @@ class Message(models.Model):
 
 
 
+
+
+
+
+
+
+from django.contrib.auth import get_user_model
+
+class BankAccount(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='bank_accounts')
+    bank_name = models.CharField(max_length=100)
+    account_number = models.CharField(max_length=20, unique=True)
+    account_name = models.CharField(max_length=100, default="Default Account Name")
+    is_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.bank_name} ({self.account_number})"
+
+
+
+
+
+

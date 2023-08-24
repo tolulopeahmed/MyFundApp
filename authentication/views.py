@@ -479,3 +479,105 @@ def reply_to_message(request, message_id):
     }
     return render(request, 'admin/message/reply_message.html', context)
 
+
+
+
+from .serializers import BankAccountSerializer
+from .models import BankAccount
+from rest_framework import viewsets, permissions
+from rest_framework.decorators import action
+from .serializers import BankAccountSerializer
+import requests
+
+class BankAccountViewSet(viewsets.ModelViewSet):
+    queryset = BankAccount.objects.all()
+    serializer_class = BankAccountSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=['get'])
+    def get_user_banks(self, request):
+        user_banks = BankAccount.objects.filter(user=request.user)
+        serializer = BankAccountSerializer(user_banks, many=True)
+        return Response(serializer.data)
+
+    def resolve_account(self, account_number, bank_code):
+        secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"
+        url = f"https://api.paystack.co/bank/resolve?account_number={account_number}&bank_code={bank_code}"
+        headers = {"Authorization": f"Bearer {secret_key}"}
+
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == status.HTTP_200_OK:
+            response_data = response.json()
+            account_name = response_data.get("data", {}).get("account_name", "")
+            return account_name
+        else:
+            return None
+
+    def perform_create(self, serializer):
+        account_number = self.request.data.get("account_number")
+        bank_code = self.request.data.get("bank_code")
+
+        if account_number and bank_code:
+            account_name = self.resolve_account(account_number, bank_code)
+
+            if account_name is not None:
+                serializer.save(user=self.request.user, bank_name=account_name, account_number=account_number)
+                return Response({"message": "Bank account added successfully."}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"message": "Failed to resolve account details."}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer.save(user=self.request.user)
+            return Response({"message": "Bank account added without account details resolution."}, status=status.HTTP_201_CREATED)
+
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_bank_account(request):
+    account_number = request.data.get("accountNumber")
+    bank_name = request.data.get("bankName")
+    account_name = request.data.get("accountName")
+
+    if account_number and bank_name and account_name:
+        # You might want to perform additional checks and validation here
+        
+        bank_account = BankAccount(
+            user=request.user,
+            bank_name=bank_name,
+            account_number=account_number,
+            account_name=account_name,
+            is_default=False  # Set to True if desired
+        )
+        bank_account.save()
+
+        serializer = BankAccountSerializer(bank_account)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response({"error": "Account number, bank name, and account name are required."},
+                        status=status.HTTP_400_BAD_REQUEST)
+    
+    
+from django.db.models import Count
+from django.db import transaction
+
+
+@api_view(['DELETE'])
+def delete_bank_account(request, account_number):
+    try:
+        bank_account = BankAccount.objects.get(account_number=account_number)
+    except BankAccount.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'DELETE':
+        duplicates = BankAccount.objects.filter(account_number=account_number).annotate(count=Count('id')).filter(count__gt=1)
+
+        with transaction.atomic():
+            for duplicate in duplicates:
+                if duplicate.id != bank_account.id:
+                    duplicate.delete()
+
+            bank_account.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
