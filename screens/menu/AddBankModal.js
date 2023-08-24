@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Modal, Text, Button, View, TextInput, TouchableOpacity } from 'react-native';
+import { Modal, Text, Alert, View, ActivityIndicator, TextInput, TouchableOpacity } from 'react-native';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
-
+import axios from 'axios'; // Import axios for making API requests
+import { ipAddress } from '../../constants';
+import { useUserContext } from '../../UserContext';
 
 const bankOptions = [
     { id: 1, name: 'Access Bank', code: '044' },
@@ -70,24 +72,121 @@ const bankOptions = [
   ];
   
 
-  const AddBankModal = ({ addBankModalVisible, setAddBankModalVisible, addBankRecord }) => {
+  const AddBankModal = ({ addBankModalVisible, setAddBankModalVisible, initialBankRecords, addBankRecord, bankRecords, setBankRecords, deleteBankRecord }) => {
     const [accountNumber, setAccountNumber] = useState('');
     const [selectedBank, setSelectedBank] = useState('');
-  
+    const [accountName, setAccountName] = useState(''); // State for resolved account name
+    const [isAccountNameResolved, setIsAccountNameResolved] = useState(false);
+    const [bankCode, setBankCode] = useState('');
+    const [bankName, setBankName] = useState('');
+    const { userInfo } = useUserContext();
+    const [isLoading, setIsLoading] = useState(false); // Add this state
+
+    
     const handleSelect = (value) => {
-      setSelectedBank(value);
+      const selectedBankObj = bankOptions.find((bank) => bank.name === value);
+      setSelectedBank(selectedBankObj);
     };
   
-    const handleProceed = () => {
-      const newBankRecord = {
-        bank: selectedBank,
-        accountNumber: accountNumber.trim(),
-      };
-  
-      addBankRecord(newBankRecord);
-      setAccountNumber('');
-      setSelectedBank('');
+
+
+    const handleAccountNumberChange = async (value) => {
+      console.log('Account number input:', value);
+      setAccountNumber(value);
+      
+      if (!value.trim() || accountName === 'Account not found. Try again.') {
+        setAccountName('');
+        setIsAccountNameResolved(false);
+        return;
+      }
+    
+      if (value.length === 10 && selectedBank) {
+        console.log('Account number:', value);
+        console.log('Bank code:', selectedBank.code);
+        
+        try {
+          setIsLoading(true); // Set isLoading to true when starting to fetch
+          const response = await axios.get(`https://api.paystack.co/bank/resolve?account_number=${value}&bank_code=${selectedBank.code}`, {
+            headers: {
+              Authorization: 'Bearer sk_live_a54969904a401ca7a59b8ca1567ce332a16a3ef8'
+            }
+          });
+            
+          console.log('API Response:', response.data);
+            
+          if (response.status === 200) {
+            setAccountName(response.data.data.account_name);
+            setIsAccountNameResolved(true);
+          } else {
+            setAccountName('Account not found. Try again.');
+            setIsAccountNameResolved(false);
+          }
+        } catch (error) {
+          console.error('Error fetching account name:', error);
+          setIsAccountNameResolved(false);
+          setAccountName('Account not found. Try again.');
+          console.log('Error response:', error.response.data);
+        } finally {
+          setIsLoading(false); // Set isLoading back to false after fetching, regardless of success or error
+        }
+      }
     };
+    
+    
+    
+    
+    const handleProceed = async () => {
+      console.log('User Token:', userInfo.token);
+    
+      try {
+        const response = await axios.post(
+          `${ipAddress}/api/add-bank-account/`,
+          {
+            accountNumber: accountNumber.trim(),
+            bankName: selectedBank.name,
+            accountName: accountName.trim(),
+            bankCode: selectedBank.code,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${userInfo.token}`,
+            },
+          }
+        );
+    
+        if (response.status === 201) {
+          setAddBankModalVisible(false); // Close the modal
+    
+          // Update the bankRecords state with the new bank account data
+          const newBankRecord = {
+            bank_name: selectedBank.name,
+            account_number: accountNumber.trim(),
+            // Add other properties here if needed
+          };
+          setBankRecords([...bankRecords, newBankRecord]);
+    
+          Alert.alert("Success", "Bank Account Added successfully", [
+            { text: "OK" },
+          ]);
+        } else {
+          console.error("Failed to add bank account:", response.data);
+          Alert.alert("Error", "Failed to add bank account. Please try again later.");
+        }
+      } catch (error) {
+        console.error("An error occurred while adding bank account:", error);
+        // You can set an error state and display an error message to the user
+        Alert.alert("Error", "An error occurred while adding bank account. Please try again later.");
+      }
+    };
+    
+    
+
+    
+
+
+
+
+
   
     const closeModal = () => {
       setAddBankModalVisible(false);
@@ -134,7 +233,8 @@ const bankOptions = [
         onSelect={handleSelect}
         buttonTextAfterSelection={(selectedItem) => selectedItem}
         rowTextForSelection={(item) => item}
-        buttonStyle={{ borderRadius: 10, fontFamily: 'karla', width: '85%', marginBottom: 15, }}
+        buttonStyle={{ borderRadius: 10,    borderColor: 'silver',
+        borderWidth: 1, fontFamily: 'karla', width: '85%', marginBottom: 15, }}
         dropdownStyle={{ fontFamily: 'karla' }}
         rowStyle={{ alignSelf: 'flex-start', fontFamily: 'karla' }}
         rowTextStyle={{ textAlign: 'left', fontSize: 16, color: 'black', fontFamily: 'ProductSans' }}
@@ -145,29 +245,55 @@ const bankOptions = [
 
 </View>
 
-  <View style={styles.fieldContainer2}>
-    <Text style={styles.labelText}>Bank Account</Text>
-    <View style={styles.inputContainer}>
+
+<View style={styles.fieldContainer2}>
+  <Text style={styles.labelText}>Bank Account Number</Text>
+  <View style={styles.inputContainer}>
     <TextInput
-              style={styles.amountInput}
-              placeholder="1234567890"
-              keyboardType="numeric"
-              maxLength={10}
-              onChangeText={(value) => setAccountNumber(value)}
-              value={accountNumber}
-            />
-    </View>
+      style={styles.amountInput}
+      placeholder="1234567890"
+      keyboardType="numeric"
+      maxLength={10}
+      onChangeText={handleAccountNumberChange} // Use the modified function
+      value={accountNumber}
+    />
+  </View>
 </View>
 
 <View style={styles.fieldContainer2}>
-    <Text style={styles.labelText}>Account Name</Text>
-    <View style={styles.inputContainer}>
+  <Text style={styles.labelText}>
+  Account Name  {isLoading ? (
+      <ActivityIndicator size="small" color="black" marginTop={2} />
+    ) : (
+      accountName && accountName !== 'Account not found. Try again.' && (
+        <Ionicons name="checkmark-circle-outline" size={18} color="green" marginTop={2} />
+      )
+    )}
+  </Text>
+  <View style={{ ...styles.inputContainer, flexDirection: 'row', alignItems: 'center' }}>
     <TextInput
-              style={styles.amountInput2}
-              keyboardType="email-address"
-            />
-    </View>
+      style={styles.amountInput2}
+      keyboardType="email-address"
+      value={accountName}
+      editable={false}
+    />
+  </View>
 </View>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         
@@ -179,13 +305,25 @@ const bankOptions = [
     
 
 
+  <View style={styles.buttonsContainer}>
+  <TouchableOpacity
+    style={{
+      ...styles.primaryButton,
+      backgroundColor: isAccountNameResolved ? '#4C28BC' : '#BEBEBE', // Change color based on isAccountNameResolved state
+    }}
+    onPress={handleProceed}
+    disabled={!isAccountNameResolved} // Disable the button if accountName is not resolved
+  >
+    <Text style={{ ...styles.primaryButtonText, color: isAccountNameResolved ? '#fff' : '#555' }}>
+      Add Bank Account
+    </Text>
+  </TouchableOpacity>
+</View>
 
-            <View style={styles.buttonsContainer}>
-            <TouchableOpacity style={styles.primaryButton} onPress={handleProceed}>
-  <Text style={styles.primaryButtonText}>Add Bank Account</Text>
-          </TouchableOpacity>
 
-              </View>
+
+
+
         </View>
         </TouchableOpacity>
         </TouchableOpacity>
@@ -260,18 +398,24 @@ const styles = {
     letterSpacing: 3,
     borderRadius: 5,
     marginBottom: 15,
+    borderColor: 'silver',
+    borderWidth: 1,
   },
 
   amountInput2: {
     color: 'black',
-    fontFamily: 'ProductSans',
-    backgroundColor: '#fff',
+    fontFamily: 'karla-italic',
+    letterSpacing: -0.6,
+    backgroundColor: '#EFEFEF',
     height: 50,
     width: '100%',
     padding: 10,
     fontSize: 17,
     borderRadius: 5,
     marginBottom: 15,
+    borderColor: 'silver',
+    borderWidth: 1,
+
   },
   
   

@@ -1,47 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, SafeAreaView, ScrollView, Pressable, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { MaterialIcons } from '@expo/vector-icons';
 import AddBankModal from './AddBankModal';
 import SectionTitle from '../components/SectionTitle';
+import axios from 'axios';
+import { ipAddress } from '../../constants';
+
 
 const Bank = ({ navigation, initialBankRecords}) => {
   const [addBankModalVisible, setAddBankModalVisible] = useState(false); // define modalVisible state
-  const [bankRecords, setBankRecords] = useState(initialBankRecords);
+  const [bankRecords, setBankRecords] = useState([]);
 
-  const deleteBankRecord = (accountNumber) => {
-    const updatedBankRecords = bankRecords.filter(
-      (record) => record.accountNumber !== accountNumber
-    );
-    setBankRecords(updatedBankRecords);
+
+
+
+
+  useEffect(() => {
+    // Fetch bank account records from the backend when the component mounts
+    fetchBankRecords();
+  }, []);
+
+
+  const fetchBankRecords = async () => {
+    try {
+      const response = await axios.get(
+        `${ipAddress}/api/bank-accounts/`); // Replace with your API endpoint
+      if (response.status === 200) {
+        setBankRecords(response.data);
+      } else {
+        // Handle API error
+      }
+    } catch (error) {
+      // Handle fetch error
+    }
   };
 
-  const addBankRecord = (bankRecord) => {
-    if (!bankRecord || typeof bankRecord !== 'object') {
-      console.error('Invalid bank record:', bankRecord);
-      return;
-    }
+
   
-    const updatedBankRecords = [bankRecord, ...bankRecords];
-    setBankRecords(updatedBankRecords);
-    setAddBankModalVisible(false);
-  };
-
-  const renderBankAccounts = () => {
-    if (!Array.isArray(bankRecords)) {
-      return null; // Return early if bankRecords is not an array
+  
+  
+  const deleteBankRecord = async (accountNumber) => {
+    try {
+      const response = await axios.delete(`${ipAddress}/api/delete-bank-account/${accountNumber}/`);
+      if (response.status === 204) {
+        // Remove the deleted bank record from the state
+        const updatedBankRecords = bankRecords.filter(
+          (record) => record.accountNumber !== accountNumber
+        );
+        setBankRecords(updatedBankRecords);
+      } else {
+        // Handle API error
+      }
+    } catch (error) {
+      // Handle fetch error
     }
-
-    return bankRecords.map((bankRecord) => (
-      <View style={styles.bankContainer} key={bankRecord.accountNumber}>
-        <Text style={styles.bankName}>{bankRecord.bank}</Text>
-        <Text style={styles.accountNumber}>{bankRecord.accountNumber}</Text>
-        <TouchableOpacity onPress={() => deleteBankRecord(bankRecord.accountNumber)}>
-          <Ionicons name="trash-outline" size={24} color="grey" />
-        </TouchableOpacity>
-      </View>
-    ));
   };
+  
+
+
+
+
+
+ 
+
+
 
   
   return (
@@ -74,7 +97,45 @@ const Bank = ({ navigation, initialBankRecords}) => {
       
       <SectionTitle>LIST OF BANK ACCOUNTS</SectionTitle>
 
-         
+      {bankRecords.map((bankRecord, index) => (
+  <View style={styles.bankCard} key={`${bankRecord.accountNumber}-${index}`}>
+    <View style={styles.bankCardHeader}>
+      <Ionicons name="ios-briefcase-outline" size={35} color="white" margin={20} />
+      <Text style={styles.bankCardAccountName}>{bankRecord.account_name}</Text>
+    </View>
+    <View style={styles.bankCardContent}>
+  <Text style={styles.bankCardBankName}>{bankRecord.bank_name}</Text>
+  <Text style={styles.bankCardAccountNumber}>
+    (*****{bankRecord.account_number.slice(-5)})
+  </Text>
+  <Text style={styles.bankCardAccountName}>
+    {bankRecord.account_name}
+  </Text>
+</View>
+<TouchableOpacity
+  style={styles.deleteButtonContainer}
+  onPress={() => deleteBankRecord(bankRecord.account_number)}
+>
+  <MaterialIcons name="delete-outline" size={20} color="#4C28BC" />
+</TouchableOpacity>
+
+  </View>
+))}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.primaryButton} onPress={() => setAddBankModalVisible(true)}>
                 <MaterialIcons name="add" size={30} color="#fff" marginRight={5}/>
@@ -82,12 +143,13 @@ const Bank = ({ navigation, initialBankRecords}) => {
                 </TouchableOpacity>
 
                </View>
+
                <AddBankModal
                 navigation={navigation}
                 addBankModalVisible={addBankModalVisible}
                 setAddBankModalVisible={setAddBankModalVisible}
                 initialBankRecords={initialBankRecords}
-                addBankRecord={addBankRecord}
+                bankRecords={bankRecords} // Pass the bankRecords state as a prop
                 setBankRecords={setBankRecords}
                 deleteBankRecord={deleteBankRecord}
               />
@@ -148,6 +210,13 @@ const styles = StyleSheet.create({
         borderColor: '#4C28BC',
         },
     
+
+        deleteButtonContainer: {
+          position: 'absolute',
+          top: 10,
+          right: 10,
+        },
+        
         cardContainer: {
             borderWidth: 0.8,
             borderColor: '#4C28BC',
@@ -192,13 +261,53 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 14,
         width: '70%',
-        fontWeight: 'regular',
         fontFamily: 'karla',
         letterSpacing: -0.2,
         color: 'black',
     
         },
  
+
+
+        bankCard: {
+          backgroundColor: '#4C28BC', // Orange background
+          borderRadius: 15,
+          marginVertical: 10,
+          marginHorizontal: 20,
+          padding: 10,
+          elevation: 2,
+          flexDirection: 'row'
+
+        },
+        bankCardHeader: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: 10,
+        },
+        bankCardAccountName: {
+          marginLeft: 10,
+          fontSize: 18,
+          fontWeight: 'bold',
+          color: 'white',
+          fontFamily: 'proxima',
+        },
+        bankCardContent: {
+          flexDirection: 'column',
+          marginLeft: 34,
+        },
+        bankCardBankName: {
+          fontSize: 16,
+          color: 'silver',
+          fontFamily: 'karla',
+        },
+        bankCardAccountNumber: {
+          fontSize: 14,
+          color: 'silver',
+          fontFamily: 'karla',
+        },
+        deleteButton: {
+          marginTop: 5,
+        },
 
   
         buttonsContainer: {

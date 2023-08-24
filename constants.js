@@ -1,2 +1,2 @@
 // constants.js
-export const ipAddress = 'http://10.10.4.252:8000';
+export const ipAddress = 'http://192.168.193.34:8000';
