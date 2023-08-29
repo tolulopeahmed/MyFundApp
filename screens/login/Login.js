@@ -39,6 +39,11 @@ const Login = ({ navigation }) => {
     }
   };
 
+
+
+
+
+  
 const handleLogin = async () => {
   setIsLoggingIn(true);
 
@@ -58,6 +63,7 @@ const handleLogin = async () => {
         await AsyncStorage.setItem('authToken', access);
         await AsyncStorage.setItem('userId', user_id.toString());
 
+        
         setModalVisible(false);
         navigation.dispatch(
           CommonActions.reset({

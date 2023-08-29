@@ -18,7 +18,7 @@ const Home = ({ navigation, route}) => {
   const { autoInvest } = useContext(AutoInvestContext)
   const { userInfo} = useUserContext();
   const [displayedProfileImage, setDisplayedProfileImage] = useState(null);
-  const { profileImageUri } = useContext(ImageContext);
+  const { profileImageUri, profileImageUrl } = useContext(ImageContext);
 
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const Home = ({ navigation, route}) => {
     } else if (displayedProfileImage) {
       setDisplayedProfileImage(userInfo.profileImageUrl);
     }
-  }, [profileImageUri, displayedProfileImage]);
+  }, [profileImageUri, displayedProfileImage, userInfo.profileImageUrl]);
 
   
 

@@ -1,5 +1,4 @@
-// UserContext.js
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { Alert, createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ipAddress } from './constants';
@@ -7,30 +6,30 @@ import { ipAddress } from './constants';
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [isFirstTimeSignup, setIsFirstTimeSignup] = useState(false);
-
   const [savingsGoal, setSavingsGoal] = useState({
-      preferred_asset: '',
-      savings_goal_amount: '',
-      time_period: '',
-  }); // New savings goal state
-  const [profileImageUri, setProfileImageUri] = useState('');
-  const [userInfo, setUserInfo] = useState({
-    is_first_time_signup: false, // Initialize with false
-    id: '', // Add the 'id' field to store the user's ID
-
-    firstName: '',
-    lastName: '',
-    mobileNumber: '',
-    email: '',
-    profileImageUrl: '', // Initialize with an empty string or default image URL
-    token: '', // Initialize with an empty string
-
     preferred_asset: '',
     savings_goal_amount: '',
     time_period: '',
   });
 
+  const [profileImageUri, setProfileImageUri] = useState('');
+  const [userBankRecords, setUserBankRecords] = useState({});
+  const [userCards, setUserCards] = useState({});
+  const [userInfo, setUserInfo] = useState({
+    is_first_time_signup: false,
+    id: '',
+    firstName: '',
+    lastName: '',
+    mobileNumber: '',
+    email: '',
+    profileImageUrl: '',
+    token: '',
+    preferred_asset: '',
+    savings_goal_amount: '',
+    time_period: '',
+    bankRecords: [], // Array to hold bank records
+    cards: [], // Array to hold card information
+  });
   
 
   useEffect(() => {
@@ -38,66 +37,59 @@ export const UserProvider = ({ children }) => {
       try {
         const token = await AsyncStorage.getItem('authToken');
         if (token !== null) {
-          console.log('Retrieved Token:', token);
           setUserInfo(prevUserInfo => ({
             ...prevUserInfo,
             token,
           }));
-  
-          // Fetch user profile data after retrieving the token
-          axios
-            .get(`${ipAddress}/api/get-user-profile/`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            })
-            .then(profileResponse => {
-              console.log('API Response (from API):', profileResponse.data);
-              const profileData = profileResponse.data;
-  
-              if (profileResponse.data.is_first_time_signup) {
-                setGoalModalVisible(true); // Open the modal
-              }
-              // Set user info in UserContext
-              setUserInfo(prevUserInfo => ({
-                ...prevUserInfo,
-                ...profileData,
-                id: profileData.id, // Include the user's ID
-                profileImageUrl: profileData.profile_picture
-                  ? ipAddress + profileData.profile_picture
-                  : null, // Handle no profile picture case
-
-              }));
-  
-              setSavingsGoal({
-                preferred_asset: profileData.preferred_asset,
-                savings_goal_amount: profileData.savings_goal_amount,
-                time_period: profileData.time_period,
-              });
-  
-              // Set the profileImageUri in the context as well
-              setProfileImageUri(
-                profileData.profile_picture
-                  ? ipAddress + profileData.profile_picture
-                  : null // Handle no profile picture case
-              );
-              
-
-
-            })
-            .catch(profileError => {
-              console.error('API Error:', profileError);
-              alert('Error fetching user profile');
-            });
+          fetchUserData(token);
         }
       } catch (error) {
-        console.error('Error retrieving auth token (not API error):', error);
+        console.error('Error retrieving auth token:', error);
       }
     };
   
     retrieveAuthToken();
   }, []);
   
+  const fetchUserData = async (userToken) => {
+    try {
+      const response = await axios.get(`${ipAddress}/api/get-user-profile/`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+  
+      if (response.status === 200) {
+        const profileData = response.data;
+  
+        setUserInfo(prevUserInfo => ({
+          ...prevUserInfo,
+          ...profileData,
+          id: profileData.id,
+          profileImageUrl: profileData.profile_picture
+            ? ipAddress + profileData.profile_picture
+            : null,
+        }));
+  
+        setSavingsGoal({
+          preferred_asset: profileData.preferred_asset,
+          savings_goal_amount: profileData.savings_goal_amount,
+          time_period: profileData.time_period,
+        });
+  
+        setProfileImageUri(
+          profileData.profile_picture
+            ? ipAddress + profileData.profile_picture
+            : null
+        );
+                
+       
+      }
+    } catch (profileError) {
+      console.error('API Error:', profileError);
+      alert('Error fetching user profile');
+    }
+  };
 
 
 
@@ -106,16 +98,136 @@ export const UserProvider = ({ children }) => {
 
 
   
+  const fetchUserBankRecords = async (userToken) => {
+    try {
+      const response = await axios.get(`${ipAddress}/api/bank-accounts/get-bank-accounts/`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+  
+      if (response.status === 200) {
+        // Update bank records in user context
+        setUserBankRecords(response.data);
+  
+        // If you want to store it in userInfo as well:
+        setUserInfo(prevUserInfo => ({
+          ...prevUserInfo,
+          bankRecords: response.data,
+        }));
+      }
+    } catch (error) {
+      console.error('Fetch Error:', error);
+    }
+  };
 
-  const updateProfileImageUri = (newUri) => {
-    setProfileImageUri(newUri);
+
+
+
+
+
+
+
+  
+  const fetchUserCards = async (userToken) => {
+    try {
+      const cardsResponse = await axios.get(`${ipAddress}/api/get-cards/`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+  
+      if (cardsResponse.status === 200) {
+        setUserInfo(prevUserInfo => ({
+          ...prevUserInfo,
+          cards: cardsResponse.data,
+        }));
+      }
+    } catch (error) {
+      console.error('Fetch Error:', error);
+    }
   };
   
+  
+
+
+
+
+
+
+
+  useEffect(() => {
+    if (userInfo.token) {
+
+      setUserBankRecords({}); // Clear previous user's bank data
+      setUserCards({}); // Clear previous user's card data
+  
+      fetchUserCards(userInfo.token); // Fetch card data for the new user
+      fetchUserBankRecords(userInfo.token);
+      fetchUserData(userInfo.token);
+
+    }
+  }, [userInfo.token]);
+  
 
   
 
-  // Add a function to update user profile
-  const updateUserProfile = (updatedProfile) => {
+
+
+
+
+
+
+
+  const addCard = (userToken, newCard) => {
+    const updatedUserCards = { ...userCards };
+    updatedUserCards[userToken] = [...(updatedUserCards[userToken] || []), newCard];
+    setUserCards(updatedUserCards);
+  };
+
+  const deleteCard = async (userToken, cardId) => {
+    try {
+      await axios.delete(`${ipAddress}/api/cards/${cardId}/`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+  
+      setUserCards(prevUserCards => ({
+        ...prevUserCards,
+        [userToken]: prevUserCards[userToken].filter(card => card.id !== cardId),
+      }));
+  
+    } catch (error) {
+      console.error('Delete Error:', error);
+    }
+  };
+  
+  
+
+  const deleteBankRecord = async (accountNumber) => {
+    try {
+      await axios.delete(`${ipAddress}/api/delete-bank-account/${accountNumber}/`, {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      });
+  
+      setUserBankRecords((prevRecords) =>
+        prevRecords.filter((record) => record.account_number !== accountNumber)
+      );
+    } catch (error) {
+      console.error('Delete Error:', error);
+    }
+  };
+
+
+    
+  const updateProfileImageUri = newUri => {
+    setProfileImageUri(newUri);
+  };
+
+  const updateUserProfile = updatedProfile => {
     setUserInfo(prevUserInfo => ({
       ...prevUserInfo,
       firstName: updatedProfile.first_name,
@@ -125,26 +237,21 @@ export const UserProvider = ({ children }) => {
   };
 
 
-  useEffect(() => {
-     // Check if the user is a first-time signup
-  if (userInfo && userInfo.is_first_time_signup) {
-    setIsFirstTimeSignup(true);
-  }
-    console.log('Profile Image URL in context:', userInfo.profileImageUrl);
-  }, [userInfo, userInfo.profileImageUrl]);
-  
-  
 
-  
+  console.log('userInfo:', userInfo);
+  console.log('userBankRecords:', userBankRecords);
+
+
 
   return (
-    <UserContext.Provider 
-        value={{ 
-            userInfo,setUserInfo,
-            updateUserProfile, 
-            profileImageUri, updateProfileImageUri,
-            savingsGoal, setSavingsGoal
-        }}
+    <UserContext.Provider
+      value={{
+        userInfo, setUserInfo,
+        updateUserProfile, profileImageUri,  updateProfileImageUri,
+        savingsGoal, setSavingsGoal,
+        userBankRecords, deleteBankRecord,
+        userCards, addCard, deleteCard,
+      }}
     >
       {children}
     </UserContext.Provider>

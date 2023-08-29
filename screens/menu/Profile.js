@@ -134,8 +134,8 @@ const Profile = ({ navigation, route }) => {
             try {
               // Make an API call to log the user out
               await AsyncStorage.removeItem('authToken');
-                // Remove chatMessages
-                const keys = await AsyncStorage.getAllKeys();
+              
+              const keys = await AsyncStorage.getAllKeys();
                 for (const key of keys) {
                   if (key.startsWith('chatMessages')) {
                     await AsyncStorage.removeItem(key);
@@ -143,6 +143,7 @@ const Profile = ({ navigation, route }) => {
                 }
 
               try {
+                
                 // Attempt to send a logout request
                 const response = await axios.post(`${ipAddress}/api/logout/`);
                 

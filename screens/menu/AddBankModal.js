@@ -10,8 +10,8 @@ import { useUserContext } from '../../UserContext';
 const bankOptions = [
     { id: 1, name: 'Access Bank', code: '044' },
     { id: 2, name: 'Citibank', code: '023' },
-    { id: 3, name: 'Diamond Bank', code: '063' },
-    { id: 4, name: 'Dynamic Standard Bank', code: '' },
+    { id: 3, name: 'Palmpay', code: '999991' },
+    { id: 4, name: 'Opay', code: '999992' },
     { id: 5, name: 'Ecobank', code: '050' },
     { id: 6, name: 'Fidelity Bank ', code: '070' },
     { id: 7, name: 'First Bank of Nigeria', code: '011' },
@@ -30,45 +30,45 @@ const bankOptions = [
     { id: 20, name: 'United Bank for Africa', code: '033' },
     { id: 21, name: 'Unity Bank Plc', code: '215' },
     { id: 22, name: 'Wema Bank', code: '035' },
-    { id: 22, name: 'Zenith Bank', code: '035' },
-    { id: 24, name: 'Kuda Microfinance Bank', code: '057' },
-    { id: 25, name: 'Abbey Mortgage Bank', code: '057' },
-    { id: 26, name: 'AG Mortgage Bank', code: '057' },
-    { id: 27, name: 'Bonghe Microfinance Bank', code: '057' },
-    { id: 28, name: 'Borstal Microfinance Bank', code: '057' },
-    { id: 29, name: 'Calabar Microfinance Bank', code: '057' },
-    { id: 30, name: 'Cherish Microfinance Bank', code: '057' },
-    { id: 31, name: 'Cross River Microfinance Bank', code: '057' },
-    { id: 32, name: 'Crutech Microfinance Bank', code: '057' },
-    { id: 33, name: 'Enterprise Bank', code: '057' },
-    { id: 34, name: 'Fame Microfinance Bank', code: '057' },
-    { id: 35, name: 'First Generation Mortgage Bank', code: '057' },
-    { id: 36, name: 'FSDH Merchant Bank', code: '057' },
-    { id: 37, name: 'Giwa Microfinance Bank', code: '057' },
-    { id: 38, name: 'Globus Bank', code: '057' },
-    { id: 39, name: 'Haggai Mortgage Bank', code: '057' },
-    { id: 40, name: 'Heritage Bank', code: '057' },
-    { id: 41, name: 'Ibeto Bank', code: '057' },
-    { id: 42, name: 'Keystone Bank', code: '057' },
-    { id: 43, name: 'Livingtrust Bank', code: '057' },
-    { id: 44, name: 'Lotus Bank', code: '057' },
-    { id: 45, name: 'Moyofade Microfinance Bank', code: '057' },
-    { id: 46, name: 'Nice Microfinance Bank', code: '057' },
-    { id: 47, name: 'NIRSAL Microfinance Bank', code: '057' },
-    { id: 48, name: 'Nova MB', code: '057' },
-    { id: 49, name: 'Parallex Bank', code: '057' },
-    { id: 50, name: 'Platinum Mortgage Bank', code: '057' },
-    { id: 51, name: 'PalmPay', code: '057' },
-    { id: 52, name: 'Providus Bank', code: '057' },
-    { id: 53, name: 'Rand Merchant Bank', code: '057' },
-    { id: 54, name: 'Safegate Microfinance Bank', code: '057' },
-    { id: 55, name: 'SLS Microfinance Bank', code: '057' },
-    { id: 56, name: 'Sparkle Bank', code: '057' },
-    { id: 57, name: 'Taj Bank', code: '057' },
-    { id: 58, name: 'Titan Trust Bank', code: '057' },
-    { id: 59, name: 'VFD Microfinance Bank', code: '057' },
-    { id: 60, name: 'Opay', code: '057' },
-    { id: 61, name: 'Moniepoint Microfinance Bank', code: '057' },
+    { id: 22, name: 'Zenith Bank', code: '057' },
+    { id: 24, name: 'Kuda Microfinance Bank', code: '50211' },
+    { id: 25, name: 'Moniepoint', code: '50515' },
+    { id: 26, name: 'Paga', code: '100002' },
+    { id: 27, name: 'ALAT by Wema', code: '035A' },
+    { id: 28, name: 'Borstal Microfinance Bank', code: '090454' },
+    { id: 29, name: 'Calabar Microfinance Bank', code: '090415' },
+    { id: 30, name: 'Cherish Microfinance Bank', code: '090440' },
+    { id: 31, name: 'Cross River Microfinance Bank', code: '090429' },
+    { id: 32, name: 'Crutech Microfinance Bank', code: '090414' },
+    { id: 33, name: 'Mainstreet MFB', code: '090171' },
+    { id: 34, name: 'Fame Microfinance Bank', code: '090330' },
+    { id: 35, name: 'First Generation Mortgage Bank', code: '070014' },
+    { id: 36, name: 'Fairmoney Microfinance Bank', code: '51318' },
+    { id: 37, name: 'Giwa Microfinance Bank', code: '090441' },
+    { id: 38, name: 'Globus Bank', code: '000027' },
+    { id: 39, name: 'Haggai Mortgage Bank', code: '070017' },
+    { id: 40, name: 'Heritage Bank', code: '000020' },
+    { id: 41, name: 'Ibeto Bank', code: '090439' },
+    { id: 42, name: 'Unilag Microfinance Bank', code: '51316' },
+    { id: 43, name: 'Livingtrust Bank', code: '031' },
+    { id: 44, name: 'Lotus Bank', code: '303' },
+    { id: 45, name: 'Moyofade Microfinance Bank', code: '090448' },
+    { id: 46, name: 'Nice Microfinance Bank', code: '090459' },
+    { id: 47, name: 'NIRSAL Microfinance Bank', code: '090194' },
+    { id: 48, name: 'Nova MB', code: '060003' },
+    { id: 49, name: 'Parallex Bank', code: '104' },
+    { id: 50, name: 'Platinum Mortgage Bank', code: '268' },
+    { id: 51, name: 'Premium Trust', code: '105' },
+    { id: 52, name: 'Providus Bank', code: '101' },
+    { id: 53, name: 'Rand Merchant Bank', code: '502' },
+    { id: 54, name: 'Safe Haven Microfinance Bank', code: '51113' },
+    { id: 55, name: 'SLS Microfinance Bank', code: '090449' },
+    { id: 56, name: 'Sparkle Bank', code: '51310' },
+    { id: 57, name: 'Taj Bank', code: '302' },
+    { id: 58, name: 'Titan Trust Bank', code: '102' },
+    { id: 59, name: 'VFD Microfinance Bank', code: '566' },
+    { id: 60, name: 'Carbon', code: '565' },
+    { id: 61, name: 'Moniepoint Microfinance Bank', code: '50515' },
   ];
   
 
@@ -81,8 +81,13 @@ const bankOptions = [
     const [bankName, setBankName] = useState('');
     const { userInfo } = useUserContext();
     const [isLoading, setIsLoading] = useState(false); // Add this state
+    const [resolvedAccountName, setResolvedAccountName] = useState('');
 
     
+
+    console.log('User Token from Context:', userInfo.token);
+
+
     const handleSelect = (value) => {
       const selectedBankObj = bankOptions.find((bank) => bank.name === value);
       setSelectedBank(selectedBankObj);
@@ -93,7 +98,7 @@ const bankOptions = [
     const handleAccountNumberChange = async (value) => {
       console.log('Account number input:', value);
       setAccountNumber(value);
-      
+    
       if (!value.trim() || accountName === 'Account not found. Try again.') {
         setAccountName('');
         setIsAccountNameResolved(false);
@@ -103,31 +108,32 @@ const bankOptions = [
       if (value.length === 10 && selectedBank) {
         console.log('Account number:', value);
         console.log('Bank code:', selectedBank.code);
-        
+    
         try {
-          setIsLoading(true); // Set isLoading to true when starting to fetch
+          setIsLoading(true);
           const response = await axios.get(`https://api.paystack.co/bank/resolve?account_number=${value}&bank_code=${selectedBank.code}`, {
             headers: {
               Authorization: 'Bearer sk_live_a54969904a401ca7a59b8ca1567ce332a16a3ef8'
             }
           });
-            
+    
           console.log('API Response:', response.data);
-            
-          if (response.status === 200) {
-            setAccountName(response.data.data.account_name);
+    
+          if (response.status === 200) { // Change status check to 200
+            setResolvedAccountName(response.data.data.account_name); // Set resolved account name
+            console.log('Resolved Account Name:', response.data.data.account_name); // Log the resolved account name
             setIsAccountNameResolved(true);
           } else {
-            setAccountName('Account not found. Try again.');
+            setResolvedAccountName(''); // Reset resolved account name
             setIsAccountNameResolved(false);
           }
         } catch (error) {
           console.error('Error fetching account name:', error);
           setIsAccountNameResolved(false);
-          setAccountName('Account not found. Try again.');
+          setResolvedAccountName(''); // Reset resolved account name
           console.log('Error response:', error.response.data);
         } finally {
-          setIsLoading(false); // Set isLoading back to false after fetching, regardless of success or error
+          setIsLoading(false);
         }
       }
     };
@@ -135,16 +141,31 @@ const bankOptions = [
     
     
     
+    
     const handleProceed = async () => {
-      console.log('User Token:', userInfo.token);
+      console.log('Resolved Account Name for Proceed:', resolvedAccountName);
+    
+      // Check if the new account already exists in bankRecords
+      const existingRecord = bankRecords.find(
+        record =>
+          record.account_number === accountNumber.trim() &&
+          record.bank_name === selectedBank.name
+      );
+    
+      if (existingRecord) {
+        Alert.alert('Error', 'You have already added this bank account.');
+        return;
+      }
     
       try {
+        console.log('User Token from Context:', userInfo.token);
+    
         const response = await axios.post(
           `${ipAddress}/api/add-bank-account/`,
           {
             accountNumber: accountNumber.trim(),
             bankName: selectedBank.name,
-            accountName: accountName.trim(),
+            accountName: resolvedAccountName.trim(),
             bankCode: selectedBank.code,
           },
           {
@@ -155,16 +176,16 @@ const bankOptions = [
         );
     
         if (response.status === 201) {
-          setAddBankModalVisible(false); // Close the modal
-    
-          // Update the bankRecords state with the new bank account data
+          setAddBankModalVisible(false);
           const newBankRecord = {
             bank_name: selectedBank.name,
             account_number: accountNumber.trim(),
-            // Add other properties here if needed
+            account_name: resolvedAccountName.trim(),
           };
           setBankRecords([...bankRecords, newBankRecord]);
-    
+          const updatedBankRecords = [...bankRecords, newBankRecord];
+          await AsyncStorage.setItem('bankRecords', JSON.stringify(updatedBankRecords));
+
           Alert.alert("Success", "Bank Account Added successfully", [
             { text: "OK" },
           ]);
@@ -174,8 +195,13 @@ const bankOptions = [
         }
       } catch (error) {
         console.error("An error occurred while adding bank account:", error);
-        // You can set an error state and display an error message to the user
-        Alert.alert("Error", "An error occurred while adding bank account. Please try again later.");
+    
+        // Check for the specific error message indicating account already added by another user
+        if (error.response && error.response.data && error.response.data.error === "This bank account is already associated with another user.") {
+          Alert.alert("Error", "This bank account is already added by another MyFund user.");
+        } else {
+          Alert.alert("Error", "An error occurred while adding bank account. Please try again later.");
+        }
       }
     };
     
@@ -265,7 +291,7 @@ const bankOptions = [
   Account Name  {isLoading ? (
       <ActivityIndicator size="small" color="black" marginTop={2} />
     ) : (
-      accountName && accountName !== 'Account not found. Try again.' && (
+      resolvedAccountName && resolvedAccountName !== 'Account not found. Try again.' && (
         <Ionicons name="checkmark-circle-outline" size={18} color="green" marginTop={2} />
       )
     )}
@@ -274,7 +300,7 @@ const bankOptions = [
     <TextInput
       style={styles.amountInput2}
       keyboardType="email-address"
-      value={accountName}
+      value={resolvedAccountName} // Use resolvedAccountName here
       editable={false}
     />
   </View>

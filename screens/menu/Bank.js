@@ -1,68 +1,126 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, SafeAreaView, ScrollView, Pressable, TouchableOpacity, StyleSheet, Switch } from 'react-native';
+import { View, Text, Alert, ScrollView, Pressable, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { MaterialIcons } from '@expo/vector-icons';
 import AddBankModal from './AddBankModal';
 import SectionTitle from '../components/SectionTitle';
-import axios from 'axios';
-import { ipAddress } from '../../constants';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUserContext } from '../../UserContext';
 
 const Bank = ({ navigation, initialBankRecords}) => {
   const [addBankModalVisible, setAddBankModalVisible] = useState(false); // define modalVisible state
   const [bankRecords, setBankRecords] = useState([]);
+  const { userBankRecords, deleteBankRecord } = useUserContext();
+  const mergedBankRecords = [...userBankRecords, ...bankRecords];
 
 
 
+  const getBackgroundColor = (bankName) => {
+    switch (bankName) {
+      case "Access Bank":
+        return "#91A62A";
+      case "Guaranty Trust Bank":
+        return "#C3460E";
+      case "Zenith Bank":
+        return "#E6000D";
+      case "United Bank for Africa":
+        return "#D42C07";
+      case "First City Monument Bank":
+        return "#702699";
+      case "Wema Bank":
+        return "#72235A";
+      case "Polaris Bank":
+        return "#8834AE";
+      case "Union Bank":
+        return "#00ADEF";
+      case "Ecobank":
+        return "#00537F";
+      case "Stanbic IBTC Bank":
+        return "#04009D";
+      case "First Bank of Nigeria":
+        return "#13233C";
+      case "Keystone Bank":
+        return "#014888";
+      case "Sterling Bank":
+        return "#DB3539";
+      case "Unity Bank Plc":
+        return "#88BB52";
+      case "Citibank":
+        return "#0275D0";
+      case "Heritage Bank Plc":
+        return "#439B2D";
+      case "Standard Chartered Bank":
+        return "#0671A9";
+      case "Jaiz Bank":
+        return "#0B411F";
+      case "Fidelity Bank":
+        return "#232B69";
+      case "Opay":
+        return "#08A67C";
+      case "Palmpay":
+        return "#7F13CB";
+      case "Moniepoint Microfinance Bank":
+        return "#0649C4";
+      default:
+        return "#4C28BC"; // Default color
+    }
+  };
+  
+
+  const confirmDelete = (accountNumber) => {
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this bank account?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: () => performDelete(accountNumber),
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+  
+  const handleDelete = (accountNumber) => {
+    confirmDelete(accountNumber);
+  };
+  
+  
+ 
+  const performDelete = async (accountNumber) => {
+    try {
+      // Call your deleteBankRecord function here
+      await deleteBankRecord(accountNumber);
+      // Optionally, you can update the local state here to remove the deleted bank record
+    } catch (error) {
+      console.error('Delete Error:', error);
+    }
+  };
+  
 
 
   useEffect(() => {
-    // Fetch bank account records from the backend when the component mounts
-    fetchBankRecords();
+    const loadBankRecords = async () => {
+      try {
+        const storedBankRecords = await AsyncStorage.getItem('bankRecords');
+        if (storedBankRecords) {
+          setBankRecords(JSON.parse(storedBankRecords));
+        }
+      } catch (error) {
+        console.error('Error loading bank records:', error);
+      }
+    };
+  
+    loadBankRecords();
   }, []);
-
-
-  const fetchBankRecords = async () => {
-    try {
-      const response = await axios.get(
-        `${ipAddress}/api/bank-accounts/`); // Replace with your API endpoint
-      if (response.status === 200) {
-        setBankRecords(response.data);
-      } else {
-        // Handle API error
-      }
-    } catch (error) {
-      // Handle fetch error
-    }
-  };
-
-
-  
-  
-  
-  const deleteBankRecord = async (accountNumber) => {
-    try {
-      const response = await axios.delete(`${ipAddress}/api/delete-bank-account/${accountNumber}/`);
-      if (response.status === 204) {
-        // Remove the deleted bank record from the state
-        const updatedBankRecords = bankRecords.filter(
-          (record) => record.accountNumber !== accountNumber
-        );
-        setBankRecords(updatedBankRecords);
-      } else {
-        // Handle API error
-      }
-    } catch (error) {
-      // Handle fetch error
-    }
-  };
   
 
-
-
-
-
- 
+  console.log('Bank Records:', bankRecords);
+  console.log('UserBank Records from context:', userBankRecords);
 
 
 
@@ -92,46 +150,53 @@ const Bank = ({ navigation, initialBankRecords}) => {
 
       <View style={styles.propertyContainer}>
         <MaterialIcons name="account-balance" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
-        <Text style={styles.propertyText}>Set up your bank accounts so you can perform faster withdrawals locally.</Text>
+        <Text style={styles.propertyText}>Set up your bank accounts so you can perform faster withdrawals.</Text>
       </View>
       
       <SectionTitle>LIST OF BANK ACCOUNTS</SectionTitle>
 
-      {bankRecords.map((bankRecord, index) => (
-  <View style={styles.bankCard} key={`${bankRecord.accountNumber}-${index}`}>
-    <View style={styles.bankCardHeader}>
-      <Ionicons name="ios-briefcase-outline" size={35} color="white" margin={20} />
-      <Text style={styles.bankCardAccountName}>{bankRecord.account_name}</Text>
-    </View>
+
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      {mergedBankRecords.length > 0 ? (
+        mergedBankRecords.map((bankRecord, index) => (
+          <View
+    style={[
+      styles.bankCard,
+      { backgroundColor: getBackgroundColor(bankRecord.bank_name) },
+    ]}
+    key={`${bankRecord.accountNumber}-${index}`}
+  >
     <View style={styles.bankCardContent}>
-  <Text style={styles.bankCardBankName}>{bankRecord.bank_name}</Text>
-  <Text style={styles.bankCardAccountNumber}>
-    (*****{bankRecord.account_number.slice(-5)})
-  </Text>
-  <Text style={styles.bankCardAccountName}>
-    {bankRecord.account_name}
-  </Text>
-</View>
-<TouchableOpacity
-  style={styles.deleteButtonContainer}
-  onPress={() => deleteBankRecord(bankRecord.account_number)}
->
-  <MaterialIcons name="delete-outline" size={20} color="#4C28BC" />
-</TouchableOpacity>
+      <View style={styles.bankCardHeader}>
+        <MaterialIcons name="account-balance" size={35} color="white" margin={20} />
+        <View style={styles.accountDetails}>
+          <Text style={styles.bankCardAccountName}>{bankRecord.account_name}</Text>
+          <Text style={styles.bankCardBankName}>{bankRecord.bank_name}</Text>
+          <Text style={styles.bankCardAccountNumber}>
+            (*****{bankRecord.account_number.slice(-5)})
+          </Text>
+        </View>
+      </View>
+      <View style={styles.deleteButtonContainer}>
 
+      <View style={styles.addBankButtonMargin} />
+
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDelete(bankRecord.account_number)}
+          >
+          <MaterialIcons name="delete-outline" size={20} color="red" />
+        </TouchableOpacity>
+      </View>
+    </View>
   </View>
-))}
-
-
-
-
-
-
-
-
-
-
-
+))
+) : (
+  <View style={styles.bankAddedcontainer}>
+    <Text style={styles.bankAddedInfo}>No bank accounts added yet.</Text>
+  </View>
+)}
+</ScrollView>
 
 
 
@@ -270,34 +335,37 @@ const styles = StyleSheet.create({
 
 
         bankCard: {
-          backgroundColor: '#4C28BC', // Orange background
-          borderRadius: 15,
+          backgroundColor: '#4C28BC',
+          borderRadius: 0,
+          borderTopLeftRadius: 20, // Set to 0 for straight top left corner
+          borderTopRightRadius: 20, // Set to 0 for straight top right corner
           marginVertical: 10,
           marginHorizontal: 20,
           padding: 10,
           elevation: 2,
           flexDirection: 'row'
-
         },
+        
         bankCardHeader: {
           flexDirection: 'row',
           alignItems: 'center',
           marginBottom: 10,
         },
         bankCardAccountName: {
-          marginLeft: 10,
           fontSize: 18,
-          fontWeight: 'bold',
           color: 'white',
           fontFamily: 'proxima',
         },
         bankCardContent: {
           flexDirection: 'column',
-          marginLeft: 34,
+          justifyContent: 'space-between', // Arrange content vertically
+          flex: 1, // Take up remaining space
+
+
         },
         bankCardBankName: {
           fontSize: 16,
-          color: 'silver',
+          color: 'white',
           fontFamily: 'karla',
         },
         bankCardAccountNumber: {
@@ -305,18 +373,43 @@ const styles = StyleSheet.create({
           color: 'silver',
           fontFamily: 'karla',
         },
-        deleteButton: {
-          marginTop: 5,
+
+        deleteButtonContainer: {
+          alignItems: 'flex-end', // Align the button to the right
         },
 
-  
+        deleteButton: {
+          marginTop: -25,
+        },
+        bankAddedcontainer: {
+          flex: 1,
+          justifyContent: 'center', // Center vertically
+          alignItems: 'center', // Center horizontally
+        },
+        bankAddedInfo: {
+          fontSize: 17,
+          color: 'silver',
+          fontFamily: 'karla',
+          marginTop: -90,
+        },
+      
+      
+        addBankButtonMargin: {
+          height: 5, // Adjust this value to control the size of the white margin area
+          backgroundColor: 'white', // Set the color of the white margin area
+        },
+
+        
+
+
         buttonsContainer: {
           flexDirection: 'row',
           justifyContent: 'center',
-          position: 'absolute',
+          position: 'relative',
           bottom: 30,
           left: 0,
           right: 0,
+          marginTop: 50,
         },
         
         primaryButton: {

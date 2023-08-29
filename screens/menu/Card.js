@@ -1,13 +1,61 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView, Pressable, TouchableOpacity, StyleSheet, Switch } from 'react-native';
+import { View, Text, Alert, ScrollView, Pressable, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { MaterialIcons } from '@expo/vector-icons';
 import AddCardModal from './AddCardModal';
 import SectionTitle from '../components/SectionTitle';
+import { useUserContext } from '../../UserContext';
 
+const getBackgroundColor = (bankName) => {
+  switch (bankName) {
+    case "Access Bank":
+      return "#91A62A";
+    case "Guaranty Trust Bank":
+      return "#C3460E";
+    case "Zenith Bank":
+      return "#E6000D";
+    case "United Bank for Africa":
+      return "#D42C07";
+    case "First City Monument Bank":
+      return "#702699";
+    case "Wema Bank":
+      return "#72235A";
+    case "Polaris Bank":
+      return "#8834AE";
+    case "Union Bank":
+      return "#00ADEF";
+    case "Ecobank":
+      return "#00537F";
+    case "Stanbic IBTC Bank":
+      return "#04009D";
+    case "First Bank of Nigeria":
+      return "#0C2B5C";
+    case "Keystone Bank":
+      return "#014888";
+    case "Sterling Bank":
+      return "#DB3539";
+    case "Unity Bank Plc":
+      return "#88BB52";
+    case "Citibank":
+      return "#0275D0";
+    case "Heritage Bank Plc":
+      return "#439B2D";
+    case "Standard Chartered Bank":
+      return "#0671A9";
+    case "Jaiz Bank":
+      return "#0B411F";
+    case "Fidelity Bank":
+      return "#232B69";
+    default:
+      return "#4C28BC"; // Default color
+  }
+};
 
 const Card = ({ navigation, route }) => {
   const [addCardModalVisible, setAddCardModalVisible] = useState(false); // define modalVisible state
+  const { userInfo, addCard, userCards, deleteCard } = useUserContext();
+  const [cards, setCards] = useState([]);
+  const userAllCards = [...userInfo.cards, ...cards];
 
 
   useEffect(() => {
@@ -15,6 +63,53 @@ const Card = ({ navigation, route }) => {
       setAddCardModalVisible(true);
     }
   }, [route.params]);
+
+
+  useEffect(() => {
+    console.log('Fetching user cards with token:', userInfo.token);
+    if (userCards[userInfo.token]) {
+      setCards(userCards[userInfo.token]);
+    }
+  }, [userCards, userInfo.token]);
+
+  
+
+
+  
+
+  const confirmDeleteCard = (cardId) => {
+    Alert.alert(
+      'Delete Card',
+      'Are you sure you want to delete this card?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => deleteCard(userInfo.token, cardId), // Updated line
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+  
+  
+
+ 
+  
+
+  const addCardToList = (newCard) => {
+    const updatedCards = [...cards, newCard];
+    setCards(updatedCards);
+  };
+  
+  
+
+  console.log('UserCards:', userCards);
+
   
   return (
     <View style={styles.container}>
@@ -41,10 +136,60 @@ const Card = ({ navigation, route }) => {
 
       <View style={styles.propertyContainer}>
         <Ionicons name="card-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
-        <Text style={styles.propertyText}>Set up your cards so you can perform faster transactions including AutoSave and AutoInvest</Text>
+        <Text style={styles.propertyText}>Set up your cards so you can perform faster transactions including AutoSave, AutoInvest, etc.</Text>
       </View>
       
     <SectionTitle>LIST OF CARDS</SectionTitle>
+
+    <ScrollView contentContainerStyle={styles.scrollViewContent}>
+
+    {userAllCards.length > 0 ? (
+    userAllCards.map((card, index) => (
+      <View
+      style={[
+        styles.bankCard,
+        { backgroundColor: getBackgroundColor(card.bank_name) },
+      ]}
+      key={`${card.id}-${index}`}
+    >
+      <View style={styles.bankCardContent}>
+        <View style={styles.bankCardHeader}>
+          <Ionicons name="card-outline" size={35} color="white" margin={20} />
+          <View style={styles.accountDetails}>
+            <Text style={styles.bankCardAccountNumber}>
+              {card.card_number.slice(0, 4)} **** **** {card.card_number.slice(-4)}
+            </Text>
+            <Text style={styles.bankCardBankName}>{card.bank_name}</Text>
+            <View style={styles.bankCardExpiry}>
+              <Text style={styles.bankCardExpiryText}>Expiry: {card.expiry_date}</Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.deleteButtonContainer}>
+
+        <View style={styles.addBankButtonMargin} />
+
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => confirmDeleteCard(card.id)} // Use a separate function for confirmation
+          >
+            <Ionicons name="trash-outline" size={18} color="red" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  ))
+) : (
+<View style={styles.cardAddedcontainer}>
+  <Text style={styles.cardAddedInfo}>No cards added yet.</Text>
+</View>
+)}
+
+</ScrollView>
+
+
+
+
 
       <View style={styles.buttonsContainer}>
                 <TouchableOpacity style={styles.primaryButton} onPress={() => setAddCardModalVisible(true)}>
@@ -52,7 +197,15 @@ const Card = ({ navigation, route }) => {
                 <Text style={styles.primaryButtonText}>Add New Card</Text>
                 </TouchableOpacity>
                </View>
-               <AddCardModal navigation={navigation} addCardModalVisible={addCardModalVisible} setAddCardModalVisible={setAddCardModalVisible}/>
+              
+               <AddCardModal 
+               navigation={navigation} 
+               addCardModalVisible={addCardModalVisible} 
+               setAddCardModalVisible={setAddCardModalVisible}
+               addCardToList={addCardToList} // Pass the function to add a new card to the list
+              cards={cards} // Pass the current list of cards
+               setCards={setCards} // Pass the function to update the list of cards
+               />
      
     </View>
   );
@@ -172,13 +325,95 @@ const styles = StyleSheet.create({
     color: 'black',
 
     },
+
+
+
+
+    bankCard: {
+      backgroundColor: '#4C28BC',
+      borderRadius: 10,
+      marginVertical: 10,
+      marginHorizontal: 35,
+      padding: 10,
+      elevation: 2,
+      flexDirection: 'row',
+    },
+    bankCardHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    bankCardBankName: {
+      fontSize: 16,
+      color: 'white',
+      fontFamily: 'karla',
+      letterSpacing: -0.5,
+      marginTop: 5,
+
+    },
+    bankCardContent: {
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      flex: 1,
+    },
+    bankCardAccountNumber: {
+      fontSize: 24,
+      color: 'white',
+      fontFamily: 'karla',
+    },
+    deleteButtonContainer: {
+      alignItems: 'flex-end',
+    },
+    deleteButton: {
+      marginTop: -5,
+    },
+
+    bankCardExpiry: {
+      alignItems: 'flex-start',
+    },
+    bankCardExpiryText: {
+      fontSize: 15,
+      color: 'silver',
+      fontFamily: 'karla',
+      marginTop: 3,
+    },
+ 
+    cardAddedcontainer: {
+      flex: 1,
+      justifyContent: 'center', // Center vertically
+      alignItems: 'center', // Center horizontally
+    },
+    cardAddedInfo: {
+      fontSize: 17,
+      color: 'silver',
+      fontFamily: 'karla',
+      marginTop: -90,
+    },
+  
+    addBankButtonMargin: {
+      height: 5, // Adjust this value to control the size of the white margin area
+      backgroundColor: 'white', // Set the color of the white margin area
+    },
+
+
+
+
+
+
+
+
+
+
+
     buttonsContainer: {
       flexDirection: 'row',
       justifyContent: 'center',
-      position: 'absolute',
+      position: 'relative',
       bottom: 30,
       left: 0,
       right: 0,
+      marginTop: 50,
+
     },
     
     primaryButton: {
