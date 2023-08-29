@@ -19,6 +19,7 @@ const Home = ({ navigation, route}) => {
   const { userInfo} = useUserContext();
   const [displayedProfileImage, setDisplayedProfileImage] = useState(null);
   const { profileImageUri, profileImageUrl } = useContext(ImageContext);
+  const { accountBalances } = useUserContext();
 
 
   useEffect(() => {
@@ -54,11 +55,11 @@ const Home = ({ navigation, route}) => {
     let newGreeting;
 
     if (currentHour < 12) {
-      newGreeting = 'Good Morning! Welcome to MyFund';
+      newGreeting = 'Good Morning! Welcome to MyFund 👋🏼';
     } else if (currentHour < 17) {
-      newGreeting = 'Good Afternoon! Welcome to MyFund';
+      newGreeting = 'Good Afternoon! Welcome to MyFund 👋🏼';
     } else {
-      newGreeting = 'Good Evening! Welcome to MyFund';
+      newGreeting = 'Good Evening! Welcome to MyFund 👋🏼';
     }
 
     setGreeting(newGreeting);
@@ -157,8 +158,8 @@ const Home = ({ navigation, route}) => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>250,000</Text>
-        <Text style={styles.dollarSign}>50</Text>
+        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.savings)}</Text>
+        <Text style={styles.decimal}>.{String(accountBalances.savings).split('.')[1]}</Text>
         </View>
 
         <View style={styles.quickSaveButtonContainer}>
@@ -182,8 +183,8 @@ const Home = ({ navigation, route}) => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>3,650,200</Text>
-        <Text style={styles.dollarSign}>00</Text>
+        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.investment)}</Text>
+        <Text style={styles.decimal}>.{String(accountBalances.investment).split('.')[1]}</Text>
         </View>
 
         <View style={styles.quickSaveButtonContainer}>
@@ -206,7 +207,7 @@ const Home = ({ navigation, route}) => {
           <Text style={styles.rateText}>    @yearly rent</Text> </Text>
         </View>
         <View style={styles.amountContainer}>
-        <Text style={styles.savingsAmount}>02</Text>
+        <Text style={styles.savingsAmount}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
         </View>
 
         <View style={styles.quickSaveButtonContainer}>
@@ -230,8 +231,8 @@ const Home = ({ navigation, route}) => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>7,500</Text>
-        <Text style={styles.dollarSign}>25</Text>
+        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.wallet)}</Text>
+        <Text style={styles.decimal}>.{String(accountBalances.wallet).split('.')[1]}</Text>
         </View>
 
         <View style={styles.quickSaveButtonContainer}>
@@ -326,7 +327,7 @@ const Home = ({ navigation, route}) => {
         <View style={styles.todoList1}>
         <TouchableOpacity style={styles.todoButton} onPress={() => navigation.navigate('ReferAndEarn')}>
           <Ionicons name="person-add-outline" size={23} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
-          <Text style={styles.todoText}>Refer and Earn</Text>
+          <Text style={styles.todoText}>Refer and Earn ₦1000</Text>
         </TouchableOpacity>
         </View>
 
@@ -575,7 +576,6 @@ fontFamily: 'karla',
 
 swiperContainer: {
   height: 160,
-  
 },
 dot: {
   backgroundColor: 'rgba(0, 0, 0, 0.2)', // Customize the color of the inactive dots
@@ -649,7 +649,7 @@ backgroundImage: {
   },
 
   dollarSign: {
-    fontSize: 30,
+    fontSize: 20,
     fontFamily: 'karla',
     textAlign: 'center',
     marginTop: 12,
@@ -657,15 +657,25 @@ backgroundImage: {
       letterSpacing: -2,
     },
 
+    decimal: {
+      fontSize: 20,
+      fontFamily: 'karla',
+      textAlign: 'center',
+      marginTop: 12,
+        color: 'silver',
+      },
+
   savingsAmount: {
-  fontSize: 65,
+  fontSize: 80,
   fontFamily: 'karla',
   textAlign: 'center',
   letterSpacing: -4,
-  marginRight: 0,
+  marginRight: 5,
+  marginLeft: 5,
+  marginTop: -10,
+  marginBottom: -10,
     color: '#fff',
   },
-
    
 
     autoSaveContainer: {

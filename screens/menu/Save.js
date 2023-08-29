@@ -20,13 +20,13 @@ const Save = ({ navigation, route }) => {
   const [deactivateAutoSaveModalVisible, setDeactivateAutoSaveModalVisible] = useState(false);
   const { autoSave, setAutoSave } = useContext(AutoSaveContext)
   const { userInfo } = useUserContext(); // Assume userInfo includes savings goal data
-  const { savingsGoal } = useUserContext();
+  const { accountBalances } = useUserContext();
 
   
   // Calculate the percentage
   const percentage = (currentAmount) => {
     const goalAmount = parseFloat(userInfo.savings_goal_amount);
-    return (currentAmount / goalAmount) * 100;
+    return (accountBalances.savings / goalAmount) * 100;
   };
 
   const roundToNearestThousand = (value) => {
@@ -105,11 +105,11 @@ const Save = ({ navigation, route }) => {
                   for your <Text style={styles.goalText}>{userInfo.preferred_asset}</Text> investment in
                   <Text style={styles.goalText}> {userInfo.time_period}</Text>
                   <Text style={styles.restText}> years. And you're now</Text>
-                  <Text style={styles.goalText}> {percentage(0)}%</Text>
+                  <Text style={styles.percentageText}> {percentage(0)}%</Text>
                   <Text style={styles.restText}> to success. Well done!</Text>
                 </Text>
                 </ScrollView>
-                <ProgressBar progress={0.25} color="#4C28BC" height={6} style={styles.progressBar} />
+                <ProgressBar progress={percentage(0)} color="#4C28BC" height={6} style={styles.progressBar} />
               </View>
             </View>
           </Swiper>
@@ -139,10 +139,13 @@ const Save = ({ navigation, route }) => {
           <Ionicons name="save-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
           <Text style={styles.greyText}>Total Savings    <Text style={styles.rateText}>@10% p.a.</Text> </Text>
         </View>
+
+
+        
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>250,000</Text>
-        <Text style={styles.dollarSign}>50</Text>
+        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.savings)}</Text>
+        <Text style={styles.decimal}>.{String(accountBalances.savings).split('.')[1]}</Text>
         </View>
 
        
@@ -462,7 +465,14 @@ const styles = StyleSheet.create({
       fontFamily: 'nexa',
       letterSpacing: -0.2,
       color: 'black',
+    },
 
+    percentageText:{
+      flex: 1,
+      fontSize: 14,
+      fontFamily: 'proxima',
+      letterSpacing: -0.2,
+      color: 'green',
     },
     restText:{
       flex: 1,
@@ -518,10 +528,11 @@ backgroundImage: {
 
     amountContainer: {
       flexDirection: 'row',
+      alignItems: 'flex-start'
     },
   
     dollarSign: {
-      fontSize: 30,
+      fontSize: 20,
       fontFamily: 'karla',
       textAlign: 'center',
       marginTop: 12,
@@ -529,12 +540,24 @@ backgroundImage: {
         letterSpacing: -2,
       },
 
+      decimal: {
+        fontSize: 20,
+        fontFamily: 'karla',
+        textAlign: 'center',
+        marginTop: 12,
+          color: 'silver',
+          letterSpacing: -2,
+        },
+
     savingsAmount: {
-    fontSize: 65,
+    fontSize: 80,
     fontFamily: 'karla',
     textAlign: 'center',
     letterSpacing: -4,
-    marginRight: 0,
+    marginRight: 5,
+    marginLeft: 5,
+    marginTop: -10,
+    marginBottom: -10,
       color: '#fff',
     },
 

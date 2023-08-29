@@ -10,7 +10,7 @@ import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoInvestContext } from '../components/AutoInvestContext';
 import SectionTitle from '../components/SectionTitle';
-
+import { useUserContext } from '../../UserContext';
 
 const Sponsorship = ({ navigation, route }) => {
 // const [autoInvest, setAutoInvest] = React.useState(false);
@@ -18,6 +18,7 @@ const Sponsorship = ({ navigation, route }) => {
   const [autoInvestModalVisible, setAutoInvestModalVisible] = useState(false);
   const [deactivateAutoInvestModalVisible, setDeactivateAutoInvestModalVisible] = useState(false);
   const { autoInvest, setAutoInvest } = useContext(AutoInvestContext);
+  const { accountBalances } = useUserContext();
 
   useEffect(() => {
     if (route.params?.autoInvestModalVisible) {
@@ -93,8 +94,8 @@ const handleConfirmDeactivateAutoInvest = () => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>3,650,200</Text>
-        <Text style={styles.dollarSign}>50</Text>
+        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.savings)}</Text>
+        <Text style={styles.decimal}>.{String(accountBalances.savings).split('.')[1]}</Text>
         </View>
        
        <View style={styles.autoSaveContainer}>
@@ -442,7 +443,7 @@ backgroundImage: {
     },
   
     dollarSign: {
-      fontSize: 30,
+      fontSize: 20,
       fontFamily: 'karla',
       textAlign: 'center',
       marginTop: 12,
@@ -450,15 +451,26 @@ backgroundImage: {
         letterSpacing: -2,
       },
 
+      decimal: {
+        fontSize: 20,
+        fontFamily: 'karla',
+        textAlign: 'center',
+        marginTop: 12,
+          color: 'silver',
+          letterSpacing: -2,
+        },
+
     savingsAmount: {
-    fontSize: 65,
+    fontSize: 80,
     fontFamily: 'karla',
     textAlign: 'center',
     letterSpacing: -4,
-    marginRight: 0,
+    marginRight: 5,
+    marginLeft: 5,
+    marginTop: -10,
+    marginBottom: -10,
       color: '#fff',
     },
-
    
 
       autoSaveContainer: {

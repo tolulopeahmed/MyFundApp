@@ -117,6 +117,7 @@ const Invest = ({ navigation, firstName }) => {
 
       <SectionTitle>OTHER INVESTMENT OPPORTUNITIES</SectionTitle>
 
+      <Text style={styles.cardAddedInfo}>Watch this space!</Text>
 
       </ScrollView>
     </View>
@@ -246,6 +247,16 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontFamily: 'ProductSans',
     marginLeft: 4,
+  },
+
+
+  cardAddedInfo: {
+    fontSize: 14,
+    color: 'silver',
+    fontFamily: 'karla-italic',
+    marginTop: 40,
+    marginBottom: 40,
+    alignSelf: 'center'
   },
 
 });

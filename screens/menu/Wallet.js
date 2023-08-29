@@ -6,9 +6,13 @@ import WithdrawModal from './WithdrawModal';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import SectionTitle from '../components/SectionTitle';
+import { useUserContext } from '../../UserContext';
 
 const Wallet = ({ navigation, firstName }) => {
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
+  const { accountBalances } = useUserContext();
+
+
 
   const handleWithdraw = () => {
     navigation.navigate('Withdraw', { withdrawModalVisible: true });
@@ -48,7 +52,9 @@ const Wallet = ({ navigation, firstName }) => {
           <Text style={styles.greyText}>Total Earnings </Text>
         </View>
         <View style={styles.amountContainer}>
-        <Text style={styles.dollarSign}>₦</Text><Text style={styles.savingsAmount}>250,000</Text><Text style={styles.decimal}>.50</Text>
+        <Text style={styles.dollarSign}>₦</Text>
+        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.wallet)}</Text>
+        <Text style={styles.decimal}>.{String(accountBalances.wallet).split('.')[1]}</Text>
         </View>
         <View style={styles.autoSaveContainer}>
        
@@ -358,24 +364,34 @@ bell: {
         color: 'silver',
       },
 
-    savingsAmount: {
-    fontSize: 70,
-    fontFamily: 'karla',
-    textAlign: 'center',
-    letterSpacing: -4,
-    marginRight: 0,
-      color: '#fff',
-    },
-
-      decimal: {
-        fontSize: 30,
-        marginTop: 33,
+      dollarSign: {
+        fontSize: 20,
         fontFamily: 'karla',
         textAlign: 'center',
-        marginRight: 0,
-        color: 'silver',
-        letterSpacing: -2,
-
+        marginTop: 12,
+          color: 'silver',
+          letterSpacing: -2,
+        },
+  
+        decimal: {
+          fontSize: 20,
+          fontFamily: 'karla',
+          textAlign: 'center',
+          marginTop: 12,
+            color: 'silver',
+            letterSpacing: -2,
+          },
+  
+      savingsAmount: {
+      fontSize: 80,
+      fontFamily: 'karla',
+      textAlign: 'center',
+      letterSpacing: -4,
+      marginRight: 5,
+      marginLeft: 5,
+      marginTop: -10,
+      marginBottom: -10,
+        color: '#fff',
       },
 
       autoSaveContainer: {

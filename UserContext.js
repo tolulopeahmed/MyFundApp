@@ -31,6 +31,14 @@ export const UserProvider = ({ children }) => {
     cards: [], // Array to hold card information
   });
   
+  const [accountBalances, setAccountBalances] = useState({
+    savings: 0,
+    investment: 0,
+    properties: 0,
+    wallet: 0,
+  });
+
+
 
   useEffect(() => {
     const retrieveAuthToken = async () => {
@@ -92,12 +100,7 @@ export const UserProvider = ({ children }) => {
   };
 
 
-
-
-
-
-
-  
+ 
   const fetchUserBankRecords = async (userToken) => {
     try {
       const response = await axios.get(`${ipAddress}/api/bank-accounts/get-bank-accounts/`, {
@@ -120,14 +123,6 @@ export const UserProvider = ({ children }) => {
       console.error('Fetch Error:', error);
     }
   };
-
-
-
-
-
-
-
-
   
   const fetchUserCards = async (userToken) => {
     try {
@@ -150,6 +145,36 @@ export const UserProvider = ({ children }) => {
   
   
 
+  const fetchAccountBalances = async () => {
+    try {
+      const response = await axios.get(`${ipAddress}/api/get-account-balances/`, {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        setAccountBalances(response.data);
+      }
+    } catch (error) {
+      console.error('Fetch Error:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (userInfo.token) {
+      fetchUserData(userInfo.token);
+      fetchUserCards(userInfo.token);
+      fetchUserBankRecords(userInfo.token);
+      fetchAccountBalances();
+    }
+  }, [userInfo.token]);
+
+
+
+
+
+
 
 
 
@@ -171,14 +196,6 @@ export const UserProvider = ({ children }) => {
   
 
   
-
-
-
-
-
-
-
-
   const addCard = (userToken, newCard) => {
     const updatedUserCards = { ...userCards };
     updatedUserCards[userToken] = [...(updatedUserCards[userToken] || []), newCard];
@@ -240,6 +257,7 @@ export const UserProvider = ({ children }) => {
 
   console.log('userInfo:', userInfo);
   console.log('userBankRecords:', userBankRecords);
+  console.log('accountBalances:', accountBalances );
 
 
 
@@ -251,6 +269,8 @@ export const UserProvider = ({ children }) => {
         savingsGoal, setSavingsGoal,
         userBankRecords, deleteBankRecord,
         userCards, addCard, deleteCard,
+        accountBalances,
+
       }}
     >
       {children}

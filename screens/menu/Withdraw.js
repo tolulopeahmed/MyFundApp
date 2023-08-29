@@ -6,12 +6,13 @@ import Divider from '../components/Divider';
 import WithdrawModal from './WithdrawModal';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
+import { useUserContext } from '../../UserContext';
 
 const Withdraw = ({ navigation, route }) => {
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false); // define modalVisible state
+  const { accountBalances } = useUserContext();
 
-  const balance = 7500.25; // replace with actual balance
-  const savingsBalance = 250000.50;
+  
 
   useEffect(() => {
     if (route.params?.withdrawModalVisible) {
@@ -37,15 +38,15 @@ const Withdraw = ({ navigation, route }) => {
   >
             <View style={styles.walletDetails}>
        
-     <View flexDirection='row' marginTop={-8}>  
-     <Ionicons name="md-wallet-outline" size={21} color="silver" />
+     <View flexDirection='row' marginTop={-4}>  
+     <Ionicons name="md-wallet-outline" size={19} color="silver" />
           <Text style={styles.walletTitle}>WALLET</Text> 
           </View> 
 
          <View style={styles.amountContainer2}> 
          <Text style={styles.nairaSign}>₦</Text>
-         <Text style={styles.walletBalance}>7500</Text>
-         <Text style={styles.nairaSign}>25</Text>
+         <Text style={styles.walletBalance}>{Math.floor(accountBalances.wallet)}</Text>
+         <Text style={styles.nairaSign}>.{String(accountBalances.wallet).split('.')[1]}</Text>
          </View>
          <Text style={styles.walletMessage}>Withdraw for <Text style={{color: '#43FF8E'}}>free</Text> anytime</Text>
  
@@ -65,15 +66,15 @@ const Withdraw = ({ navigation, route }) => {
   >        
     <View style={styles.walletDetails}>
        
-     <View flexDirection='row' marginTop={-8}>  
-     <Ionicons name="md-save-outline" size={21} color="silver" />
+     <View flexDirection='row' marginTop={-4}>  
+     <Ionicons name="md-save-outline" size={19} color="silver" />
           <Text style={styles.walletTitle}>SAVINGS</Text> 
           </View> 
 
          <View style={styles.amountContainer2}> 
          <Text style={styles.nairaSign}>₦</Text>
-         <Text style={styles.walletBalance}>250,000</Text>
-         <Text style={styles.nairaSign}>00</Text>
+         <Text style={styles.walletBalance}>{Math.floor(accountBalances.savings)}</Text>
+         <Text style={styles.nairaSign}>.{String(accountBalances.savings).split('.')[1]}</Text>
          </View>
          <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>2.5%</Text> fee.
 </Text>
@@ -89,15 +90,15 @@ const Withdraw = ({ navigation, route }) => {
   >        
   <View style={styles.walletDetails}>
        
-     <View flexDirection='row' marginTop={-8}>  
-     <Ionicons name="md-trending-up-outline" size={21} color="silver" />
+     <View flexDirection='row' marginTop={-4}>  
+     <Ionicons name="md-trending-up-outline" size={19} color="silver" />
           <Text style={styles.walletTitle}>SPONSORSHIP INVESTMENT</Text> 
           </View> 
 
          <View style={styles.amountContainer2}> 
          <Text style={styles.nairaSign}>₦</Text>
-         <Text style={styles.walletBalance}>3,650,200</Text>
-         <Text style={styles.nairaSign}>00</Text>
+         <Text style={styles.walletBalance}>{Math.floor(accountBalances.investment)}</Text>
+         <Text style={styles.nairaSign}>.{String(accountBalances.investment).split('.')[1]}</Text>
          </View>
          <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>5%</Text> fee.
 </Text>
@@ -258,6 +259,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'ProductSans',
     marginTop: 3,
+    marginBottom: 5,
     marginLeft: 7,
   },
 
@@ -269,22 +271,32 @@ const styles = StyleSheet.create({
   },
 
   walletBalance: {
-    fontSize: 55,
+    fontSize: 61,
     fontFamily: 'karla',
     textAlign: 'center',
-    letterSpacing: -4,
-    marginBottom: -20,
+    letterSpacing: -3,
+    marginBottom: -25,
+    marginTop: -1,
       color: '#fff',
   },
 
   nairaSign: {
-    fontSize: 25,
+    fontSize: 16,
     fontFamily: 'karla',
     marginTop: 10,
       color: 'silver',
-      letterSpacing: -2,
+      letterSpacing: -0.5,
     
     },
+
+    decimal: {
+      fontSize: 16,
+      fontFamily: 'karla',
+      marginTop: 10,
+        color: 'silver',
+        letterSpacing: -2,
+      
+      },
 
    
 
@@ -294,7 +306,7 @@ const styles = StyleSheet.create({
     fontFamily: 'karla',
     letterSpacing: -0.3,
     marginLeft: 5,
-    marginTop: 20,
+    marginTop: 25,
   },
 
   withdrawButton: {
