@@ -57,6 +57,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     bank_accounts = models.ManyToManyField('BankAccount', related_name='owners', blank=True)
     cards = models.ManyToManyField('Card', related_name='owners', blank=True)
 
+    savings = models.DecimalField(max_digits=11, decimal_places=2, default=0)
+    investment = models.DecimalField(max_digits=11, decimal_places=2, default=0)
+    properties = models.PositiveIntegerField(default=0)
+    wallet = models.DecimalField(max_digits=11, decimal_places=2, default=0)
+
+
 
     is_first_time_signup = models.BooleanField(default=True)
 

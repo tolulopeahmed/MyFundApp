@@ -6,7 +6,7 @@ from django.urls import re_path
 from .consumers import ChatConsumer
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from .views import CardListCreateView, CardDetailView, UserCardListView
+from .views import CardListCreateView, CardDetailView, UserCardListView, AccountBalancesAPIView
 
 
 router = DefaultRouter()
@@ -47,6 +47,9 @@ urlpatterns = [
     path('add-card/', CardListCreateView.as_view(), name='card-list-create'),
     path('cards/<int:pk>/', CardDetailView.as_view(), name='card-detail'),
     path('get-cards/', UserCardListView.as_view(), name='user-card-list'),
+
+    # Accounts-related APIs
+    path('get-account-balances/', AccountBalancesAPIView.as_view(), name='get-account-balances'),
 
     ]
 

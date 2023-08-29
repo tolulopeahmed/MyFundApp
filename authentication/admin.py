@@ -10,7 +10,7 @@ from .models import Card
 class CustomUserAdmin(UserAdmin):
     list_display = UserAdmin.list_display + ('preferred_asset', 'savings_goal_amount', 'time_period')
 
-    list_display = ('id', 'email', 'first_name', 'last_name', 'phone_number', 'profile_picture', 'is_staff', 'is_active', 'preferred_asset', 'savings_goal_amount', 'time_period')
+    list_display = ('id', 'email', 'first_name', 'last_name', 'phone_number', 'profile_picture', 'is_staff', 'is_active', 'preferred_asset', 'savings_goal_amount', 'time_period', 'savings', 'investment', 'properties', 'wallet')
     list_filter = ('is_staff', 'is_active')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),

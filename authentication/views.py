@@ -660,3 +660,12 @@ class UserCardListView(generics.ListAPIView):
 
 
 
+from .serializers import AccountBalancesSerializer
+
+class AccountBalancesAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        serializer = AccountBalancesSerializer(user)
+        return Response(serializer.data)
