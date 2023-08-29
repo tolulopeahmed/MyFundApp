@@ -532,6 +532,7 @@ class BankAccountViewSet(viewsets.ModelViewSet):
 
 
 
+from django.db import IntegrityError
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -541,22 +542,30 @@ def add_bank_account(request):
     account_name = request.data.get("accountName")
 
     if account_number and bank_name and account_name:
-        # You might want to perform additional checks and validation here
-        
-        bank_account = BankAccount(
-            user=request.user,
-            bank_name=bank_name,
-            account_number=account_number,
-            account_name=account_name,
-            is_default=False  # Set to True if desired
-        )
-        bank_account.save()
+        try:
+            bank_account = BankAccount(
+                user=request.user,
+                bank_name=bank_name,
+                account_number=account_number,
+                account_name=account_name,
+                is_default=False
+            )
+            bank_account.save()
 
-        serializer = BankAccountSerializer(bank_account)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer = BankAccountSerializer(bank_account)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        except IntegrityError:
+            return Response(
+                {"error": "This bank account is already associated with another user."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
     else:
-        return Response({"error": "Account number, bank name, and account name are required."},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Account number, bank name, and account name are required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
     
     
 from django.db.models import Count
@@ -581,3 +590,73 @@ def delete_bank_account(request, account_number):
             bank_account.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_banks(request):
+    user_banks = BankAccount.objects.filter(user=request.user)
+    serializer = BankAccountSerializer(user_banks, many=True)
+    return Response(serializer.data)
+
+
+
+
+from .models import Card
+from .serializers import CardSerializer
+from rest_framework import generics
+
+
+class BankAccountListCreateView(generics.ListCreateAPIView):
+    queryset = BankAccount.objects.all()
+    serializer_class = BankAccountSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class BankAccountDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BankAccount.objects.all()
+    serializer_class = BankAccountSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_destroy(self, instance):
+        instance.delete()
+
+class UserBankAccountListView(generics.ListAPIView):
+    serializer_class = BankAccountSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return BankAccount.objects.filter(user=self.request.user)
+
+
+class CardListCreateView(generics.ListCreateAPIView):
+    queryset = Card.objects.all()
+    serializer_class = CardSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class CardDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Card.objects.all()
+    serializer_class = CardSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_destroy(self, instance):
+        instance.delete()
+
+class UserCardListView(generics.ListAPIView):
+    serializer_class = CardSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Card.objects.filter(user=self.request.user)
+
+
+

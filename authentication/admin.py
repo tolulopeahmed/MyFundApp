@@ -5,6 +5,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.core.mail import send_mail
 from .models import BankAccount
+from .models import Card
 
 class CustomUserAdmin(UserAdmin):
     list_display = UserAdmin.list_display + ('preferred_asset', 'savings_goal_amount', 'time_period')
@@ -46,5 +47,14 @@ reply_to_messages.short_description = "Reply to selected messages"
 admin.site.add_action(reply_to_messages)
 
 
+class BankAccountAdmin(admin.ModelAdmin):
+    list_display = ('user', 'bank_name', 'account_number', 'account_name', 'is_default')
+    list_filter = ('is_default',)
 
-admin.site.register(BankAccount)
+admin.site.register(BankAccount, BankAccountAdmin)
+
+class CardAdmin(admin.ModelAdmin):
+    list_display = ('user', 'bank_name', 'card_number', 'expiry_date', 'cvv', 'is_default')
+    list_filter = ('is_default',)
+
+admin.site.register(Card, CardAdmin)

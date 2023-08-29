@@ -54,6 +54,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     savings_goal_amount = models.DecimalField(max_digits=11, decimal_places=2, blank=True, null=True)
     time_period = models.PositiveIntegerField(blank=True, null=True)
 
+    bank_accounts = models.ManyToManyField('BankAccount', related_name='owners', blank=True)
+    cards = models.ManyToManyField('Card', related_name='owners', blank=True)
+
+
     is_first_time_signup = models.BooleanField(default=True)
 
 
@@ -125,7 +129,7 @@ class Message(models.Model):
 from django.contrib.auth import get_user_model
 
 class BankAccount(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='bank_accounts')
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='owned_bank_accounts')  # Change related_name here
     bank_name = models.CharField(max_length=100)
     account_number = models.CharField(max_length=20, unique=True)
     account_name = models.CharField(max_length=100, default="Default Account Name")
@@ -133,6 +137,19 @@ class BankAccount(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.bank_name} ({self.account_number})"
+
+
+class Card(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='owned_cards')  # Change related_name here
+    bank_name = models.CharField(max_length=100)
+    card_number = models.CharField(max_length=19)
+    expiry_date = models.CharField(max_length=5)
+    cvv = models.CharField(max_length=4)
+    is_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        card_last_digits = self.card_number[-4:]  # Extract last 4 digits of the card number
+        return f"{self.user.email}'s Card ending in {card_last_digits} ({self.bank_name})"
 
 
 

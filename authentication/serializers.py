@@ -116,9 +116,26 @@ class IncomingMessageSerializer(serializers.Serializer):
 
 
 
+from .models import BankAccount, Card
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 
-from .models import BankAccount
 class BankAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = BankAccount
         fields = '__all__'
+
+
+class CardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Card
+        fields = ('id', 'bank_name', 'card_number', 'expiry_date', 'cvv', 'is_default')
+        read_only_fields = ('id', 'is_default')  # Make id and is_default read-only
+
+class CardListCreateView(generics.ListCreateAPIView):
+    queryset = Card.objects.all()
+    serializer_class = CardSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

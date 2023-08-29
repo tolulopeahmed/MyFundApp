@@ -6,7 +6,7 @@ from django.urls import re_path
 from .consumers import ChatConsumer
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from .views import BankAccountViewSet
+from .views import CardListCreateView, CardDetailView, UserCardListView
 
 
 router = DefaultRouter()
@@ -41,6 +41,12 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('add-bank-account/', views.add_bank_account, name='add-bank-account'),
     path('delete-bank-account/<str:account_number>/', views.delete_bank_account, name='delete-bank-account'),
+    path('bank-accounts/get-bank-accounts/', views.get_user_banks, name='get_user_banks'),
+
+    # Card-related APIs
+    path('add-card/', CardListCreateView.as_view(), name='card-list-create'),
+    path('cards/<int:pk>/', CardDetailView.as_view(), name='card-detail'),
+    path('get-cards/', UserCardListView.as_view(), name='user-card-list'),
 
     ]
 
