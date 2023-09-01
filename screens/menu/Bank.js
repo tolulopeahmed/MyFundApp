@@ -11,7 +11,7 @@ const Bank = ({ navigation, initialBankRecords}) => {
   const [addBankModalVisible, setAddBankModalVisible] = useState(false); // define modalVisible state
   const [bankRecords, setBankRecords] = useState([]);
   const { userBankRecords, deleteBankRecord } = useUserContext();
-  const mergedBankRecords = [...userBankRecords, ...bankRecords];
+  const mergedBankRecords = [...(userBankRecords || []), ...(bankRecords || [])];
 
 
 

@@ -11,6 +11,7 @@ import axios from 'axios';  // Import axios for making API requests
 import { ipAddress } from '../../constants';
 import { useUserContext } from '../../UserContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SectionTitle from '../components/SectionTitle';
 
 const Profile = ({ navigation, route }) => {
   const { profileImageUri, setProfileImageUri } = useContext(ImageContext);
@@ -223,9 +224,13 @@ const Profile = ({ navigation, route }) => {
 
   <View flexDirection='row'>
   <View style={styles.leftContainer}>
+  
+  <View style={{marginTop: 10, alignSelf: 'flex-start', marginLeft: -28}}>
+  <SectionTitle>PROFILE</SectionTitle>
+  </View>
   <View style={styles.imageContainer}>
   <Pressable onPress={handlePickImage}>
-    
+
   <Image
   source={
     selectedImage
@@ -332,6 +337,7 @@ const Profile = ({ navigation, route }) => {
         goalModalVisible={goalModalVisible} 
         setGoalModalVisible={setGoalModalVisible} />
 
+<SectionTitle>SETTINGS</SectionTitle>
 <View>
 <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => setGoalModalVisible(true)}>
@@ -388,7 +394,12 @@ const Profile = ({ navigation, route }) => {
         </View>
 
 
-      <Text style={styles.credits}>MyFund</Text><Text style={{fontSize: 10,     marginBottom: 22, textAlign: 'center', fontFamily: 'karla'}}>version 1.0.0</Text>
+        <View style={styles.logoContainer}>
+  <Image source={require('../images/MyFundlogo.png')} style={styles.logo} />
+  <View style={styles.creditsContainer}>
+    <Text style={styles.version}>version 1.0.0</Text>
+  </View>
+</View>
 
     </ScrollView>
     </View> 
@@ -646,6 +657,31 @@ icon: {
     color: '#4C28BC',
     fontSize: 14,
     fontFamily: 'ProductSans',
+  },
+
+  logoContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    alignSelf: 'center',
+    alignContent: 'center',
+  },
+  logo: {
+  width: 90, // Adjust the width as needed
+  height: 25, // Adjust the height as needed
+    marginRight: 10,
+    resizeMode: 'contain',
+
+  },
+  creditsContainer: {
+    flexDirection: 'column',
+  },
+  
+  version: {
+    fontSize: 10,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    marginBottom: 15,
+
   },
 });
 

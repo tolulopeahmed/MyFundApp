@@ -7,6 +7,7 @@ import WithdrawModal from './WithdrawModal';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { useUserContext } from '../../UserContext';
+import SectionTitle from '../components/SectionTitle';
 
 const Withdraw = ({ navigation, route }) => {
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false); // define modalVisible state
@@ -114,9 +115,8 @@ const Withdraw = ({ navigation, route }) => {
       
       <Divider />
      
-     
       <SafeAreaView style={styles.transactionContainer}>
-      <Text style={styles.todoList}>WITHDRAWAL TRANSACTIONS</Text>
+      <SectionTitle>WITHDRAWAL TRANSACTIONS</SectionTitle>
 
         <View style={styles.transactionsContainer}>
           <View style={styles.transactionItem}>

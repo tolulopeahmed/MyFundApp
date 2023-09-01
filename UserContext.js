@@ -2,10 +2,35 @@ import React, { Alert, createContext, useContext, useState, useEffect } from 're
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ipAddress } from './constants';
+import io from 'socket.io-client';
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
+
+  useEffect(() => {
+    const socket = io('ws://192.168.220.34:8000/ws/balance_update/');
+
+    socket.on('connect', () => {
+      console.log('WebSocket Connected');
+    });
+
+    socket.on('disconnect', () => {
+      console.log('WebSocket Disconnected');
+    });
+
+    socket.on('balance_update', (updatedBalances) => {
+      setAccountBalances(updatedBalances);
+    });
+
+   // Clean up the socket connection when the component unmounts
+   return () => {
+    socket.disconnect();
+  };
+}, []);
+
+
+
   const [savingsGoal, setSavingsGoal] = useState({
     preferred_asset: '',
     savings_goal_amount: '',
@@ -15,6 +40,7 @@ export const UserProvider = ({ children }) => {
   const [profileImageUri, setProfileImageUri] = useState('');
   const [userBankRecords, setUserBankRecords] = useState({});
   const [userCards, setUserCards] = useState({});
+
   const [userInfo, setUserInfo] = useState({
     is_first_time_signup: false,
     id: '',
@@ -154,31 +180,19 @@ export const UserProvider = ({ children }) => {
       });
 
       if (response.status === 200) {
-        setAccountBalances(response.data);
+        updateAccountBalances(response.data); // Update the context state
       }
     } catch (error) {
       console.error('Fetch Error:', error);
     }
   };
 
-  useEffect(() => {
-    if (userInfo.token) {
-      fetchUserData(userInfo.token);
-      fetchUserCards(userInfo.token);
-      fetchUserBankRecords(userInfo.token);
-      fetchAccountBalances();
-    }
-  }, [userInfo.token]);
+  // Define a function to update account balances within the context
+  const updateAccountBalances = (newBalances) => {
+    setAccountBalances(newBalances);
+  };
 
-
-
-
-
-
-
-
-
-
+ 
 
 
   useEffect(() => {
@@ -190,6 +204,7 @@ export const UserProvider = ({ children }) => {
       fetchUserCards(userInfo.token); // Fetch card data for the new user
       fetchUserBankRecords(userInfo.token);
       fetchUserData(userInfo.token);
+      fetchAccountBalances(); // Fetch balances using the updated token
 
     }
   }, [userInfo.token]);
@@ -210,10 +225,14 @@ export const UserProvider = ({ children }) => {
         },
       });
   
-      setUserCards(prevUserCards => ({
-        ...prevUserCards,
-        [userToken]: prevUserCards[userToken].filter(card => card.id !== cardId),
-      }));
+      setUserCards(prevUserCards => {
+        const updatedUserCards = { ...prevUserCards };
+        if (updatedUserCards[userToken]) {
+          updatedUserCards[userToken] = updatedUserCards[userToken].filter(card => card.id !== cardId);
+        }
+        return updatedUserCards;
+      });
+      
   
     } catch (error) {
       console.error('Delete Error:', error);
@@ -260,7 +279,6 @@ export const UserProvider = ({ children }) => {
   console.log('accountBalances:', accountBalances );
 
 
-
   return (
     <UserContext.Provider
       value={{
@@ -268,8 +286,8 @@ export const UserProvider = ({ children }) => {
         updateUserProfile, profileImageUri,  updateProfileImageUri,
         savingsGoal, setSavingsGoal,
         userBankRecords, deleteBankRecord,
-        userCards, addCard, deleteCard,
-        accountBalances,
+        userCards, addCard, deleteCard, setUserCards,
+        accountBalances, setAccountBalances, updateAccountBalances
 
       }}
     >

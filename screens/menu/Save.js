@@ -105,11 +105,11 @@ const Save = ({ navigation, route }) => {
                   for your <Text style={styles.goalText}>{userInfo.preferred_asset}</Text> investment in
                   <Text style={styles.goalText}> {userInfo.time_period}</Text>
                   <Text style={styles.restText}> years. And you're now</Text>
-                  <Text style={styles.percentageText}> {percentage(0)}%</Text>
+                  <Text style={styles.percentageText}> {percentage(0).toFixed(2)}%</Text>
                   <Text style={styles.restText}> to success. Well done!</Text>
                 </Text>
                 </ScrollView>
-                <ProgressBar progress={percentage(0)} color="#4C28BC" height={6} style={styles.progressBar} />
+                <ProgressBar progress={percentage(0)/100} color="#4C28BC" height={6} style={styles.progressBar} />
               </View>
             </View>
           </Swiper>
@@ -216,23 +216,31 @@ const Save = ({ navigation, route }) => {
 
       <Divider />
 
-      <Text style={styles.todoList}>SAVINGS TRANSACTIONS</Text>
-
+<SectionTitle>SAVINGS TRANSACTIONS</SectionTitle>
         <View style={styles.transactionsContainer}>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="car-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>AutoSave</Text>
-              <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+300.50</Text>
-            </View>
-          </View>
+
+
+        <View style={styles.transactionItem}>
+  <Ionicons
+    name="arrow-down-outline"
+    size={25}
+    style={styles.transactionIcon}
+  />
+  <View style={styles.transactionText}>
+    <Text style={styles.transactionDescription}>
+      Withdrawal From Savings
+    </Text>
+    <Text style={styles.transactionDate}>01 Mar, 2023  | <Text style={styles.transactionTime}>9:30am</Text> </Text>
+    <Text style={styles.transactionID}>ID: ABC123X3ddiw35</Text>
+  </View>
+  <View style={styles.transactionAmountContainer}>
+    <Text style={styles.negativeAmount}>-500.00</Text>
+  </View>
+</View>
+
+
+
+
           <View style={styles.transactionItem}>
             <Ionicons
               name="save-outline"
@@ -674,7 +682,7 @@ backgroundImage: {
     transactionDescription: {
       color: '#4C28BC',
       letterSpacing: -1,
-      fontSize: 18,
+      fontSize: 17,
       fontFamily: 'karla',
       marginTop: 3,
       textAlign: 'left',
@@ -682,8 +690,19 @@ backgroundImage: {
     },
     transactionDate: {
       fontFamily: 'karla',
-      fontSize: 12,
-      marginTop: 3,
+      fontSize: 10,
+      marginTop: 1,
+    },
+    transactionTime: {
+      fontFamily: 'karla',
+      fontSize: 10,
+      marginTop: 1,
+    },
+    transactionID: {
+      fontFamily: 'nexa',
+      fontSize: 10,
+      marginTop: 1,
+      color: '#4C28BC',
     },
     transactionAmount: {
       color: 'green',

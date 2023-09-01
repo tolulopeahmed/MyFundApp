@@ -29,7 +29,7 @@ const Dot = ({ color }) => (
 const TabBarIcon = ({ focused, iconName, color, label }) => (
   <View style={{ alignItems: 'center' }}>
     <Ionicons name={iconName} size={focused ? 24 : 24} color={color} />
-    <Text style={{ color: color, fontSize: 11, fontFamily: 'ProductSans' }}>{label}</Text>
+    <Text style={{ color: color, fontSize: 11, fontFamily: 'nexa' }}>{label}</Text>
     {focused && <Dot color={color} />}
   </View>
 );

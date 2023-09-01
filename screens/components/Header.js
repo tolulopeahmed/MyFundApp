@@ -49,8 +49,9 @@ const styles = StyleSheet.create({
     color: 'silver',
     alignSelf: 'center',
     marginLeft: 15,
-    fontFamily: 'karla',
+    fontFamily: 'nexa',
     letterSpacing: 3,
+    fontSize: 13,
     },
 
     person: {

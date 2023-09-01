@@ -46,6 +46,12 @@ const getBackgroundColor = (bankName) => {
       return "#0B411F";
     case "Fidelity Bank":
       return "#232B69";
+    case "Opay":
+        return "#08A67C";
+    case "Palmpay":
+        return "#7F13CB";
+    case "Moniepoint Microfinance Bank":
+        return "#0649C4";
     default:
       return "#4C28BC"; // Default color
   }
@@ -53,9 +59,9 @@ const getBackgroundColor = (bankName) => {
 
 const Card = ({ navigation, route }) => {
   const [addCardModalVisible, setAddCardModalVisible] = useState(false); // define modalVisible state
-  const { userInfo, addCard, userCards, deleteCard } = useUserContext();
+  const { userInfo, setUserCards, userCards, deleteCard } = useUserContext();
   const [cards, setCards] = useState([]);
-  const userAllCards = [...userInfo.cards, ...cards];
+  const userAllCards = [ ...(userCards[userInfo.token] || [])]; // Use userCards from the context
 
 
   useEffect(() => {
@@ -67,17 +73,21 @@ const Card = ({ navigation, route }) => {
 
   useEffect(() => {
     console.log('Fetching user cards with token:', userInfo.token);
+    if (userCards && userCards[userInfo.token]) {
+      userInfo.cards = userCards[userInfo.token];
+    }
+  }, [userCards, userInfo.token]);
+  
+
+  
+  useEffect(() => {
     if (userCards[userInfo.token]) {
       setCards(userCards[userInfo.token]);
     }
-  }, [userCards, userInfo.token]);
-
-  
+  }, [userCards[userInfo.token]]);
 
 
-  
-
-  const confirmDeleteCard = (cardId) => {
+  const confirmDeleteCard = async (userToken, cardId) => {
     Alert.alert(
       'Delete Card',
       'Are you sure you want to delete this card?',
@@ -89,7 +99,26 @@ const Card = ({ navigation, route }) => {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => deleteCard(userInfo.token, cardId), // Updated line
+          onPress: async () => {
+            try {
+              // Call the deleteCard function
+              await deleteCard(userToken, cardId);
+  
+              // Remove the deleted card from the userAllCards list
+              const updatedUserAllCards = userAllCards.filter((card) => card.id !== cardId);
+  
+              // Update the context directly to make the card disappear from the UI
+              setUserCards((prevUserCards) => {
+                const updatedUserCardsObj = { ...prevUserCards };
+                updatedUserCardsObj[userToken] = updatedUserAllCards;
+                return updatedUserCardsObj;
+              });
+  
+              console.log('Card deleted successfully.');
+            } catch (error) {
+              console.error('Error deleting card:', error);
+            }
+          },
         },
       ],
       { cancelable: false }
@@ -97,14 +126,39 @@ const Card = ({ navigation, route }) => {
   };
   
   
+  
+  
+  
+  
+  
+  
+  
 
  
   
-
   const addCardToList = (newCard) => {
+    // Check if the card with the same number already exists in userAllCards
+    const isCardAlreadyAdded = userAllCards.some((card) => card.card_number === newCard.card_number);
+  
+    if (isCardAlreadyAdded) {
+      Alert.alert('Error', 'This card has already been added.');
+      return;
+    }
+  
     const updatedCards = [...cards, newCard];
     setCards(updatedCards);
+  
+    // Update the context with the new card
+    setUserCards((prevUserCards) => {
+      const updatedUserCardsObj = { ...prevUserCards };
+      updatedUserCardsObj[userInfo.token] = updatedCards;
+      return updatedUserCardsObj;
+    });
   };
+  
+  
+  
+  
   
   
 
@@ -144,7 +198,7 @@ const Card = ({ navigation, route }) => {
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
 
     {userAllCards.length > 0 ? (
-    userAllCards.map((card, index) => (
+  userAllCards.map((card, index) => (
       <View
       style={[
         styles.bankCard,
@@ -171,8 +225,8 @@ const Card = ({ navigation, route }) => {
 
           <TouchableOpacity
             style={styles.deleteButton}
-            onPress={() => confirmDeleteCard(card.id)} // Use a separate function for confirmation
-          >
+            onPress={() => confirmDeleteCard(userInfo.token, card.id)}
+            >
             <Ionicons name="trash-outline" size={18} color="red" />
           </TouchableOpacity>
         </View>
@@ -384,10 +438,10 @@ const styles = StyleSheet.create({
       alignItems: 'center', // Center horizontally
     },
     cardAddedInfo: {
-      fontSize: 17,
+      fontSize: 15,
       color: 'silver',
       fontFamily: 'karla',
-      marginTop: -90,
+      marginTop: 140,
     },
   
     addBankButtonMargin: {

@@ -27,6 +27,7 @@ import ForgotPassword from './screens/menu/ForgotPassword';
 import Chat from './screens/menu/Chat'
 import Success from './screens/components/Success';
 import ReferAndEarn from './screens/menu/ReferAndEarn';
+import PaystackWebViewScreen from './screens/menu/PaystackWebViewScreen';
 import { ImageProvider } from './screens/menu/ImageContext';
 import { AutoInvestProvider } from './screens/components/AutoInvestContext';
 import { UserProvider } from './UserContext';
@@ -98,6 +99,7 @@ const App = ({ styles, darkModeStyles, }) => {
         <Stack.Screen name="Chat" component={Chat} />
         <Stack.Screen name="Success" component={Success} />
         <Stack.Screen name="ReferAndEarn" component={ReferAndEarn} />
+        <Stack.Screen name="PaystackWebViewScreen" component={PaystackWebViewScreen} />
 
 
 

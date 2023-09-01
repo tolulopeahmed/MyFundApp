@@ -10,9 +10,10 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginTop: 2,
     color: 'grey',
-    fontFamily: 'karla',
+    fontFamily: 'nexa',
     letterSpacing: 2,
     marginBottom: 2,
+    fontSize: 11,
   },
 });
 

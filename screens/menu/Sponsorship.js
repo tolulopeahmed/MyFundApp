@@ -94,8 +94,8 @@ const handleConfirmDeactivateAutoInvest = () => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.savings)}</Text>
-        <Text style={styles.decimal}>.{String(accountBalances.savings).split('.')[1]}</Text>
+        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.investment)}</Text>
+        <Text style={styles.decimal}>.{String(accountBalances.investment).split('.')[1]}</Text>
         </View>
        
        <View style={styles.autoSaveContainer}>
@@ -165,8 +165,7 @@ const handleConfirmDeactivateAutoInvest = () => {
       <SafeAreaView style={styles.transactionContainer}>
 
       <Divider />
-
-      <Text style={styles.todoList}>INVESTMENT TRANSACTIONS</Text>
+      <SectionTitle>INVESTMENT TRANSACTIONS</SectionTitle>
 
         <View style={styles.transactionsContainer}>
           <View style={styles.transactionItem}>

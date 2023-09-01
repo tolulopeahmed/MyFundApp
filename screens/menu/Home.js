@@ -183,7 +183,7 @@ const Home = ({ navigation, route}) => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.investment)}</Text>
+        <Text style={styles.savingsAmount2}>{Math.floor(accountBalances.investment)}</Text>
         <Text style={styles.decimal}>.{String(accountBalances.investment).split('.')[1]}</Text>
         </View>
 
@@ -207,7 +207,7 @@ const Home = ({ navigation, route}) => {
           <Text style={styles.rateText}>    @yearly rent</Text> </Text>
         </View>
         <View style={styles.amountContainer}>
-        <Text style={styles.savingsAmount}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
+        <Text style={styles.savingsAmount3}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
         </View>
 
         <View style={styles.quickSaveButtonContainer}>
@@ -231,7 +231,7 @@ const Home = ({ navigation, route}) => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.wallet)}</Text>
+        <Text style={styles.savingsAmount4}>{Math.floor(accountBalances.wallet)}</Text>
         <Text style={styles.decimal}>.{String(accountBalances.wallet).split('.')[1]}</Text>
         </View>
 
@@ -676,6 +676,42 @@ backgroundImage: {
   marginBottom: -10,
     color: '#fff',
   },
+
+  savingsAmount2: {
+    fontSize: 80,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    letterSpacing: -4,
+    marginRight: 5,
+    marginLeft: 5,
+    marginTop: -10,
+    marginBottom: -10,
+      color: 'yellow',
+    },
+
+    savingsAmount3: {
+      fontSize: 80,
+      fontFamily: 'karla',
+      textAlign: 'center',
+      letterSpacing: -4,
+      marginRight: 5,
+      marginLeft: 5,
+      marginTop: -10,
+      marginBottom: -10,
+        color: 'gold',
+      },
+
+      savingsAmount4: {
+        fontSize: 80,
+        fontFamily: 'karla',
+        textAlign: 'center',
+        letterSpacing: -4,
+        marginRight: 5,
+        marginLeft: 5,
+        marginTop: -10,
+        marginBottom: -10,
+          color: '#43FF8E',
+        },
    
 
     autoSaveContainer: {

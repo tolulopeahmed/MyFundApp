@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Text, Image, Alert, Pressable, View, TextInput, TouchableOpacity } from 'react-native';
+import { Modal, Text, ActivityIndicator, Image, Alert, Pressable, View, TextInput, TouchableOpacity } from 'react-native';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -10,8 +10,8 @@ import { useUserContext } from '../../UserContext';
 const bankOptions = [
   { id: 1, name: 'Access Bank', code: '044' },
   { id: 2, name: 'Citibank', code: '023' },
-  { id: 3, name: 'Diamond Bank', code: '063' },
-  { id: 4, name: 'Access Bank (Diamond)', code: '063' },
+  { id: 3, name: 'Palmpay', code: '999991' },
+  { id: 4, name: 'Opay', code: '999992' },
   { id: 5, name: 'Ecobank', code: '050' },
   { id: 6, name: 'Fidelity Bank ', code: '070' },
   { id: 7, name: 'First Bank of Nigeria', code: '011' },
@@ -30,10 +30,10 @@ const bankOptions = [
   { id: 20, name: 'United Bank for Africa', code: '033' },
   { id: 21, name: 'Unity Bank Plc', code: '215' },
   { id: 22, name: 'Wema Bank', code: '035' },
-  { id: 22, name: 'Zenith Bank', code: '035' },
+  { id: 22, name: 'Zenith Bank', code: '057' },
   { id: 24, name: 'Kuda Microfinance Bank', code: '50211' },
-  { id: 25, name: 'Abbey Mortgage Bank', code: '070010' },
-  { id: 26, name: 'AG Mortgage Bank', code: '100028' },
+  { id: 25, name: 'Moniepoint', code: '50515' },
+  { id: 26, name: 'Paga', code: '100002' },
   { id: 27, name: 'ALAT by Wema', code: '035A' },
   { id: 28, name: 'Borstal Microfinance Bank', code: '090454' },
   { id: 29, name: 'Calabar Microfinance Bank', code: '090415' },
@@ -43,51 +43,54 @@ const bankOptions = [
   { id: 33, name: 'Mainstreet MFB', code: '090171' },
   { id: 34, name: 'Fame Microfinance Bank', code: '090330' },
   { id: 35, name: 'First Generation Mortgage Bank', code: '070014' },
-  { id: 36, name: 'FSDH Merchant Bank', code: '400001' },
+  { id: 36, name: 'Fairmoney Microfinance Bank', code: '51318' },
   { id: 37, name: 'Giwa Microfinance Bank', code: '090441' },
   { id: 38, name: 'Globus Bank', code: '000027' },
   { id: 39, name: 'Haggai Mortgage Bank', code: '070017' },
   { id: 40, name: 'Heritage Bank', code: '000020' },
   { id: 41, name: 'Ibeto Bank', code: '090439' },
-  { id: 42, name: 'Keystone Bank', code: '000002' },
-  { id: 43, name: 'Livingtrust Bank', code: '070007' },
-  { id: 44, name: 'Lotus Bank', code: '000029' },
+  { id: 42, name: 'Unilag Microfinance Bank', code: '51316' },
+  { id: 43, name: 'Livingtrust Bank', code: '031' },
+  { id: 44, name: 'Lotus Bank', code: '303' },
   { id: 45, name: 'Moyofade Microfinance Bank', code: '090448' },
   { id: 46, name: 'Nice Microfinance Bank', code: '090459' },
   { id: 47, name: 'NIRSAL Microfinance Bank', code: '090194' },
   { id: 48, name: 'Nova MB', code: '060003' },
-  { id: 49, name: 'Parallex Bank', code: '090004' },
-  { id: 50, name: 'Platinum Mortgage Bank', code: '070013' },
-  { id: 51, name: 'PalmPay', code: '100033' },
+  { id: 49, name: 'Parallex Bank', code: '104' },
+  { id: 50, name: 'Platinum Mortgage Bank', code: '268' },
+  { id: 51, name: 'Premium Trust', code: '105' },
   { id: 52, name: 'Providus Bank', code: '101' },
-  { id: 53, name: 'Rand Merchant Bank', code: '000024' },
-  { id: 54, name: 'Safegate Microfinance Bank', code: '090485' },
+  { id: 53, name: 'Rand Merchant Bank', code: '502' },
+  { id: 54, name: 'Safe Haven Microfinance Bank', code: '51113' },
   { id: 55, name: 'SLS Microfinance Bank', code: '090449' },
   { id: 56, name: 'Sparkle Bank', code: '51310' },
   { id: 57, name: 'Taj Bank', code: '302' },
   { id: 58, name: 'Titan Trust Bank', code: '102' },
   { id: 59, name: 'VFD Microfinance Bank', code: '566' },
-  { id: 60, name: 'Opay', code: '100004' },
-  { id: 61, name: 'Moniepoint Microfinance Bank', code: '090405' },
+  { id: 60, name: 'Carbon', code: '565' },
+  { id: 61, name: 'Moniepoint Microfinance Bank', code: '50515' },
 ];
   
 
 const AddCardModal = ({ navigation, addCardModalVisible, setAddCardModalVisible, cards, setCards, addCardToList   }) => {
-  const [frequency, setFrequency] = useState('');
-  const [amount, setAmount] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
   const [selectedBank, setSelectedBank] = useState(null); // Add selectedBank state
-  const { userInfo, addCard } = useUserContext(); // Use the addCard function from the context
+  const { userInfo, setUserCards, setAccountBalances } = useUserContext(); // Use the addCard function from the context
+  const [processing, setProcessing] = useState(false);
 
   const dropdownOptions = bankOptions.map((bank) => bank.name);
   const [cvv, setCVV] = useState('');
   const [expiry, setExpiry] = useState('');
   const [showCVVText, setShowCVVText] = useState(false);
+  const [pin, setPin] = useState('');
+  const [allFieldsFilled, setAllFieldsFilled] = useState(false);
 
   const handleAmountChange = (value) => {
   const formattedValue = value.replace(/[^0-9]/g, '');
-  const truncatedValue = formattedValue.substring(0, 16);
+  const truncatedValue = formattedValue.substring(0, 19);
   const spacedValue = truncatedValue.replace(/(\d{4})(?=\d)/g, '$1 ');
-  setAmount(spacedValue);
+  setCardNumber(spacedValue);
+  checkAllFieldsFilled();
   };
 
 
@@ -98,14 +101,20 @@ const AddCardModal = ({ navigation, addCardModalVisible, setAddCardModalVisible,
   };
   
   
+  const checkAllFieldsFilled = () => {
+    if (cardNumber && selectedBank && cvv && expiry && pin) {
+      setAllFieldsFilled(true);
+    } else {
+      setAllFieldsFilled(false);
+    }
+  };
   
-
-
-
-
+  
 const handleCVVChange = (value) => {
   const truncatedValue = value.substring(0, 3);
   setCVV(truncatedValue);
+  checkAllFieldsFilled(); // Call checkAllFieldsFilled here
+
 };
 
 const handleExpiryChange = (text) => {
@@ -114,6 +123,8 @@ const handleExpiryChange = (text) => {
     formattedText += '/';
   }
   setExpiry(formattedText);
+  checkAllFieldsFilled(); // Call checkAllFieldsFilled here
+
 };
 
 const handleAlertIconTap = () => {
@@ -128,20 +139,39 @@ const closeModal = () => {
   setAddCardModalVisible(false);
 };
 
-
+const handlePinChange = (pinValue) => {
+  setPin(pinValue);
+  checkAllFieldsFilled(); // Call checkAllFieldsFilled here
+};
 
 console.log('UserInfo Token before the API call:', userInfo.token); // Log the response data for debugging
 
 
+
+
+
+
+
+
 const handleProceed = async () => {
+  setProcessing(true);
+
   console.log('Selected Bank:', selectedBank);
 
   if (!selectedBank) {
     Alert.alert('Error', 'Please select a bank');
+    setProcessing(false); // Reset processing state
     return;
   }
 
-  const cardNumberWithoutSpaces = amount.replace(/ /g, '');
+  
+  if (!userInfo || !userInfo.token) {
+    Alert.alert('Error', 'User information is missing. Please relog in.');
+    setProcessing(false); // Reset processing state
+    return;
+  }
+
+  const cardNumberWithoutSpaces = cardNumber.replace(/ /g, '');
     // Check if the card with the same number already exists
     const isCardAlreadyAdded = cards.some(card => card.card_number === cardNumberWithoutSpaces);
 
@@ -150,6 +180,22 @@ const handleProceed = async () => {
       return;
     }
 
+    const confirmation = await new Promise((resolve) => {
+      Alert.alert(
+        'Confirmation',
+        'An initial charge of ₦50 will be made and returned back to your savings account just to confirm that your card works fine. Click OK to proceed.',
+        [
+          { text: 'Cancel', onPress: () => resolve(false), style: 'cancel' },
+          { text: 'OK', onPress: () => resolve(true) },
+        ]
+      );
+    });
+  
+    if (!confirmation) {
+      setProcessing(false); // Reset processing state
+      return;
+    }
+  
 
   try {
     const requestData = {
@@ -157,9 +203,12 @@ const handleProceed = async () => {
       card_number: cardNumberWithoutSpaces,
       expiry_date: expiry,
       cvv: cvv,
+      pin: pin,
+
     };
 
-    console.log('UserInfo Token during handle Procceed:', userInfo.token); // Log the response data for debugging
+    console.log('requestData:', requestData);
+
 
     const response = await axios.post(`${ipAddress}/api/add-card/`, requestData, {
       headers: {
@@ -178,19 +227,25 @@ const handleProceed = async () => {
         id: response.data.id, // Assuming the response contains the card ID
       };
 
-      addCard(userInfo.token, newCardRecord);
+      addCardToList(newCardRecord); // Call the updated addCardToList function
+     // setAccountBalances([...response.data.updatedAccountBalances]);
 
-      Alert.alert('Success', 'Card added successfully', [{ text: 'OK' }]);
+      Alert.alert('Success', 'Card added successfully! And ₦50 has been credited to your Savings Account', [{ text: 'OK' }]);
     } else {
       console.error('Failed to add card:', response.data);
       Alert.alert('Error', 'Failed to add card. Please try again later.');
     }
   } catch (error) {
     console.error('An error occurred while adding card:', error);
+    console.error(error.stack); // Print the stack trace
+
     Alert.alert('Error', 'An error occurred while adding card. Please try again later.');
   }
-};
 
+  setTimeout(() => {
+    setProcessing(false);
+  }, 3000);
+};
 
 
 
@@ -258,17 +313,15 @@ An initial charge of ₦50 will be made and returned back as to your savings acc
     <View style={styles.inputContainer}>
       <TextInput
         style={styles.amountInput}
-        placeholder="1234  5678  9101  1121"
+        placeholder="1234  5678  9101  1121 XXXX"
         keyboardType="numeric"
-        maxLength={19} // Maximum length including spaces
+        maxLength={23} // Maximum length including spaces
         onChangeText={handleAmountChange}
-        value={amount}
+        value={cardNumber}
+        placeholderTextColor="silver" // Add this line
       />
     </View>
 </View>
-
-
-
 
 
 
@@ -282,6 +335,7 @@ An initial charge of ₦50 will be made and returned back as to your savings acc
       maxLength={5}
       onChangeText={handleExpiryChange}
       value={expiry}
+      placeholderTextColor="silver" // Add this line     
     />
   </View>
 
@@ -298,26 +352,29 @@ An initial charge of ₦50 will be made and returned back as to your savings acc
     keyboardType="numeric"
     onChangeText={handleCVVChange}
     value={cvv}
+    placeholderTextColor="silver" // Add this line
   />
 </View>
 
 
   
-  {/* <View style={styles.fieldContainer}>
+  <View style={styles.fieldContainer}>
     <Text style={styles.labelText}>PIN</Text>
     <TextInput
       style={styles.amountInput2}
       placeholder="* * * *"
       keyboardType="numeric"
       secureTextEntry={true}
-    />
-  </View> */}
+      onChangeText={handlePinChange} 
+      placeholderTextColor="silver" 
+      />
+  </View>
 </View>
 
 
 {showCVVText && (
         <View style={{width: '80%', position: 'absolute', marginTop: 360}}>
-          <Text style={{fontFamily: 'karla', fontSize: 12, textAlign: 'center', color: 'grey'}}>
+          <Text style={{fontFamily: 'karla-italic', fontSize: 12, textAlign: 'center', color: 'grey', marginTop: 50,}}>
             CVV is the 3 or 4-digit number at the back of your debit card. It is NOT your PIN.
           </Text>
         </View>
@@ -328,10 +385,28 @@ An initial charge of ₦50 will be made and returned back as to your savings acc
 
 
             <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton}   onPress={handleProceed}>
-                <Image source={require('./paystack.png')} style={styles.image} />
-                  <Text style={styles.primaryButtonText}>Proceed</Text>
-                </TouchableOpacity>           
+            <TouchableOpacity
+                style={[
+                  styles.primaryButton,
+                  (!allFieldsFilled || processing) && styles.disabledPrimaryButton, // Apply the disabled style here
+                  { backgroundColor: processing ? 'green' : allFieldsFilled ? '#4C28BC' : 'grey' },
+ 
+                ]}
+                onPress={handleProceed}
+                disabled={!allFieldsFilled || processing} // Use the allFieldsFilled state here
+                >
+                {processing ? (
+                  <>
+                  <ActivityIndicator color="white" style={styles.activityIndicator} />
+                  <Image source={require('./paystack.png')} style={styles.image} />
+                  </>
+                ) : (
+                  <Image source={require('./paystack.png')} style={styles.image} />
+                )}
+                <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
+                  {processing ? 'Paystack Processing...' : 'Proceed'}
+                </Text>
+              </TouchableOpacity>      
               </View>
         </View>
 
@@ -512,6 +587,10 @@ amountInput: {
     marginRight: 5,
   },
 
+  disabledPrimaryButton: {
+    backgroundColor: 'grey', // Change this to the color you want for disabled buttons
+  },
+
   image: {
     marginTop: 5,
     marginRight: 5,
@@ -529,6 +608,17 @@ amountInput: {
     fontFamily: 'ProductSans',
   },
 
+  activityIndicator: {
+    marginRight: 10,
+  },
+
+  processingButton: {
+    backgroundColor: 'green',
+  },
+  
+  processingText: {
+    color: 'white',
+  },
 
 };
 
