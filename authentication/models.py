@@ -127,11 +127,6 @@ class Message(models.Model):
 
 
 
-
-
-
-
-
 from django.contrib.auth import get_user_model
 
 class BankAccount(models.Model):
@@ -146,17 +141,17 @@ class BankAccount(models.Model):
 
 
 class Card(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='owned_cards')  # Change related_name here
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='owned_cards')
     bank_name = models.CharField(max_length=100)
     card_number = models.CharField(max_length=19)
     expiry_date = models.CharField(max_length=5)
     cvv = models.CharField(max_length=4)
+    pin = models.CharField(max_length=4, default='0000')  # Add the PIN field
     is_default = models.BooleanField(default=False)
 
     def __str__(self):
-        card_last_digits = self.card_number[-4:]  # Extract last 4 digits of the card number
+        card_last_digits = self.card_number[-4:]
         return f"{self.user.email}'s Card ending in {card_last_digits} ({self.bank_name})"
-
 
 
 

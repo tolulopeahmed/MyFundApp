@@ -634,6 +634,10 @@ class UserBankAccountListView(generics.ListAPIView):
         return BankAccount.objects.filter(user=self.request.user)
 
 
+
+
+
+
 class CardListCreateView(generics.ListCreateAPIView):
     queryset = Card.objects.all()
     serializer_class = CardSerializer
@@ -642,14 +646,12 @@ class CardListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-
 class CardDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Card.objects.all()
     serializer_class = CardSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_destroy(self, instance):
-        instance.delete()
+    # ... other methods ...
 
 class UserCardListView(generics.ListAPIView):
     serializer_class = CardSerializer
@@ -657,6 +659,10 @@ class UserCardListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Card.objects.filter(user=self.request.user)
+
+
+
+
 
 
 
@@ -669,3 +675,7 @@ class AccountBalancesAPIView(APIView):
         user = request.user
         serializer = AccountBalancesSerializer(user)
         return Response(serializer.data)
+
+
+
+

@@ -25,6 +25,7 @@ application = ProtocolTypeRouter({
     "websocket": AuthMiddlewareStack(
         URLRouter([
             path("ws/chat/<int:recipient_id>/", consumers.ChatConsumer.as_asgi()),
-        ])
+            path("ws/balance_update/", consumers.BalanceUpdateConsumer.as_asgi()),  # Replace 'balance_update' with your desired URL path.
+       ])
     ),
 })

@@ -148,3 +148,73 @@ class AccountBalancesSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['savings', 'investment', 'properties', 'wallet']
+
+
+
+
+
+import requests, uuid
+
+unique_reference = str(uuid.uuid4())
+
+
+class CardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Card
+        fields = ('id', 'bank_name', 'card_number', 'expiry_date', 'cvv', 'pin', 'is_default')
+        read_only_fields = ('id', 'is_default')
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        pin = validated_data.pop('pin')
+
+        # Verify the card with Paystack
+        paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"
+        card_number = validated_data['card_number']
+        expiry_month, expiry_year = validated_data['expiry_date'].split('/')
+        cvv = validated_data['cvv']
+        
+        paystack_url = "https://api.paystack.co/charge"
+        payload = {
+            "card": {
+                "number": card_number,
+                "cvv": cvv,
+                "expiry_month": expiry_month,
+                "expiry_year": expiry_year,
+            },
+            "email": user.email,
+            "amount": 50 * 100,  # Amount in kobo (N50)
+            "pin": pin,
+            "reference": unique_reference,  # You need to generate a unique reference
+        }
+        headers = {
+            "Authorization": f"Bearer {paystack_secret_key}",
+            "Content-Type": "application/json",
+        }
+        
+        response = requests.post(paystack_url, json=payload, headers=headers)
+        paystack_response = response.json()
+        print("Paystack Response:", paystack_response)
+
+        if paystack_response.get("status"):
+            # Paystack payment successful
+            # Update user's savings
+            user.savings += 50
+            user.save()
+
+            validated_data['user'] = user
+            card = Card.objects.create(**validated_data)
+
+            return {
+                "id": card.id,
+                "bank_name": card.bank_name,
+                "card_number": card.card_number,
+                "expiry_date": card.expiry_date,
+                "cvv": card.cvv,
+                "pin": card.pin,
+                "is_default": card.is_default,
+                "reference": paystack_response.get("data", {}).get("reference"),
+            }
+        else:
+            print("Paystack API Error Response:", paystack_response)  # Add this line for debugging
+            raise serializers.ValidationError("Failed to verify card and process payment")

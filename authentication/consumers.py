@@ -41,3 +41,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': message
         }))
+
+
+class BalanceUpdateConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        pass
+
+    async def send_balance_update(self, event):
+        await self.send_json(event)  # Send the balance update as JSON to the connected client
+
+    async def update_balances(self, event):
+        # Get the updated balances from the event data
+        updated_balances = event["balances"]
+        
+        # Broadcast the updated balances to all connected clients
+        await self.send_balance_update({
+            "type": "balance.update",
+            "balances": updated_balances,
+        })
