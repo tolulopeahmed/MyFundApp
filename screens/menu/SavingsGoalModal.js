@@ -185,7 +185,15 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
               keyboardType="numeric"
               onChangeText={(value) => handleAmountChange(value)}
               value={formattedAmount} // Display the formatted value
+              placeholderTextColor="silver"
+
+              onBlur={() => {
+                if (parseInt(amount) < 1000000) {
+                  Alert.alert('Invalid Amount', 'The minimum amount is 1,000,000. Please enter a valid amount.');
+                }
+              }}
             />
+
 
 
             <Text style={{fontFamily: 'proxima', marginTop: 7, marginLeft: 40, alignSelf: 'flex-start'}}>How long will it take you?</Text>

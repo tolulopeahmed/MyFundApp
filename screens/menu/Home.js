@@ -16,10 +16,36 @@ const Home = ({ navigation, route}) => {
   const [greeting, setGreeting] = useState('');
   const { autoSave } = useContext(AutoSaveContext)
   const { autoInvest } = useContext(AutoInvestContext)
-  const { userInfo} = useUserContext();
   const [displayedProfileImage, setDisplayedProfileImage] = useState(null);
   const { profileImageUri, profileImageUrl } = useContext(ImageContext);
-  const { accountBalances } = useUserContext();
+  const { userInfo, accountBalances, userTransactions } = useUserContext(); // Assume userInfo includes savings goal data
+
+  const iconMapping = {
+    "Card Successful": "card-outline",
+    "QuickSave": "save-outline",
+    "AutoSave": "car-outline",
+    "QuickInvest": "trending-up-outline",
+    "AutoInvest": "car-sport-outline",
+    "Withdrawal from Savings": "arrow-down-outline",
+    "Pending Referral Reward": "ellipsis-horizontal-circle-outline",
+    "Referral Reward": "checkmark-circle",
+    "Withdrawal from Investment": "arrow-down-outline",
+    "Property": "home-outline",
+  };
+
+
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'short', day: '2-digit' };
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', options);
+};
+
+// Function to format the time
+const formatTime = (timeString) => {
+  const options = { hour: 'numeric', minute: '2-digit', hour12: true };
+  const time = new Date(`2023-01-01T${timeString}`);
+  return time.toLocaleTimeString('en-US', options);
+};
 
 
   useEffect(() => {
@@ -349,154 +375,49 @@ const Home = ({ navigation, route}) => {
 <SectionTitle>RECENT TRANSACTIONS</SectionTitle>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.transactionsContainer}>
-
-        <View style={styles.transactionItem}>
+      <View style={styles.transactionsContainer}>
+            {userTransactions.length > 0 ? (
+    userTransactions.slice(0, 5).map((transaction, index) => (
+      // Inside your Save component where you are rendering transactions
+          <View key={index} style={styles.transactionItem}>
             <Ionicons
-              name="save-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickSave</Text>
-              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+1000.00</Text>
-            </View>
-          </View>
-
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="car-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>AutoSave</Text>
-              <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+300.50</Text>
-            </View>
-          </View>
-
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="trending-up-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickInvest</Text>
-              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+1000.00</Text>
-            </View>
-          </View>
-
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="car-sport-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>AutoInvest</Text>
-              <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+300.50</Text>
-            </View>
-          </View>
-
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="arrow-down-outline"
+              name={iconMapping[transaction.description] || "card-outline"}
               size={25}
               style={styles.transactionIcon}
             />
             <View style={styles.transactionText}>
               <Text style={styles.transactionDescription}>
-                Withdrawal from Savings
+                {transaction.description}
               </Text>
-              <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
+              <Text style={styles.transactionDate}>
+                {formatDate(transaction.date)} | {formatTime(transaction.time)}
+              </Text>
+              <Text style={styles.transactionID}>
+                ID: {transaction.transaction_id}
+              </Text>
             </View>
             <View style={styles.transactionAmountContainer}>
-            <Text style={styles.negativeAmount}>-500.00</Text>
-            </View>
-          </View>
-
-
-
-          </View>
-          {/* Add more transaction items here */}
-          <View style={styles.transactionsContainer}>
-        
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="ellipsis-horizontal-circle-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>Pending Referral Reward</Text>
-              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+1000.00</Text>
-            </View>
-          </View>
-
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="checkmark-circle"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>Referral Reward</Text>
-              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+1000.00</Text>
-            </View>
-          </View>
-
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="arrow-down-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>
-                Withdrawal from Investment
+              <Text
+                style={
+                  transaction.transaction_type === "debit"
+                    ? styles.negativeAmount
+                    : styles.transactionAmount
+                }
+              >
+                ₦{transaction.amount}
               </Text>
-              <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
-            </View>
-            <View style={styles.transactionAmountContainer}>
-            <Text style={styles.negativeAmount}>-500.00</Text>
             </View>
           </View>
 
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="home-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>FUNNAB</Text>
-              <Text style={styles.transactionDate}>05 Jun, 2023</Text>
+  ))
+) : (
+  <View style={styles.noTransactionsContainer}>
+    <Text style={styles.noTransactionsMessage}>Your most recent transactions will appear here.</Text>
+  </View>
+)}
+
             </View>
-            <View flexDirection='row' alignContent='space-between'>
-            <Text style={styles.transactionAmount2}>5000000           </Text>
-            <Text style={styles.transactionAmount}>200000</Text>
-            </View>
-          </View>
-          </View>
+
           </ScrollView>
     </SafeAreaView>
      
@@ -916,6 +837,12 @@ transactionDate: {
   fontSize: 12,
   marginTop: 3,
 },
+transactionID: {
+  fontFamily: 'nexa',
+  fontSize: 10,
+  marginTop: 1,
+  color: '#4C28BC',
+},
 transactionAmount: {
   color: 'green',
   fontSize: 23,
@@ -945,8 +872,22 @@ negativeAmount: {
 
 transactionAmountContainer: {
   textAlign: 'right',
-  
 },
+
+
+noTransactionsContainer: {
+  flex: 1,
+  justifyContent: 'center', // Center vertically
+  alignItems: 'center', // Center horizontally
+},
+noTransactionsMessage: {
+  fontSize: 15,
+  color: 'silver',
+  fontFamily: 'karla-italic',
+  marginTop: 140,
+  marginBottom: 100
+},
+
 });
 
 export default Home;

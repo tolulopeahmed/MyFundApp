@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import * as Font from 'expo-font';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Splash from './screens/Splash';
 import OnboardingScreens from './screens/onboarding/OnboardingScreens';
@@ -31,6 +30,8 @@ import PaystackWebViewScreen from './screens/menu/PaystackWebViewScreen';
 import { ImageProvider } from './screens/menu/ImageContext';
 import { AutoInvestProvider } from './screens/components/AutoInvestContext';
 import { UserProvider } from './UserContext';
+import store from './ReduxStore';
+import { Provider } from 'react-redux';
 
 const Stack = createStackNavigator();
 
@@ -38,6 +39,16 @@ const App = ({ styles, darkModeStyles, }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   
+
+
+
+
+  
+
+
+
+
+
 
 
   useEffect(() => {
@@ -66,6 +77,7 @@ const App = ({ styles, darkModeStyles, }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+     <Provider store={store}> 
       <UserProvider>
         <ImageProvider>
         <AutoInvestProvider>
@@ -109,6 +121,7 @@ const App = ({ styles, darkModeStyles, }) => {
     </AutoInvestProvider>
     </ImageProvider>
     </UserProvider>
+    </Provider>
     </SafeAreaView>
 
   );

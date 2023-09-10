@@ -19,10 +19,36 @@ const Save = ({ navigation, route }) => {
   const [autoSaveModalVisible, setAutoSaveModalVisible] = useState(false);
   const [deactivateAutoSaveModalVisible, setDeactivateAutoSaveModalVisible] = useState(false);
   const { autoSave, setAutoSave } = useContext(AutoSaveContext)
-  const { userInfo } = useUserContext(); // Assume userInfo includes savings goal data
-  const { accountBalances } = useUserContext();
+  const { userInfo, accountBalances, userTransactions } = useUserContext(); // Assume userInfo includes savings goal data
 
-  
+  const iconMapping = {
+    "Card Successful": "card-outline",
+    "QuickSave": "save-outline",
+    "AutoSave": "car-outline",
+    "QuickInvest": "trending-up-outline",
+    "AutoInvest": "car-sport-outline",
+    "Withdrawal from Savings": "arrow-down-outline",
+    "Pending Referral Reward": "ellipsis-horizontal-circle-outline",
+    "Referral Reward": "checkmark-circle",
+    "Withdrawal from Investment": "arrow-down-outline",
+    "Property": "home-outline",
+  };
+
+
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'short', day: '2-digit' };
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', options);
+};
+
+// Function to format the time
+const formatTime = (timeString) => {
+  const options = { hour: 'numeric', minute: '2-digit', hour12: true };
+  const time = new Date(`2023-01-01T${timeString}`);
+  return time.toLocaleTimeString('en-US', options);
+};
+
+
   // Calculate the percentage
   const percentage = (currentAmount) => {
     const goalAmount = parseFloat(userInfo.savings_goal_amount);
@@ -189,7 +215,7 @@ const Save = ({ navigation, route }) => {
     {autoSave && (
         <View style={styles.autoSaveSettingContainer}>
           <Text style={styles.autoSaveSetting}>
-            @N30000/month   
+            @₦30000/month   
             <Ionicons name="checkmark-circle" size={20}  color="#0AA447" />
           </Text>
         </View>
@@ -217,111 +243,71 @@ const Save = ({ navigation, route }) => {
       <Divider />
 
 <SectionTitle>SAVINGS TRANSACTIONS</SectionTitle>
-        <View style={styles.transactionsContainer}>
 
 
-        <View style={styles.transactionItem}>
-  <Ionicons
-    name="arrow-down-outline"
-    size={25}
-    style={styles.transactionIcon}
-  />
-  <View style={styles.transactionText}>
-    <Text style={styles.transactionDescription}>
-      Withdrawal From Savings
-    </Text>
-    <Text style={styles.transactionDate}>01 Mar, 2023  | <Text style={styles.transactionTime}>9:30am</Text> </Text>
-    <Text style={styles.transactionID}>ID: ABC123X3ddiw35</Text>
-  </View>
-  <View style={styles.transactionAmountContainer}>
-    <Text style={styles.negativeAmount}>-500.00</Text>
-  </View>
+<View style={styles.transactionsContainer}>
+  {userTransactions.length > 0 ? (
+    userTransactions
+      .filter(
+        (transaction) =>
+          [
+            "Card Successful",
+            "QuickSave",
+            "AutoSave",
+          ].includes(transaction.description) // Filter transactions with these descriptions
+      )
+      .slice(0, 5)
+      .map((transaction, index) => (
+        // Inside your Save component where you are rendering transactions
+        <View key={index} style={styles.transactionItem}>
+          <Ionicons
+            name={iconMapping[transaction.description] || "card-outline"}
+            size={25}
+            style={styles.transactionIcon}
+          />
+          <View style={styles.transactionText}>
+            <Text style={styles.transactionDescription}>
+              {transaction.description}
+            </Text>
+            <Text style={styles.transactionDate}>
+              {formatDate(transaction.date)} | {formatTime(transaction.time)}
+            </Text>
+            <Text style={styles.transactionID}>
+              ID: {transaction.transaction_id}
+            </Text>
+          </View>
+          <View style={styles.transactionAmountContainer}>
+            <Text
+              style={
+                transaction.transaction_type === "debit"
+                  ? styles.negativeAmount
+                  : styles.transactionAmount
+              }
+            >
+              ₦{transaction.amount}
+            </Text>
+          </View>
+        </View>
+      ))
+  ) : (
+    <View style={styles.noTransactionsContainer}>
+      <Text style={styles.noTransactionsMessage}>
+        Your most recent savings will appear here.
+      </Text>
+    </View>
+  )}
 </View>
 
 
-
-
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="save-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickSave</Text>
-              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+1000.00</Text>
-            </View>
-          </View>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="arrow-down-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>
-                Withdrawal From Savings
-              </Text>
-              <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
-            </View>
-            <View style={styles.transactionAmountContainer}>
-            <Text style={styles.negativeAmount}>-500.00</Text>
-            </View>
-          </View>
-          </View>
-          {/* Add more transaction items here */}
-          <View style={styles.transactionsContainer}>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="car-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>AutoSave</Text>
-              <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+300.50</Text>
-            </View>
-          </View>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="save-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickSave</Text>
-              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+1000.00</Text>
-            </View>
-          </View>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="arrow-down-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>
-                Withdrawal From Savings
-              </Text>
-              <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
-            </View>
-            <View style={styles.transactionAmountContainer}>
-            <Text style={styles.negativeAmount}>-500.00</Text>
-            </View>
-          </View>
-          </View>
     </SafeAreaView>
     </ScrollView>
 
+    <TouchableOpacity
+        style={styles.quickSaveButtonCircle}
+        onPress={handleQuickSave}
+      >
+        <Ionicons name="save-outline" size={25} color="#fff" />
+      </TouchableOpacity>
 
     </View>
   );
@@ -682,7 +668,7 @@ backgroundImage: {
     transactionDescription: {
       color: '#4C28BC',
       letterSpacing: -1,
-      fontSize: 17,
+      fontSize: 19,
       fontFamily: 'karla',
       marginTop: 3,
       textAlign: 'left',
@@ -727,6 +713,34 @@ backgroundImage: {
       
     },
 
+    noTransactionsContainer: {
+      flex: 1,
+      justifyContent: 'center', // Center vertically
+      alignItems: 'center', // Center horizontally
+    },
+    noTransactionsMessage: {
+      fontSize: 15,
+      color: 'silver',
+      fontFamily: 'karla-italic',
+      marginTop: 140,
+      marginBottom: 100
+    },
+
+    quickSaveButtonCircle: {
+      position: 'absolute',
+      bottom: 20,
+      right: 20,
+      backgroundColor: '#4C28BC',
+      width: 60,
+      height: 60,
+      borderRadius: 40,
+      borderBottomRightRadius: 0,
+      alignItems: 'center',
+      justifyContent: 'center',
+      elevation: 10, // Add elevation to create a shadow
+
+    },
+  
 
 });
 

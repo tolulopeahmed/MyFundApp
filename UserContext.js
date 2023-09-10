@@ -1,35 +1,15 @@
-import React, { Alert, createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ipAddress } from './constants';
-import io from 'socket.io-client';
+import { ipAddress, RedisAddress } from './constants';
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-
-  useEffect(() => {
-    const socket = io('ws://192.168.220.34:8000/ws/balance_update/');
-
-    socket.on('connect', () => {
-      console.log('WebSocket Connected');
-    });
-
-    socket.on('disconnect', () => {
-      console.log('WebSocket Disconnected');
-    });
-
-    socket.on('balance_update', (updatedBalances) => {
-      setAccountBalances(updatedBalances);
-    });
-
-   // Clean up the socket connection when the component unmounts
-   return () => {
-    socket.disconnect();
+  const [userTransactions, setUserTransactions] = useState([]);
+  const addTransaction = (transactionData) => {
+    setUserTransactions([...userTransactions, transactionData]);
   };
-}, []);
-
-
 
   const [savingsGoal, setSavingsGoal] = useState({
     preferred_asset: '',
@@ -53,16 +33,77 @@ export const UserProvider = ({ children }) => {
     preferred_asset: '',
     savings_goal_amount: '',
     time_period: '',
-    bankRecords: [], // Array to hold bank records
-    cards: [], // Array to hold card information
+    bankRecords: [],
+    cards: [],
   });
-  
+
   const [accountBalances, setAccountBalances] = useState({
     savings: 0,
     investment: 0,
     properties: 0,
     wallet: 0,
   });
+
+
+
+  useEffect(() => {
+    const transactionSocket = new WebSocket(`${RedisAddress}/ws/transaction_update/`);
+        console.log('Transaction WebSocket connection opened successfully.');
+
+    transactionSocket.onopen = () => {
+      console.log('WebSocket connection opened successfully.');
+    };
+
+    transactionSocket.onmessage = (event) => {
+      console.log('Received WebSocket message:', event.data);
+
+      const data = JSON.parse(event.data);
+      if (data.type === 'update_transaction') {
+        const newTransaction = {
+          transaction_type: data.transaction.transaction_type,
+          amount: data.transaction.amount,
+          date: data.transaction.date,
+          time: data.transaction.time,
+          transaction_id: data.transaction.transaction_id,
+          description: data.transaction.description,
+        };
+  
+        // Update userTransactions with the new transaction
+        setUserTransactions(prevUserTransactions => [
+          ...prevUserTransactions,
+          newTransaction,
+        ]);
+      }
+      console.log('Received WebSocket message:', event.data);
+
+      transactionSocket.onclose = (event) => {
+        console.log('WebSocket connection closed:', event);
+      };
+    
+      transactionSocket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+    };
+
+
+
+
+    const balanceSocket = new WebSocket(`${RedisAddress}/ws/balance_update/`);
+
+    balanceSocket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'update_balances') {
+        setAccountBalances(data.balances);
+      }
+    };
+
+    return () => {
+      transactionSocket.close();
+      balanceSocket.close();
+    };
+  }, [userCards, userTransactions]); 
+
+
 
 
 
@@ -76,6 +117,8 @@ export const UserProvider = ({ children }) => {
             token,
           }));
           fetchUserData(token);
+          fetchUserTransactions(token);
+          
         }
       } catch (error) {
         console.error('Error retrieving auth token:', error);
@@ -84,8 +127,11 @@ export const UserProvider = ({ children }) => {
   
     retrieveAuthToken();
   }, []);
-  
+
+
+
   const fetchUserData = async (userToken) => {
+    if (!userInfo.token) {
     try {
       const response = await axios.get(`${ipAddress}/api/get-user-profile/`, {
         headers: {
@@ -116,18 +162,19 @@ export const UserProvider = ({ children }) => {
             ? ipAddress + profileData.profile_picture
             : null
         );
-                
-       
       }
     } catch (profileError) {
       console.error('API Error:', profileError);
       alert('Error fetching user profile');
     }
+  }
   };
 
-
- 
+  
   const fetchUserBankRecords = async (userToken) => {
+    if (!userToken) {
+      return; // Do not make the API call if the user is not authenticated
+    }
     try {
       const response = await axios.get(`${ipAddress}/api/bank-accounts/get-bank-accounts/`, {
         headers: {
@@ -136,42 +183,43 @@ export const UserProvider = ({ children }) => {
       });
   
       if (response.status === 200) {
-        // Update bank records in user context
         setUserBankRecords(response.data);
-  
-        // If you want to store it in userInfo as well:
-        setUserInfo(prevUserInfo => ({
-          ...prevUserInfo,
-          bankRecords: response.data,
-        }));
       }
     } catch (error) {
       console.error('Fetch Error:', error);
     }
   };
+
+
+
+
+
   
-  const fetchUserCards = async (userToken) => {
+  
+  const fetchUserCards = async () => {
+    if (!userInfo.token) {
+      return; // Do not make the API call if the user is not authenticated
+    }
     try {
       const cardsResponse = await axios.get(`${ipAddress}/api/get-cards/`, {
         headers: {
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${userInfo.token}`,
         },
       });
   
       if (cardsResponse.status === 200) {
-        setUserInfo(prevUserInfo => ({
-          ...prevUserInfo,
-          cards: cardsResponse.data,
-        }));
+        setUserCards(cardsResponse.data);
       }
     } catch (error) {
       console.error('Fetch Error:', error);
     }
   };
-  
-  
+
 
   const fetchAccountBalances = async () => {
+    if (!userInfo.token) {
+      return; // Do not make the API call if the user is not authenticated
+    }
     try {
       const response = await axios.get(`${ipAddress}/api/get-account-balances/`, {
         headers: {
@@ -180,37 +228,54 @@ export const UserProvider = ({ children }) => {
       });
 
       if (response.status === 200) {
-        updateAccountBalances(response.data); // Update the context state
+        setAccountBalances(response.data);
       }
     } catch (error) {
       console.error('Fetch Error:', error);
     }
   };
 
-  // Define a function to update account balances within the context
   const updateAccountBalances = (newBalances) => {
     setAccountBalances(newBalances);
   };
 
- 
 
+
+
+
+
+  const fetchUserTransactions = async (userToken) => {
+    if (!userToken) {
+      return; // Do not make the API call if the user is not authenticated
+    }
+    try {
+      const response = await axios.get(`${ipAddress}/api/user-transactions/`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      if (response.status === 200) {
+        setUserTransactions(response.data);
+      }
+    } catch (error) {
+      console.error('Fetch Error:', error);
+    }
+  };
 
   useEffect(() => {
     if (userInfo.token) {
-
-      setUserBankRecords({}); // Clear previous user's bank data
-      setUserCards({}); // Clear previous user's card data
+      setUserBankRecords({});
+      setUserCards({});
   
-      fetchUserCards(userInfo.token); // Fetch card data for the new user
+      fetchUserCards(userInfo.token);
       fetchUserBankRecords(userInfo.token);
       fetchUserData(userInfo.token);
-      fetchAccountBalances(); // Fetch balances using the updated token
-
+      fetchAccountBalances();
+      fetchUserTransactions(userInfo.token);
     }
   }, [userInfo.token]);
-  
 
-  
   const addCard = (userToken, newCard) => {
     const updatedUserCards = { ...userCards };
     updatedUserCards[userToken] = [...(updatedUserCards[userToken] || []), newCard];
@@ -232,15 +297,11 @@ export const UserProvider = ({ children }) => {
         }
         return updatedUserCards;
       });
-      
-  
     } catch (error) {
       console.error('Delete Error:', error);
     }
   };
   
-  
-
   const deleteBankRecord = async (accountNumber) => {
     try {
       await axios.delete(`${ipAddress}/api/delete-bank-account/${accountNumber}/`, {
@@ -256,8 +317,6 @@ export const UserProvider = ({ children }) => {
       console.error('Delete Error:', error);
     }
   };
-
-
     
   const updateProfileImageUri = newUri => {
     setProfileImageUri(newUri);
@@ -274,10 +333,6 @@ export const UserProvider = ({ children }) => {
 
 
 
-  console.log('userInfo:', userInfo);
-  console.log('userBankRecords:', userBankRecords);
-  console.log('accountBalances:', accountBalances );
-
 
   return (
     <UserContext.Provider
@@ -287,8 +342,8 @@ export const UserProvider = ({ children }) => {
         savingsGoal, setSavingsGoal,
         userBankRecords, deleteBankRecord,
         userCards, addCard, deleteCard, setUserCards,
-        accountBalances, setAccountBalances, updateAccountBalances
-
+        accountBalances, setAccountBalances, updateAccountBalances,
+        userTransactions, addTransaction,
       }}
     >
       {children}

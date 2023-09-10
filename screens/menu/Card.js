@@ -61,9 +61,8 @@ const Card = ({ navigation, route }) => {
   const [addCardModalVisible, setAddCardModalVisible] = useState(false); // define modalVisible state
   const { userInfo, setUserCards, userCards, deleteCard } = useUserContext();
   const [cards, setCards] = useState([]);
-  const userAllCards = [ ...(userCards[userInfo.token] || [])]; // Use userCards from the context
-
-
+  const userAllCards = [...(userInfo.cards || []), ...(userCards[userInfo.token] || [])]; // Use userCards from the context
+  
   useEffect(() => {
     if (route.params?.addCardModalVisible) {
       setAddCardModalVisible(true);

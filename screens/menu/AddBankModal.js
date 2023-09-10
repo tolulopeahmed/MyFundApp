@@ -6,6 +6,9 @@ import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios'; // Import axios for making API requests
 import { ipAddress } from '../../constants';
 import { useUserContext } from '../../UserContext';
+import { useDispatch } from 'react-redux';
+import { addBankAccount  } from '../../ReduxActions';
+
 
 const bankOptions = [
     { id: 1, name: 'Access Bank', code: '044' },
@@ -77,11 +80,10 @@ const bankOptions = [
     const [selectedBank, setSelectedBank] = useState('');
     const [accountName, setAccountName] = useState(''); // State for resolved account name
     const [isAccountNameResolved, setIsAccountNameResolved] = useState(false);
-    const [bankCode, setBankCode] = useState('');
-    const [bankName, setBankName] = useState('');
     const { userInfo } = useUserContext();
     const [isLoading, setIsLoading] = useState(false); // Add this state
     const [resolvedAccountName, setResolvedAccountName] = useState('');
+    const dispatch = useDispatch();
 
     
 
@@ -146,16 +148,17 @@ const bankOptions = [
       console.log('Resolved Account Name for Proceed:', resolvedAccountName);
     
       // Check if the new account already exists in bankRecords
-      const existingRecord = bankRecords.find(
-        record =>
-          record.account_number === accountNumber.trim() &&
-          record.bank_name === selectedBank.name
+      const isDuplicate = bankRecords.some(
+        ({ account_number, bank_name }) =>
+          account_number.trim() === accountNumber.trim() &&
+          bank_name === selectedBank.name
       );
-    
-      if (existingRecord) {
+      
+      if (isDuplicate) {
         Alert.alert('Error', 'You have already added this bank account.');
         return;
       }
+      
     
       try {
         console.log('User Token from Context:', userInfo.token);
@@ -182,9 +185,8 @@ const bankOptions = [
             account_number: accountNumber.trim(),
             account_name: resolvedAccountName.trim(),
           };
-          setBankRecords([...bankRecords, newBankRecord]);
-          const updatedBankRecords = [...bankRecords, newBankRecord];
-          await AsyncStorage.setItem('bankRecords', JSON.stringify(updatedBankRecords));
+
+          dispatch(addBankAccount(newBankRecord));
 
           Alert.alert("Success", "Bank Account Added successfully", [
             { text: "OK" },
@@ -254,19 +256,34 @@ const bankOptions = [
           <View>
     <Text style={styles.labelText}>Bank</Text>
     <View style={styles.fieldContainer3}>
-      <SelectDropdown
-        data={dropdownOptions}
-        onSelect={handleSelect}
-        buttonTextAfterSelection={(selectedItem) => selectedItem}
-        rowTextForSelection={(item) => item}
-        buttonStyle={{ borderRadius: 10,    borderColor: 'silver',
-        borderWidth: 1, fontFamily: 'karla', width: '85%', marginBottom: 15, }}
-        dropdownStyle={{ fontFamily: 'karla' }}
-        rowStyle={{ alignSelf: 'flex-start', fontFamily: 'karla' }}
-        rowTextStyle={{ textAlign: 'left', fontSize: 16, color: 'black', fontFamily: 'ProductSans' }}
-        defaultButtonText="Select Bank" // Placeholder text
-        buttonTextStyle={{ color: 'black', fontSize: 16, fontFamily: 'karla', letterSpacing: -0.6 }} // Style for the placeholder text
-      />
+    <SelectDropdown
+  data={dropdownOptions}
+  onSelect={handleSelect}
+  buttonTextAfterSelection={(selectedItem) => selectedItem}
+  rowTextForSelection={(item) => item}
+  buttonStyle={{
+    borderRadius: 6,
+    borderColor: 'silver',
+    borderWidth: 1,
+    fontFamily: 'karla',
+    width: '85%',
+    marginBottom: 15,
+  }}
+  dropdownStyle={{ fontFamily: 'karla' }}
+  rowStyle={{ alignSelf: 'flex-start', fontFamily: 'karla' }}
+  rowTextStyle={{ textAlign: 'left', fontSize: 16, color: 'black', fontFamily: 'ProductSans' }}
+  defaultButtonText="Select Bank" // Placeholder text
+  buttonTextStyle={{
+    color: 'black',
+    fontSize: 16,
+    fontFamily: 'karla',
+    letterSpacing: -0.6,
+    textAlign: 'center', // Align the text to the left
+    alignContent: 'flex-start',
+    alignItems: 'flex-start'
+  }}
+/>
+
   </View>
 
 </View>
@@ -429,8 +446,8 @@ const styles = {
   },
 
   amountInput2: {
-    color: 'black',
-    fontFamily: 'karla-italic',
+    color: 'green',
+    fontFamily: 'nexa',
     letterSpacing: -0.6,
     backgroundColor: '#EFEFEF',
     height: 50,

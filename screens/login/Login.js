@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Alert, ActivityIndicator, Text, ScrollView, StyleSheet,Image,animation,TouchableOpacity,TextInput,Modal,Animated,} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Alert,Keyboard, ActivityIndicator, Text, ScrollView, StyleSheet,Image,animation,TouchableOpacity,TextInput,Modal,Animated,} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as LocalAuthentication from 'expo-local-authentication';
 import logo from './logo..png';
@@ -20,6 +20,8 @@ const Login = ({ navigation }) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [isFormTouched, setIsFormTouched] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  const passwordInputRef = useRef(null); // Create a ref for the password input
 
 
 
@@ -136,8 +138,11 @@ const handleLogin = async () => {
     <>
      
 
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.logoContainer}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled" // Ensure taps outside input fields dismiss the keyboard
+      >   
+           <View style={styles.logoContainer}>
           <Image source={logo} style={styles.logo} />
         </View>
         <View style={styles.headerContainer}>
@@ -172,6 +177,8 @@ const handleLogin = async () => {
             validatePassword(text);
           }}
           onBlur={() => setIsFormTouched(true)}
+          ref={passwordInputRef} // Set the ref for the password input
+
         />
 
             <TouchableOpacity style={styles.passwordToggle} onPress={togglePasswordVisibility}>
@@ -190,32 +197,34 @@ const handleLogin = async () => {
           </TouchableOpacity>
           </View>
          
-          <TouchableOpacity style={styles.fingerprintContainer} onPress={handleFingerprintLogin}>
-            <Image source={require('./fingerprint.png')} style={styles.image} />
-            <Text style={styles.fingerprintText}>Tap to use Fingerprint</Text>
-          </TouchableOpacity>
+          <View style={styles.loginButtonContainer}>
+  <TouchableOpacity
+    style={[
+      styles.loginButton,
+      !isFormValid && styles.disabledLoginButton,
+      isLoggingIn && { backgroundColor: 'green' },
+    ]}
+    onPress={handleLogin}
+    disabled={!isFormValid || isLoggingIn}
+  >
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      {isLoggingIn ? (
+        <ActivityIndicator color="white" size="small" />
+      ) : null}
+      <Text style={styles.loginButtonText}>
+        {isLoggingIn ? ' Logging in...' : 'LOG IN'}
+      </Text>
+    </View>
+  </TouchableOpacity>
 
-          <TouchableOpacity
-          style={[
-            styles.loginButton,
-            !isFormValid && styles.disabledLoginButton,
-            isLoggingIn && { backgroundColor: 'green' },
-          ]}
-          onPress={handleLogin}
-          disabled={!isFormValid || isLoggingIn}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            {isLoggingIn ? (
-              <ActivityIndicator color="white" size="small" /> // Show the activity indicator
-            ) : null}
-            <Text style={styles.loginButtonText}>
-              {isLoggingIn ? ' Logging in...' : 'LOG IN'} {/* Display the text */}
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-
-
+  {/* Fingerprint button */}
+  <TouchableOpacity
+    style={styles.fingerprintButton}
+    onPress={handleFingerprintLogin}
+  >
+    <Image source={require('./fingerprint.png')} style={styles.fingerprintImage} />
+  </TouchableOpacity>
+</View>
 
 
           <TouchableOpacity
@@ -229,11 +238,11 @@ const handleLogin = async () => {
         </View>
 
         {/* add a divider line */}
-        <View style={styles.divider} />
+        {/* <View style={styles.divider} />
         <Text style={styles.orLoginText}>OR LOGIN WITH</Text>
 
         {/* add two buttons */}
-        <View style={styles.buttonContainer}>
+        {/* <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.googleButton}>
             <Ionicons name="logo-google" size={24} color="#fff" />
             <Text style={styles.googleButtonText}>Google</Text>
@@ -242,7 +251,7 @@ const handleLogin = async () => {
             <Ionicons name="logo-linkedin" size={24} color="#fff" />
             <Text style={styles.linkedinButtonText}>LinkedIn</Text>
           </TouchableOpacity>
-        </View>
+        </View> */} 
 
         <Modal
           animationType="slide"
@@ -281,7 +290,9 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 50,
+    marginTop: 170,
+    marginBottom: 70,
+
   },
   logo: {
     width: 75,
@@ -294,7 +305,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   headerContainer: {
-    marginTop: 20,
+    marginTop: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -310,6 +321,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginHorizontal: 40,
     marginTop: 5,
+    marginBottom: 15,
+
   },
   inputContainer: {
     marginTop: 25,
@@ -346,7 +359,7 @@ const styles = StyleSheet.create({
     height: 45,
     backgroundColor: 'white',
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 5,
     paddingLeft: 15,
     paddingRight: 40,
     borderWidth: 1,
@@ -363,22 +376,28 @@ const styles = StyleSheet.create({
     color: '#4C28BC',
     alignSelf: 'flex-end',
     marginLeft: '50%',
-    marginBottom: 25,
+    marginBottom: 1,
   },
-  fingerprintContainer: {
-    alignItems: 'center', // Align content to the center horizontally
-    justifyContent: 'center', // Align content to the center vertically
+  loginButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '77%',
+    marginTop: 5,
+    marginRight: 10,
+    marginBottom: 55,
+
   },
 
-  fingerprintText: {
-    marginTop: 5,
-    marginBottom: 20,
-    fontSize: 9,
-    fontFamily: 'karla',
-    color: 'grey',
-    textAlign: 'center',
-    alignSelf: 'center'
+
+  fingerprintImage: {
+    width: 40, // Adjust the width as needed
+    height: 40, // Adjust the height as needed
+    resizeMode: 'contain',
+    marginBottom: 12,
+
   },
+
 
   disabledLoginButton: {
     backgroundColor: 'grey',
@@ -386,12 +405,12 @@ const styles = StyleSheet.create({
 
   loginButton: {
     backgroundColor: '#4C28BC',
-    width: '80%',
+    width: '90%',
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 15,
-    marginBottom: 54,
+    marginBottom: 24,
     marginTop: 10,
     marginRight: 10,
   },
@@ -405,14 +424,14 @@ const styles = StyleSheet.create({
     fontFamily: 'karla',
     color: 'black',
     textAlign: 'center',
-    marginHorizontal: 40,
+    marginHorizontal: 1,
   },
   createAccountText: {
     fontSize: 13,
     fontFamily: 'karla',
     color: 'black',
     textAlign: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: 5,
     marginTop: 5,
     letterSpacing: -0.2,
   },
@@ -421,7 +440,7 @@ const styles = StyleSheet.create({
     fontFamily: 'karla',
     color: '#4C28BC',
     textAlign: 'center',
-    marginHorizontal: 40,
+    marginHorizontal: 10,
     marginTop: 5,
   },
   divider: {

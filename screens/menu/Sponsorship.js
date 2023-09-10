@@ -263,6 +263,13 @@ const handleConfirmDeactivateAutoInvest = () => {
     </SafeAreaView>
     </ScrollView>
 
+
+    <TouchableOpacity
+        style={styles.quickInvestButtonCircle}
+        onPress={handleQuickInvest}
+      >
+        <Ionicons name="trending-up-outline" size={25} color="#fff" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -614,6 +621,23 @@ backgroundImage: {
       
     },
 
+
+    
+    quickInvestButtonCircle: {
+      position: 'absolute',
+      bottom: 30,
+      right: 30,
+      backgroundColor: '#4C28BC',
+      width: 60,
+      height: 60,
+      borderRadius: 40,
+      borderBottomRightRadius: 0,
+      alignItems: 'center',
+      justifyContent: 'center',
+      elevation: 10, // Add elevation to create a shadow
+
+    },
+  
 
 });
 

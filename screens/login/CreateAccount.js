@@ -280,7 +280,7 @@ const CreateAccount = ({ navigation }) => {
           <TouchableOpacity style={styles.loginTextContainer} onPress={() => navigation.navigate('Login')}>
             <Text style={styles.loginText}>Already have an account? <Text style={styles.login}>Log in</Text></Text>
           </TouchableOpacity>
-          <View style={styles.divider} />
+          {/* <View style={styles.divider} />
           <Text style={styles.orLoginText}>OR SIGN UP WITH</Text>
           <View style={styles.buttonContainer}>
           
@@ -295,7 +295,7 @@ const CreateAccount = ({ navigation }) => {
               <Ionicons name="logo-linkedin" size={24} color="#fff" />
               <Text style={styles.linkedinButtonText}>LinkedIn</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </ScrollView>
       </SafeAreaView>
     </>
@@ -333,7 +333,9 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 70,
+    marginTop: 90,
+    marginBottom: 70,
+
   },
   logo: {
     width: 75,
@@ -413,7 +415,7 @@ const styles = StyleSheet.create({
     fontFamily: 'karla',
     color: 'black',
     textAlign: 'center',
-    marginHorizontal: 40,
+    marginTop: 20,
   },
   loginText: {
     fontSize: 14,

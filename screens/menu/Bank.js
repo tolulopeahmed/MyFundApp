@@ -4,16 +4,22 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { MaterialIcons } from '@expo/vector-icons';
 import AddBankModal from './AddBankModal';
 import SectionTitle from '../components/SectionTitle';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector, useDispatch } from 'react-redux';
+import { deleteBankAccount  } from '../../ReduxActions';
 import { useUserContext } from '../../UserContext';
 
 const Bank = ({ navigation, initialBankRecords}) => {
   const [addBankModalVisible, setAddBankModalVisible] = useState(false); // define modalVisible state
-  const [bankRecords, setBankRecords] = useState([]);
-  const { userBankRecords, deleteBankRecord } = useUserContext();
-  const mergedBankRecords = [...(userBankRecords || []), ...(bankRecords || [])];
+  const bankAccounts = useSelector((state) => state.bank.bankAccounts);
+  const dispatch = useDispatch();
+  const { userInfo } = useUserContext();
 
+  useEffect(() => {
+    // Update bankRecords when bankAccounts from Redux changes
+    setBankRecords(bankAccounts);
+  }, [bankAccounts]);
 
+  const [bankRecords, setBankRecords] = useState(bankAccounts); // Initialize with Redux data
 
   const getBackgroundColor = (bankName) => {
     switch (bankName) {
@@ -67,7 +73,18 @@ const Bank = ({ navigation, initialBankRecords}) => {
   };
   
 
-  const confirmDelete = (accountNumber) => {
+
+
+
+  
+
+
+
+  const handleDelete = (accountNumber) => {
+    confirmDelete(accountNumber, userInfo.token);
+  };
+  
+  const confirmDelete = (accountNumber, userToken) => {
     Alert.alert(
       'Confirm Delete',
       'Are you sure you want to delete this bank account?',
@@ -78,49 +95,35 @@ const Bank = ({ navigation, initialBankRecords}) => {
         },
         {
           text: 'Delete',
-          onPress: () => performDelete(accountNumber),
+          onPress: async () => {
+            try {
+              // Dispatch the delete action with the user token
+              dispatch(deleteBankAccount(accountNumber, userToken));
+  
+              // Remove the deleted bank record from the local state
+              setBankRecords((prevBankRecords) =>
+                prevBankRecords.filter(
+                  (record) => record.account_number !== accountNumber
+                )
+              );
+            } catch (error) {
+              console.error('Delete Error:', error);
+            }
+          },
         },
       ],
       { cancelable: true }
     );
   };
   
-  const handleDelete = (accountNumber) => {
-    confirmDelete(accountNumber);
-  };
-  
   
  
-  const performDelete = async (accountNumber) => {
-    try {
-      // Call your deleteBankRecord function here
-      await deleteBankRecord(accountNumber);
-      // Optionally, you can update the local state here to remove the deleted bank record
-    } catch (error) {
-      console.error('Delete Error:', error);
-    }
-  };
-  
 
 
-  useEffect(() => {
-    const loadBankRecords = async () => {
-      try {
-        const storedBankRecords = await AsyncStorage.getItem('bankRecords');
-        if (storedBankRecords) {
-          setBankRecords(JSON.parse(storedBankRecords));
-        }
-      } catch (error) {
-        console.error('Error loading bank records:', error);
-      }
-    };
   
-    loadBankRecords();
-  }, []);
   
 
   console.log('Bank Records:', bankRecords);
-  console.log('UserBank Records from context:', userBankRecords);
 
 
 
@@ -157,23 +160,23 @@ const Bank = ({ navigation, initialBankRecords}) => {
 
 
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-      {mergedBankRecords.length > 0 ? (
-        mergedBankRecords.map((bankRecord, index) => (
-          <View
-    style={[
-      styles.bankCard,
-      { backgroundColor: getBackgroundColor(bankRecord.bank_name) },
-    ]}
-    key={`${bankRecord.accountNumber}-${index}`}
-  >
+      {bankRecords.length > 0 ? ( 
+          bankRecords.map((bankAccount, index) => (
+            <View
+            style={[
+              styles.bankCard,
+              { backgroundColor: getBackgroundColor(bankAccount.bank_name) },
+            ]}
+            key={`${bankAccount.accountNumber}-${index}`}
+            >
     <View style={styles.bankCardContent}>
       <View style={styles.bankCardHeader}>
         <MaterialIcons name="account-balance" size={35} color="white" margin={20} />
         <View style={styles.accountDetails}>
-          <Text style={styles.bankCardAccountName}>{bankRecord.account_name}</Text>
-          <Text style={styles.bankCardBankName}>{bankRecord.bank_name}</Text>
+          <Text style={styles.bankCardAccountName}>{bankAccount.account_name}</Text>
+          <Text style={styles.bankCardBankName}>{bankAccount.bank_name}</Text>
           <Text style={styles.bankCardAccountNumber}>
-            (*****{bankRecord.account_number.slice(-5)})
+            (*****{bankAccount.account_number.slice(-5)})
           </Text>
         </View>
       </View>
@@ -183,7 +186,7 @@ const Bank = ({ navigation, initialBankRecords}) => {
 
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => handleDelete(bankRecord.account_number)}
+          onPress={() => handleDelete(bankAccount.account_number)}
           >
           <MaterialIcons name="delete-outline" size={20} color="red" />
         </TouchableOpacity>
@@ -216,8 +219,8 @@ const Bank = ({ navigation, initialBankRecords}) => {
                 initialBankRecords={initialBankRecords}
                 bankRecords={bankRecords} // Pass the bankRecords state as a prop
                 setBankRecords={setBankRecords}
-                deleteBankRecord={deleteBankRecord}
-              />
+                dispatch={dispatch} // Pass dispatch as a prop
+                />
 
 
      

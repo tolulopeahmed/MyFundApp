@@ -1,10 +1,44 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useUserContext } from '../../UserContext';
+
 
 const Notifications = ({ navigation, firstName }) => {
   const [selectedTab, setSelectedTab] = useState('All');
+  const { userTransactions } = useUserContext(); // Assume userInfo includes savings goal data
+
   
+  
+  const iconMapping = {
+    "Card Successful": "card-outline",
+    "QuickSave": "save-outline",
+    "AutoSave": "car-outline",
+    "QuickInvest": "trending-up-outline",
+    "AutoInvest": "car-sport-outline",
+    "Withdrawal from Savings": "arrow-down-outline",
+    "Pending Referral Reward": "ellipsis-horizontal-circle-outline",
+    "Referral Reward": "checkmark-circle",
+    "Withdrawal from Investment": "arrow-down-outline",
+    "Property": "home-outline",
+  };
+  
+
+  
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'short', day: '2-digit' };
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', options);
+};
+
+// Function to format the time
+const formatTime = (timeString) => {
+  const options = { hour: 'numeric', minute: '2-digit', hour12: true };
+  const time = new Date(`2023-01-01T${timeString}`);
+  return time.toLocaleTimeString('en-US', options);
+};
+
+
   const [transactions, setTransactions] = useState([
     {
       id: 1,
@@ -119,46 +153,48 @@ const Notifications = ({ navigation, firstName }) => {
       </View>
 
 
-
-
-
-      {renderList.map((item) => (
-  <View key={item.id}>
-    {item.type === 'transaction' ? (
-      <View style={styles.transactionsContainer}>
-        <View style={styles.transactionItem}>
-          <Ionicons
-            name="car-outline"
-            size={25}
-            style={styles.transactionIcon}
-          />
-          <View style={styles.transactionText}>
-            <Text style={styles.transactionDescription}>
-              {item.description}
-            </Text>
-            <Text style={styles.transactionDate}>{item.date}</Text>
+      <ScrollView style={styles.transactionsContainer} showsVerticalScrollIndicator={false}>
+            {userTransactions.length > 0 ? (
+  userTransactions.map((transaction, index) => (
+// Inside your Save component where you are rendering transactions
+          <View key={index} style={styles.transactionItem}>
+            <Ionicons
+              name={iconMapping[transaction.description] || "card-outline"}
+              size={25}
+              style={styles.transactionIcon}
+            />
+            <View style={styles.transactionText}>
+              <Text style={styles.transactionDescription}>
+                {transaction.description}
+              </Text>
+              <Text style={styles.transactionDate}>
+                {formatDate(transaction.date)} | {formatTime(transaction.time)}
+              </Text>
+              <Text style={styles.transactionID}>
+                ID: {transaction.transaction_id}
+              </Text>
+            </View>
+            <View style={styles.transactionAmountContainer}>
+              <Text
+                style={
+                  transaction.transaction_type === "debit"
+                    ? styles.negativeAmount
+                    : styles.transactionAmount
+                }
+              >
+                ₦{transaction.amount}
+              </Text>
+            </View>
           </View>
-          <View>
-            <Text style={styles.transactionAmount}>{item.amount}</Text>
-          </View>
-        </View>
-      </View>
-    ) : (
-      <View style={styles.propertyContainer}>
-        <Ionicons
-          name="mail-outline"
-          size={34}
-          color="#4C28BC"
-          style={{ marginRight: 15 }}
-        />
-        <View style={styles.textContainer}>
-          <Text style={styles.propertyText}>{item.description}</Text>
-          <Text style={styles.transactionDate}>{item.date}</Text>
-        </View>
-      </View>
-    )}
+
+  ))
+) : (
+  <View style={styles.noTransactionsContainer}>
+    <Text style={styles.noTransactionsMessage}>No transactions yet.</Text>
   </View>
-))}
+)}
+
+            </ScrollView>
 
     </View>
   );
@@ -283,68 +319,97 @@ const styles = StyleSheet.create({
     },
    
     
-    transactionsContainer: {
-        borderRadius: 10,
-        marginHorizontal: 20,
-        marginTop: 5,
-      },
+    transactionContainer: {
+      marginTop: 25,
+      flex: 1,
+        },
 
+    transactionsContainer: {
+      borderRadius: 10,
+      marginHorizontal: 20,
+      marginTop: 5,
+    },
     transactionItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
-      },
-      transactionIcon: {
-        backgroundColor: '#DEE4FC',
-        color: '#4C28BC',
-        padding: 8,
-        borderRadius: 10,
-        marginRight: 10,
-      },
-      transactionText: {
-        flex: 1,
-        alignItems: 'flex-start',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ccc',
+    },
+    transactionIcon: {
+      backgroundColor: '#DEE4FC',
+      color: '#4C28BC',
+      padding: 8,
+      borderRadius: 10,
+      marginRight: 10,
+    },
+    transactionText: {
+      flex: 1,
+      alignItems: 'flex-start',
+
+    },
+    transactionDescription: {
+      color: '#4C28BC',
+      letterSpacing: -1,
+      fontSize: 19,
+      fontFamily: 'karla',
+      marginTop: 3,
+      textAlign: 'left',
+      alignItems: 'flex-start',
+    },
+    transactionDate: {
+      fontFamily: 'karla',
+      fontSize: 10,
+      marginTop: 1,
+    },
+    transactionTime: {
+      fontFamily: 'karla',
+      fontSize: 10,
+      marginTop: 1,
+    },
+    transactionID: {
+      fontFamily: 'nexa',
+      fontSize: 10,
+      marginTop: 1,
+      color: '#4C28BC',
+    },
+    transactionAmount: {
+      color: 'green',
+      fontSize: 23,
+      fontFamily: 'karla',
+      letterSpacing: -1,
+      marginTop: 10,
+      textAlign: 'right',
+    },
+
+    negativeAmount: {
+      color: 'red',
+      fontSize: 23,
+      fontFamily: 'karla',
+      letterSpacing: -1,
+      marginTop: 10,
+      textAlign: 'right',
+    },
+
+    transactionAmountContainer: {
+      textAlign: 'right',
+      
+    },
+
+    noTransactionsContainer: {
+      flex: 1,
+      justifyContent: 'center', // Center vertically
+      alignItems: 'center', // Center horizontally
+    },
+    noTransactionsMessage: {
+      fontSize: 15,
+      color: 'silver',
+      fontFamily: 'karla-italic',
+      marginTop: 140,
+      marginBottom: 100
+    },
   
-      },
-      transactionDescription: {
-        color: '#4C28BC',
-        letterSpacing: -1,
-        fontSize: 18,
-        fontFamily: 'karla',
-        marginTop: 3,
-        textAlign: 'left',
-        alignItems: 'flex-start',
-      },
-      transactionDate: {
-        fontFamily: 'karla',
-        fontSize: 12,
-        marginTop: 3,
-      },
-      transactionAmount: {
-        color: 'green',
-        fontSize: 23,
-        fontFamily: 'karla',
-        letterSpacing: -1,
-        marginTop: 10,
-        textAlign: 'right',
-      },
-  
-      negativeAmount: {
-        color: 'red',
-        fontSize: 23,
-        fontFamily: 'karla',
-        letterSpacing: -1,
-        marginTop: 10,
-        textAlign: 'right',
-      },
-  
-      transactionAmountContainer: {
-        textAlign: 'right',
-        
-      },
 
 
 

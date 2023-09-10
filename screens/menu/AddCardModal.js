@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Modal, Text, ActivityIndicator, Image, Alert, Pressable, View, TextInput, TouchableOpacity } from 'react-native';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
@@ -84,7 +84,9 @@ const AddCardModal = ({ navigation, addCardModalVisible, setAddCardModalVisible,
   const [showCVVText, setShowCVVText] = useState(false);
   const [pin, setPin] = useState('');
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
-
+  const cvvInputRef = useRef(null);
+  const pinInputRef = useRef(null);
+  
   const handleAmountChange = (value) => {
   const formattedValue = value.replace(/[^0-9]/g, '');
   const truncatedValue = formattedValue.substring(0, 19);
@@ -113,9 +115,12 @@ const AddCardModal = ({ navigation, addCardModalVisible, setAddCardModalVisible,
 const handleCVVChange = (value) => {
   const truncatedValue = value.substring(0, 3);
   setCVV(truncatedValue);
-  checkAllFieldsFilled(); // Call checkAllFieldsFilled here
-
+  if (truncatedValue.length === 3) { // Check the length here
+    pinInputRef.current.focus(); // Focus on PIN input field
+  }
+  checkAllFieldsFilled();
 };
+
 
 const handleExpiryChange = (text) => {
   let formattedText = text;
@@ -123,9 +128,12 @@ const handleExpiryChange = (text) => {
     formattedText += '/';
   }
   setExpiry(formattedText);
-  checkAllFieldsFilled(); // Call checkAllFieldsFilled here
-
+  if (formattedText.length === 4) { // Check the length here
+    cvvInputRef.current.focus(); // Focus on CVV input field
+  }
+  checkAllFieldsFilled();
 };
+
 
 const handleAlertIconTap = () => {
   setShowCVVText(true);
@@ -219,22 +227,23 @@ const handleProceed = async () => {
     console.log('Response:', response.data); // Log the response data for debugging
 
     if (response.status === 201) {
-      closeModal();
       const newCardRecord = {
         bank_name: selectedBank.name,
         card_number: cardNumberWithoutSpaces,
         expiry_date: expiry,
         id: response.data.id, // Assuming the response contains the card ID
       };
+    
+     addCardToList(newCardRecord); // Call the updated addCardToList function
 
-      addCardToList(newCardRecord); // Call the updated addCardToList function
-     // setAccountBalances([...response.data.updatedAccountBalances]);
+     Alert.alert('Success', 'Card added successfully! And ₦50 has been credited to your Savings Account', [{ text: 'OK' }]);
+     closeModal();
 
-      Alert.alert('Success', 'Card added successfully! And ₦50 has been credited to your Savings Account', [{ text: 'OK' }]);
     } else {
       console.error('Failed to add card:', response.data);
       Alert.alert('Error', 'Failed to add card. Please try again later.');
     }
+    
   } catch (error) {
     console.error('An error occurred while adding card:', error);
     console.error(error.stack); // Print the stack trace
@@ -335,7 +344,8 @@ An initial charge of ₦50 will be made and returned back as to your savings acc
       maxLength={5}
       onChangeText={handleExpiryChange}
       value={expiry}
-      placeholderTextColor="silver" // Add this line     
+      placeholderTextColor="silver" 
+      ref={cvvInputRef} // Attach the ref here    
     />
   </View>
 
@@ -352,7 +362,8 @@ An initial charge of ₦50 will be made and returned back as to your savings acc
     keyboardType="numeric"
     onChangeText={handleCVVChange}
     value={cvv}
-    placeholderTextColor="silver" // Add this line
+    placeholderTextColor="silver"
+    ref={pinInputRef} // Attach the ref here
   />
 </View>
 
