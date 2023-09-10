@@ -6,7 +6,7 @@ from django.urls import re_path
 from .consumers import ChatConsumer
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from .views import CardListCreateView, CardDetailView, UserCardListView, AccountBalancesAPIView
+from .views import CardListCreateView, CardDetailView, UserTransactionListView, UserCardListView, AccountBalancesAPIView
 
 
 router = DefaultRouter()
@@ -50,6 +50,9 @@ urlpatterns = [
 
     # Accounts-related APIs
     path('get-account-balances/', AccountBalancesAPIView.as_view(), name='get-account-balances'),
+
+
+    path('user-transactions/', UserTransactionListView.as_view(), name='user-transactions'),
 
     ]
 

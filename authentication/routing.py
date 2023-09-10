@@ -1,9 +1,8 @@
 from channels.routing import ProtocolTypeRouter, URLRouter
-from authentication.consumers import BalanceUpdateConsumer
-from django.urls import path
+from django.urls import re_path
+from . import consumers
 
-application = ProtocolTypeRouter({
-    "websocket": URLRouter([
-        path("ws/balance_update/", BalanceUpdateConsumer.as_asgi()),
-    ]),
-})
+websocket_urlpatterns = [
+    re_path(r'ws/transaction_update/$', consumers.TransactionUpdateConsumer.as_asgi()),
+    # Add other WebSocket consumers and channels if needed
+]

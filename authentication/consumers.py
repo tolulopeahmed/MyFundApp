@@ -5,6 +5,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.recipient_id = self.scope['url_route']['kwargs']['recipient_id']
         self.room_group_name = f"chat_{self.recipient_id}"
+        print(f"WebSocket Connected: {self.scope['user']}")
 
         # Join the room group
         await self.channel_layer.group_add(
@@ -20,6 +21,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        print(f"WebSocket Disconnected: {self.scope['user']}")
+
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -50,15 +53,25 @@ class BalanceUpdateConsumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         pass
 
-    async def send_balance_update(self, event):
-        await self.send_json(event)  # Send the balance update as JSON to the connected client
-
     async def update_balances(self, event):
-        # Get the updated balances from the event data
         updated_balances = event["balances"]
-        
-        # Broadcast the updated balances to all connected clients
-        await self.send_balance_update({
-            "type": "balance.update",
+        await self.send_json({
+            "type": "update_balances",
             "balances": updated_balances,
         })
+
+
+
+
+class TransactionUpdateConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        pass  # Handle WebSocket disconnects if needed
+
+    async def send_transaction_update(self, transaction_data):
+        await self.send(json.dumps({
+            'type': 'update_transaction',
+            'transaction': transaction_data,
+        }))

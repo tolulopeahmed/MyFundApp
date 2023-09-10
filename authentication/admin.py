@@ -1,11 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Message
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-from django.core.mail import send_mail
-from .models import BankAccount
-from .models import Card
+from .models import CustomUser, Message, BankAccount, Card, AccountBalance, Transaction
 
 class CustomUserAdmin(UserAdmin):
     list_display = UserAdmin.list_display + ('preferred_asset', 'savings_goal_amount', 'time_period')
@@ -58,3 +53,8 @@ class CardAdmin(admin.ModelAdmin):
     list_filter = ('is_default',)
 
 admin.site.register(Card, CardAdmin)
+admin.site.register(AccountBalance)
+admin.site.register(Transaction)
+
+
+

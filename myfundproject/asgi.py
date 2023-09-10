@@ -14,6 +14,7 @@ from channels.auth import AuthMiddlewareStack
 from django.urls import path
 from authentication import consumers
 from django.core.asgi import get_asgi_application
+from authentication.consumers import BalanceUpdateConsumer, TransactionConsumer
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myfundproject.settings')
 
@@ -25,7 +26,9 @@ application = ProtocolTypeRouter({
     "websocket": AuthMiddlewareStack(
         URLRouter([
             path("ws/chat/<int:recipient_id>/", consumers.ChatConsumer.as_asgi()),
-            path("ws/balance_update/", consumers.BalanceUpdateConsumer.as_asgi()),  # Replace 'balance_update' with your desired URL path.
+            path("ws/update_balance/", BalanceUpdateConsumer.as_asgi()),
+            path("ws/update_transaction/", TransactionConsumer.as_asgi()),
+
        ])
     ),
 })

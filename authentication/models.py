@@ -128,6 +128,7 @@ class Message(models.Model):
 
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 
 class BankAccount(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='owned_bank_accounts')  # Change related_name here
@@ -152,6 +153,33 @@ class Card(models.Model):
     def __str__(self):
         card_last_digits = self.card_number[-4:]
         return f"{self.user.email}'s Card ending in {card_last_digits} ({self.bank_name})"
+
+
+# Update the models to use settings.AUTH_USER_MODEL
+class AccountBalance(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    savings = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    investment = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    properties = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    wallet = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+class Transaction(models.Model):
+    TRANSACTION_TYPES = (
+        ('credit', 'Credit'),
+        ('debit', 'Debit'),
+    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateField()
+    time = models.TimeField()
+    description = models.CharField(max_length=255, default="No description available")
+    transaction_id = models.CharField(max_length=255, default='')
+
+    def __str__(self):
+        return f'{self.transaction_type} - {self.amount} - {self.date}'
+
 
 
 

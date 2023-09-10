@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 import os
+from channels_redis.core import RedisChannelLayer
+import redis
 
 
 SSL_PORT = 8443  # You can choose any available port number
@@ -30,7 +32,7 @@ SECRET_KEY = 'django-insecure-rct_mdzr=x!99kwy+xy1$#x=5_+!_-dynu%z&!jx_-qkj7*%*%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.220.34','192.168.138.34','localhost', '192.168.226.34', '192.168.176.34', '10.10.4.174', '192.168.84.34', '10.10.4.174' ]
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.240.1','192.168.138.34','localhost', '192.168.226.34', '192.168.176.34', '10.10.4.174', '192.168.84.34', '10.10.4.174' ]
 
 
 # Application definition
@@ -48,21 +50,39 @@ INSTALLED_APPS = [
     'corsheaders',
    # 'sslserver',
     'channels',
-    
+   # 'django_socketio',
+
     ]
-ASGI_APPLICATION = 'myfundproject.asgi.application'  # Replace with your ASGI application path
-ASGI_APPLICATION = 'myfundproject.routing.application'
+
+
+ASGI_APPLICATION = "myfundproject.routing.application"
 ADMIN_URL = 'admin/'
 
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.RedisChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [('127.0.0.1', 6379)],  # Configure with your Redis server details
+            "hosts": [('192.168.240.1', 6379)],
         },
     },
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://192.168.240.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+
+
+
+
+
 
 REST_FRAMEWORK = {
     # Other settings...
@@ -93,7 +113,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+ #   "channels.middleware.WebSocketMiddleware",
+
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
     'https://tolulopeahmed.github.io',

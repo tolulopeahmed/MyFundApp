@@ -605,7 +605,7 @@ def get_user_banks(request):
 
 
 from .models import Card
-from .serializers import CardSerializer
+from .serializers import CardSerializer, TransactionSerializer
 from rest_framework import generics
 
 
@@ -651,8 +651,6 @@ class CardDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CardSerializer
     permission_classes = [IsAuthenticated]
 
-    # ... other methods ...
-
 class UserCardListView(generics.ListAPIView):
     serializer_class = CardSerializer
     permission_classes = [IsAuthenticated]
@@ -660,9 +658,29 @@ class UserCardListView(generics.ListAPIView):
     def get_queryset(self):
         return Card.objects.filter(user=self.request.user)
 
+class TransactionCreateView(generics.CreateAPIView):
+    serializer_class = TransactionSerializer
+    permission_classes = [IsAuthenticated]
 
+    def perform_create(self, serializer):
+        serializer.save(
+            user=self.request.user,  # Set the user field to the authenticated user
+            description="Add Card Transaction"  # Provide a transaction description
+        )
 
+from .models import Transaction
 
+channel_layer = get_channel_layer()
+
+# Modify UserTransactionListView to use the Transaction model
+class UserTransactionListView(generics.ListAPIView):
+    serializer_class = TransactionSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        transactions = Transaction.objects.filter(user=user).order_by('-date', '-time')
+        return transactions
 
 
 

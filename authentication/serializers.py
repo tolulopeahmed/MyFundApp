@@ -151,14 +151,15 @@ class AccountBalancesSerializer(serializers.ModelSerializer):
 
 
 
-
-
+from django.utils import timezone
 import requests, uuid
 
 unique_reference = str(uuid.uuid4())
 
 
 class CardSerializer(serializers.ModelSerializer):
+    expiry_date = serializers.CharField(max_length=5)  # Update the field to a CharField for MM/YY input
+
     class Meta:
         model = Card
         fields = ('id', 'bank_name', 'card_number', 'expiry_date', 'cvv', 'pin', 'is_default')
@@ -167,13 +168,17 @@ class CardSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context['request'].user
         pin = validated_data.pop('pin')
+        expiry_date = validated_data.pop('expiry_date')  # Get the expiry_date as a string
+
+        # Parse the expiry_date in MM/YY format
+        expiry_month, expiry_year = expiry_date.split('/')
+        expiry_date = f"01/{expiry_month}/{expiry_year}"  # Convert to a valid date format
 
         # Verify the card with Paystack
         paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"
         card_number = validated_data['card_number']
-        expiry_month, expiry_year = validated_data['expiry_date'].split('/')
         cvv = validated_data['cvv']
-        
+
         paystack_url = "https://api.paystack.co/charge"
         payload = {
             "card": {
@@ -191,7 +196,7 @@ class CardSerializer(serializers.ModelSerializer):
             "Authorization": f"Bearer {paystack_secret_key}",
             "Content-Type": "application/json",
         }
-        
+
         response = requests.post(paystack_url, json=payload, headers=headers)
         paystack_response = response.json()
         print("Paystack Response:", paystack_response)
@@ -205,16 +210,66 @@ class CardSerializer(serializers.ModelSerializer):
             validated_data['user'] = user
             card = Card.objects.create(**validated_data)
 
+            # Create a Transaction object
+            now = timezone.now()
+            transaction_id = unique_reference  # Use the same reference as for the payment
+            transaction_data = {
+                "user": user,
+                "transaction_type": "credit",  # You can set it to "credit" for successful payments
+                "amount": 50,  # The amount of the successful payment
+                "date": now.date(),  # Use DateField for date
+                "time": now.time(),  # Use TimeField for time
+                "transaction_id": transaction_id,
+                "description": "Card Successful",  # You can set any description you want
+            }
+            transaction = Transaction.objects.create(**transaction_data)
+
+            # Notify the WebSocket consumer about the successful transaction
+            notify_transaction_update(transaction)
+
             return {
                 "id": card.id,
                 "bank_name": card.bank_name,
                 "card_number": card.card_number,
-                "expiry_date": card.expiry_date,
+                "expiry_date": expiry_date,  # Return the parsed expiry_date
                 "cvv": card.cvv,
                 "pin": card.pin,
                 "is_default": card.is_default,
                 "reference": paystack_response.get("data", {}).get("reference"),
+                "transaction": TransactionSerializer(transaction).data,
             }
+
         else:
             print("Paystack API Error Response:", paystack_response)  # Add this line for debugging
             raise serializers.ValidationError("Failed to verify card and process payment")
+
+
+def notify_transaction_update(transaction):
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync
+
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.send)(
+        'transaction_update_channel',  # Channel name
+        {
+            'type': 'send_transaction_update',
+            'transaction_data': {
+                'transaction_type': 'credit',
+                'amount': 50,  # Amount of the successful payment
+                'date': transaction.date,
+                'time': transaction.time,
+                'transaction_id': transaction.transaction_id,
+                'description': 'Card Successful',
+            },
+        },
+    )
+
+
+
+
+from .models import Transaction
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ('transaction_type', 'amount', 'date', 'time', 'transaction_id', 'description')
+
