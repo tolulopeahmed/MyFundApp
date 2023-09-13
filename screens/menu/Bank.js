@@ -6,20 +6,19 @@ import AddBankModal from './AddBankModal';
 import SectionTitle from '../components/SectionTitle';
 import { useSelector, useDispatch } from 'react-redux';
 import { deleteBankAccount  } from '../../ReduxActions';
-import { useUserContext } from '../../UserContext';
 
 const Bank = ({ navigation, initialBankRecords}) => {
   const [addBankModalVisible, setAddBankModalVisible] = useState(false); // define modalVisible state
   const bankAccounts = useSelector((state) => state.bank.bankAccounts);
   const dispatch = useDispatch();
-  const { userInfo } = useUserContext();
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  const [bankRecords, setBankRecords] = useState(bankAccounts); // Initialize with Redux data
 
   useEffect(() => {
-    // Update bankRecords when bankAccounts from Redux changes
     setBankRecords(bankAccounts);
   }, [bankAccounts]);
+  
 
-  const [bankRecords, setBankRecords] = useState(bankAccounts); // Initialize with Redux data
 
   const getBackgroundColor = (bankName) => {
     switch (bankName) {
@@ -81,10 +80,10 @@ const Bank = ({ navigation, initialBankRecords}) => {
 
 
   const handleDelete = (accountNumber) => {
-    confirmDelete(accountNumber, userInfo.token);
+    confirmDelete(accountNumber);
   };
   
-  const confirmDelete = (accountNumber, userToken) => {
+  const confirmDelete = (accountNumber) => {
     Alert.alert(
       'Confirm Delete',
       'Are you sure you want to delete this bank account?',
@@ -97,9 +96,9 @@ const Bank = ({ navigation, initialBankRecords}) => {
           text: 'Delete',
           onPress: async () => {
             try {
-              // Dispatch the delete action with the user token
-              dispatch(deleteBankAccount(accountNumber, userToken));
-  
+              // Dispatch the delete action
+              dispatch(deleteBankAccount(accountNumber));
+
               // Remove the deleted bank record from the local state
               setBankRecords((prevBankRecords) =>
                 prevBankRecords.filter(
@@ -123,11 +122,11 @@ const Bank = ({ navigation, initialBankRecords}) => {
   
   
 
+  console.log('Bank Accounts:', bankAccounts);
   console.log('Bank Records:', bankRecords);
 
 
 
-  
   return (
     <View style={styles.container}>
 
@@ -160,7 +159,7 @@ const Bank = ({ navigation, initialBankRecords}) => {
 
 
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-      {bankRecords.length > 0 ? ( 
+      {bankRecords.length > 0 ? ( // Use bankRecords instead of bankAccounts
           bankRecords.map((bankAccount, index) => (
             <View
             style={[
@@ -176,7 +175,7 @@ const Bank = ({ navigation, initialBankRecords}) => {
           <Text style={styles.bankCardAccountName}>{bankAccount.account_name}</Text>
           <Text style={styles.bankCardBankName}>{bankAccount.bank_name}</Text>
           <Text style={styles.bankCardAccountNumber}>
-            (*****{bankAccount.account_number.slice(-5)})
+          {bankAccount.account_number}
           </Text>
         </View>
       </View>
@@ -220,6 +219,8 @@ const Bank = ({ navigation, initialBankRecords}) => {
                 bankRecords={bankRecords} // Pass the bankRecords state as a prop
                 setBankRecords={setBankRecords}
                 dispatch={dispatch} // Pass dispatch as a prop
+                userInfo={userInfo} 
+
                 />
 
 

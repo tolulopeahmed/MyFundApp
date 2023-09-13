@@ -5,8 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios'; // Import axios for making API requests
 import { ipAddress } from '../../constants';
-import { useUserContext } from '../../UserContext';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { addBankAccount  } from '../../ReduxActions';
 
 
@@ -75,19 +74,18 @@ const bankOptions = [
   ];
   
 
-  const AddBankModal = ({ addBankModalVisible, setAddBankModalVisible, initialBankRecords, addBankRecord, bankRecords, setBankRecords, deleteBankRecord }) => {
+  const AddBankModal = ({ addBankModalVisible, setAddBankModalVisible, initialBankRecords, addBankRecord, userInfo  }) => {
     const [accountNumber, setAccountNumber] = useState('');
     const [selectedBank, setSelectedBank] = useState('');
     const [accountName, setAccountName] = useState(''); // State for resolved account name
     const [isAccountNameResolved, setIsAccountNameResolved] = useState(false);
-    const { userInfo } = useUserContext();
     const [isLoading, setIsLoading] = useState(false); // Add this state
     const [resolvedAccountName, setResolvedAccountName] = useState('');
     const dispatch = useDispatch();
-
+    const [bankRecords, setBankRecords] = useState([]);
     
 
-    console.log('User Token from Context:', userInfo.token);
+    //console.log('User Token from Redux:', userInfo.token);
 
 
     const handleSelect = (value) => {
@@ -140,29 +138,30 @@ const bankOptions = [
       }
     };
     
-    
-    
-    
+    console.log('userInfo prop in AddBankModal:', userInfo);
+
     
     const handleProceed = async () => {
-      console.log('Resolved Account Name for Proceed:', resolvedAccountName);
-    
-      // Check if the new account already exists in bankRecords
-      const isDuplicate = bankRecords.some(
+      if (!userInfo) {
+        console.log('User not defined');
+        return;
+      }
+      console.log('userInfo in handleProceed:', userInfo); // Debug userInfo here
+
+      const isDuplicate = Array.isArray(bankRecords) && bankRecords.some(
         ({ account_number, bank_name }) =>
           account_number.trim() === accountNumber.trim() &&
           bank_name === selectedBank.name
       );
       
+    
       if (isDuplicate) {
         Alert.alert('Error', 'You have already added this bank account.');
         return;
       }
-      
     
       try {
-        console.log('User Token from Context:', userInfo.token);
-    
+        // Make the API request to add the bank account
         const response = await axios.post(
           `${ipAddress}/api/add-bank-account/`,
           {
@@ -179,33 +178,47 @@ const bankOptions = [
         );
     
         if (response.status === 201) {
+          // If the addition was successful on the backend, update the Redux store
           setAddBankModalVisible(false);
           const newBankRecord = {
             bank_name: selectedBank.name,
             account_number: accountNumber.trim(),
             account_name: resolvedAccountName.trim(),
           };
-
+    
+          // Dispatch the action to add the bank account to Redux
           dispatch(addBankAccount(newBankRecord));
+          setBankRecords((prevBankRecords) => [...prevBankRecords, newBankRecord]);
 
-          Alert.alert("Success", "Bank Account Added successfully", [
-            { text: "OK" },
+          Alert.alert('Success', 'Bank Account Added successfully', [
+            { text: 'OK' },
           ]);
         } else {
-          console.error("Failed to add bank account:", response.data);
-          Alert.alert("Error", "Failed to add bank account. Please try again later.");
+          console.error('Failed to add bank account:', response.data);
+          Alert.alert('Error', 'Failed to add bank account. Please try again later.');
         }
       } catch (error) {
-        console.error("An error occurred while adding bank account:", error);
+        console.error('An error occurred while adding bank account:', error);
     
-        // Check for the specific error message indicating account already added by another user
-        if (error.response && error.response.data && error.response.data.error === "This bank account is already associated with another user.") {
-          Alert.alert("Error", "This bank account is already added by another MyFund user.");
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error ===
+            'This bank account is already associated with another user.'
+        ) {
+          Alert.alert(
+            'Error',
+            'This bank account is already added by another MyFund user.'
+          );
         } else {
-          Alert.alert("Error", "An error occurred while adding bank account. Please try again later.");
+          Alert.alert(
+            'Error',
+            'An error occurred while adding bank account. Please try again later.'
+          );
         }
       }
     };
+    
     
     
 

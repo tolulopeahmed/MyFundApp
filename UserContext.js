@@ -46,66 +46,6 @@ export const UserProvider = ({ children }) => {
 
 
 
-  useEffect(() => {
-    const transactionSocket = new WebSocket(`${RedisAddress}/ws/transaction_update/`);
-        console.log('Transaction WebSocket connection opened successfully.');
-
-    transactionSocket.onopen = () => {
-      console.log('WebSocket connection opened successfully.');
-    };
-
-    transactionSocket.onmessage = (event) => {
-      console.log('Received WebSocket message:', event.data);
-
-      const data = JSON.parse(event.data);
-      if (data.type === 'update_transaction') {
-        const newTransaction = {
-          transaction_type: data.transaction.transaction_type,
-          amount: data.transaction.amount,
-          date: data.transaction.date,
-          time: data.transaction.time,
-          transaction_id: data.transaction.transaction_id,
-          description: data.transaction.description,
-        };
-  
-        // Update userTransactions with the new transaction
-        setUserTransactions(prevUserTransactions => [
-          ...prevUserTransactions,
-          newTransaction,
-        ]);
-      }
-      console.log('Received WebSocket message:', event.data);
-
-      transactionSocket.onclose = (event) => {
-        console.log('WebSocket connection closed:', event);
-      };
-    
-      transactionSocket.onerror = (error) => {
-        console.error('WebSocket error:', error);
-      };
-    };
-
-
-
-
-    const balanceSocket = new WebSocket(`${RedisAddress}/ws/balance_update/`);
-
-    balanceSocket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === 'update_balances') {
-        setAccountBalances(data.balances);
-      }
-    };
-
-    return () => {
-      transactionSocket.close();
-      balanceSocket.close();
-    };
-  }, [userCards, userTransactions]); 
-
-
-
-
 
   useEffect(() => {
     const retrieveAuthToken = async () => {

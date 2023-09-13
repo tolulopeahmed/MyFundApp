@@ -8,7 +8,8 @@ import { CommonActions } from '@react-navigation/native';
 import { ipAddress } from '../../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
-
+import { useDispatch } from 'react-redux';
+import { loadBankAccounts, setAuthToken } from '../../ReduxActions';
 
 const Login = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -20,6 +21,7 @@ const Login = ({ navigation }) => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [isFormTouched, setIsFormTouched] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const dispatch = useDispatch();
 
   const passwordInputRef = useRef(null); // Create a ref for the password input
 
@@ -65,7 +67,9 @@ const handleLogin = async () => {
         await AsyncStorage.setItem('authToken', access);
         await AsyncStorage.setItem('userId', user_id.toString());
 
-        
+        dispatch(loadBankAccounts());
+        dispatch(setAuthToken(access));
+
         setModalVisible(false);
         navigation.dispatch(
           CommonActions.reset({
