@@ -47,68 +47,68 @@ export const UserProvider = ({ children }) => {
 
 
 
-  useEffect(() => {
-    const retrieveAuthToken = async () => {
-      try {
-        const token = await AsyncStorage.getItem('authToken');
-        if (token !== null) {
-          setUserInfo(prevUserInfo => ({
-            ...prevUserInfo,
-            token,
-          }));
-          fetchUserData(token);
-          fetchUserTransactions(token);
+  // useEffect(() => {
+  //   const retrieveAuthToken = async () => {
+  //     try {
+  //       const token = await AsyncStorage.getItem('authToken');
+  //       if (token !== null) {
+  //         setUserInfo(prevUserInfo => ({
+  //           ...prevUserInfo,
+  //           token,
+  //         }));
+  //        // fetchUserData(token);
+  //         fetchUserTransactions(token);
           
-        }
-      } catch (error) {
-        console.error('Error retrieving auth token:', error);
-      }
-    };
+  //       }
+  //     } catch (error) {
+  //       console.error('Error retrieving auth token:', error);
+  //     }
+  //   };
   
-    retrieveAuthToken();
-  }, []);
+  //   retrieveAuthToken();
+  // }, []);
 
 
 
-  const fetchUserData = async (userToken) => {
-    if (!userInfo.token) {
-    try {
-      const response = await axios.get(`${ipAddress}/api/get-user-profile/`, {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      });
+  // const fetchUserData = async (userToken) => {
+  //   if (!userInfo.token) {
+  //   try {
+  //     const response = await axios.get(`${ipAddress}/api/get-user-profile/`, {
+  //       headers: {
+  //         Authorization: `Bearer ${userToken}`,
+  //       },
+  //     });
   
-      if (response.status === 200) {
-        const profileData = response.data;
+  //     if (response.status === 200) {
+  //       const profileData = response.data;
   
-        setUserInfo(prevUserInfo => ({
-          ...prevUserInfo,
-          ...profileData,
-          id: profileData.id,
-          profileImageUrl: profileData.profile_picture
-            ? ipAddress + profileData.profile_picture
-            : null,
-        }));
+  //       setUserInfo(prevUserInfo => ({
+  //         ...prevUserInfo,
+  //         ...profileData,
+  //         id: profileData.id,
+  //         profileImageUrl: profileData.profile_picture
+  //           ? ipAddress + profileData.profile_picture
+  //           : null,
+  //       }));
   
-        setSavingsGoal({
-          preferred_asset: profileData.preferred_asset,
-          savings_goal_amount: profileData.savings_goal_amount,
-          time_period: profileData.time_period,
-        });
+  //       setSavingsGoal({
+  //         preferred_asset: profileData.preferred_asset,
+  //         savings_goal_amount: profileData.savings_goal_amount,
+  //         time_period: profileData.time_period,
+  //       });
   
-        setProfileImageUri(
-          profileData.profile_picture
-            ? ipAddress + profileData.profile_picture
-            : null
-        );
-      }
-    } catch (profileError) {
-      console.error('API Error:', profileError);
-      alert('Error fetching user profile');
-    }
-  }
-  };
+  //       setProfileImageUri(
+  //         profileData.profile_picture
+  //           ? ipAddress + profileData.profile_picture
+  //           : null
+  //       );
+  //     }
+  //   } catch (profileError) {
+  //     console.error('API Error:', profileError);
+  //     alert('Error fetching user profile');
+  //   }
+  // }
+  // };
 
   
   const fetchUserBankRecords = async (userToken) => {

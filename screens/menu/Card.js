@@ -4,7 +4,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { MaterialIcons } from '@expo/vector-icons';
 import AddCardModal from './AddCardModal';
 import SectionTitle from '../components/SectionTitle';
-import { useUserContext } from '../../UserContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteCard, fetchUserCards } from '../../ReduxActions';
+import axios from 'axios';
+import { ipAddress } from '../../constants';
 
 const getBackgroundColor = (bankName) => {
   switch (bankName) {
@@ -59,10 +62,11 @@ const getBackgroundColor = (bankName) => {
 
 const Card = ({ navigation, route }) => {
   const [addCardModalVisible, setAddCardModalVisible] = useState(false); // define modalVisible state
-  const { userInfo, setUserCards, userCards, deleteCard } = useUserContext();
-  const [cards, setCards] = useState([]);
-  const userAllCards = [...(userInfo.cards || []), ...(userCards[userInfo.token] || [])]; // Use userCards from the context
-  
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  const cards = useSelector((state) => state.bank.cards);
+  const userCards = useSelector((state) => state.bank.userCards); // Define and use userCards
+
   useEffect(() => {
     if (route.params?.addCardModalVisible) {
       setAddCardModalVisible(true);
@@ -71,22 +75,12 @@ const Card = ({ navigation, route }) => {
 
 
   useEffect(() => {
-    console.log('Fetching user cards with token:', userInfo.token);
-    if (userCards && userCards[userInfo.token]) {
-      userInfo.cards = userCards[userInfo.token];
-    }
-  }, [userCards, userInfo.token]);
-  
-
-  
-  useEffect(() => {
-    if (userCards[userInfo.token]) {
-      setCards(userCards[userInfo.token]);
-    }
-  }, [userCards[userInfo.token]]);
+    // Fetch user cards here
+    dispatch(fetchUserCards(userInfo.token));
+  }, [userInfo.token]);
 
 
-  const confirmDeleteCard = async (userToken, cardId) => {
+  const confirmDeleteCard = async (cardId) => {
     Alert.alert(
       'Delete Card',
       'Are you sure you want to delete this card?',
@@ -100,20 +94,20 @@ const Card = ({ navigation, route }) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              // Call the deleteCard function
-              await deleteCard(userToken, cardId);
-  
-              // Remove the deleted card from the userAllCards list
-              const updatedUserAllCards = userAllCards.filter((card) => card.id !== cardId);
-  
-              // Update the context directly to make the card disappear from the UI
-              setUserCards((prevUserCards) => {
-                const updatedUserCardsObj = { ...prevUserCards };
-                updatedUserCardsObj[userToken] = updatedUserAllCards;
-                return updatedUserCardsObj;
+              const response = await axios.delete(`${ipAddress}/api/delete-card/${cardId}`, {
+                headers: {
+                  Authorization: `Bearer ${userInfo.token}`,
+                },
               });
-  
-              console.log('Card deleted successfully.');
+
+              if (response.status === 200) {
+                dispatch(deleteCard(cardId)); // Dispatch the action to delete the card from Redux
+
+                // ... Rest of the code
+              } else {
+                console.error('Failed to delete card:', response.data);
+                Alert.alert('Error', 'Failed to delete card. Please try again later.');
+              }
             } catch (error) {
               console.error('Error deleting card:', error);
             }
@@ -130,10 +124,6 @@ const Card = ({ navigation, route }) => {
   
   
   
-  
-  
-
- 
   
   const addCardToList = (newCard) => {
     // Check if the card with the same number already exists in userAllCards
@@ -196,8 +186,8 @@ const Card = ({ navigation, route }) => {
 
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
 
-    {userAllCards.length > 0 ? (
-  userAllCards.map((card, index) => (
+    {cards.length > 0 ? (
+    cards.map((card, index) => (
       <View
       style={[
         styles.bankCard,
@@ -256,8 +246,7 @@ const Card = ({ navigation, route }) => {
                addCardModalVisible={addCardModalVisible} 
                setAddCardModalVisible={setAddCardModalVisible}
                addCardToList={addCardToList} // Pass the function to add a new card to the list
-              cards={cards} // Pass the current list of cards
-               setCards={setCards} // Pass the function to update the list of cards
+               cards={cards} // Pass the current list of cards
                />
      
     </View>

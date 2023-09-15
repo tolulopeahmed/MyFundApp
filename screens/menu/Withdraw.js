@@ -6,12 +6,16 @@ import Divider from '../components/Divider';
 import WithdrawModal from './WithdrawModal';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
-import { useUserContext } from '../../UserContext';
+import { useSelector, useDispatch } from 'react-redux'; 
+import { updateAccountBalances, updateUserTransactions, fetchAccountBalances, fetchUserTransactions } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 
 const Withdraw = ({ navigation, route }) => {
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false); // define modalVisible state
-  const { userInfo, accountBalances, userTransactions } = useUserContext(); // Assume userInfo includes savings goal data
+  const dispatch = useDispatch(); // Create a dispatch function
+  const accountBalances = useSelector((state) => state.bank.accountBalances);
+  const userTransactions = useSelector((state) => state.bank.userTransactions);
+  const userInfo = useSelector((state) => state.bank.userInfo);
 
   const iconMapping = {
     "Card Successful": "card-outline",
@@ -47,6 +51,8 @@ const formatTime = (timeString) => {
     if (route.params?.withdrawModalVisible) {
       setWithdrawModalVisible(true);
     }
+    dispatch(fetchAccountBalances()); // Replace with your action to fetch account balances
+    dispatch(fetchUserTransactions()); // Replace with your action to fetch user transactions
   }, [route.params]);
 
 

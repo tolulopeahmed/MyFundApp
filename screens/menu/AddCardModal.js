@@ -5,7 +5,9 @@ import { Ionicons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
-import { useUserContext } from '../../UserContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { addCard, fetchUserData, fetchUserCards } from '../../ReduxActions';
+
 
 const bankOptions = [
   { id: 1, name: 'Access Bank', code: '044' },
@@ -72,11 +74,13 @@ const bankOptions = [
 ];
   
 
-const AddCardModal = ({ navigation, addCardModalVisible, setAddCardModalVisible, cards, setCards, addCardToList   }) => {
+const AddCardModal = ({ navigation, addCardModalVisible, setAddCardModalVisible,   }) => {
   const [cardNumber, setCardNumber] = useState('');
   const [selectedBank, setSelectedBank] = useState(null); // Add selectedBank state
-  const { userInfo, setUserCards, setAccountBalances } = useUserContext(); // Use the addCard function from the context
   const [processing, setProcessing] = useState(false);
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  const dispatch = useDispatch();
+  const cards = useSelector((state) => state.bank.cards);
 
   const dropdownOptions = bankOptions.map((bank) => bank.name);
   const [cvv, setCVV] = useState('');
@@ -234,7 +238,7 @@ const handleProceed = async () => {
         id: response.data.id, // Assuming the response contains the card ID
       };
     
-     addCardToList(newCardRecord); // Call the updated addCardToList function
+      dispatch(addCard(newCardRecord));
 
      Alert.alert('Success', 'Card added successfully! And ₦50 has been credited to your Savings Account', [{ text: 'OK' }]);
      closeModal();

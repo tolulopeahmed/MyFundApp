@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useUserContext } from '../../UserContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUserTransactions, fetchUserData } from '../../ReduxActions';
 
 
 const Notifications = ({ navigation, firstName }) => {
   const [selectedTab, setSelectedTab] = useState('All');
-  const { userTransactions } = useUserContext(); // Assume userInfo includes savings goal data
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  const userTransactions = useSelector((state) => state.bank.userTransactions);
 
-  
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchUserTransactions()); // Fetch user transactions using Redux action
+    dispatch(fetchUserData(userInfo.token));
+  }, []);  
   
   const iconMapping = {
     "Card Successful": "card-outline",

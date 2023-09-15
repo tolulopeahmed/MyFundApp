@@ -8,7 +8,8 @@ import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { AutoInvestContext } from '../components/AutoInvestContext';
-import { useUserContext } from '../../UserContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import ImageContext from './ImageContext';
 
@@ -17,8 +18,11 @@ const Home = ({ navigation, route}) => {
   const { autoSave } = useContext(AutoSaveContext)
   const { autoInvest } = useContext(AutoInvestContext)
   const [displayedProfileImage, setDisplayedProfileImage] = useState(null);
-  const { profileImageUri, profileImageUrl } = useContext(ImageContext);
-  const { userInfo, accountBalances, userTransactions } = useUserContext(); // Assume userInfo includes savings goal data
+  const { profileImageUri, selectedImage } = useContext(ImageContext);
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  const accountBalances = useSelector((state) => state.bank.accountBalances);
+  const userTransactions = useSelector((state) => state.bank.userTransactions);
+  const dispatch = useDispatch();
 
   const iconMapping = {
     "Card Successful": "card-outline",
@@ -63,9 +67,6 @@ const formatTime = (timeString) => {
 }, [userInfo]);
 
 
-
-
-
   useEffect(() => {
     if (profileImageUri) {
       setDisplayedProfileImage(profileImageUri);
@@ -75,6 +76,20 @@ const formatTime = (timeString) => {
   }, [profileImageUri, displayedProfileImage, userInfo.profileImageUrl]);
 
   
+  useEffect(() => {
+    dispatch(fetchAccountBalances()); // Fetch account balances using Redux action
+    dispatch(fetchUserTransactions()); // Fetch user transactions using Redux action
+    dispatch(fetchUserData(userInfo.token));
+  }, []);
+
+
+  // useEffect(() => {
+  //   // Dispatch actions to fetch user data and set profile image URI when the component mounts or when the user logs in.
+  //   if (userInfo.token) {
+  //     dispatch(fetchUserData(userInfo.token));
+  //   }
+  // }, [dispatch, userInfo.token]);
+
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -136,21 +151,20 @@ const formatTime = (timeString) => {
 
   </View>
   
-  <Pressable
-  marginRight={15}
-  marginTop={5}
-  onPress={() => navigation.navigate('More...')}
-  style={styles.profileContainer} // Add this style to the container
->
-  <View style={styles.profileImageContainer}>
-    {displayedProfileImage && (
-      <Image source={{ uri: displayedProfileImage }} style={styles.profileImage} />
-    )}
-    {!displayedProfileImage && (
-      <Ionicons name="person-circle" size={80} color="silver" />
-    )}
-  </View>
-</Pressable>
+        <Pressable
+        marginRight={15}
+        marginTop={5}
+        onPress={() => navigation.navigate('More...')}
+        style={styles.profileContainer} // Add this style to the container
+      >
+      <View style={styles.profileImageContainer}>
+        {selectedImage ? (
+          <Image source={{ uri: selectedImage }} style={styles.profileImage} />
+        ) : (
+          <Ionicons name="person-circle" size={80} color="silver" />
+        )}
+      </View>
+      </Pressable>
 
 
 </View>
@@ -372,49 +386,50 @@ const formatTime = (timeString) => {
       <SafeAreaView style={styles.transactionContainer}>
       <Divider />
 
-<SectionTitle>RECENT TRANSACTIONS</SectionTitle>
+<SectionTitle>MY RECENT TRANSACTIONS</SectionTitle>
 
       <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.transactionsContainer}>
-            {userTransactions.length > 0 ? (
-    userTransactions.slice(0, 5).map((transaction, index) => (
-      // Inside your Save component where you are rendering transactions
-          <View key={index} style={styles.transactionItem}>
-            <Ionicons
-              name={iconMapping[transaction.description] || "card-outline"}
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>
-                {transaction.description}
-              </Text>
-              <Text style={styles.transactionDate}>
-                {formatDate(transaction.date)} | {formatTime(transaction.time)}
-              </Text>
-              <Text style={styles.transactionID}>
-                ID: {transaction.transaction_id}
-              </Text>
-            </View>
-            <View style={styles.transactionAmountContainer}>
-              <Text
-                style={
-                  transaction.transaction_type === "debit"
-                    ? styles.negativeAmount
-                    : styles.transactionAmount
-                }
-              >
-                ₦{transaction.amount}
-              </Text>
-            </View>
-          </View>
-
+      {userTransactions.length > 0 ? (
+  userTransactions.slice(0, 5).map((transaction, index) => (
+    <View key={index} style={styles.transactionItem}>
+      <Ionicons
+        name={iconMapping[transaction.description] || "card-outline"}
+        size={25}
+        style={styles.transactionIcon}
+      />
+      <View style={styles.transactionText}>
+        <Text style={styles.transactionDescription}>
+          {transaction.description}
+        </Text>
+        <Text style={styles.transactionDate}>
+          {formatDate(transaction.date)} | {formatTime(transaction.time)}
+        </Text>
+        <Text style={styles.transactionID}>
+          ID: {transaction.transaction_id}
+        </Text>
+      </View>
+      <View style={styles.transactionAmountContainer}>
+        <Text
+          style={
+            transaction.transaction_type === "debit"
+              ? styles.negativeAmount
+              : styles.transactionAmount
+          }
+        >
+          ₦{transaction.amount}
+        </Text>
+      </View>
+    </View>
   ))
 ) : (
   <View style={styles.noTransactionsContainer}>
-    <Text style={styles.noTransactionsMessage}>Your most recent transactions will appear here.</Text>
+    <Text style={styles.noTransactionsMessage}>
+      Your most recent transactions will appear here.
+    </Text>
   </View>
 )}
+
 
             </View>
 

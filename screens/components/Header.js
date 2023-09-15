@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
@@ -6,6 +6,13 @@ import { useNavigation } from '@react-navigation/native';
 
 const Header = ({ navigation, headerText,  }) => {
   const { toggleDrawer } = useNavigation();
+  const [newNotificationCount, setNewNotificationCount] = useState(0);
+
+  // useEffect(() => {
+  //   // Replace this with logic to fetch new notifications and update the count.
+  //   const newNotifications = fetchNewNotifications();
+  //   setNewNotificationCount(newNotifications.length);
+  // }, []);
 
   return (
     <View style={styles.header}>
@@ -15,13 +22,20 @@ const Header = ({ navigation, headerText,  }) => {
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>{headerText}</Text>
 
-      {<TouchableOpacity style={styles.bell}>
-            <Ionicons name="notifications-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('Notifications')} />
-          </TouchableOpacity>}
-        </View>
+        <TouchableOpacity style={styles.bell} onPress={() => navigation.navigate('Notifications')}>
+          <Ionicons name="notifications-outline" size={22} color="#4C28BC" />
+          {newNotificationCount > 0 && (
+            <View style={styles.notificationBadge}>
+              <Text style={styles.notificationText}>{newNotificationCount}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
     header: {
@@ -77,6 +91,21 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         alignItems: 'center',
         alignContent: 'center'
+    },
+    notificationBadge: {
+      position: 'absolute',
+      top: 2,
+      right: 2,
+      backgroundColor: 'red',
+      borderRadius: 15,
+      paddingHorizontal: 4,
+      paddingVertical: 2,
+    },
+  
+    notificationText: {
+      color: 'white',
+      fontSize: 12,
+      fontWeight: 'bold',
     },
 
   });

@@ -10,6 +10,9 @@ import axios from 'axios';
 import { useUserContext } from '../../UserContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Subtitle from '../components/Subtitle';
+import { useSelector, useDispatch } from 'react-redux'; // Import Redux functions
+import { addMessage, clearMessages } from '../../ReduxActions';
+
 
 // EmojiPicker component
 const EmojiPicker = ({ onSelectEmoji }) => {
@@ -27,7 +30,6 @@ const EmojiPicker = ({ onSelectEmoji }) => {
 };
 
 const Chat = ({ navigation }) => {
-  const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState('');
   const [attachmentImage, setAttachmentImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -36,6 +38,8 @@ const Chat = ({ navigation }) => {
   const { userInfo } = useUserContext();
   const scrollViewRef = useRef(null);
   const [fetchInterval, setFetchInterval] = useState(null);
+  const messages = useSelector((state) => state.messages);
+  const dispatch = useDispatch();
 
 
   useEffect(() => {
@@ -59,7 +63,7 @@ const Chat = ({ navigation }) => {
     };
   
     // Update the state immediately with the new message
-    setMessages([...messages, newMessage]);
+    dispatch(addMessage(newMessage));
     setMessageText('');
     setAttachmentImage(null);
   
@@ -112,7 +116,10 @@ const Chat = ({ navigation }) => {
   
       // Assuming the API response structure matches the structure of your state
       const newMessages = response.data;
-      setMessages(newMessages);
+      dispatch(clearMessages()); // Clear existing messages before updating with new ones
+      newMessages.forEach((message) => {
+        dispatch(addMessage(message)); // Add each new message to Redux state
+      });
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
@@ -144,8 +151,12 @@ const Chat = ({ navigation }) => {
       try {
         const storedMessages = await AsyncStorage.getItem('chatMessages');
         if (storedMessages) {
-          setMessages(JSON.parse(storedMessages));
+          const parsedMessages = JSON.parse(storedMessages);
+          parsedMessages.forEach((message) => {
+            dispatch(addMessage(message)); // Add each stored message to Redux state
+          });
         }
+
 
         // Fetch messages from server
         fetchMessages();
@@ -156,10 +167,6 @@ const Chat = ({ navigation }) => {
 
     loadMessages();
   }, []);
-
-  
-
-
 
   
 

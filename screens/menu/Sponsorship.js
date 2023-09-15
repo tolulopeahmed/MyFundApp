@@ -10,7 +10,9 @@ import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoInvestContext } from '../components/AutoInvestContext';
 import SectionTitle from '../components/SectionTitle';
-import { useUserContext } from '../../UserContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateAutoInvest, confirmAutoInvest, confirmDeactivateAutoInvest } from '../../ReduxActions';
+
 
 const Sponsorship = ({ navigation, route }) => {
 // const [autoInvest, setAutoInvest] = React.useState(false);
@@ -18,8 +20,12 @@ const Sponsorship = ({ navigation, route }) => {
   const [autoInvestModalVisible, setAutoInvestModalVisible] = useState(false);
   const [deactivateAutoInvestModalVisible, setDeactivateAutoInvestModalVisible] = useState(false);
   const { autoInvest, setAutoInvest } = useContext(AutoInvestContext);
-  const { accountBalances } = useUserContext();
+  const dispatch = useDispatch();
+  const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
+  const accountBalances = useSelector((state) => state.bank.accountBalances);
+  const userTransactions = useSelector((state) => state.bank.userTransactions);
 
+  
   useEffect(() => {
     if (route.params?.autoInvestModalVisible) {
       setAutoInvestModalVisible(true);

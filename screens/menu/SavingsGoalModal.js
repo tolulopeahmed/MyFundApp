@@ -4,17 +4,20 @@ import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios'; // Import axios library
-import { useUserContext } from '../../UserContext';
+import { useDispatch, useSelector } from 'react-redux';
 import { ipAddress } from '../../constants';
+import { updateSavingsGoal } from '../../ReduxActions';
 
 
 const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible }) => {
   const [frequency, setFrequency] = useState('');
   const [year, setYear] = useState('');
   const [amount, setAmount] = useState('');
-  const { userInfo, setUserInfo, setSavingsGoal } = useUserContext();
   const [isUpdateEnabled, setIsUpdateEnabled] = useState(false); // State for button enabling
   const [formattedAmount, setFormattedAmount] = useState('');
+  const dispatch = useDispatch(); // Get the dispatch function from Redux
+  const userInfo = useSelector(state => state.bank.userInfo); // Get user info from Redux store
+  const savingsGoal = useSelector(state => state.bank.savingsGoal); // Get savings goal from Redux store
 
 
   useEffect(() => {
@@ -28,7 +31,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
 
 
 
-  const updateSavingsGoal = async () => {
+  const handleUpdateSavingsGoal = async () => {
     try {
       // Check if userInfo and token are available
       if (!userInfo || !userInfo.token) {
@@ -57,18 +60,8 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
   
       if (response.data && response.data.preferred_asset) {
         // Update context states with the data from the response
-        setUserInfo(prevUserInfo => ({
-          ...prevUserInfo,
-          preferred_asset: response.data.preferred_asset,
-          savings_goal_amount: response.data.savings_goal_amount,
-          time_period: response.data.time_period,
-        }));
-  
-        setSavingsGoal({
-          preferred_asset: response.data.preferred_asset,
-          savings_goal_amount: response.data.savings_goal_amount,
-          time_period: response.data.time_period,
-        });
+        dispatch(updateSavingsGoal(data));
+
       }
       // Ensure the API response contains the expected data structure
       if (!response.data || typeof response.data !== 'object') {
@@ -90,20 +83,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
       
       Alert.alert('Savings Goal Updated!', successMessage);
       
-      setSavingsGoal({
-        preferred_asset: frequency,
-        savings_goal_amount: amount,
-        time_period: year,
-      });
-
-      // Update the corresponding userInfo properties in the context
-    setUserInfo(prevUserInfo => ({
-      ...prevUserInfo,
-      preferred_asset: frequency,
-      savings_goal_amount: amount,
-      time_period: year,
-    }));
-  
+    
       // Close the modal
       setGoalModalVisible(false);
   
@@ -226,7 +206,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
                   styles.primaryButton,
                   isUpdateEnabled ? {} : { backgroundColor: 'grey' }, // Disable button style
                 ]}
-                onPress={updateSavingsGoal}
+                onPress={handleUpdateSavingsGoal}
                 disabled={!isUpdateEnabled} // Disable button if not enabled
               >
                 <Ionicons

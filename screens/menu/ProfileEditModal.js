@@ -4,16 +4,33 @@ import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';  // Import axios for making API requests
 import { ipAddress } from '../../constants';
-import { useUserContext } from '../../UserContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateUserProfile, fetchUserData } from '../../ReduxActions';
+
 
 const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVisible, setProfileEditModalVisible, onClose }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [updatingProfile, setUpdatingProfile] = useState(false);
-  const { userInfo, setUserInfo } = useUserContext();
+  const [isButtonEnabled, setIsButtonEnabled] = useState(false); // Add state to track button enablement
 
-  
+  const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
+  const dispatch = useDispatch();
+
+  const checkFieldsAndEnableButton = () => {
+    if (firstName && lastName && mobileNumber) {
+      setIsButtonEnabled(true);
+    } else {
+      setIsButtonEnabled(false);
+    }
+  };
+
+  useEffect(() => {
+    checkFieldsAndEnableButton();
+  }, [firstName, lastName, mobileNumber]);
+
+
   const handleUpdateProfile = async () => {
     const updatedProfile = {
       first_name: firstName,
@@ -35,47 +52,20 @@ const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVis
       );
   
       if (response.status === 200) {
-        if (response.status === 200) {
-          // Update the userInfo using the setUserInfo function from the context
-          setUserInfo(prevUserInfo => ({
-            ...prevUserInfo,
-            first_name: updatedProfile.first_name,
-            last_name: updatedProfile.last_name,
-            phone_number: updatedProfile.phone_number,
-          }));
-      
-          Alert.alert('Success', 'Profile updated successfully. Please login again to update. Do you want to do that now?', [
-            {
-              text: 'Yes, Logout',
-              onPress: async () => {
-                try {
-                  // Make an API call to log the user out
-                  const logoutResponse = await axios.post(`${ipAddress}/api/logout/`);
-      
-                  if (logoutResponse.status === 200) {
-                    // Successfully logged out
-                    navigation.reset({
-                      index: 0,
-                      routes: [{ name: 'Login' }],
-                    });
-                  }
-                } catch (error) {
-                  console.log('Logout error:', error);
-                }
-              },
-            },
-            {
-              text: 'No, Later',
-              onPress: () => {
-                onClose();
-                setProfileEditModalVisible(false);
-              },
-            },
-          ]);
+        dispatch(updateUserProfile(updatedProfile));
+               
+        Alert.alert('Success', 'Profile updated successfully.', [
+          {text: 'OK', onPress: () => {}  },
+        ], { cancelable: true });
+        
+        setTimeout(() => {
+            onClose();
+            setProfileEditModalVisible(false);
+          }, 1000);
+        
         } else {
           console.log('Profile update failed:', response.data);
-        }
-      };
+        };
     } catch (error) {
       console.log('Profile update error:', error);
     } finally {
@@ -163,16 +153,16 @@ const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVis
 
 
             <View style={styles.buttonsContainer}>
-            <TouchableOpacity style={styles.primaryButton} onPress={handleUpdateProfile}>
-              {updatingProfile ? (
-                <ActivityIndicator color="#fff" size="small" style={{ marginRight: 10 }} />
-              ) : (
-                <Ionicons name="arrow-up-outline" size={24} color="#fff" marginRight={10} />
-              )}
-              <Text style={styles.primaryButtonText}>
-                {updatingProfile ? " Updating profile..." : "Update"}
-              </Text>
-            </TouchableOpacity>
+            <TouchableOpacity style={[styles.primaryButton, { opacity: isButtonEnabled ? 1 : 0.5 }]} onPress={handleUpdateProfile} disabled={!isButtonEnabled}>
+                  {updatingProfile ? (
+                    <ActivityIndicator color="#fff" size="small" style={{ marginRight: 10 }} />
+                  ) : (
+                    <Ionicons name="arrow-up-outline" size={24} color="#fff" marginRight={10} />
+                  )}
+                  <Text style={styles.primaryButtonText}>
+                    {updatingProfile ? " Updating profile... Please wait..." : "Update"}
+                  </Text>
+                </TouchableOpacity>
 
 
               </View>

@@ -9,7 +9,7 @@ import { ipAddress } from '../../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import { useDispatch } from 'react-redux';
-import { loadBankAccounts, setAuthToken } from '../../ReduxActions';
+import { loadBankAccounts, setUserToken } from '../../ReduxActions';
 
 const Login = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -64,11 +64,11 @@ const handleLogin = async () => {
       const { access, refresh, user_id } = response.data;
 
       if (access && refresh) {
-        await AsyncStorage.setItem('authToken', access);
+        await AsyncStorage.setItem('UserToken', access);
         await AsyncStorage.setItem('userId', user_id.toString());
 
         dispatch(loadBankAccounts());
-        dispatch(setAuthToken(access));
+        dispatch(setUserToken(access));
 
         setModalVisible(false);
         navigation.dispatch(

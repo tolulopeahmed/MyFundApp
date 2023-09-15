@@ -41,16 +41,6 @@ const App = ({ styles, darkModeStyles, }) => {
   
 
 
-
-
-  
-
-
-
-
-
-
-
   useEffect(() => {
       async function loadFonts() {
       await Font.loadAsync({

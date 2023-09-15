@@ -5,18 +5,30 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AddBankModal from './AddBankModal';
 import SectionTitle from '../components/SectionTitle';
 import { useSelector, useDispatch } from 'react-redux';
-import { deleteBankAccount  } from '../../ReduxActions';
+import { deleteBankAccount, fetchUserBankAccounts  } from '../../ReduxActions';
+import axios from 'axios';
+import { ipAddress } from '../../constants';
 
 const Bank = ({ navigation, initialBankRecords}) => {
   const [addBankModalVisible, setAddBankModalVisible] = useState(false); // define modalVisible state
   const bankAccounts = useSelector((state) => state.bank.bankAccounts);
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.bank.userInfo);
-  const [bankRecords, setBankRecords] = useState(bankAccounts); // Initialize with Redux data
+  const [bankRecords, setBankRecords] = useState([]);
+
 
   useEffect(() => {
+    dispatch(fetchUserBankAccounts()); // Use the correct action name here
+  }, []);
+
+
+
+  useEffect(() => {
+    console.log('Bank Accounts:', bankAccounts); // Log bankAccounts
     setBankRecords(bankAccounts);
   }, [bankAccounts]);
+  
+  console.log('Bank Records:', bankRecords); // Log bankRecords
   
 
 
@@ -76,9 +88,6 @@ const Bank = ({ navigation, initialBankRecords}) => {
 
 
   
-
-
-
   const handleDelete = (accountNumber) => {
     confirmDelete(accountNumber);
   };
@@ -96,17 +105,29 @@ const Bank = ({ navigation, initialBankRecords}) => {
           text: 'Delete',
           onPress: async () => {
             try {
-              // Dispatch the delete action
-              dispatch(deleteBankAccount(accountNumber));
-
-              // Remove the deleted bank record from the local state
-              setBankRecords((prevBankRecords) =>
-                prevBankRecords.filter(
-                  (record) => record.account_number !== accountNumber
-                )
+              // Send a DELETE request to your backend API to delete the bank account
+              const response = await axios.delete(
+                `${ipAddress}/api/delete-bank-account/${accountNumber}/`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${userInfo.token}`,
+                  },
+                }
               );
+  
+              if (response.status === 204) {
+                // If the backend successfully deleted the account, dispatch the action to update the Redux store
+                dispatch(deleteBankAccount(accountNumber));
+                Alert.alert('Success', 'Bank Account Deleted successfully', [
+                  { text: 'OK' },
+                ]);
+              } else {
+                console.error('Failed to delete bank account:', response.data);
+                Alert.alert('Error', 'Failed to delete bank account. Please try again later.');
+              }
             } catch (error) {
-              console.error('Delete Error:', error);
+              console.error('An error occurred while deleting bank account:', error);
+              Alert.alert('Error', 'An error occurred while deleting bank account. Please try again later.');
             }
           },
         },
@@ -114,6 +135,7 @@ const Bank = ({ navigation, initialBankRecords}) => {
       { cancelable: true }
     );
   };
+  
   
   
  
@@ -159,7 +181,7 @@ const Bank = ({ navigation, initialBankRecords}) => {
 
 
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-      {bankRecords.length > 0 ? ( // Use bankRecords instead of bankAccounts
+      {bankRecords && bankRecords.length > 0 ? (
           bankRecords.map((bankAccount, index) => (
             <View
             style={[
@@ -220,7 +242,6 @@ const Bank = ({ navigation, initialBankRecords}) => {
                 setBankRecords={setBankRecords}
                 dispatch={dispatch} // Pass dispatch as a prop
                 userInfo={userInfo} 
-
                 />
 
 

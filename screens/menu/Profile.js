@@ -9,9 +9,10 @@ import ProfileEditModal from './ProfileEditModal';
 import ImageContext from './ImageContext';
 import axios from 'axios';  // Import axios for making API requests
 import { ipAddress } from '../../constants';
-import { useUserContext } from '../../UserContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SectionTitle from '../components/SectionTitle';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchUserData, setProfileImageUri } from '../../ReduxActions';
 
 const Profile = ({ navigation, route }) => {
   const { profileImageUri, setProfileImageUri } = useContext(ImageContext);
@@ -22,16 +23,18 @@ const Profile = ({ navigation, route }) => {
   const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
   const [profileEditModalVisible, setProfileEditModalVisible] = useState(false); // define modalVisible state
   const [profile, setProfile] = useState({});
-  const { userInfo, updateProfileImageUri } = useUserContext();
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  const dispatch = useDispatch(); // Get the dispatch function from Redux
 
   console.log('Profile Image URL from context:', userInfo.profileImageUrl);
 
  
   useEffect(() => {
-    if (userInfo.profileImageUrl) {
-      setProfileImageUri(userInfo.profileImageUrl);
+    // Dispatch actions to fetch user data and set profile image URI when the component mounts or when the user logs in.
+    if (userInfo.token) {
+      dispatch(fetchUserData(userInfo.token));
     }
-  }, [userInfo.profileImageUrl]);
+  }, [dispatch, userInfo.token]);
 
   
   useEffect(() => {
@@ -85,11 +88,11 @@ const Profile = ({ navigation, route }) => {
               console.log('New profile image URI:', selectedAsset.uri);
 
               setSelectedImage(selectedAsset.uri); // Update the selectedImage state
-              updateProfileImageUri(selectedAsset.uri); // Use the provided function
               setProfileImageUri(selectedAsset.uri); // Update the context
 
               await AsyncStorage.setItem('profileImageUri', selectedAsset.uri);
-              
+              dispatch(updateUserProfileImage(selectedAsset.uri));
+
             } else {
               Alert.alert('Error', response.data.message); // Assuming the API returns an error message in the 'message' field
             }
@@ -288,7 +291,8 @@ const Profile = ({ navigation, route }) => {
  profileEditModalVisible={profileEditModalVisible}
  setProfileEditModalVisible={setProfileEditModalVisible}
  onClose={handleProfileEditModalClose} // Pass the onClose function
- setUserData={setUserData} // Pass setUserData as a prop
+ dispatch={dispatch} // Pass the dispatch function
+
  />
 
 )}
@@ -335,7 +339,9 @@ const Profile = ({ navigation, route }) => {
         <SavingsGoalModal 
         navigation={navigation} 
         goalModalVisible={goalModalVisible} 
-        setGoalModalVisible={setGoalModalVisible} />
+        setGoalModalVisible={setGoalModalVisible} 
+        dispatch={dispatch} // Pass the dispatch function
+        />
 
 <SectionTitle>SETTINGS</SectionTitle>
 <View>
@@ -628,7 +634,7 @@ icon: {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
-  
+    marginTop: 25,
   },
 
   primaryButtonText: {

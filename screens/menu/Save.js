@@ -11,15 +11,28 @@ import DeactivateAutoSaveModal from './DeactivateAutoSaveModal';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
-import { useUserContext } from '../../UserContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
+import moment from 'moment';
 
 const Save = ({ navigation, route }) => {
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
   const [autoSaveModalVisible, setAutoSaveModalVisible] = useState(false);
   const [deactivateAutoSaveModalVisible, setDeactivateAutoSaveModalVisible] = useState(false);
   const { autoSave, setAutoSave } = useContext(AutoSaveContext)
-  const { userInfo, accountBalances, userTransactions } = useUserContext(); // Assume userInfo includes savings goal data
+  const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
+  const accountBalances = useSelector((state) => state.bank.accountBalances);
+  const userTransactions = useSelector((state) => state.bank.userTransactions);
+  const [currentMonth, setCurrentMonth] = useState('');
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchAccountBalances()); // Fetch account balances using Redux action
+    dispatch(fetchUserTransactions()); // Fetch user transactions using Redux action
+    dispatch(fetchUserData(userInfo.token));
+  }, []);
 
   const iconMapping = {
     "Card Successful": "card-outline",
@@ -34,6 +47,11 @@ const Save = ({ navigation, route }) => {
     "Property": "home-outline",
   };
 
+  useEffect(() => {
+    const monthName = moment().format('MMMM');
+    setCurrentMonth(monthName);
+  }, []);
+
 
 const formatDate = (dateString) => {
   const options = { year: 'numeric', month: 'short', day: '2-digit' };
@@ -47,7 +65,6 @@ const formatTime = (timeString) => {
   const time = new Date(`2023-01-01T${timeString}`);
   return time.toLocaleTimeString('en-US', options);
 };
-
 
   // Calculate the percentage
   const percentage = (currentAmount) => {
@@ -145,7 +162,7 @@ const formatTime = (timeString) => {
               <View style={styles.progressBarContainer}>
                 <Text style={styles.propertyText}>
                   <Text style={{ fontFamily: 'proxima', color: '#4C28BC'}}>Top Saver: </Text>
-                  You're currently 65% from being the top saver of the month. Top Savers earn extra points, bonuses, rewards, and cash every month. Keep growing your funds to qualify.
+                  Hey {userInfo?.firstName ? `${userInfo.firstName},` : ''} you're 65% from being one of the top savers of {currentMonth}. Keep growing your funds to earn extra points, bonuses, rewards, and cash as top saver.
                 </Text>
                 <ProgressBar progress={0.65} color="#4C28BC" height={6} style={styles.progressBar} />
               </View>

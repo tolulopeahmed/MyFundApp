@@ -6,7 +6,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import axios from 'axios'; // Import axios for making API requests
 import { ipAddress } from '../../constants';
 import { useSelector, useDispatch } from 'react-redux';
-import { addBankAccount  } from '../../ReduxActions';
+import { addBankAccount } from '../../ReduxActions';
 
 
 const bankOptions = [
@@ -74,7 +74,7 @@ const bankOptions = [
   ];
   
 
-  const AddBankModal = ({ addBankModalVisible, setAddBankModalVisible, initialBankRecords, addBankRecord, userInfo  }) => {
+  const AddBankModal = ({ addBankModalVisible, setAddBankModalVisible  }) => {
     const [accountNumber, setAccountNumber] = useState('');
     const [selectedBank, setSelectedBank] = useState('');
     const [accountName, setAccountName] = useState(''); // State for resolved account name
@@ -83,7 +83,8 @@ const bankOptions = [
     const [resolvedAccountName, setResolvedAccountName] = useState('');
     const dispatch = useDispatch();
     const [bankRecords, setBankRecords] = useState([]);
-    
+    const userInfo = useSelector((state) => state.bank.userInfo);
+
 
     //console.log('User Token from Redux:', userInfo.token);
 
@@ -141,9 +142,14 @@ const bankOptions = [
     console.log('userInfo prop in AddBankModal:', userInfo);
 
     
+
+
+
+
+
     const handleProceed = async () => {
-      if (!userInfo) {
-        console.log('User not defined');
+      if (!userInfo || !selectedBank) {
+        console.error('User info or selected bank is undefined');
         return;
       }
       console.log('userInfo in handleProceed:', userInfo); // Debug userInfo here
@@ -188,7 +194,6 @@ const bankOptions = [
     
           // Dispatch the action to add the bank account to Redux
           dispatch(addBankAccount(newBankRecord));
-          setBankRecords((prevBankRecords) => [...prevBankRecords, newBankRecord]);
 
           Alert.alert('Success', 'Bank Account Added successfully', [
             { text: 'OK' },
