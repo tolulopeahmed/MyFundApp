@@ -225,7 +225,6 @@ class CardSerializer(serializers.ModelSerializer):
             transaction = Transaction.objects.create(**transaction_data)
 
             # Notify the WebSocket consumer about the successful transaction
-            notify_transaction_update(transaction)
 
             return {
                 "id": card.id,

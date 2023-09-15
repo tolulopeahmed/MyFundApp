@@ -3,7 +3,6 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import re_path
-from .consumers import ChatConsumer
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from .views import CardListCreateView, CardDetailView, UserTransactionListView, UserCardListView, AccountBalancesAPIView
@@ -56,7 +55,3 @@ urlpatterns = [
 
     ]
 
-
-websocket_urlpatterns = [
-    re_path(r'ws/chat/$', ChatConsumer.as_asgi()),
-]
