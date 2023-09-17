@@ -46,6 +46,7 @@ urlpatterns = [
     path('add-card/', CardListCreateView.as_view(), name='card-list-create'),
     path('cards/<int:pk>/', CardDetailView.as_view(), name='card-detail'),
     path('get-cards/', UserCardListView.as_view(), name='user-card-list'),
+    path('cards/<int:pk>/delete/', views.DeleteCardView.as_view(), name='delete-card'),
 
     # Accounts-related APIs
     path('get-account-balances/', AccountBalancesAPIView.as_view(), name='get-account-balances'),

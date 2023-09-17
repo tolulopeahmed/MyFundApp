@@ -657,6 +657,19 @@ class UserCardListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Card.objects.filter(user=self.request.user)
+    
+class DeleteCardView(generics.DestroyAPIView):
+    queryset = Card.objects.all()
+    serializer_class = CardSerializer
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        card = self.get_object()
+        card.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
 
 class TransactionCreateView(generics.CreateAPIView):
     serializer_class = TransactionSerializer
