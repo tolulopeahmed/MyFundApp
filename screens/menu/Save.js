@@ -12,7 +12,7 @@ import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, fetchUserTransactions, fetchUserData } from '../../ReduxActions';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData, fetchUserCards } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import moment from 'moment';
 
@@ -25,8 +25,18 @@ const Save = ({ navigation, route }) => {
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
   const [currentMonth, setCurrentMonth] = useState('');
+  const userCards = useSelector((state) => state.bank.userCards) || [];  // Replace 'cards' with the correct slice name
+
+
+  console.log('User Cards in Save.js:', userCards);
 
   const dispatch = useDispatch();
+
+
+  useEffect(() => {
+    dispatch(fetchUserCards()); // Use fetchUserCards instead of loadCards
+  }, []);
+  
 
   useEffect(() => {
     dispatch(fetchAccountBalances()); // Fetch account balances using Redux action
@@ -113,6 +123,9 @@ const formatTime = (timeString) => {
     setAutoSave(false);
   };
   
+
+  console.log('Fetched Cards in Save.js:', userCards);
+
 
   
   return (
@@ -251,6 +264,7 @@ const formatTime = (timeString) => {
   navigation={navigation}
   quickSaveModalVisible={quickSaveModalVisible} 
   setQuickSaveModalVisible={setQuickSaveModalVisible}
+
   />
 )}
 

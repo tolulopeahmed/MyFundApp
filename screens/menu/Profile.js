@@ -157,6 +157,73 @@ const Profile = ({ navigation, route }) => {
                     index: 0,
                     routes: [{ name: 'Login' }],
                   });
+
+                  
+  const handleLogout = () => {
+    Alert.alert(
+      'Confirm Logout',
+      'Are you sure you want to log out of MyFund?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes, Logout',
+          onPress: async () => {
+            try {
+              // Make an API call to log the user out
+              await AsyncStorage.removeItem('authToken');
+              
+              const keys = await AsyncStorage.getAllKeys();
+                for (const key of keys) {
+                  if (key.startsWith('chatMessages')) {
+                    await AsyncStorage.removeItem(key);
+                  }
+                }
+
+              try {
+                
+                // Attempt to send a logout request
+                const response = await axios.post(`${ipAddress}/api/logout/`);
+                
+                if (response.status === 200) {
+                  // Successfully logged out
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }],
+                  });
+                } else {
+                  // Handle error cases
+                  console.log('Logout failed:', response.data);
+                }
+              } catch (error) {
+                // Handle logout request error
+                console.log('Logout request error:', error);
+  
+                // Check if the error is due to a network issue
+                if (error.message === 'Network Error') {
+                  Alert.alert(
+                    'Logout Failed',
+                    'There was a problem logging you out. Please check your internet connection and try again.',
+                    [
+                      {
+                        text: 'OK',
+                      },
+                    ]
+                  );
+                }
+              }
+            } catch (error) {
+              console.log('Logout error:', error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+  
                 } else {
                   // Handle error cases
                   console.log('Logout failed:', response.data);

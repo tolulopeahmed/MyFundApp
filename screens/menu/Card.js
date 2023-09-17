@@ -80,6 +80,20 @@ const Card = ({ navigation, route }) => {
   }, [userInfo.token]);
 
 
+  
+  
+  const addCardToList = (newCard) => {
+    // Check if the card with the same number already exists in cards
+    const isCardAlreadyAdded = cards.some((card) => card.card_number === newCard.card_number);
+
+    if (isCardAlreadyAdded) {
+      Alert.alert('Error', 'This card has already been added.');
+      return;
+    }
+
+    dispatch(addCard(newCard)); // Dispatch the action to add the new card to Redux
+  };
+
   const confirmDeleteCard = async (cardId) => {
     Alert.alert(
       'Delete Card',
@@ -94,20 +108,8 @@ const Card = ({ navigation, route }) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              const response = await axios.delete(`${ipAddress}/api/delete-card/${cardId}`, {
-                headers: {
-                  Authorization: `Bearer ${userInfo.token}`,
-                },
-              });
-
-              if (response.status === 200) {
-                dispatch(deleteCard(cardId)); // Dispatch the action to delete the card from Redux
-
-                // ... Rest of the code
-              } else {
-                console.error('Failed to delete card:', response.data);
-                Alert.alert('Error', 'Failed to delete card. Please try again later.');
-              }
+              // Dispatch the action to delete the card
+              dispatch(deleteCard(userInfo.token, cardId)); // Use the deleteCard action with token and cardId
             } catch (error) {
               console.error('Error deleting card:', error);
             }
@@ -118,40 +120,11 @@ const Card = ({ navigation, route }) => {
     );
   };
   
-  
-  
-  
-  
-  
-  
-  
-  const addCardToList = (newCard) => {
-    // Check if the card with the same number already exists in userAllCards
-    const isCardAlreadyAdded = userAllCards.some((card) => card.card_number === newCard.card_number);
-  
-    if (isCardAlreadyAdded) {
-      Alert.alert('Error', 'This card has already been added.');
-      return;
-    }
-  
-    const updatedCards = [...cards, newCard];
-    setCards(updatedCards);
-  
-    // Update the context with the new card
-    setUserCards((prevUserCards) => {
-      const updatedUserCardsObj = { ...prevUserCards };
-      updatedUserCardsObj[userInfo.token] = updatedCards;
-      return updatedUserCardsObj;
-    });
-  };
-  
-  
-  
-  
-  
+
   
 
   console.log('UserCards:', userCards);
+//  console.log('CardId:', cardId);
 
   
   return (
@@ -186,7 +159,7 @@ const Card = ({ navigation, route }) => {
 
     <ScrollView contentContainerStyle={styles.scrollViewContent}>
 
-    {cards.length > 0 ? (
+    {cards && cards.length > 0 ? (
     cards.map((card, index) => (
       <View
       style={[

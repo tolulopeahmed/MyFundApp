@@ -17,10 +17,12 @@ export const ADD_BANK_ACCOUNT = 'ADD_BANK_ACCOUNT';
 export const DELETE_BANK_ACCOUNT = 'DELETE_BANK_ACCOUNT'; // Define DELETE_BANK_ACCOUNT action type
 export const LOAD_BANK_ACCOUNTS = 'LOAD_BANK_ACCOUNTS';
 export const ADD_CARD = 'ADD_CARD';
-export const DELETE_CARD = 'DELETE_CARD';
+export const DELETE_CARD_SUCCESS = 'DELETE_CARD_SUCCESS';
+export const DELETE_CARD_FAILURE = 'DELETE_CARD_FAILURE';
+export const DELETE_CARD = 'DE LETE_CARD';
 export const LOAD_CARDS = 'LOAD_CARDS';
-export const FETCH_USER_CARDS = 'FETCH_USER_CARDS';
-
+export const FETCH_USER_CARDS_SUCCESS = 'FETCH_USER_CARDS_SUCCESS';
+export const FETCH_USER_CARDS_FAILURE = 'FETCH_USER_CARDS_FAILURE';
 
 export const setUserToken = (token) => ({
   type: SET_USER_TOKEN,
@@ -84,18 +86,38 @@ export const addCard = (newCard) => ({
   payload: newCard,
 });
 
-export const deleteCard = (cardId) => ({
-  type: DELETE_CARD,
-  payload: cardId,
-});
 
 export const loadCards = (cards) => ({
   type: LOAD_CARDS,
   payload: cards,
 });
 
+export const fetchUserCardsSuccess = (cards) => ({
+  type: FETCH_USER_CARDS_SUCCESS,
+  payload: cards,
+});
+
+export const fetchUserCardsFailure = (error) => ({
+  type: FETCH_USER_CARDS_FAILURE,
+  payload: error,
+});
 
 
+export const deleteCard = (token, cardId) => async (dispatch) => {
+  try {
+    await axios.delete(`${ipAddress}/api/cards/${cardId}/delete/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        cardId: cardId, // Include the cardId in the request body or as a query parameter
+      },
+    });
+    dispatch({ type: DELETE_CARD_SUCCESS, payload: cardId });
+  } catch (error) {
+    dispatch({ type: DELETE_CARD_FAILURE, payload: error.message });
+  }
+};
 
 // Fetch user data and update the Redux store with user information
 export const fetchUserData = () => async (dispatch, getState) => {
@@ -214,10 +236,10 @@ export const fetchUserBankAccounts = () => async (dispatch, getState) => {
 };
 
 
-
 export const fetchUserCards = () => async (dispatch, getState) => {
   const userInfo = getState().bank.userInfo;
-  if (!userInfo.token) {
+  if (!userInfo || !userInfo.token) {
+    console.error('Authentication Error: User is not authenticated');
     return;
   }
 
@@ -229,9 +251,12 @@ export const fetchUserCards = () => async (dispatch, getState) => {
     });
 
     if (response.status === 200) {
-      dispatch(loadCards(response.data)); // Dispatch the action to load user cards
+      const userCards = response.data;
+      console.log('Fetched Cards:', userCards);
+      dispatch(fetchUserCardsSuccess(userCards)); // Dispatch success action
     }
   } catch (error) {
     console.error('Fetch Error:', error);
+    dispatch(fetchUserCardsFailure(error.message)); // Dispatch failure action
   }
 };

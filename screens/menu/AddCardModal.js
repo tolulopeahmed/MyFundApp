@@ -240,8 +240,19 @@ const handleProceed = async () => {
     
       dispatch(addCard(newCardRecord));
 
-     Alert.alert('Success', 'Card added successfully! And ₦50 has been credited to your Savings Account', [{ text: 'OK' }]);
-     closeModal();
+      Alert.alert(
+        'Success',
+        'Card added successfully! And ₦50 has been credited to your SAVINGS Account',
+        [
+          { text: 'OK' },
+          {
+            text: 'Continue to Save',
+            onPress: () => {navigation.navigate('Save');
+            },
+          },
+        ]
+      );
+           closeModal();
 
     } else {
       console.error('Failed to add card:', response.data);

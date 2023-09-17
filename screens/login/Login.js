@@ -9,7 +9,7 @@ import { ipAddress } from '../../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import { useDispatch } from 'react-redux';
-import { loadBankAccounts, setUserToken } from '../../ReduxActions';
+import { loadBankAccounts, setUserToken, fetchUserCards } from '../../ReduxActions';
 
 const Login = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -44,12 +44,16 @@ const Login = ({ navigation }) => {
   };
 
 
-
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
 
 
   
 const handleLogin = async () => {
   setIsLoggingIn(true);
+
+  dismissKeyboard();
 
   try {
     // Attempt to make the login request
@@ -69,6 +73,7 @@ const handleLogin = async () => {
 
         dispatch(loadBankAccounts());
         dispatch(setUserToken(access));
+        dispatch(fetchUserCards());
 
         setModalVisible(false);
         navigation.dispatch(
