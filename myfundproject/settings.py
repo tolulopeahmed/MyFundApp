@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'corsheaders',
    # 'sslserver',
     'channels',
+    'graphene_django'
    # 'django_socketio',
 
     ]
