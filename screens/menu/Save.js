@@ -12,7 +12,7 @@ import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, fetchUserTransactions, fetchUserData, fetchUserCards } from '../../ReduxActions';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import moment from 'moment';
 
@@ -33,9 +33,7 @@ const Save = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
 
-  useEffect(() => {
-    dispatch(fetchUserCards()); // Use fetchUserCards instead of loadCards
-  }, []);
+
   
 
   useEffect(() => {
@@ -124,7 +122,6 @@ const formatTime = (timeString) => {
   };
   
 
-  console.log('Fetched Cards in Save.js:', userCards);
 
 
   

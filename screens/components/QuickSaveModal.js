@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Text, Keyboard, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { Modal, Text, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
@@ -10,8 +10,10 @@ import { fetchUserCards } from '../../ReduxActions'; // Import fetchUserCards
 const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVisible }) => {
   const [frequency, setFrequency] = useState('');
   const [amount, setAmount] = useState('');
+  const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
+  const [selectedCard, setSelectedCard] = useState('null');
+
   const userCards = useSelector((state) => state.bank.cards) || [];
-  const [selectedCard, setSelectedCard] = useState('');
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -28,16 +30,35 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
     Keyboard.dismiss();
   };
 
+
+
+  useEffect(() => {
+    // Check if both amount and selectedCard are not empty and selectedCard is not 'null'
+    if (amount !== '' && selectedCard !== '' && selectedCard !== 'null') {
+      setIsContinueButtonDisabled(false);
+    } else {
+      setIsContinueButtonDisabled(true);
+    }
+  }, [amount, selectedCard]);
+  
+
+
+
   const handleAmountChange = (value) => {
     const numericValue = parseFloat(value.replace(/,/g, ''));
 
-    if (!isNaN(numericValue)) {
+    if (!isNaN(numericValue) && numericValue > 0 && selectedCard !== '') {
       setAmount(numericValue.toLocaleString('en-US'));
     } else {
       setAmount('');
     }
-  }
+  };
+  
+  const handleCardSelection = (value) => {
+    setSelectedCard(value);
+  };
 
+  
   const handleAddCard = () => {
     navigation.navigate('Card', { addCardModalVisible: true });
   };
@@ -87,11 +108,15 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
           activeOpacity={1}
           onPress={closeModal}
         >
+          
           <TouchableOpacity
             activeOpacity={1}
             style={styles.modalContent}
             onPress={() => dismissKeyboard()} // Dismiss the keyboard when tapping within the modal
             >
+
+
+            <ScrollView>  
             <View style={styles.modalContent}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 30 }}>
                 <Text style={styles.modalHeader}>QuickSave</Text>
@@ -165,9 +190,9 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                     <Picker
                       style={styles.labelItem2}
                       selectedValue={selectedCard}
-                      onValueChange={(value) => setSelectedCard(value)}
-                    >
-                      <Picker.Item color='silver' label="My Saved Cards" value="My Saved Cards" />
+                      onValueChange={(value) => handleCardSelection(value)}
+                      >
+                      <Picker.Item color='#4C28BC' label="Choose Card" value="null" />
                       {userCards.map((card) => (
                         <Picker.Item
                           label={`${card.bank_name} - **** **** **** ${card.card_number.slice(-4)}`}
@@ -177,14 +202,28 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                       ))}
                     </Picker>
                     <View style={styles.buttonsContainer}>
-                      <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.navigate('Success')}>
-                        <Image source={require('./paystack.png')} style={styles.image} />
-                        <Text style={styles.primaryButtonText}>Continue</Text>
-                      </TouchableOpacity>
+
+
+                    <TouchableOpacity
+                      style={isContinueButtonDisabled ? styles.primaryButtonDisabled : styles.primaryButton}
+                      onPress={() => {
+                        if (!isContinueButtonDisabled) {
+                          navigation.navigate('Success');
+                        }
+                      }}
+                      disabled={isContinueButtonDisabled}
+                    >
+                      <Image source={require('./paystack.png')} style={styles.image} />
+                      <Text style={styles.primaryButtonText}>Continue</Text>
+                    </TouchableOpacity>
+
+
                     </View>
                   </View>
                 </>
               )}
+
+
               {frequency === "Add New Card" && (
                 <>
                   <View style={styles.paymentOptionsContainer}>
@@ -211,6 +250,8 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                 </>
               )}
             </View>
+            </ScrollView>
+
           </TouchableOpacity>
         </TouchableOpacity>
 
@@ -424,7 +465,17 @@ const styles = {
     justifyContent: 'center',
     borderRadius: 10,
   },
-
+  primaryButtonDisabled: {
+    flexDirection: 'row',
+    backgroundColor: 'grey', // Background color for disabled state
+    width: '85%',
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    opacity: 0.7, // Reduce opacity for disabled state
+  },
+  
   primaryButtonText: {
     color: '#fff',
     fontSize: 18,

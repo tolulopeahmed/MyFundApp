@@ -62,7 +62,6 @@ const handleLogin = async () => {
       password: password,
     });
 
-    setIsLoggingIn(false);
 
     if (response.status === 200) {
       const { access, refresh, user_id } = response.data;

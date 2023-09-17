@@ -255,16 +255,19 @@ const handleProceed = async () => {
            closeModal();
 
     } else {
+      setProcessing(false);
       console.error('Failed to add card:', response.data);
       Alert.alert('Error', 'Failed to add card. Please try again later.');
     }
     
   } catch (error) {
+    setProcessing(false);
     console.error('An error occurred while adding card:', error);
     console.error(error.stack); // Print the stack trace
 
     Alert.alert('Error', 'An error occurred while adding card. Please try again later.');
   }
+  setProcessing(false);
 
   setTimeout(() => {
     setProcessing(false);
