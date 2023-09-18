@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Alert, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { Modal, Keyboard, Alert, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
@@ -14,7 +14,6 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
   const [year, setYear] = useState('');
   const [amount, setAmount] = useState('');
   const [isUpdateEnabled, setIsUpdateEnabled] = useState(false); // State for button enabling
-  const [formattedAmount, setFormattedAmount] = useState('');
   const dispatch = useDispatch(); // Get the dispatch function from Redux
   const userInfo = useSelector(state => state.bank.userInfo); // Get user info from Redux store
   const savingsGoal = useSelector(state => state.bank.savingsGoal); // Get savings goal from Redux store
@@ -97,17 +96,32 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
 
 
 
+
   const handleAmountChange = (value) => {
-    // Remove any non-numeric characters from the input
-    const formattedValue = value.replace(/[^0-9]/g, '');
-  
-    // Add commas as thousands separators to the formatted value
-    const numberWithCommas = formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  
-    setAmount(formattedValue); // Store the value without commas
-    setFormattedAmount(numberWithCommas); // Store the formatted value for display
+    const numericValue = parseFloat(value.replace(/,/g, ''));
+
+    if (!isNaN(numericValue) && numericValue > 0 && selectedCard !== '') {
+      setAmount(numericValue.toLocaleString('en-US'));
+    } else {
+      setAmount('');
+    }
+  };
+
+  const handleAmountPreset = (presetAmount) => {
+    setAmount(presetAmount.toLocaleString('en-US'));
+  }
+
+  const clearAmount = () => {
+    setAmount('');
   };
   
+  const handleAmountButtonPress = (presetAmount) => {
+    handleAmountPreset(presetAmount);
+    // Dismiss the keyboard when the button is pressed
+    Keyboard.dismiss();
+  };
+
+
 
   const closeModal = () => {
     setGoalModalVisible(false);
@@ -141,7 +155,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          As part of helping you grow your funds to own properties and developing your savings habit, you'll need to set a savings goal. {'\n'}
+          Hey {userInfo?.firstName ? `${userInfo.firstName},` : ''} As part of helping you grow your funds to own properties and developing your savings habit, you'll need to set a savings goal. {'\n'}
             {'\n'}<Text style={{fontFamily: 'proxima'}}>Preferred Asset</Text>
           </Text>
           
@@ -151,32 +165,67 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
                 selectedValue={frequency}
                 onValueChange={(value) => setFrequency(value)}
               >
-                <Picker.Item color='blue' label="Select Asset" value="Select Asset" />
+                <Picker.Item color='#4C28BC' label="Select asset..." value="Select Asset" />
                 <Picker.Item label="Real Estate (MyFund Hostels)" value="Real Estate" />
                 <Picker.Item label="Paper Assets" value="Paper Assets" />
               </Picker>
             </View>
         
             <Text style={{fontFamily: 'proxima', marginTop: 7, marginLeft: 40, alignSelf: 'flex-start'}}>How much are you planning to save for it?</Text>
+            
+            <View style={styles.inputContainer2}>
+                <Text style={styles.nairaSign}>₦</Text>
+                <TextInput
+                  style={styles.amountInput}
+                  placeholder="Minimum amount is 1,000,000"
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleAmountChange(value)}
+                  value={amount}
+                  placeholderTextColor="silver"
 
-            <TextInput
-              style={styles.amountInput}
-              placeholder="Minimum amount is 1,000,000"
-              keyboardType="numeric"
-              onChangeText={(value) => handleAmountChange(value)}
-              value={formattedAmount} // Display the formatted value
-              placeholderTextColor="silver"
+                  onBlur={() => {
+                    if (parseInt(amount) < 1000000) {
+                      Alert.alert('Invalid Amount', 'The minimum amount is 1,000,000. Please enter a valid amount.');
+                    }
+                  }}
+                />
+                {amount !== '' && (
+                  <TouchableOpacity onPress={clearAmount}>
+                    <Ionicons name="close-circle-outline" size={24} color="grey" marginRight={10} />
+                  </TouchableOpacity>
+                )}
+              </View>
 
-              onBlur={() => {
-                if (parseInt(amount) < 1000000) {
-                  Alert.alert('Invalid Amount', 'The minimum amount is 1,000,000. Please enter a valid amount.');
-                }
-              }}
-            />
+              <View style={styles.presetAmountsContainer}>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(1000000)}>
+                    <Text style={styles.presetAmountText}>1,000,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(10000000)}>
+                    <Text style={styles.presetAmountText}>10,000,000</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(2000000)}>
+                    <Text style={styles.presetAmountText}>2,000,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(15000000)}>
+                    <Text style={styles.presetAmountText}>15,000,000</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(5000000)}>
+                    <Text style={styles.presetAmountText}>5,000,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(30000000)}>
+                    <Text style={styles.presetAmountText}>30,000,000</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
 
 
 
-            <Text style={{fontFamily: 'proxima', marginTop: 7, marginLeft: 40, alignSelf: 'flex-start'}}>How long will it take you?</Text>
+            <Text style={{fontFamily: 'proxima', marginTop: 15, marginLeft: 40, alignSelf: 'flex-start'}}>How long will it take you?</Text>
           <View style={styles.inputContainer}>
             <View style={styles.dropdown}>
               <Picker
@@ -184,7 +233,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
                 selectedValue={year}
                 onValueChange={(value) => setYear(value)}
               >
-                <Picker.Item color='blue' label="Select number of years" value="Select years" />
+                <Picker.Item color='blue' label="Select number of years..." value="Select years" />
                 <Picker.Item label="1 year" value="1" />
                 <Picker.Item label="2 years" value="2" />
                 <Picker.Item label="3 years" value="3" />
@@ -215,7 +264,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
                   color="#fff"
                   style={{ marginRight: 4 }}
                 />
-                <Text style={styles.primaryButtonText}>Update</Text>
+                <Text style={styles.primaryButtonText}>Update Savings Goal</Text>
               </TouchableOpacity>
 
               </View>
@@ -333,22 +382,56 @@ const styles = {
     padding: 10,
     borderRadius: 10,
   },
-
-  amountInput: {
-    color: 'black',
-    textAlign: 'left',
-    marginLeft: -5,
-    fontFamily: 'ProductSans',
+  
+  inputContainer2: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 10,
     height: 50,
-    width: "80%",
-    padding: 10,
+    width: '80%',
     marginTop: 5,
-    borderRadius: 10,
-    fontSize: 18,
-    letterSpacing: -0.5,
   },
+
+  nairaSign: {
+    fontSize: 16,
+    marginLeft: 15,
+    marginRight: 0,
+  },
+  amountInput: {
+    flex: 1,
+    color: 'black',
+    fontFamily: 'karla',
+    fontSize: 16,
+    letterSpacing: -0.3,
+    padding: 10,
+  },
+  
+
+  presetAmountsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 40,
+    marginTop: 5,
+  },
+  presetAmountColumn: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  presetAmountButton: {
+    backgroundColor: '#DCD1FF', // Background color changed to #DCD1FF
+    borderRadius: 5,
+    padding: 10,
+    margin: 5,
+    alignItems: 'center',
+  },
+  presetAmountText: {
+    color: 'black', // Text color changed to #4C28BC
+    fontSize: 15,
+    fontFamily: 'karla',
+    letterSpacing: -0.5
+  },
+
 
   dropdown: {
     height: 45,

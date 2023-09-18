@@ -1,48 +1,121 @@
-import React, { useState, useCallback } from 'react';
-import { Modal, Text, Image, View, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Modal, Text, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUserCards } from '../../ReduxActions'; // Import fetchUserCards
 
 const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestModalVisible }) => {
   const [frequency, setFrequency] = useState('');
-  const [paymentOption, setPaymentOption] = useState('');
+  const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
   const [amount, setAmount] = useState('');
+  const [selectedCard, setSelectedCard] = useState('null');
+
+  const userCards = useSelector((state) => state.bank.cards) || [];
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchUserCards());
+  }, []);
+
+  const handleAmountButtonPress = (presetAmount) => {
+    handleAmountPreset(presetAmount);
+    // Dismiss the keyboard when the button is pressed
+    Keyboard.dismiss();
+  };
+
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
+
+
+  useEffect(() => {
+    // Check if both amount and selectedCard are not empty and selectedCard is not 'null'
+    if (amount !== '' && selectedCard !== '' && selectedCard !== 'null') {
+      setIsContinueButtonDisabled(false);
+    } else {
+      setIsContinueButtonDisabled(true);
+    }
+  }, [amount, selectedCard]);
+  
+
+
 
   const handleAmountChange = (value) => {
-    setAmount(value);
-  }
+    const numericValue = parseFloat(value.replace(/,/g, ''));
 
-  const handleAddCard= () => {
+    if (!isNaN(numericValue) && numericValue > 0 && selectedCard !== '') {
+      setAmount(numericValue.toLocaleString('en-US'));
+    } else {
+      setAmount('');
+    }
+  };
+  
+  const handleCardSelection = (value) => {
+    setSelectedCard(value);
+  };
+
+  
+  const handleAddCard = () => {
     navigation.navigate('Card', { addCardModalVisible: true });
   };
 
- 
   const closeModal = () => {
     setQuickInvestModalVisible(false);
   };
 
-  return (
-    <>
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={quickInvestModalVisible}
-      onRequestClose={() => setQuickInvestModalVisible(false)}
-      >
-<TouchableOpacity
-  style={styles.modalContainer}
-  activeOpacity={1}
-  onPress={closeModal}
-  
->
-  <TouchableOpacity
-    activeOpacity={1}
-    style={styles.modalContent}
-    onPress={() => {}}
-  >     
-      
+  const handleAmountPreset = (presetAmount) => {
+    setAmount(presetAmount.toLocaleString('en-US'));
+  }
 
+  const clearAmount = () => {
+    setAmount('');
+  };
+  
+  console.log('User Cards in QuickInvestModal:', userCards);
+
+
+
+
+
+
+
+
+
+
+  return (
+<>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={quickInvestModalVisible}
+        onRequestClose={() => setQuickInvestModalVisible(false)}
+      >
+        <TouchableWithoutFeedback
+          onPress={() => {
+            Keyboard.dismiss(); // Dismiss the keyboard when tapping outside the modal
+            closeModal(); // Optionally, close the modal on outside tap
+          }}
+          accessible={false} // Disable accessibility for this wrapper
+          keyboardShouldPersistTaps="handled" // Ensure taps outside input fields dismiss the keyboard
+        >
+
+        <TouchableOpacity
+          style={styles.modalContainer}
+          activeOpacity={1}
+          onPress={closeModal}
+        >
+          
+          <TouchableOpacity
+            activeOpacity={1}
+            style={styles.modalContent}
+            onPress={() => dismissKeyboard()} // Dismiss the keyboard when tapping within the modal
+            >
+
+
+            <ScrollView>  
         <View style={styles.modalContent}>
          <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
              <Text style={styles.modalHeader} >QuickInvest</Text>
@@ -50,112 +123,151 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          Manually move multiples of N100,000 from your local bank acount into your Sponsorship Investment Account with a few taps to enjoy <Text style={{fontFamily: 'proxima'}}>20% p.a. ROI. </Text> {'\n'}
+          Manually move multiples of N100,000 from your local bank acount into your Sponsorship Investment Account with a few taps to enjoy <Text style={{fontFamily: 'proxima'}}>20% ROI p.a. </Text> {'\n'}
             {'\n'}QuickInvest...
           </Text>
         
           <View style={styles.inputContainer2}>
-  <Text style={styles.nairaSign}>₦</Text>
-  <TextInput
-    style={styles.amountInput}
-    placeholder="Amount (e.g. 100000)"
-    keyboardType="numeric"
-    onChangeText={(value) => handleAmountChange(value)}
-  />
-</View>
+                <Text style={styles.nairaSign}>₦</Text>
+                <TextInput
+                  style={styles.amountInput}
+                  placeholder="Minimum amount is 100,000"
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleAmountChange(value)}
+                  value={amount}
+                  placeholderTextColor="silver"
+
+                  onBlur={() => {
+                    if (parseInt(amount) < 1000000) {
+                      Alert.alert('Invalid Amount', 'The minimum amount is 1,000,000. Please enter a valid amount.');
+                    }
+                  }}
+                />
+                {amount !== '' && (
+                  <TouchableOpacity onPress={clearAmount}>
+                    <Ionicons name="close-circle-outline" size={24} color="grey" marginRight={10} />
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              <View style={styles.presetAmountsContainer}>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(1000000)}>
+                    <Text style={styles.presetAmountText}>100,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(10000000)}>
+                    <Text style={styles.presetAmountText}>1,000,000</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(2000000)}>
+                    <Text style={styles.presetAmountText}>200,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(15000000)}>
+                    <Text style={styles.presetAmountText}>2,000,000</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(5000000)}>
+                    <Text style={styles.presetAmountText}>500,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(30000000)}>
+                    <Text style={styles.presetAmountText}>5,000,000</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
 
 
-          <Text style={styles.modalSubText2} alignSelf='flex-start'>using...</Text>
+              <Text style={styles.modalSubText2} alignSelf='flex-start'>using...</Text>
+              <View style={styles.inputContainer}>
+                <View style={styles.dropdown}>
+                  <Picker
+                    style={styles.labelItem}
+                    selectedValue={frequency}
+                    onValueChange={(value) => setFrequency(value)}
+                  >
+                    <Picker.Item color='#4C28BC' label="Select source of funding..." value="Select destination account" />
+                    <Picker.Item label="My Saved Cards" value="My Saved Cards" />
+                    <Picker.Item label="Add New Card" value="Add New Card" />
+                    <Picker.Item label="Bank Transfer" value="Bank Transfer" />
+                  </Picker>
+                </View>
+              </View>
+              {frequency === 'My Saved Cards' && (
+                <>
+                  <View style={styles.paymentOptionsContainer}>
+                    <Text style={styles.label3}>Which of them?     </Text>
+                    <Picker
+                      style={styles.labelItem2}
+                      selectedValue={selectedCard}
+                      onValueChange={(value) => handleCardSelection(value)}
+                      >
+                      <Picker.Item color='#4C28BC' label="Choose card..." value="null" />
+                      {userCards.map((card) => (
+                        <Picker.Item
+                          label={`${card.bank_name} - **** **** **** ${card.card_number.slice(-4)}`}
+                          value={card.cardId}
+                          key={card.id}
+                        />
+                      ))}
+                    </Picker>
+                    <View style={styles.buttonsContainer}>
 
-          <View style={styles.inputContainer}>
-            <View style={styles.dropdown}>
-              <Picker
-                style={styles.labelItem}
-                selectedValue={frequency}
-                onValueChange={(value) => setFrequency(value)}
-              >
-                <Picker.Item color='silver' label="Select source of funding" value="Select destination account" />
-                <Picker.Item label="My Saved Cards" value="My Saved Cards" />
-                <Picker.Item label="Add New Card" value="Add New Card" />
-                <Picker.Item label="Bank Transfer" value="Bank Transfer" />
-              </Picker>
+
+                    <TouchableOpacity
+                      style={isContinueButtonDisabled ? styles.primaryButtonDisabled : styles.primaryButton}
+                      onPress={() => {
+                        if (!isContinueButtonDisabled) {
+                          navigation.navigate('Success');
+                        }
+                      }}
+                      disabled={isContinueButtonDisabled}
+                    >
+                      <Image source={require('./paystack.png')} style={styles.image} />
+                      <Text style={styles.primaryButtonText}>Continue</Text>
+                    </TouchableOpacity>
+
+
+                    </View>
+                  </View>
+                </>
+              )}
+
+
+              {frequency === "Add New Card" && (
+                <>
+                  <View style={styles.paymentOptionsContainer}>
+                    <Text style={styles.modalSubText3} alignSelf='center'>Tap the button below to add a new card first...</Text>
+                    <View style={styles.buttonsContainer}>
+                      <TouchableOpacity style={styles.primaryButton} onPress={handleAddCard}>
+                        <Text style={styles.primaryButtonText}>Add Card Now</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </>
+              )}
+              {frequency === "Bank Transfer" && (
+                <>
+                  <View style={styles.paymentOptionsContainer}>
+                    <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. Click 'Submit' after payment and your account will be updated within 12 hours.</Text>
+                    <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} Vcorp Systems Limited</Text>
+                    <View style={styles.buttonsContainer}>
+                      <TouchableOpacity style={styles.primaryButton}>
+                        <Text style={styles.primaryButtonText}>Submit</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </>
+              )}
             </View>
-          </View>
+            </ScrollView>
 
-          {frequency === 'My Saved Cards' && (
-            <>
-              <View style={styles.paymentOptionsContainer}>
-                <Text style={styles.label3}>Which of them?     </Text>
-                <Picker
-                  style={styles.labelItem2}
-                  selectedValue={paymentOption}
-                  onValueChange={(value) => setPaymentOption(value)}
-                >
-                  <Picker.Item color='silver' label="My Saved Cards" value="My Saved Cards"/>
-                  <Picker.Item label="Mastercard 3591" value="Mastercard 3591" />
-                </Picker>
-
-
-                <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton}>
-                <Image source={require('./paystack.png')} style={styles.image} />
-                  <Text style={styles.primaryButtonText}>Continue</Text>
-                </TouchableOpacity>
-
-           
-              </View>
-      
-              </View>
-            </>
-          )}
-
-
-{frequency === "Add New Card" && (
-  <>
-    <View style={styles.paymentOptionsContainer}>
-    <Text style={styles.modalSubText2} alignSelf='center'>Tap the button below to add a new card first.</Text>
-
-      
-      <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton} onPress={handleAddCard}>
-                  <Text style={styles.primaryButtonText}>Add Card Now</Text>
-                </TouchableOpacity>
-
-            
-              </View>
-    </View>
-  </>
-)}
-
-
-{frequency === "Bank Transfer" && (
-  <>
-    <View style={styles.paymentOptionsContainer}>
-    <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. 
-    Click 'Submit' after payment and your account will be updated within 12 hours.</Text>
-
-      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} Vcorp Systems Limited</Text>
-      
-      <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton}>
-                  <Text style={styles.primaryButtonText}>Submit</Text>
-                </TouchableOpacity>
-
-            
-              </View>
-    </View>
-  </>
-)}
-
-
-           
-        </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
         </TouchableOpacity>
 
-    </Modal>
+        </TouchableWithoutFeedback>
 
-    
+      </Modal>
     </>
   );
 };
@@ -300,6 +412,32 @@ const styles = {
     padding: 10,
   },
 
+  
+  presetAmountsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 40,
+    marginTop: 5,
+  },
+  presetAmountColumn: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  presetAmountButton: {
+    backgroundColor: '#DCD1FF', // Background color changed to #DCD1FF
+    borderRadius: 5,
+    padding: 10,
+    margin: 5,
+    alignItems: 'center',
+  },
+  presetAmountText: {
+    color: 'black', // Text color changed to #4C28BC
+    fontSize: 15,
+    fontFamily: 'karla',
+    letterSpacing: -0.5
+  },
+
+
   dropdown: {
     height: 45,
     width: '80%',
@@ -341,6 +479,18 @@ const styles = {
     borderRadius: 10,
   },
 
+  
+  primaryButtonDisabled: {
+    flexDirection: 'row',
+    backgroundColor: 'grey', // Background color for disabled state
+    width: '85%',
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    opacity: 0.7, // Reduce opacity for disabled state
+  },
+  
   primaryButtonText: {
     color: '#fff',
     fontSize: 18,

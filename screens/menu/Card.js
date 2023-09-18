@@ -375,12 +375,13 @@ const styles = StyleSheet.create({
       fontSize: 24,
       color: 'white',
       fontFamily: 'karla',
+      marginTop: 10,
     },
     deleteButtonContainer: {
       alignItems: 'flex-end',
     },
     deleteButton: {
-      marginTop: -5,
+      marginTop: -15,
     },
 
     bankCardExpiry: {

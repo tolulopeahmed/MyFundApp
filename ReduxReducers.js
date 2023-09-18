@@ -157,20 +157,21 @@ const Reducer = (state = initialState, action) => {
             ...state,
             userTransactions: action.payload,
           };
+          case FETCH_USER_CARDS_SUCCESS:
+            return {
+              ...state,
+              cards: action.payload,
+            };
+    
+          case FETCH_USER_CARDS_FAILURE:
+            return {
+              ...state,
+              error: action.payload,
+            };    
     default:
-
-      case FETCH_USER_CARDS_SUCCESS:
-        return {
-          ...state,
-          cards: action.payload,
-        };
-
-      case FETCH_USER_CARDS_FAILURE:
-        return {
-          ...state,
-          error: action.payload,
-        };    
       return state;
+
+     
   }
 };
 

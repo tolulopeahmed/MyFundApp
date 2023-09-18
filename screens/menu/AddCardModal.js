@@ -239,19 +239,26 @@ const handleProceed = async () => {
       };
     
       dispatch(addCard(newCardRecord));
-
       Alert.alert(
         'Success',
         'Card added successfully! And ₦50 has been credited to your SAVINGS Account',
         [
           { text: 'OK' },
           {
-            text: 'Continue to Save',
-            onPress: () => {navigation.navigate('Save');
+            text: 'QuickSave',
+            onPress: () => {
+              navigation.navigate('Save', { quickSaveModalVisible: true });
+            },
+          },
+          {
+            text: 'AutoSave',
+            onPress: () => {
+              navigation.navigate('Save', { autoSaveModalVisible: true });
             },
           },
         ]
       );
+      
            closeModal();
 
     } else {

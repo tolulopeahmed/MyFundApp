@@ -142,32 +142,34 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                   </TouchableOpacity>
                 )}
               </View>
+
               <View style={styles.presetAmountsContainer}>
                 <View style={styles.presetAmountColumn}>
                   <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(5000)}>
-                    <Text style={styles.presetAmountText}>₦5,000</Text>
+                    <Text style={styles.presetAmountText}>5,000</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(20000)}>
-                    <Text style={styles.presetAmountText}>₦20,000</Text>
+                    <Text style={styles.presetAmountText}>20,000</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.presetAmountColumn}>
                   <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(10000)}>
-                    <Text style={styles.presetAmountText}>₦10,000</Text>
+                    <Text style={styles.presetAmountText}>10,000</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(40000)}>
-                    <Text style={styles.presetAmountText}>₦40,000</Text>
+                    <Text style={styles.presetAmountText}>40,000</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.presetAmountColumn}>
                   <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(15000)}>
-                    <Text style={styles.presetAmountText}>₦15,000</Text>
+                    <Text style={styles.presetAmountText}>15,000</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(100000)}>
-                    <Text style={styles.presetAmountText}>₦100,000</Text>
+                    <Text style={styles.presetAmountText}>100,000</Text>
                   </TouchableOpacity>
                 </View>
               </View>
+
               <Text style={styles.modalSubText2} alignSelf='flex-start'>using...</Text>
               <View style={styles.inputContainer}>
                 <View style={styles.dropdown}>
@@ -176,7 +178,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                     selectedValue={frequency}
                     onValueChange={(value) => setFrequency(value)}
                   >
-                    <Picker.Item color='silver' label="Select source of funding" value="Select destination account" />
+                    <Picker.Item color='#4C28BC' label="Select source of funding..." value="Select destination account" />
                     <Picker.Item label="My Saved Cards" value="My Saved Cards" />
                     <Picker.Item label="Add New Card" value="Add New Card" />
                     <Picker.Item label="Bank Transfer" value="Bank Transfer" />
@@ -192,7 +194,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                       selectedValue={selectedCard}
                       onValueChange={(value) => handleCardSelection(value)}
                       >
-                      <Picker.Item color='#4C28BC' label="Choose Card" value="null" />
+                      <Picker.Item color='#4C28BC' label="Choose card..." value="null" />
                       {userCards.map((card) => (
                         <Picker.Item
                           label={`${card.bank_name} - **** **** **** ${card.card_number.slice(-4)}`}
@@ -227,7 +229,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
               {frequency === "Add New Card" && (
                 <>
                   <View style={styles.paymentOptionsContainer}>
-                    <Text style={styles.modalSubText2} alignSelf='center'>Tap the button below to add a new card first.</Text>
+                    <Text style={styles.modalSubText3} alignSelf='center'>Tap the button below to add a new card first...</Text>
                     <View style={styles.buttonsContainer}>
                       <TouchableOpacity style={styles.primaryButton} onPress={handleAddCard}>
                         <Text style={styles.primaryButtonText}>Add Card Now</Text>
@@ -306,6 +308,17 @@ const styles = {
     letterSpacing: -0.5,
   },
 
+  modalSubText3: {
+    fontSize: 13,
+    fontFamily: 'karla-italic',
+    textAlign: 'center',
+    color: 'black',
+    textAlign: 'center',
+    marginHorizontal: 45,
+    marginTop: 5,
+    letterSpacing: -0.2,
+  },
+
   inputContainer: {
     marginTop: 5,
     marginBottom: 15,
@@ -367,7 +380,7 @@ const styles = {
   },
 
   labelItem: {
-    color: 'grey',
+    color: 'black',
     textAlign: 'left',
     marginLeft: -16,
     marginBottom: 30,
@@ -377,7 +390,7 @@ const styles = {
   },
 
   labelItem2: {
-    color: 'grey',
+    color: 'black',
     textAlign: 'left',
     marginLeft: -5,
     marginBottom: 10,
