@@ -172,12 +172,13 @@ class CardSerializer(serializers.ModelSerializer):
 
         # Parse the expiry_date in MM/YY format
         expiry_month, expiry_year = expiry_date.split('/')
-        expiry_date = f"01/{expiry_month}/{expiry_year}"  # Convert to a valid date format
+        expiry_date = f"{expiry_month}/{expiry_year}"  # Convert to a valid date format
 
         # Verify the card with Paystack
         paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"
         card_number = validated_data['card_number']
         cvv = validated_data['cvv']
+        validated_data['expiry_date'] = expiry_date  # Add this line
 
         paystack_url = "https://api.paystack.co/charge"
         payload = {
