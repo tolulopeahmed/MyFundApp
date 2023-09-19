@@ -28,7 +28,6 @@ const Save = ({ navigation, route }) => {
   const userCards = useSelector((state) => state.bank.userCards) || [];  // Replace 'cards' with the correct slice name
 
 
-  console.log('User Cards in Save.js:', userCards);
 
   const dispatch = useDispatch();
 

@@ -13,12 +13,10 @@ import {
   UPDATE_ACCOUNT_BALANCES,
   UPDATE_USER_TRANSACTIONS,
   ADD_CARD,
-  DELETE_CARD,
-  LOAD_CARDS,
+  FETCH_CARDS_SUCCESS,
+  ADD_CARD_SUCCESS,
   DELETE_CARD_SUCCESS,
-  DELETE_CARD_FAILURE,
-  FETCH_USER_CARDS_SUCCESS,
-  FETCH_USER_CARDS_FAILURE,
+  LOAD_CARDS,
 } from './ReduxActions';
 
 
@@ -87,18 +85,21 @@ const Reducer = (state = initialState, action) => {
         cards: [...state.cards, action.payload],
       };
 
-    case DELETE_CARD_SUCCESS:
-      return {
-        ...state,
-        cards: state.cards.filter((card) => card.id !== action.payload),
-      };
-
-    case DELETE_CARD_FAILURE:
-      return {
-        ...state,
-        error: action.payload,
-      };
-
+      case FETCH_CARDS_SUCCESS:
+        return {
+          ...state,
+          cards: action.payload,
+        };
+      case ADD_CARD_SUCCESS:
+        return {
+          ...state,
+          cards: [...state.cards, action.payload],
+        };
+      case DELETE_CARD_SUCCESS:
+        return {
+          ...state,
+          cards: state.cards.filter((card) => card.id !== action.payload),
+        };
     case LOAD_CARDS:
       return {
         ...state,
@@ -157,18 +158,7 @@ const Reducer = (state = initialState, action) => {
             ...state,
             userTransactions: action.payload,
           };
-          case FETCH_USER_CARDS_SUCCESS:
-            return {
-              ...state,
-              cards: action.payload,
-            };
-    
-          case FETCH_USER_CARDS_FAILURE:
-            return {
-              ...state,
-              error: action.payload,
-            };    
-    default:
+     default:
       return state;
 
      

@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AddCardModal from './AddCardModal';
 import SectionTitle from '../components/SectionTitle';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteCard, fetchUserCards } from '../../ReduxActions';
+import { fetchUserCards, deleteCardSuccess } from '../../ReduxActions';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
 
@@ -108,8 +108,14 @@ const Card = ({ navigation, route }) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              // Dispatch the action to delete the card
-              dispatch(deleteCard(userInfo.token, cardId)); // Use the deleteCard action with token and cardId
+              // Make a DELETE request to the delete card API endpoint
+              const response = await axios.delete(`${ipAddress}/api/cards/${cardId}/`);
+              if (response.status === 204) {
+                // Card deleted successfully, dispatch the action to remove it from Redux
+                dispatch(deleteCardSuccess(cardId));
+              } else {
+                console.error('Failed to delete card');
+              }
             } catch (error) {
               console.error('Error deleting card:', error);
             }
@@ -119,6 +125,7 @@ const Card = ({ navigation, route }) => {
       { cancelable: false }
     );
   };
+  
   
 
   
@@ -187,7 +194,7 @@ const Card = ({ navigation, route }) => {
 
           <TouchableOpacity
             style={styles.deleteButton}
-            onPress={() => confirmDeleteCard(userInfo.token, card.id)}
+            onPress={() => confirmDeleteCard(card.id)}
             >
             <Ionicons name="trash-outline" size={18} color="red" />
           </TouchableOpacity>

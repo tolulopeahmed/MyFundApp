@@ -136,6 +136,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                   onChangeText={(value) => handleAmountChange(value)}
                   value={amount}
                 />
+                
                 {amount !== '' && (
                   <TouchableOpacity onPress={clearAmount}>
                     <Ionicons name="close-circle-outline" size={24} color="grey" marginRight={10} />
@@ -171,6 +172,8 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
               </View>
 
               <Text style={styles.modalSubText2} alignSelf='flex-start'>using...</Text>
+              
+              
               <View style={styles.inputContainer}>
                 <View style={styles.dropdown}>
                   <Picker
@@ -185,24 +188,35 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                   </Picker>
                 </View>
               </View>
+
               {frequency === 'My Saved Cards' && (
                 <>
-                  <View style={styles.paymentOptionsContainer}>
+                  <View style={styles.inputContainer}>
                     <Text style={styles.label3}>Which of them?     </Text>
-                    <Picker
-                      style={styles.labelItem2}
-                      selectedValue={selectedCard}
-                      onValueChange={(value) => handleCardSelection(value)}
+                    {userCards.length === 0 ? (
+                      <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 10, marginLeft: 15 }}>No cards added yet...</Text>
+                    ) : (
+                      
+                      <View style={styles.inputContainer}>
+                      <View style={styles.dropdown}>
+                      <Picker
+                        style={styles.labelItem}
+                        selectedValue={selectedCard}
+                        onValueChange={(value) => handleCardSelection(value)}
                       >
-                      <Picker.Item color='#4C28BC' label="Choose card..." value="null" />
-                      {userCards.map((card) => (
-                        <Picker.Item
-                          label={`${card.bank_name} - **** **** **** ${card.card_number.slice(-4)}`}
-                          value={card.cardId}
-                          key={card.id}
-                        />
-                      ))}
-                    </Picker>
+                        <Picker.Item color='#4C28BC' label="Choose card..." value="null" />
+                        {userCards.map((card) => (
+                          <Picker.Item
+                            label={`${card.bank_name} - **** ${card.card_number.slice(-4)}`}
+                            value={card.cardId}
+                            key={card.id}
+                          />
+                        ))}
+                      </Picker>
+                      </View>
+                      </View>
+                    )}
+
                     <View style={styles.buttonsContainer}>
 
 
@@ -315,7 +329,7 @@ const styles = {
     color: 'black',
     textAlign: 'center',
     marginHorizontal: 45,
-    marginTop: 5,
+    marginTop: 25,
     letterSpacing: -0.2,
   },
 
@@ -360,6 +374,10 @@ const styles = {
 
   paymentOptionsContainer:{
     marginTop: -20,
+    marginLeft: 5,
+    marginRight: 5,
+    borderRadius: 10, // Add border radius here
+    overflow: 'hidden', // This ensures that the border radius is applied to the Picker
   },
 
   label: {
@@ -374,9 +392,9 @@ const styles = {
   label3: {
       fontSize: 17,
       fontFamily: 'proxima',
-      marginRight: 190,
-      marginTop: 20,
-      marginBottom: 10,
+      marginBottom: 5,
+      marginLeft: 45,
+      alignSelf: 'flex-start'
   },
 
   labelItem: {
@@ -385,20 +403,25 @@ const styles = {
     marginLeft: -16,
     marginBottom: 30,
     fontFamily: 'karla',
-    backgroundColor: '#fff',
+    //backgroundColor: '#fff',
     borderRadius: 10,
   },
 
-  labelItem2: {
-    color: 'black',
-    textAlign: 'left',
-    marginLeft: -5,
-    marginBottom: 10,
-    fontFamily: 'karla',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-
+  pickerContainer: {
+    borderRadius: 10, // Add border radius here
+   overflow: 'hidden', // This ensures that the border radius is applied to the Picker
   },
+
+  // labelItem2: {
+  //   color: 'black',
+  //   textAlign: 'left',
+  //   marginLeft: 5,
+  //   marginRight: 5,
+  //   marginBottom: 10,
+  //   fontFamily: 'karla',
+  //   backgroundColor: '#fff',
+  //   borderRadius: 10,
+  // },
 
   emailInput: {
     color: 'grey',
@@ -439,11 +462,11 @@ const styles = {
   
 
   dropdown: {
-    height: 45,
+    height: 50,
     width: '80%',
     backgroundColor: 'white',
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 1,
     paddingLeft: 15,
     paddingRight: 5,
 
