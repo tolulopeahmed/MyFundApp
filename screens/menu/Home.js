@@ -158,8 +158,8 @@ const formatTime = (timeString) => {
         style={styles.profileContainer} // Add this style to the container
       >
       <View style={styles.profileImageContainer}>
-        {profileImageUri ? (
-          <Image source={{ uri: profileImageUri }} style={styles.profileImage} />
+        {selectedImage ? (
+          <Image source={{ uri: selectedImage }} style={styles.profileImage} />
         ) : (
           <Ionicons name="person-circle" size={80} color="silver" />
         )}
@@ -198,7 +198,7 @@ const formatTime = (timeString) => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.savings)}</Text>
+        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.savings).toLocaleString()}</Text>
         <Text style={styles.decimal}>.{String(accountBalances.savings).split('.')[1]}</Text>
         </View>
 
@@ -223,7 +223,7 @@ const formatTime = (timeString) => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount2}>{Math.floor(accountBalances.investment)}</Text>
+        <Text style={styles.savingsAmount2}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
         <Text style={styles.decimal}>.{String(accountBalances.investment).split('.')[1]}</Text>
         </View>
 
@@ -271,7 +271,7 @@ const formatTime = (timeString) => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount4}>{Math.floor(accountBalances.wallet)}</Text>
+        <Text style={styles.savingsAmount4}>{Math.floor(accountBalances.wallet).toLocaleString()}</Text>
         <Text style={styles.decimal}>.{String(accountBalances.wallet).split('.')[1]}</Text>
         </View>
 

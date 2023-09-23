@@ -182,7 +182,7 @@ const formatTime = (timeString) => {
                   <Text style={styles.restText}> to success. Well done!</Text>
                 </Text>
                 </ScrollView>
-                <ProgressBar progress={percentage(0)/100} color="#4C28BC" height={6} style={styles.progressBar} />
+                <ProgressBar progress={percentage(0)/100} color="green" height={6} style={styles.progressBar} />
               </View>
             </View>
           </Swiper>
@@ -192,9 +192,9 @@ const formatTime = (timeString) => {
               <View style={styles.progressBarContainer}>
                 <Text style={styles.propertyText}>
                   <Text style={{ fontFamily: 'proxima', color: '#4C28BC'}}>Top Saver: </Text>
-                  Hey {userInfo?.firstName ? `${userInfo.firstName},` : ''} you're 65% from being one of the top savers of {currentMonth}. Keep growing your funds to earn extra points, bonuses, rewards, and cash as top saver.
+                  Hey {userInfo?.firstName ? `${userInfo.firstName},` : ''} you're <Text style={styles.percentageText}>65%</Text> from being one of the top savers of {currentMonth}. Keep growing your funds to earn extra points, bonuses, rewards, and cash as top saver.
                 </Text>
-                <ProgressBar progress={0.65} color="#4C28BC" height={6} style={styles.progressBar} />
+                <ProgressBar progress={0.65} color="green" height={6} style={styles.progressBar} />
               </View>
             </View>
           </Swiper>
@@ -217,7 +217,9 @@ const formatTime = (timeString) => {
         
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.savings)}</Text>
+        <Text style={styles.savingsAmount}>
+        {Math.floor(accountBalances.savings).toLocaleString()}
+        </Text>
         <Text style={styles.decimal}>.{String(accountBalances.savings).split('.')[1]}</Text>
         </View>
 
@@ -243,6 +245,8 @@ const formatTime = (timeString) => {
         autoSaveModalVisible={autoSaveModalVisible}
         setAutoSaveModalVisible={setAutoSaveModalVisible}
         onConfirm={handleConfirmAutoSave}
+        navigation={navigation} // Pass the navigation prop here
+
       />
 
         

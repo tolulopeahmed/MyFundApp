@@ -264,7 +264,7 @@ const handleProceed = async () => {
     } else {
       setProcessing(false);
       console.error('Failed to add card:', response.data);
-      Alert.alert('Error', 'Failed to add card. Please try again later.');
+      Alert.alert('Error', 'Failed to add card. This kind of problem is usually solved by trying another card.');
     }
     
   } catch (error) {
@@ -409,8 +409,8 @@ An initial charge of ₦50 will be made and returned back as to your savings acc
 
 
 {showCVVText && (
-        <View style={{width: '80%', position: 'absolute', marginTop: 360}}>
-          <Text style={{fontFamily: 'karla-italic', fontSize: 12, textAlign: 'center', color: 'grey', marginTop: 50,}}>
+        <View style={{width: '80%', position: 'relative', }}>
+          <Text style={{fontFamily: 'karla-italic', fontSize: 12, textAlign: 'center', color: 'grey', marginTop: 5,}}>
             CVV is the 3 or 4-digit number at the back of your debit card. It is NOT your PIN.
           </Text>
         </View>

@@ -82,7 +82,7 @@ const formatTime = (timeString) => {
 
          <View style={styles.amountContainer2}> 
          <Text style={styles.nairaSign}>₦</Text>
-         <Text style={styles.savingsBalance}>{Math.floor(accountBalances.savings)}</Text>
+         <Text style={styles.savingsBalance}>{Math.floor(accountBalances.savings).toLocaleString()}</Text>
          <Text style={styles.nairaSign}>.{String(accountBalances.savings).split('.')[1]}</Text>
          </View>
          <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>2.5%</Text> fee.
@@ -114,7 +114,7 @@ const formatTime = (timeString) => {
 
          <View style={styles.amountContainer2}> 
          <Text style={styles.nairaSign}>₦</Text>
-         <Text style={styles.investmentBalance}>{Math.floor(accountBalances.investment)}</Text>
+         <Text style={styles.investmentBalance}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
          <Text style={styles.nairaSign}>.{String(accountBalances.investment).split('.')[1]}</Text>
          </View>
          <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>5%</Text> fee.
@@ -146,7 +146,7 @@ const formatTime = (timeString) => {
 
          <View style={styles.amountContainer2}> 
          <Text style={styles.nairaSign}>₦</Text>
-         <Text style={styles.walletBalance}>{Math.floor(accountBalances.wallet)}</Text>
+         <Text style={styles.walletBalance}>{Math.floor(accountBalances.wallet).toLocaleString()}</Text>
          <Text style={styles.nairaSign}>.{String(accountBalances.wallet).split('.')[1]}</Text>
          </View>
          <Text style={styles.walletMessage}>Withdraw for <Text style={{color: '#43FF8E'}}>free</Text> anytime</Text>

@@ -100,7 +100,7 @@ const handleConfirmDeactivateAutoInvest = () => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.investment)}</Text>
+        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
         <Text style={styles.decimal}>.{String(accountBalances.investment).split('.')[1]}</Text>
         </View>
        

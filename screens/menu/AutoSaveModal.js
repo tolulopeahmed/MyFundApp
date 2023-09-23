@@ -1,14 +1,76 @@
-import React, { useState } from 'react';
-import { Modal, Text, animation, StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Modal, Text, Alert, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity, Touchable } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider'
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUserCards, updateAccountBalances, } from '../../ReduxActions'; // Import fetchUserCards
+import { ipAddress } from '../../constants';
+import axios from 'axios';
 
-const AutoSaveModal = ({ autoSaveModalVisible, setAutoSave, setAutoSaveModalVisible}) => {
+
+const getBackgroundColor = (bankName) => {
+  switch (bankName) {
+    case "Access Bank":
+      return "#91A62A";
+    case "Guaranty Trust Bank":
+      return "#C3460E";
+    case "Zenith Bank":
+      return "#E6000D";
+    case "United Bank for Africa":
+      return "#D42C07";
+    case "First City Monument Bank":
+      return "#702699";
+    case "Wema Bank":
+      return "#72235A";
+    case "Polaris Bank":
+      return "#8834AE";
+    case "Union Bank":
+      return "#00ADEF";
+    case "Ecobank":
+      return "#00537F";
+    case "Stanbic IBTC Bank":
+      return "#04009D";
+    case "First Bank of Nigeria":
+      return "#0C2B5C";
+    case "Keystone Bank":
+      return "#014888";
+    case "Sterling Bank":
+      return "#DB3539";
+    case "Unity Bank Plc":
+      return "#88BB52";
+    case "Citibank":
+      return "#0275D0";
+    case "Heritage Bank Plc":
+      return "#439B2D";
+    case "Standard Chartered Bank":
+      return "#0671A9";
+    case "Jaiz Bank":
+      return "#0B411F";
+    case "Fidelity Bank":
+      return "#232B69";
+    case "Opay":
+        return "#08A67C";
+    case "Palmpay":
+        return "#7F13CB";
+    case "Moniepoint Microfinance Bank":
+        return "#0649C4";
+    default:
+      return "#4C28BC"; // Default color
+  }
+};
+
+const AutoSaveModal = ({ navigation, autoSaveModalVisible, setAutoSave, setAutoSaveModalVisible}) => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
   const [paymentOption, setPaymentOption] = useState('');
-
+  const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  const selectedCardId = selectedCard !== undefined && selectedCard !== null ? selectedCard : null;
+  const [processing, setProcessing] = useState(false);
+  const userCards = useSelector((state) => state.bank.cards) || [];
+  const dispatch = useDispatch();
   
   const closeModal = () => {
     setAutoSaveModalVisible(false);
@@ -20,7 +82,63 @@ const AutoSaveModal = ({ autoSaveModalVisible, setAutoSave, setAutoSaveModalVisi
   };
   
   
- 
+  const handleAmountPreset = (presetAmount) => {
+    setAmount(presetAmount.toLocaleString('en-US'));
+  }
+
+  
+  const clearAmount = () => {
+    setAmount('');
+  };
+
+  const handleAmountButtonPress = (presetAmount) => {
+    handleAmountPreset(presetAmount);
+    // Dismiss the keyboard when the button is pressed
+    Keyboard.dismiss();
+  };
+
+
+  useEffect(() => {
+    // Check if both amount and selectedCard are not empty and selectedCard is not 'null'
+    if (amount !== '' && selectedCard !== null) {
+      setIsContinueButtonDisabled(false);
+    } else {
+      setIsContinueButtonDisabled(true);
+    }
+  
+    // Set initial selectedCard when userCards are available
+    if (userCards.length > 0 && selectedCard === null) {
+      setSelectedCard(userCards[0].id);
+    }
+  }, [amount, selectedCard, userCards]);
+  
+  
+  
+
+  const handleAmountChange = (value) => {
+    const numericValue = parseFloat(value.replace(/,/g, ''));
+
+    if (!isNaN(numericValue) && numericValue > 0 && selectedCard !== '') {
+      setAmount(numericValue.toLocaleString('en-US'));
+    } else {
+      setAmount('');
+    }
+  };
+  
+  
+  const handleCardSelection = (value) => {
+    console.log('Selected Card Value:', value); // Add this line
+    setSelectedCard(value);
+  };
+
+  
+  const handleAddCard = () => {
+    navigation.navigate('Card', { addCardModalVisible: true });
+  };
+
+
+  const disabledButtonStyle = isContinueButtonDisabled ? styles.disabledButton : {};
+
 
 
 
@@ -56,23 +174,62 @@ const AutoSaveModal = ({ autoSaveModalVisible, setAutoSave, setAutoSaveModalVisi
           <View style={styles.inputContainer}>
           <Text style={styles.autoSaveSetting}>AutoSave Settings</Text>
 
-            <TextInput
-              style={styles.input}
-              value={amount}
-              onChangeText={setAmount}
-              keyboardType="numeric"
-              placeholder="Enter The Amount to AutoSave"
-            />
+          <View style={styles.inputContainer2}>
+                <Text style={styles.nairaSign}>₦</Text>
+                <TextInput
+                  style={styles.amountInput}
+                  placeholder="Amount (e.g. 20,000)"
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleAmountChange(value)}
+                  value={amount}
+                />
+                
+                {amount !== '' && (
+                  <TouchableOpacity onPress={clearAmount}>
+                    <Ionicons name="close-circle-outline" size={24} color="grey" marginRight={10} />
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              <View style={styles.presetAmountsContainer}>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(5000)}>
+                    <Text style={styles.presetAmountText}>5,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(20000)}>
+                    <Text style={styles.presetAmountText}>20,000</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(10000)}>
+                    <Text style={styles.presetAmountText}>10,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(40000)}>
+                    <Text style={styles.presetAmountText}>40,000</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(15000)}>
+                    <Text style={styles.presetAmountText}>15,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(100000)}>
+                    <Text style={styles.presetAmountText}>100,000</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            
+
           </View>
           
           <View style={styles.inputContainer}>
+          <Text style={styles.label3}>Frequency</Text>
+
       <View style={styles.dropdown}>
         <Picker
           style={styles.labelItem}
           selectedValue={frequency}
           onValueChange={(value) => setFrequency(value)}
         >
-          <Picker.Item color='silver' label="Set The Frequency" value="Frequency" />
           <Picker.Item label="Hourly" value="hourly" />
           <Picker.Item label="Daily" value="daily" />
           <Picker.Item label="Weekly" value="weekly" />
@@ -82,28 +239,64 @@ const AutoSaveModal = ({ autoSaveModalVisible, setAutoSave, setAutoSaveModalVisi
     </View>
 
 
-          <View style={styles.paymentOptionsContainer}>
-            <Text style={styles.label}>Payment Options</Text>
-            
-            <Picker
-          style={styles.labelItem}
-          selectedValue={paymentOption}
-          onValueChange={(value) => setPaymentOption(value)}
-        >
-          <Picker.Item color='silver' label="Select Source of Funding" value="Frequency" />
-          <Picker.Item label="Pay with saved card" value="Pay with card" />
-          <Picker.Item label="Add new card" value="Add new card" />
-          <Picker.Item label="Pay with bank transfer" value="Pay with bank transfer" />
-        </Picker>
-            
-            </View>
-          <View style={styles.buttonsContainer}>
-          <TouchableOpacity style={styles.primaryButton} onPress={handleConfirmAutoSave}>
-    <Text style={styles.primaryButtonText}>Activate Now</Text>
-  </TouchableOpacity>
+                <>
+                  <View style={styles.inputContainer}>
+                    <Text style={styles.label3}>Which of them?     </Text>
+                    {userCards.length === 0 ? (
+                      <TouchableOpacity onPress={handleAddCard}>
+                      <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>No cards added yet... 
+                      <Text style={{ color: '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>    Add Card Now!</Text>
+                      </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      
+                      <View style={styles.inputContainer}>
+                      <View style={styles.dropdown}>
+
+                      <Picker
+                        style={styles.labelItem}
+                        selectedValue={selectedCard}
+                        onValueChange={(value) => {
+                          console.log('Selected Card Value:', value);
+                          handleCardSelection(value)
+                          }} 
+                      >
+                        {userCards.map((card) => (
+                          <Picker.Item
+                            label={`${card.bank_name} - **** ${card.card_number.slice(-4)}`}
+                            value={card.id} // Use the card's ID as the value
+                            key={card.id}
+                            color={getBackgroundColor(card.bank_name)}
+                          />
+                        ))}
+                      </Picker>
+
+
+
+
+                      </View>
+                      </View>
+                    )}
+
+              <View style={styles.buttonsContainer}>
+              <TouchableOpacity
+                style={[styles.primaryButton, disabledButtonStyle]}
+                onPress={handleConfirmAutoSave}
+                disabled={isContinueButtonDisabled}
+              >
+                <Text style={styles.primaryButtonText}>Activate AutoSave Now</Text>
+              </TouchableOpacity>
 
           
           </View>
+         
+                  </View>
+                </>
+
+
+              
+
+     
         </View>
         </TouchableOpacity>
         </TouchableOpacity>
@@ -127,6 +320,7 @@ const styles = {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,      
   },
+  
 
   modalHeader: {
     marginTop: 30,
@@ -173,9 +367,72 @@ const styles = {
   autoSaveSetting: {
     fontSize: 17,
     fontFamily: 'proxima',
-    marginRight: 190,
-    marginBottom: 10,
+    marginLeft: 50,
+    marginBottom: 5,
+    alignSelf: 'flex-start',
+    marginTop: 10,
   },
+
+
+
+  inputContainer: {
+    marginTop: 5,
+    marginBottom: 15,
+    width: '100%',
+    alignItems: 'center',
+  },
+  
+  inputContainer2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    height: 50,
+    width: '80%',
+    marginTop: 5,
+  },
+
+  nairaSign: {
+    fontSize: 16,
+    marginLeft: 15,
+    marginRight: 0,
+  },
+
+  amountInput: {
+    flex: 1,
+    color: 'black',
+    fontFamily: 'karla',
+    fontSize: 16,
+    letterSpacing: -0.3,
+    padding: 10,
+  },
+  
+
+  presetAmountsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 45,
+    marginTop: 5,
+  },
+  presetAmountColumn: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  presetAmountButton: {
+    backgroundColor: '#DCD1FF', // Background color changed to #DCD1FF
+    borderRadius: 5,
+    padding: 10,
+    margin: 5,
+    alignItems: 'center',
+  },
+  presetAmountText: {
+    color: 'black', // Text color changed to #4C28BC
+    fontSize: 15,
+    fontFamily: 'karla',
+  },
+
+
+
 
   label: {
     fontSize: 17,
@@ -184,31 +441,41 @@ const styles = {
     marginTop: 20,
   },
 
-  labelItem: {
-    color: 'grey',
-    textAlign: 'left',
-    marginLeft: -16,
-    marginBottom: 30,
-    backgroundColor: '#fff',
-  },
+  label3: {
+    fontSize: 17,
+    fontFamily: 'proxima',
+    marginBottom: 5,
+    marginLeft: 50,
+    alignSelf: 'flex-start'
+},
+
+
+labelItem: {
+  color: 'black',
+  textAlign: 'left',
+  marginLeft: -16,
+  marginBottom: 30,
+  fontFamily: 'karla',
+  //backgroundColor: '#fff',
+  borderRadius: 10,
+},
 
   dropdown: {
-    height: 45,
+    height: 50,
     width: '80%',
     backgroundColor: 'white',
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 1,
     paddingLeft: 15,
     paddingRight: 5,
 
   },
 
-
   buttonsContainer: {
     flexDirection: 'row',
     marginTop: 10,
     position: 'relative',
-    marginBottom: 35,
+    marginBottom: 40,
     alignSelf: 'center'
   },
 
@@ -220,6 +487,11 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,  
+  },
+
+  disabledButton: {
+    backgroundColor: 'gray', // Change the background color to grey
+    opacity: 0.9, // You can adjust the opacity as desired
   },
 
   primaryButtonText: {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Text, Alert, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { Modal, Text, Alert, KeyboardAvoidingView, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
@@ -77,8 +77,6 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
 
   const handleAmountButtonPress = (presetAmount) => {
     handleAmountPreset(presetAmount);
-    // Dismiss the keyboard when the button is pressed
-    Keyboard.dismiss();
   };
 
   const dismissKeyboard = () => {
@@ -86,15 +84,19 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
   };
 
 
-
   useEffect(() => {
     // Check if both amount and selectedCard are not empty and selectedCard is not 'null'
-    if (amount !== '' && selectedCard !== '' && selectedCard !== 'null') {
+    if (amount !== '' && selectedCard !== null) {
       setIsContinueButtonDisabled(false);
     } else {
       setIsContinueButtonDisabled(true);
     }
-  }, [amount, selectedCard]);
+  
+    // Set initial selectedCard when userCards are available
+    if (userCards.length > 0 && selectedCard === null) {
+      setSelectedCard(userCards[0].id);
+    }
+  }, [amount, selectedCard, userCards]);
   
 
 
@@ -138,11 +140,8 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
   const handleQuickSave = async () => {
     setProcessing(true);
     try {
-      console.log('QuickSave button pressed');
       console.log('Selected card:', selectedCard);
-      console.log('userInfo:', userInfo.token);
-      console.log('ipAddress:', ipAddress);
-
+      console.log('Amount Entered:', amount);
 
       // Send the QuickSave request to your API using axios
       const response = await axios.post(`${ipAddress}/api/quicksave/`,
@@ -213,12 +212,15 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
         onRequestClose={() => setQuickSaveModalVisible(false)}
       >
         <TouchableWithoutFeedback
-          onPress={() => {
-            Keyboard.dismiss(); // Dismiss the keyboard when tapping outside the modal
-            closeModal(); // Optionally, close the modal on outside tap
+          onPress={(e) => {
+            if (e.target !== e.currentTarget) {
+              // If the tap event target is not the outer wrapper, don't dismiss
+              return;
+            }
+            Keyboard.dismiss();
+            closeModal();
           }}
-          accessible={false} // Disable accessibility for this wrapper
-          keyboardShouldPersistTaps="handled" // Ensure taps outside input fields dismiss the keyboard
+          accessible={false}
         >
 
         <TouchableOpacity
@@ -227,7 +229,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
           onPress={closeModal}
         >
           
-          <TouchableOpacity
+          <KeyboardAvoidingView
             activeOpacity={1}
             style={styles.modalContent}
             onPress={() => dismissKeyboard()} // Dismiss the keyboard when tapping within the modal
@@ -299,7 +301,6 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                     selectedValue={frequency}
                     onValueChange={(value) => setFrequency(value)}
                   >
-                    <Picker.Item color='#4C28BC' label="Select source of funding..." value="Select destination account" />
                     <Picker.Item label="My Saved Cards" value="My Saved Cards" />
                     <Picker.Item label="Add New Card" value="Add New Card" />
                     <Picker.Item label="Bank Transfer" value="Bank Transfer" />
@@ -307,12 +308,15 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                 </View>
               </View>
 
-              {frequency === 'My Saved Cards' && (
                 <>
                   <View style={styles.inputContainer}>
                     <Text style={styles.label3}>Which of them?     </Text>
                     {userCards.length === 0 ? (
-                      <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 10, marginLeft: 15 }}>No cards added yet...</Text>
+                      <TouchableOpacity onPress={handleAddCard}>
+                      <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>No cards added yet... 
+                      <Text style={{ color: '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>    Add Card Now!</Text>
+                      </Text>
+                      </TouchableOpacity>
                     ) : (
                       
                       <View style={styles.inputContainer}>
@@ -321,13 +325,15 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                       <Picker
                         style={styles.labelItem}
                         selectedValue={selectedCard}
-                        onValueChange={(value) => handleCardSelection(value)}
+                        onValueChange={(value) => {
+                          console.log('Selected Card Value:', value);
+                          handleCardSelection(value)
+                          }} 
                       >
-                        <Picker.Item color={getBackgroundColor("Choose card...")} label="Choose card..." value={null} />
                         {userCards.map((card) => (
                           <Picker.Item
                             label={`${card.bank_name} - **** ${card.card_number.slice(-4)}`}
-                            value={card.id}
+                            value={card.id} // Use the card's ID as the value
                             key={card.id}
                             color={getBackgroundColor(card.bank_name)}
                           />
@@ -335,18 +341,18 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                       </Picker>
 
 
+
+
                       </View>
                       </View>
                     )}
 
-                    <View style={styles.buttonsContainer}>
-
-
-                    <TouchableOpacity
+                        <View style={styles.buttonsContainer}>
+                          <TouchableOpacity
                             style={[
                               styles.primaryButton,
                               (isContinueButtonDisabled || processing) && styles.primaryButtonDisabled,
-                              { backgroundColor: processing ? 'green' : '#4C28BC' },
+                              { backgroundColor: processing ? 'green' : isContinueButtonDisabled ? 'grey' : '#4C28BC' },
                             ]}
                             onPress={handleQuickSave}
                             disabled={isContinueButtonDisabled || processing}
@@ -363,13 +369,9 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                               {processing ? 'Paystack Processing...' : 'QuickSave Now!'}
                             </Text>
                           </TouchableOpacity>
-
-
-
-                    </View>
+                        </View>
                   </View>
                 </>
-              )}
 
 
               {frequency === "Add New Card" && (
@@ -400,7 +402,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
             </View>
             </ScrollView>
 
-          </TouchableOpacity>
+          </KeyboardAvoidingView>
         </TouchableOpacity>
 
         </TouchableWithoutFeedback>
