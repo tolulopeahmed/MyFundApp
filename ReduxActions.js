@@ -11,8 +11,11 @@ export const SET_PROFILE_IMAGE_URI = 'SET_PROFILE_IMAGE_URI';
 export const UPDATE_SAVINGS_GOAL = 'UPDATE_SAVINGS_GOAL';
 export const ADD_MESSAGE = 'ADD_MESSAGE';
 export const CLEAR_MESSAGES = 'CLEAR_MESSAGES';
+
 export const UPDATE_ACCOUNT_BALANCES = 'UPDATE_ACCOUNT_BALANCES';
+export const UPDATE_SAVINGS_BALANCE = 'UPDATE_SAVINGS_BALANCE';
 export const UPDATE_USER_TRANSACTIONS = 'UPDATE_USER_TRANSACTIONS';
+
 export const ADD_BANK_ACCOUNT = 'ADD_BANK_ACCOUNT';
 export const DELETE_BANK_ACCOUNT = 'DELETE_BANK_ACCOUNT'; // Define DELETE_BANK_ACCOUNT action type
 export const LOAD_BANK_ACCOUNTS = 'LOAD_BANK_ACCOUNTS';
@@ -65,9 +68,9 @@ export const deleteBankAccount = (accountNumber) => ({
   payload: accountNumber,
 });
 
-export const updateAccountBalances = (newBalances) => ({
+export const updateAccountBalances = (newAccountBalances) => ({
   type: UPDATE_ACCOUNT_BALANCES,
-  payload: newBalances,
+  payload: newAccountBalances,
 });
 
 export const updateUserTransactions = (transactions) => ({

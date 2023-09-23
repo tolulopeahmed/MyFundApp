@@ -9,7 +9,7 @@ import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { AutoInvestContext } from '../components/AutoInvestContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, fetchUserTransactions, fetchUserData } from '../../ReduxActions';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData, } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import ImageContext from './ImageContext';
 
@@ -18,7 +18,7 @@ const Home = ({ navigation, route}) => {
   const { autoSave } = useContext(AutoSaveContext)
   const { autoInvest } = useContext(AutoInvestContext)
   const [displayedProfileImage, setDisplayedProfileImage] = useState(null);
-  const { profileImageUri, selectedImage } = useContext(ImageContext);
+  const { profileImageUri, setProfileImageUri, selectedImage } = useContext(ImageContext);
   const userInfo = useSelector((state) => state.bank.userInfo);
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
@@ -83,12 +83,12 @@ const formatTime = (timeString) => {
   }, []);
 
 
-  // useEffect(() => {
-  //   // Dispatch actions to fetch user data and set profile image URI when the component mounts or when the user logs in.
-  //   if (userInfo.token) {
-  //     dispatch(fetchUserData(userInfo.token));
-  //   }
-  // }, [dispatch, userInfo.token]);
+  useEffect(() => {
+    // Dispatch actions to fetch user data and set profile image URI when the component mounts or when the user logs in.
+    if (userInfo.token) {
+      dispatch(fetchUserData(userInfo.token));
+    }
+  }, [dispatch, userInfo.token]);
 
 
   useEffect(() => {
@@ -158,8 +158,8 @@ const formatTime = (timeString) => {
         style={styles.profileContainer} // Add this style to the container
       >
       <View style={styles.profileImageContainer}>
-        {selectedImage ? (
-          <Image source={{ uri: selectedImage }} style={styles.profileImage} />
+        {profileImageUri ? (
+          <Image source={{ uri: profileImageUri }} style={styles.profileImage} />
         ) : (
           <Ionicons name="person-circle" size={80} color="silver" />
         )}
@@ -172,7 +172,7 @@ const formatTime = (timeString) => {
 
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
-        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: "#4C28BC" }}></Text><Text style={{fontFamily: 'proxima'}}>Every January and July</Text>, you'll earn 10% p.a. on Savings and 20% p.a. on your Investments. <Text style={{fontFamily: 'proxima'}}>Every year</Text>, you'll earn a lifetime rental income on properties you buy. Keep growing your funds.</Text>
+        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: "#4C28BC" }}></Text><Text style={{fontFamily: 'proxima'}}>Every January and July</Text>, you'll earn 10% p.a. on Savings and 20% p.a. on your Investments until you've saved enough to buy properties and earn lifetime rent.. Keep growing your funds.</Text>
       </View>
 
 

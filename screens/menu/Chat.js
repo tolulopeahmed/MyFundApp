@@ -7,7 +7,6 @@ import Title from '../components/Title';
 import SectionTitle from '../components/SectionTitle';
 import { ipAddress } from '../../constants';
 import axios from 'axios';
-import { useUserContext } from '../../UserContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Subtitle from '../components/Subtitle';
 import { useSelector, useDispatch } from 'react-redux'; // Import Redux functions
@@ -35,10 +34,10 @@ const Chat = ({ navigation }) => {
   const [previewImage, setPreviewImage] = useState(null);
   const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
-  const { userInfo } = useUserContext();
+  const userInfo = useSelector((state) => state.bank.userInfo);
   const scrollViewRef = useRef(null);
   const [fetchInterval, setFetchInterval] = useState(null);
-  const messages = useSelector((state) => state.messages);
+  const messages = useSelector((state) => state.bank.messages);
   const dispatch = useDispatch();
 
 
@@ -53,6 +52,9 @@ const Chat = ({ navigation }) => {
   }, []);
 
 
+
+
+
   const sendMessage = async () => {
     const timestamp = new Date().toLocaleTimeString();
     const newMessage = {
@@ -62,34 +64,37 @@ const Chat = ({ navigation }) => {
       image: attachmentImage ? attachmentImage.uri : null,
     };
   
-    // Update the state immediately with the new message
-    dispatch(addMessage(newMessage));
-    setMessageText('');
-    setAttachmentImage(null);
-  
     try {
       const formData = new FormData();
-      formData.append('content', messageText); // Include the text content
-      formData.append('recipient_id', 1); // Admin's ID
-      formData.append('sender_id', userInfo.id); // User's ID
+      formData.append('content', messageText);
+      formData.append('recipient_id', 1);
+      formData.append('sender_id', userInfo.id);
+  
       if (attachmentImage) {
         formData.append('image', {
           uri: attachmentImage.uri,
-          type: 'image/jpeg', // Adjust the MIME type accordingly
-          name: 'attachment.jpg', // You can provide a name for the attachment
+          type: 'image/jpeg',
+          name: 'attachment.jpg',
         });
       }
   
       const response = await axios.post(
-        `${ipAddress}/api/send-message/1/`, // Assuming 1 is the admin's ID
+        `${ipAddress}/api/send-message/1/`,
         formData,
         {
           headers: {
             Authorization: `Bearer ${userInfo.token}`,
-            'Content-Type': 'multipart/form-data', // Specify content type for image attachment
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
+  
+      // If the request is successful, update the state with the new message
+      dispatch(addMessage(newMessage));
+  
+      // Clear the message input and attachment
+      setMessageText('');
+      setAttachmentImage(null);
   
       console.log('Message sent successfully:', response.data);
     } catch (error) {
@@ -98,15 +103,17 @@ const Chat = ({ navigation }) => {
   };
   
   
-
+  
   
 
-  
   const fetchMessages = async () => {
+    if (!isAuthenticated) {
+      // User is not in chat or message admin section, do not fetch messages
+      return;
+    }
     try {
-      const recipient_id = 1; // User or admin's ID, depending on the recipient
       const response = await axios.get(
-        `${ipAddress}/api/get-messages/${recipient_id}/`,
+        `${ipAddress}/api/get-messages/1/`,
         {
           headers: {
             Authorization: `Bearer ${userInfo.token}`,
@@ -116,7 +123,11 @@ const Chat = ({ navigation }) => {
   
       // Assuming the API response structure matches the structure of your state
       const newMessages = response.data;
-      dispatch(clearMessages()); // Clear existing messages before updating with new ones
+  
+      // Dispatch the clearMessages action to clear existing messages
+      dispatch(clearMessages());
+  
+      // Iterate through the newMessages array and dispatch addMessage for each message
       newMessages.forEach((message) => {
         dispatch(addMessage(message)); // Add each new message to Redux state
       });
@@ -127,46 +138,37 @@ const Chat = ({ navigation }) => {
   
 
 
-
-  // Renamed fetchNewMessages to fetchMessages
   useEffect(() => {
-    fetchMessages(); // Fetch messages immediately
-    // Set up a polling interval to fetch new messages every 10 seconds
-    const intervalId = setInterval(fetchMessages, 1 * 60 * 1000); // Adjust the interval as needed
-    setFetchInterval(intervalId);
-
-    // Clean up the interval when the component unmounts
+    setAuthentication(true); // User is in the chat section
     return () => {
-      if (fetchInterval) {
-        clearInterval(fetchInterval);
-      }
+      setAuthentication(false); // User is leaving the chat section
     };
   }, []);
+  
 
 
 
-  useEffect(() => {
-    // Load messages from AsyncStorage and fetch from server
-    const loadMessages = async () => {
-      try {
-        const storedMessages = await AsyncStorage.getItem('chatMessages');
-        if (storedMessages) {
-          const parsedMessages = JSON.parse(storedMessages);
-          parsedMessages.forEach((message) => {
-            dispatch(addMessage(message)); // Add each stored message to Redux state
-          });
-        }
+  // useEffect(() => {
+  //   // Load messages from AsyncStorage and fetch from server
+  //   const loadMessages = async () => {
+  //     try {
+  //       const storedMessages = await AsyncStorage.getItem('chatMessages');
+  //       if (storedMessages) {
+  //         const parsedMessages = JSON.parse(storedMessages);
+  //         parsedMessages.forEach((message) => {
+  //           dispatch(addMessage(message)); // Add each stored message to Redux state
+  //         });
+  //       }
 
+  //       // Fetch messages from server
+  //       fetchMessages();
+  //     } catch (error) {
+  //       console.error('Error loading messages:', error);
+  //     }
+  //   };
 
-        // Fetch messages from server
-        fetchMessages();
-      } catch (error) {
-        console.error('Error loading messages:', error);
-      }
-    };
-
-    loadMessages();
-  }, []);
+  //   loadMessages();
+  // }, []);
 
   
 

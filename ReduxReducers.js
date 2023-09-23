@@ -17,6 +17,7 @@ import {
   ADD_CARD_SUCCESS,
   DELETE_CARD_SUCCESS,
   LOAD_CARDS,
+  UPDATE_SAVINGS_BALANCE,
 } from './ReduxActions';
 
 
@@ -61,7 +62,16 @@ const Reducer = (state = initialState, action) => {
           token: action.payload,
         },
       };
-      
+      case UPDATE_SAVINGS_GOAL:
+        return {
+          ...state,
+          userInfo: {
+            ...state.userInfo,
+            preferred_asset: action.payload.preferred_asset,
+            savings_goal_amount: action.payload.savings_goal_amount,
+            time_period: action.payload.time_period,
+          },
+        }; 
     case ADD_BANK_ACCOUNT:
       return {
         ...state,
@@ -130,34 +140,31 @@ const Reducer = (state = initialState, action) => {
         profileImageUri: action.payload,
       };
       case ADD_MESSAGE:
-        return {
-          ...state,
-          messages: [...state.messages, action.payload],
-        };
-      case CLEAR_MESSAGES:
-        return {
-          ...state,
-          messages: [],
-        };
-      case UPDATE_SAVINGS_GOAL:
-        return {
-          ...state,
-          userInfo: {
-            ...state.userInfo,
-            ...action.payload,
-          },
-        };
-
-      case UPDATE_ACCOUNT_BALANCES:
-        return {
-          ...state,
-          accountBalances: action.payload,
-        };
+            return {
+                ...state,
+                messages: [...state.messages, action.payload],
+            };
+        case CLEAR_MESSAGES:
+            return {
+                ...state,
+                messages: [],
+            };
+        
+            case UPDATE_ACCOUNT_BALANCES:
+              return {
+                ...state,
+                accountBalances: {
+                  ...state.accountBalances,
+                  ...action.payload, // Merge the new balances into the existing state
+                },
+              };
       case UPDATE_USER_TRANSACTIONS:
           return {
             ...state,
             userTransactions: action.payload,
           };
+
+         
      default:
       return state;
 

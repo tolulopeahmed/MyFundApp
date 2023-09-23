@@ -5,6 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
 import SavingsGoalModal from './SavingsGoalModal';
+import PinModal from '../components/PinModal';
 import ProfileEditModal from './ProfileEditModal';
 import ImageContext from './ImageContext';
 import axios from 'axios';  // Import axios for making API requests
@@ -21,6 +22,8 @@ const Profile = ({ navigation, route }) => {
   const [showBalances, setShowBalances] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
+  const [pinModalVisible, setPinModalVisible] = useState(false); // define modalVisible state
+
   const [profileEditModalVisible, setProfileEditModalVisible] = useState(false); // define modalVisible state
   const [profile, setProfile] = useState({});
   const userInfo = useSelector((state) => state.bank.userInfo);
@@ -138,7 +141,8 @@ const Profile = ({ navigation, route }) => {
             try {
               // Make an API call to log the user out
               await AsyncStorage.removeItem('authToken');
-              
+              await AsyncStorage.removeItem('profileImageUri');
+  
               const keys = await AsyncStorage.getAllKeys();
                 for (const key of keys) {
                   if (key.startsWith('chatMessages')) {
@@ -402,22 +406,32 @@ const Profile = ({ navigation, route }) => {
       </View>
       </View>
     
-
-        <SavingsGoalModal 
+      <SavingsGoalModal 
         navigation={navigation} 
         goalModalVisible={goalModalVisible} 
         setGoalModalVisible={setGoalModalVisible} 
         dispatch={dispatch} // Pass the dispatch function
         />
 
+{pinModalVisible && (
+        <PinModal 
+        navigation={navigation} 
+        pinModalVisible={pinModalVisible} 
+        setPinModalVisible={setPinModalVisible} 
+        />
+)}
+
+    
+
 <SectionTitle>SETTINGS</SectionTitle>
 <View>
 <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => setGoalModalVisible(true)}>
-          <Ionicons name="save" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <MaterialIcons name="flag" size={25} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Savings Goal Settings</Text>
         </TouchableOpacity>
         </View>
+        
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Card')}>
           <Ionicons name="card" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
@@ -428,6 +442,13 @@ const Profile = ({ navigation, route }) => {
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('KYC')}>
           <Ionicons name="shield-checkmark" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Update KYC</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => setPinModalVisible(true)}>
+          <MaterialIcons name="lock" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Text style={styles.buttonText}>Set PIN</Text>
         </TouchableOpacity>
       </View>
  
@@ -447,6 +468,8 @@ const Profile = ({ navigation, route }) => {
       </View>
 
       
+
+     
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleRateMyFund}>

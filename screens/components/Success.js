@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Modal from 'react-native-modal'; // Import the Modal component
 
-const Success = ({ navigation }) => {
+const Success = ({ isVisible, onClose, navigation }) => {
   const [animation] = useState(new Animated.Value(0));
 
   useEffect(() => {
@@ -18,7 +19,12 @@ const Success = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.modalContainer}>
+    <Modal
+      isVisible={isVisible}
+      backdropOpacity={0.6}
+      style={styles.modal}
+      onBackdropPress={onClose}
+    >
       <View style={styles.modalContent}>
         <View style={styles.modalHeaderContainer}>
           <Text style={styles.modalHeader}>Success!</Text>
@@ -26,7 +32,7 @@ const Success = ({ navigation }) => {
             name="close-outline"
             size={24}
             color="grey"
-            onPress={() => navigation.goBack()}
+            onPress={onClose}
           />
         </View>
         <Text style={styles.modalSubText}>
@@ -41,35 +47,33 @@ const Success = ({ navigation }) => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.primaryButton}
-            onPress={() => navigation.goBack()}
-          >
+            onPress={() => navigation.navigate('Withdraw')}          
+            >
             <Text style={styles.primaryButtonText}>OK</Text>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </Modal>
   );
 };
 
 const styles = {
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  modal: {
+    margin: 0,
+    justifyContent: 'flex-end',
   },
   modalContent: {
     backgroundColor: '#F6F3FF',
-    width: '85%',
-    alignItems: 'center',
-    borderRadius: 10,
+    borderTopRightRadius: 25,
+    borderTopLeftRadius: 25,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
     padding: 20,
   },
   modalHeaderContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '100%',
     marginBottom: 20,
   },
   modalHeader: {
@@ -87,11 +91,12 @@ const styles = {
   },
   checkmarkContainer: {
     marginBottom: 20,
+    alignItems: 'center', // Center the checkmark
   },
   buttonContainer: {
-    marginTop: 'auto',
-    width: '95%',
-    marginBottom: 10,
+    marginTop: 10,
+    alignSelf: 'center',
+    width: '85%',
   },
   primaryButton: {
     backgroundColor: '#4C28BC',

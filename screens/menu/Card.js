@@ -108,8 +108,23 @@ const Card = ({ navigation, route }) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              // Make a DELETE request to the delete card API endpoint
-              const response = await axios.delete(`${ipAddress}/api/cards/${cardId}/`);
+              // Get the user's token from Redux state
+              const userToken = userInfo.token;
+  
+              // Check if the userToken exists
+              if (!userToken) {
+                console.error('User is not authenticated');
+                return;
+              }
+  
+              // Set up authorization headers
+              const headers = {
+                Authorization: `Bearer ${userToken}`,
+              };
+  
+              // Make a DELETE request to the delete card API endpoint with authorization headers
+              const response = await axios.delete(`${ipAddress}/api/cards/${cardId}/`, { headers });
+  
               if (response.status === 204) {
                 // Card deleted successfully, dispatch the action to remove it from Redux
                 dispatch(deleteCardSuccess(cardId));
@@ -125,6 +140,7 @@ const Card = ({ navigation, route }) => {
       { cancelable: false }
     );
   };
+  
   
   
 

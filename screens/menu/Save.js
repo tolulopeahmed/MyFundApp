@@ -15,6 +15,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAccountBalances, fetchUserTransactions, fetchUserData } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import moment from 'moment';
+import Success from '../components/Success';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 const Save = ({ navigation, route }) => {
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
@@ -25,15 +28,33 @@ const Save = ({ navigation, route }) => {
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
   const [currentMonth, setCurrentMonth] = useState('');
-  const userCards = useSelector((state) => state.bank.userCards) || [];  // Replace 'cards' with the correct slice name
+  const [isSuccessVisible, setIsSuccessVisible] = useState(false);
 
+
+  const handleCloseSuccessModal = () => {
+    setIsSuccessVisible(false);
+  };
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('Save.js gained focus');
+    }, [])
+  );
+
+  const [forceUpdateCounter, setForceUpdateCounter] = useState(0);
+  const forceUpdate = () => {
+    setForceUpdateCounter(forceUpdateCounter + 1);
+  };
+
+  useEffect(() => {
+    if (!isSuccessVisible) {
+      forceUpdate(); // Trigger a re-render when isSuccessVisible becomes false
+    }
+  }, [isSuccessVisible]);
 
 
   const dispatch = useDispatch();
-
-
-
-  
+ 
 
   useEffect(() => {
     dispatch(fetchAccountBalances()); // Fetch account balances using Redux action
@@ -260,7 +281,7 @@ const formatTime = (timeString) => {
   navigation={navigation}
   quickSaveModalVisible={quickSaveModalVisible} 
   setQuickSaveModalVisible={setQuickSaveModalVisible}
-
+  setIsSuccessVisible={setIsSuccessVisible} // Pass the setIsSuccessVisible function here
   />
 )}
 
@@ -335,6 +356,15 @@ const formatTime = (timeString) => {
       >
         <Ionicons name="save-outline" size={25} color="#fff" />
       </TouchableOpacity>
+
+      {isSuccessVisible && (
+      <Success  
+      isVisible={isSuccessVisible}
+      onClose={handleCloseSuccessModal} // Pass the callback function
+      navigation={navigation}
+      />
+      )}
+
 
     </View>
   );

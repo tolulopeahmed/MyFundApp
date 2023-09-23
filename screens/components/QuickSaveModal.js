@@ -1,18 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Text, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { Modal, Text, Alert, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserCards } from '../../ReduxActions'; // Import fetchUserCards
+import { fetchUserCards, updateAccountBalances, } from '../../ReduxActions'; // Import fetchUserCards
+import { ipAddress } from '../../constants';
+import axios from 'axios';
 
 
-const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVisible }) => {
+const getBackgroundColor = (bankName) => {
+  switch (bankName) {
+    case "Access Bank":
+      return "#91A62A";
+    case "Guaranty Trust Bank":
+      return "#C3460E";
+    case "Zenith Bank":
+      return "#E6000D";
+    case "United Bank for Africa":
+      return "#D42C07";
+    case "First City Monument Bank":
+      return "#702699";
+    case "Wema Bank":
+      return "#72235A";
+    case "Polaris Bank":
+      return "#8834AE";
+    case "Union Bank":
+      return "#00ADEF";
+    case "Ecobank":
+      return "#00537F";
+    case "Stanbic IBTC Bank":
+      return "#04009D";
+    case "First Bank of Nigeria":
+      return "#0C2B5C";
+    case "Keystone Bank":
+      return "#014888";
+    case "Sterling Bank":
+      return "#DB3539";
+    case "Unity Bank Plc":
+      return "#88BB52";
+    case "Citibank":
+      return "#0275D0";
+    case "Heritage Bank Plc":
+      return "#439B2D";
+    case "Standard Chartered Bank":
+      return "#0671A9";
+    case "Jaiz Bank":
+      return "#0B411F";
+    case "Fidelity Bank":
+      return "#232B69";
+    case "Opay":
+        return "#08A67C";
+    case "Palmpay":
+        return "#7F13CB";
+    case "Moniepoint Microfinance Bank":
+        return "#0649C4";
+    default:
+      return "#4C28BC"; // Default color
+  }
+};
+
+const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVisible, setIsSuccessVisible }) => {
   const [frequency, setFrequency] = useState('');
   const [amount, setAmount] = useState('');
   const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
-  const [selectedCard, setSelectedCard] = useState('null');
-
+  const [selectedCard, setSelectedCard] = useState(null);
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  const selectedCardId = selectedCard !== undefined && selectedCard !== null ? selectedCard : null;
+  const [processing, setProcessing] = useState(false);
   const userCards = useSelector((state) => state.bank.cards) || [];
   const dispatch = useDispatch();
 
@@ -55,6 +110,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
   };
   
   const handleCardSelection = (value) => {
+    console.log('Selected Card Value:', value); // Add this line
     setSelectedCard(value);
   };
 
@@ -74,10 +130,72 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
   const clearAmount = () => {
     setAmount('');
   };
+
+
   
-  console.log('User Cards in QuickSaveModal:', userCards);
 
 
+  const handleQuickSave = async () => {
+    setProcessing(true);
+    try {
+      console.log('QuickSave button pressed');
+      console.log('Selected card:', selectedCard);
+      console.log('userInfo:', userInfo.token);
+      console.log('ipAddress:', ipAddress);
+
+
+      // Send the QuickSave request to your API using axios
+      const response = await axios.post(`${ipAddress}/api/quicksave/`,
+        {
+          card_id: selectedCardId,
+          amount: parseFloat(amount.replace(/,/g, '')),
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        // QuickSave was successful, update account balances and transactions
+        const responseData = response.data;
+        setIsSuccessVisible(true);
+
+        setQuickSaveModalVisible(false);
+          // Dispatch actions to update Redux store
+          dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
+      
+     
+      } else {
+        // Handle QuickSave error here and show appropriate alerts
+        if (response.status === 400) {
+          setProcessing(false);
+          // Bad request, possibly due to invalid input
+          Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+        } else if (response.status === 401) {
+          setProcessing(false);
+          // Unauthorized, user not authenticated
+          Alert.alert('Error', 'You are not authorized. Please login again.');
+        } else {
+          // Other server errors
+          setProcessing(false);
+          Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+        }
+      }
+    } catch (error) {
+      console.error('QuickSave Error:', error);
+      setProcessing(false);
+      // Handle network or other errors here and show an appropriate alert
+      Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+    }
+  };
+
+
+
+  console.log('Selected card:', selectedCard);
+  console.log('userInfo:', userInfo.token);
 
 
 
@@ -125,7 +243,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
               <Divider />
               <Text style={styles.modalSubText}>
                 Manually move funds from your local bank account into your <Text style={{ fontFamily: 'nexa', fontSize: 12 }}>SAVINGS</Text> account with a few taps. <Text style={{ fontFamily: 'proxima' }}>(@10% interest p.a.)</Text> {'\n'}
-                {'\n'}QuickSave how much?
+                {'\n'}Enter or Select an amount.
               </Text>
               <View style={styles.inputContainer2}>
                 <Text style={styles.nairaSign}>₦</Text>
@@ -199,20 +317,24 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                       
                       <View style={styles.inputContainer}>
                       <View style={styles.dropdown}>
+
                       <Picker
                         style={styles.labelItem}
                         selectedValue={selectedCard}
                         onValueChange={(value) => handleCardSelection(value)}
                       >
-                        <Picker.Item color='#4C28BC' label="Choose card..." value="null" />
+                        <Picker.Item color={getBackgroundColor("Choose card...")} label="Choose card..." value={null} />
                         {userCards.map((card) => (
                           <Picker.Item
                             label={`${card.bank_name} - **** ${card.card_number.slice(-4)}`}
-                            value={card.cardId}
+                            value={card.id}
                             key={card.id}
+                            color={getBackgroundColor(card.bank_name)}
                           />
                         ))}
                       </Picker>
+
+
                       </View>
                       </View>
                     )}
@@ -221,17 +343,27 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
 
 
                     <TouchableOpacity
-                      style={isContinueButtonDisabled ? styles.primaryButtonDisabled : styles.primaryButton}
-                      onPress={() => {
-                        if (!isContinueButtonDisabled) {
-                          navigation.navigate('Success');
-                        }
-                      }}
-                      disabled={isContinueButtonDisabled}
-                    >
-                      <Image source={require('./paystack.png')} style={styles.image} />
-                      <Text style={styles.primaryButtonText}>Continue</Text>
-                    </TouchableOpacity>
+                            style={[
+                              styles.primaryButton,
+                              (isContinueButtonDisabled || processing) && styles.primaryButtonDisabled,
+                              { backgroundColor: processing ? 'green' : '#4C28BC' },
+                            ]}
+                            onPress={handleQuickSave}
+                            disabled={isContinueButtonDisabled || processing}
+                          >
+                            {processing ? (
+                              <>
+                                <ActivityIndicator color="white" style={styles.activityIndicator} />
+                                <Image source={require('./paystack.png')} style={styles.image} />
+                              </>
+                            ) : (
+                              <Image source={require('./paystack.png')} style={styles.image} />
+                            )}
+                            <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
+                              {processing ? 'Paystack Processing...' : 'QuickSave Now!'}
+                            </Text>
+                          </TouchableOpacity>
+
 
 
                     </View>
@@ -274,6 +406,8 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
         </TouchableWithoutFeedback>
 
       </Modal>
+
+
     </>
   );
 };
@@ -513,6 +647,13 @@ const styles = {
   },
   
   primaryButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'ProductSans',
+    marginRight: 5,
+  },
+
+  processingText: {
     color: '#fff',
     fontSize: 18,
     fontFamily: 'ProductSans',

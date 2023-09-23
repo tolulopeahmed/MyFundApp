@@ -3,11 +3,11 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from 'rea
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider';
 import QuickSaveModal from '../components/QuickSaveModal';
-import { useUserContext } from '../../UserContext';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Sidebar = ({ navigation, }) => {
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
-  const { userInfo } = useUserContext();
+  const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
 
 
   const handleLogout = () => {
@@ -31,7 +31,7 @@ const Sidebar = ({ navigation, }) => {
 
         <View style={styles.profileInfo}>
           <Text style={styles.firstName}>Hi</Text>
-          <Text style={styles.username}>{userInfo?.firstName}</Text>
+          <Text style={styles.username}>{userInfo?.firstName ? `${userInfo.firstName}` : ''}</Text>
         </View>
       </View>
       <View style={styles.menuItemsContainer}>

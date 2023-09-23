@@ -104,7 +104,7 @@ const handleLogin = async () => {
     if (error.message === 'Network Error') {
       Alert.alert('Connection Error', 'Please check your internet connection and try again.');
     } else {
-      Alert.alert('Login Error', 'Wrong username or password. Please try again.');
+      Alert.alert('Login Error', 'Something went wrong. Please try again later.');
       console.log('Login error:', error);
     }
   }

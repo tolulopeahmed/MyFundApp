@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Modal, Text, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { Modal, Text, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
@@ -152,26 +152,26 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
 
               <View style={styles.presetAmountsContainer}>
                 <View style={styles.presetAmountColumn}>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(1000000)}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(100000)}>
                     <Text style={styles.presetAmountText}>100,000</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(10000000)}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(1000000)}>
                     <Text style={styles.presetAmountText}>1,000,000</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.presetAmountColumn}>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(2000000)}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(200000)}>
                     <Text style={styles.presetAmountText}>200,000</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(15000000)}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(2000000)}>
                     <Text style={styles.presetAmountText}>2,000,000</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={styles.presetAmountColumn}>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(5000000)}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(500000)}>
                     <Text style={styles.presetAmountText}>500,000</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(30000000)}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(5000000)}>
                     <Text style={styles.presetAmountText}>5,000,000</Text>
                   </TouchableOpacity>
                 </View>

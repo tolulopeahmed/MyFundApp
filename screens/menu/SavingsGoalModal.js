@@ -26,6 +26,11 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
     } else {
       setIsUpdateEnabled(false);
     }
+
+      // Log the values for debugging
+  console.log('Frequency:', frequency);
+  console.log('Year:', year);
+  console.log('Amount:', amount);
   }, [frequency, year, amount]);
 
 
@@ -39,9 +44,14 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
       }
   
       // Prepare data for the API call
+      const numericAmount = parseFloat(amount.replace(/,/g, ''));
+      if (isNaN(numericAmount) || numericAmount < 0) {
+        console.error('Invalid amount');
+        return;
+      }
       const data = {
         preferred_asset: frequency,
-        savings_goal_amount: amount,
+        savings_goal_amount: Math.round(numericAmount), // Store it as an integer without commas
         time_period: year,
       };
   
@@ -96,16 +106,21 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
 
 
 
-
   const handleAmountChange = (value) => {
+    // Remove commas from the input value and parse it as a float
     const numericValue = parseFloat(value.replace(/,/g, ''));
-
-    if (!isNaN(numericValue) && numericValue > 0 && selectedCard !== '') {
-      setAmount(numericValue.toLocaleString('en-US'));
+  
+    if (!isNaN(numericValue) && numericValue >= 0) {
+      setAmount(Math.round(numericValue).toString()); // Store it as a string without commas
     } else {
       setAmount('');
     }
   };
+  
+  
+  
+  
+  
 
   const handleAmountPreset = (presetAmount) => {
     setAmount(presetAmount.toLocaleString('en-US'));
@@ -128,6 +143,12 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
   };
   
   
+
+  console.log('Amount:', amount);
+
+
+
+
    return (
     <>
     <Modal
@@ -155,7 +176,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          Hey {userInfo?.firstName ? `${userInfo.firstName},` : ''} As part of helping you grow your funds to own properties and developing your savings habit, you'll need to set a savings goal. {'\n'}
+          Hey {userInfo?.firstName ? `${userInfo.firstName},` : ''} {'\n'} {'\n'}As part of helping you grow your funds to own properties and developing your savings habit, you'll need to set a savings goal. {'\n'}
             {'\n'}<Text style={{fontFamily: 'proxima'}}>Preferred Asset</Text>
           </Text>
           

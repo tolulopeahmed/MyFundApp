@@ -177,7 +177,9 @@ const formatTime = (timeString) => {
       <SafeAreaView style={styles.transactionContainer}>
       <SectionTitle>WITHDRAWAL TRANSACTIONS</SectionTitle>
 
-      <View style={styles.transactionsContainer}>
+      
+
+<View style={styles.transactionsContainer}>
   {userTransactions.length > 0 ? (
     userTransactions
       .filter(
@@ -233,11 +235,12 @@ const formatTime = (timeString) => {
             ].includes(transaction.description)
         )
           ? "Your most recent withdrawals will appear here."
-          : "No withdrawal transactions yet."}
+          : "You're yet to make a withdrawal."} {/* Updated message */}
       </Text>
     </View>
   )}
 </View>
+
 
 
 
@@ -357,7 +360,7 @@ const styles = StyleSheet.create({
    
 
   walletMessage: {
-    color: '#fff',
+    color: 'silver',
     fontSize: 10,
     fontFamily: 'karla',
     letterSpacing: -0.3,
