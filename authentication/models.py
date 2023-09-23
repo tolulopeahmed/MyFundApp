@@ -49,6 +49,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     reset_token_expires = models.DateTimeField(null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     is_confirmed = models.BooleanField(default=False)
+    
+    myfund_pin = models.CharField(max_length=4, null=True, blank=True)
 
     preferred_asset = models.CharField(max_length=50, blank=True, null=True)
     savings_goal_amount = models.DecimalField(max_digits=11, decimal_places=2, blank=True, null=True)
@@ -162,6 +164,7 @@ class AccountBalance(models.Model):
     investment = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     properties = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     wallet = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
 
 class Transaction(models.Model):
     TRANSACTION_TYPES = (

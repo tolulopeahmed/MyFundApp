@@ -367,6 +367,8 @@ def send_message(request, recipient_id):
     content = request.data.get('content')
     image = request.data.get('image')
 
+    recipient_id = 1
+
     try:
         recipient = get_user_model().objects.get(id=recipient_id)
     except get_user_model().DoesNotExist:
@@ -386,12 +388,6 @@ def send_message(request, recipient_id):
             'sender_id': message.sender.id,
         }
     }
-
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        f'chat_{recipient_id}',
-        message_data
-    )
 
     return Response({'success': True})
 
@@ -423,8 +419,6 @@ def get_messages(request, recipient_id):
 
 
 
-
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def send_admin_reply(request, message_id):
@@ -442,10 +436,11 @@ def send_admin_reply(request, message_id):
     if not content:
         return Response({'error': 'Message content is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Create a new message for the admin's reply
+    # Create a new message from admin to user
     reply_message = Message.objects.create(sender=admin_user, recipient=message.sender, content=content)
 
     return Response({'success': True})
+
 
 
 
@@ -708,5 +703,93 @@ class AccountBalancesAPIView(APIView):
         return Response(serializer.data)
 
 
+from graphene_django.views import GraphQLView
+from graphql_jwt.decorators import jwt_cookie
+from django.utils.decorators import method_decorator
+
+class CustomGraphQLView(GraphQLView):
+    @method_decorator(jwt_cookie)
+    def dispatch(self, request, *args, **kwargs):
+        # Your existing authentication logic
+        if request.user.is_authenticated:
+            print("User is authenticated:", request.user)
+            return super().dispatch(request, *args, **kwargs)
+        else:
+            print("User is not authenticated. Sending 401 response.")
+            return JsonResponse({'error': 'Authentication required. Login first'}, status=401)
+
+
+
+
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def quicksave(request):
+    # Get the selected card details from the request
+    card_id = request.data.get('card_id')
+    amount = request.data.get('amount')
+
+    # Retrieve the card details from your database
+    try:
+        card = Card.objects.get(id=card_id)
+    except Card.DoesNotExist:
+        return Response({'error': 'Selected card not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Use the card details to initiate a payment with Paystack
+    paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"  # Use your actual secret key
+    paystack_url = "https://api.paystack.co/charge"
+
+    payload = {
+        "card": {
+            "number": card.card_number,
+            "cvv": card.cvv,
+            "expiry_month": card.expiry_date.split('/')[0],
+            "expiry_year": card.expiry_date.split('/')[1],
+        },
+        "email": request.user.email,  # Assuming you have a user authenticated with a JWT token
+        "amount": int(amount) * 100,  # Amount in kobo (multiply by 100)
+    }
+
+    headers = {
+        "Authorization": f"Bearer {paystack_secret_key}",
+        "Content-Type": "application/json",
+    }
+
+    response = requests.post(paystack_url, json=payload, headers=headers)
+    paystack_response = response.json()
+
+    if paystack_response.get("status"):
+        # Payment successful, update user's savings and create a transaction
+        user = request.user
+        user.savings += int(amount)
+        user.save()
+
+
+        # Send a confirmation email
+        subject = "QuickSave Successful!"
+        message = f"Well done {user.first_name},\n\nYour QuickSave was successful and ₦{amount} has been successfully added to your SAVINGS account. \n\nKeep growing your funds.🥂\n\nMyFund"
+        from_email = "MyFund <info@myfundmobile.com>"
+        recipient_list = [user.email]
+
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+        # Create a transaction record
+        transaction = Transaction.objects.create(
+            user=user,
+            transaction_type="credit",
+            amount=int(amount),
+            date=timezone.now().date(),
+            time=timezone.now().time(),
+            description=f"QuickSave",
+            transaction_id=paystack_response.get("data", {}).get("reference"),
+        )
+
+        # Return a success response
+        return Response({'message': 'QuickSave successful', 'transaction_id': transaction.transaction_id}, status=status.HTTP_200_OK)
+    else:
+        # Payment failed, return an error response
+        return Response({'error': 'QuickSave failed'}, status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-rct_mdzr=x!99kwy+xy1$#x=5_+!_-dynu%z&!jx_-qkj7*%*%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.240.1','192.168.137.1','localhost', '192.168.226.34', '192.168.176.34', '10.10.4.174', '192.168.84.34', '10.10.4.174' ]
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.16.34','192.168.31.34','localhost', '192.168.226.34', '192.168.176.34', '10.10.4.174', '192.168.84.34', '10.10.4.174' ]
 
 
 # Application definition
@@ -67,6 +67,8 @@ REST_FRAMEWORK = {
     # Other settings...
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+
     ],
     'DEFAULT_TOKEN_EXPIRE_TIME': 60 * 60 * 24,  # Default is 1 day in seconds
 }
@@ -82,12 +84,16 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(days=7),
 }
 
+SESSION_COOKIE_AGE = 365 * 24 * 60 * 60  # 1 year
+
+
 MIDDLEWARE = [
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -102,7 +108,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://tolulopeahmed.github.io',
     'https://10.10.4.82:8443',
     'https://www.myfundmobile.com',  # Add your domain here
-
+    'http://192.168.238.34:8000'
 ]
 
 

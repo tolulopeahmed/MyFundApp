@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to MyFundApp</title>
+    <!-- Your CSS styles here -->
+</head>
+<body>
+    <img src="logo.png" alt="MyFund Logo">
+    <h1>Welcome to MyFundApp, {{ user.username }}!</h1>
+    <p>Your card ending in {{ card.card_number[-4:] }} has been added successfully.</p>
+    <p>Transaction Details:</p>
+    <ul>
+        <li>Amount: ${{ transaction.amount }}</li>
+        <li>Date: {{ transaction.date }}</li>
+        <li>Time: {{ transaction.time }}</li>
+        <!-- Add more transaction details as needed -->
+    </ul>
+</body>
+</html>

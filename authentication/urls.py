@@ -6,7 +6,10 @@ from django.urls import re_path
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from .views import CardListCreateView, CardDetailView, UserTransactionListView, UserCardListView, AccountBalancesAPIView
-
+from django.views.decorators.csrf import csrf_exempt
+from authentication.views import CustomGraphQLView
+from authentication.schema import schema  # Adjust the import path
+from graphql_jwt.decorators import jwt_cookie
 
 router = DefaultRouter()
 router.register(r'bank-accounts', views.BankAccountViewSet, basename='bank-account')
@@ -51,8 +54,12 @@ urlpatterns = [
     # Accounts-related APIs
     path('get-account-balances/', AccountBalancesAPIView.as_view(), name='get-account-balances'),
 
-
     path('user-transactions/', UserTransactionListView.as_view(), name='user-transactions'),
+
+    path('graphql/', csrf_exempt(jwt_cookie(CustomGraphQLView.as_view(graphiql=True, schema=schema)))),
+
+    # Savings-related APIs
+    path('quicksave/', views.quicksave, name='quicksave'),
 
     ]
 

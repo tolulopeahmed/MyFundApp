@@ -153,6 +153,7 @@ class AccountBalancesSerializer(serializers.ModelSerializer):
 
 from django.utils import timezone
 import requests, uuid
+from django.core.mail import send_mail
 
 unique_reference = str(uuid.uuid4())
 
@@ -211,6 +212,15 @@ class CardSerializer(serializers.ModelSerializer):
             validated_data['user'] = user
             card = Card.objects.create(**validated_data)
 
+            # Send a confirmation email
+            subject = "New Card Added Successfully"
+            message = f"Well done {user.first_name},\n\nYour card has been successfully added to MyFund. \n\nKeep growing your funds.🥂\n\nMyFund"
+            from_email = "MyFund <info@myfundmobile.com>"
+            recipient_list = [user.email]
+
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+
             # Create a Transaction object
             now = timezone.now()
             transaction_id = unique_reference  # Use the same reference as for the payment
@@ -244,25 +254,25 @@ class CardSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Failed to verify card and process payment")
 
 
-def notify_transaction_update(transaction):
-    from channels.layers import get_channel_layer
-    from asgiref.sync import async_to_sync
+# def notify_transaction_update(transaction):
+#     from channels.layers import get_channel_layer
+#     from asgiref.sync import async_to_sync
 
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.send)(
-        'transaction_update_channel',  # Channel name
-        {
-            'type': 'send_transaction_update',
-            'transaction_data': {
-                'transaction_type': 'credit',
-                'amount': 50,  # Amount of the successful payment
-                'date': transaction.date,
-                'time': transaction.time,
-                'transaction_id': transaction.transaction_id,
-                'description': 'Card Successful',
-            },
-        },
-    )
+#     channel_layer = get_channel_layer()
+#     async_to_sync(channel_layer.send)(
+#         'transaction_update_channel',  # Channel name
+#         {
+#             'type': 'send_transaction_update',
+#             'transaction_data': {
+#                 'transaction_type': 'credit',
+#                 'amount': 50,  # Amount of the successful payment
+#                 'date': transaction.date,
+#                 'time': transaction.time,
+#                 'transaction_id': transaction.transaction_id,
+#                 'description': 'Card Successful',
+#             },
+#         },
+#     )
 
 
 
@@ -273,3 +283,6 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = Transaction
         fields = ('transaction_type', 'amount', 'date', 'time', 'transaction_id', 'description')
 
+class QuickSaveSerializer(serializers.Serializer):
+    amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    card_id = serializers.IntegerField()
