@@ -37,6 +37,7 @@ const Save = ({ navigation, route }) => {
     setIsSuccessVisible(false);
   };
   
+
   const [forceUpdateCounter, setForceUpdateCounter] = useState(0);
   const forceUpdate = () => {
     setForceUpdateCounter(forceUpdateCounter + 1);
@@ -279,13 +280,15 @@ const formatTime = (timeString) => {
 
 
     
-          {autoSave && (
-        <View style={styles.autoSaveSettingContainer}>
+         <View>
+    {autoSave ? (
           <Text style={styles.autoSaveSetting}>
             You're AutoSaving ₦{amount} {frequency} <Ionicons name="checkmark-circle" size={20} color="#0AA447" marginBottom={10} />
           </Text>
-        </View>
+          ) : (
+        <Text style={styles.autoSaveText} alignSelf='center' marginTop={10}>AutoSave is OFF: Use the switch to turn ON</Text>
       )}
+        </View>
 
 
         <View>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Alert, ImageBackground, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
@@ -152,13 +152,15 @@ const formatTime = (timeString) => {
          <Text style={styles.walletMessage}>Completed sales attract <Text style={{color: 'orange'}}>5%</Text> fee.
 </Text>
 
-<View style={styles.quickWithdrawButtonContainer}>
-      <TouchableOpacity
-      style={styles.quickWithdrawButton2}
-      // onPress={() => setWithdrawModalVisible(true)} // Replace with the appropriate onPress function
-    >
-      <Text style={styles.quickWithdrawText}>Sell to User</Text>
-    </TouchableOpacity>
+        <View style={styles.quickWithdrawButtonContainer}>
+        <TouchableOpacity
+          style={styles.quickWithdrawButton2}
+          onPress={() => {
+            Alert.alert('Sell Property', "You're yet to acquire any property. Keep growing your funds.");
+          }}
+        >
+          <Text style={styles.quickWithdrawText}>Sell to User</Text>
+        </TouchableOpacity>
     </View>
         </View>
       </ImageBackground>
@@ -279,15 +281,17 @@ const formatTime = (timeString) => {
   )}
 </View>
 
-
-
-
-
-
-
     </SafeAreaView>
-
     </ScrollView>
+
+    <TouchableOpacity
+        style={styles.quickSaveButtonCircle}
+        onPress={() => setWithdrawModalVisible(true)}
+      >
+        <Ionicons name="arrow-down-outline" size={25} color="#fff" />
+      </TouchableOpacity>
+
+
     </SafeAreaView>
   );
 };
@@ -609,6 +613,22 @@ quickWithdrawText: {
     fontFamily: 'karla',
     letterSpacing: 2,
     marginBottom: 2,
+  },
+
+  
+  quickSaveButtonCircle: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#4C28BC',
+    width: 60,
+    height: 60,
+    borderRadius: 40,
+    borderBottomRightRadius: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 10, // Add elevation to create a shadow
+
   },
   
 

@@ -105,6 +105,7 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
 
         setAutoSave(true);
         // Show a success message alert
+        
         Alert.alert(
           'AutoSave Activated!',
           `Your AutoSave has been activated. You're now saving ₦${amount} ${frequency}. Well done! Keep growing your funds. 🥂`,
