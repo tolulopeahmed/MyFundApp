@@ -60,6 +60,8 @@ urlpatterns = [
 
     # Savings-related APIs
     path('quicksave/', views.quicksave, name='quicksave'),
+    path('activate-autosave/', views.autosave, name='autosave'),  # Make sure to use the correct view function
+    path('deactivate-autosave/', views.deactivate_autosave, name='deactivate_autosave'),
 
     ]
 

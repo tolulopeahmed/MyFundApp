@@ -254,27 +254,6 @@ class CardSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Failed to verify card and process payment")
 
 
-# def notify_transaction_update(transaction):
-#     from channels.layers import get_channel_layer
-#     from asgiref.sync import async_to_sync
-
-#     channel_layer = get_channel_layer()
-#     async_to_sync(channel_layer.send)(
-#         'transaction_update_channel',  # Channel name
-#         {
-#             'type': 'send_transaction_update',
-#             'transaction_data': {
-#                 'transaction_type': 'credit',
-#                 'amount': 50,  # Amount of the successful payment
-#                 'date': transaction.date,
-#                 'time': transaction.time,
-#                 'transaction_id': transaction.transaction_id,
-#                 'description': 'Card Successful',
-#             },
-#         },
-#     )
-
-
 
 
 from .models import Transaction
@@ -286,3 +265,10 @@ class TransactionSerializer(serializers.ModelSerializer):
 class QuickSaveSerializer(serializers.Serializer):
     amount = serializers.DecimalField(max_digits=10, decimal_places=2)
     card_id = serializers.IntegerField()
+
+
+from .models import AutoSave
+class AutoSaveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AutoSave
+        fields = '__all__'

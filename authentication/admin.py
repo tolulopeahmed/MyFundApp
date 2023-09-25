@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Message, BankAccount, Card, AccountBalance, Transaction
+from .models import CustomUser, Message, BankAccount, Card, AccountBalance, Transaction, AutoSave
 
 class CustomUserAdmin(UserAdmin):
     list_display = UserAdmin.list_display + ('preferred_asset', 'savings_goal_amount', 'time_period')
@@ -55,6 +55,7 @@ class CardAdmin(admin.ModelAdmin):
 admin.site.register(Card, CardAdmin)
 admin.site.register(AccountBalance)
 admin.site.register(Transaction)
+admin.site.register(AutoSave)
 
 
 

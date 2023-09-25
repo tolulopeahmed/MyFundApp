@@ -353,7 +353,7 @@ def update_savings_goal(request):
 
 
 from .serializers import MessageSerializer  # Create a serializer for AdminMessage if needed
-from .models import Message
+from .models import AutoSave, Message
 from django.contrib.auth import get_user_model
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -793,3 +793,141 @@ def quicksave(request):
         return Response({'error': 'QuickSave failed'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+import time
+import threading
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def autosave(request):
+    user = request.user
+    card_id = request.data.get('card_id')
+    amount = request.data.get('amount')
+    frequency = request.data.get('frequency')
+
+    # Validate frequency (should be one of 'hourly', 'daily', 'weekly', 'monthly')
+    valid_frequencies = ['hourly', 'daily', 'weekly', 'monthly']
+    if frequency not in valid_frequencies:
+        return Response({'error': 'Invalid frequency'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        active_autosave = AutoSave.objects.get(user=user, active=True)
+        return Response({'error': 'User already has an active autosave'}, status=status.HTTP_400_BAD_REQUEST)
+    except AutoSave.DoesNotExist:
+        pass
+
+        card = Card.objects.get(id=card_id)
+    except Card.DoesNotExist:
+        return Response({'error': 'Selected card not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Calculate the interval based on the selected frequency (in seconds)
+    intervals = {
+        'hourly': 3600,
+        'daily': 86400,
+        'weekly': 604800,
+        'monthly': 2419200,  # Approximation for 28-31 days
+    }
+
+    interval_seconds = intervals.get(frequency)
+
+    if not interval_seconds:
+        return Response({'error': 'Invalid frequency'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Create an 'AutoSave' record
+    AutoSave.objects.create(user=user, frequency=frequency, active=True)
+
+    # Use the card details to initiate a payment with Paystack periodically
+    def auto_charge():
+        while True:
+            # Delay for the specified interval
+            time.sleep(interval_seconds)
+
+            # Perform the auto charge
+            paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"  # Use your actual secret key
+            paystack_url = "https://api.paystack.co/charge"
+
+            payload = {
+                "card": {
+                    "number": card.card_number,
+                    "cvv": card.cvv,
+                    "expiry_month": card.expiry_date.split('/')[0],
+                    "expiry_year": card.expiry_date.split('/')[1],
+                },
+                "email": user.email,
+                "amount": int(amount) * 100,  # Amount in kobo (multiply by 100)
+            }
+
+            headers = {
+                "Authorization": f"Bearer {paystack_secret_key}",
+                "Content-Type": "application/json",
+            }
+
+            response = requests.post(paystack_url, json=payload, headers=headers)
+            paystack_response = response.json()
+
+            if paystack_response.get("status"):
+                # Payment successful, update user's savings and create a transaction
+                user.savings += int(amount)
+                user.save()
+
+                # Create a transaction record
+                Transaction.objects.create(
+                    user=user,
+                    transaction_type="credit",
+                    amount=int(amount),
+                    date=timezone.now().date(),
+                    time=timezone.now().time(),
+                    description=f"AutoSave",
+                    transaction_id=paystack_response.get("data", {}).get("reference"),
+                )
+
+                # Send a confirmation email
+                subject = "AutoSave Successful!"
+                message = f"Hi {user.first_name},\n\nYour AutoSave ({frequency}) of ₦{amount} was successful. It has been added to your SAVINGS account. \n\nKeep growing your funds.🥂\n\nMyFund"
+                from_email = "MyFund <info@myfundmobile.com>"
+                recipient_list = [user.email]
+
+                send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+    # Start a new thread for the auto charge process
+    threading.Thread(target=auto_charge).start()
+
+    # Send an immediate email alert for activation
+    subject = "AutoSave Activated!"
+    message = f"Well done {user.first_name},\n\nAutoSave ({frequency}) was successfully activated. You are now saving ₦{amount} {frequency} and your next autosave will happen in the next selected periodic interval. \n\nKeep growing your funds.🥂\n\nMyFund"
+    from_email = "MyFund <info@myfundmobile.com>"
+    recipient_list = [user.email]
+
+    send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+    # Return a success response indicating that AutoSave has been activated
+    return Response({'message': 'AutoSave activated'}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deactivate_autosave(request):
+    user = request.user
+    frequency = request.data.get('frequency')
+
+    try:
+        # Find the active AutoSave for the user with the given frequency
+        autosave = AutoSave.objects.get(user=user, frequency=frequency, active=True)
+
+        # Deactivate the AutoSave by setting it to False
+        autosave.active = False
+        autosave.save()
+
+        # Send a confirmation email
+        subject = "AutoSave Deactivated!"
+        message = f"Hi {user.first_name},\n\nYour AutoSave has been deactivated. \n\nKeep growing your funds.🥂\n\nMyFund"
+        from_email = "MyFund <info@myfundmobile.com>"
+        recipient_list = [user.email]
+
+        send_mail(subject, message, from_email, recipient_list)
+
+
+        # Return a success response indicating that AutoSave has been deactivated
+        return Response({'message': 'AutoSave deactivated'}, status=status.HTTP_200_OK)
+
+    except AutoSave.DoesNotExist:
+        return Response({'error': 'AutoSave not found'}, status=status.HTTP_404_NOT_FOUND)

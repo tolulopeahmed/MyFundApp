@@ -184,7 +184,14 @@ class Transaction(models.Model):
         return f'{self.transaction_type} - {self.amount} - {self.date}'
 
 
+class AutoSave(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE, null=True, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    frequency = models.CharField(
+        max_length=10, choices=[('hourly', 'Hourly'), ('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly')]
+    )
+    active = models.BooleanField(default=True)  # Add this field to track the AutoSave status
 
-
-
-
+    def __str__(self):
+        return f"AutoSave for {self.user.email} - {self.amount} ({self.frequency})"
