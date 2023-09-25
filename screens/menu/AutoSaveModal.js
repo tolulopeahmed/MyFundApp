@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserCards, updateAccountBalances, } from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
-
+import LoadingModal from '../components/LoadingModal';
 
 const getBackgroundColor = (bankName) => {
   switch (bankName) {
@@ -60,9 +60,9 @@ const getBackgroundColor = (bankName) => {
   }
 };
 
-const AutoSaveModal = ({ navigation, autoSaveModalVisible, setAutoSave, setAutoSaveModalVisible}) => {
-  const [amount, setAmount] = useState('');
-  const [frequency, setFrequency] = useState('');
+const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, setAutoSave, setAutoSaveModalVisible}) => {
+  const [amount, setAmount] = useState(''); // Changed from const [setAmount] = useState('');
+  const [frequency, setFrequency] = useState(''); // Changed from const [setFrequency] = useState(''); 
   const [paymentOption, setPaymentOption] = useState('');
   const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
   const [selectedCard, setSelectedCard] = useState(null);
@@ -71,16 +71,80 @@ const AutoSaveModal = ({ navigation, autoSaveModalVisible, setAutoSave, setAutoS
   const [processing, setProcessing] = useState(false);
   const userCards = useSelector((state) => state.bank.cards) || [];
   const dispatch = useDispatch();
-  
+
   const closeModal = () => {
     setAutoSaveModalVisible(false);
   };
   
-  const handleConfirmAutoSave = () => {
-    setAutoSave(true);
-    setAutoSaveModalVisible(false);
+  const handleConfirmAutoSave = async () => {
+    try {
+      setProcessing(true);
+      console.log('Selected card:', selectedCard);
+      console.log('Amount Entered:', amount);
+      // Make an API request to activate AutoSave
+      const response = await axios.post(
+        `${ipAddress}/api/activate-autosave/`,
+        {
+          card_id: selectedCard,
+          amount: parseFloat(amount.replace(/,/g, '')), // Parse the amount as a float
+          frequency: frequency,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`, // Include the user's token in the headers
+          },
+        }
+      );
+      
+      console.log('API Response:', response);
+
+      if (response.status === 200) {
+        const responseData = response.data;
+        setProcessing(false);
+
+        setAutoSave(true);
+        // Show a success message alert
+        Alert.alert(
+          'AutoSave Activated!',
+          `Your AutoSave has been activated. You're now saving ₦${amount} ${frequency}. Well done! Keep growing your funds. 🥂`,
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // Close the AutoSave modal
+                setAutoSaveModalVisible(false);
+              },
+            },
+          ]
+        );
+  
+        // Update the amount and frequency props in Save.js
+        if (amount && frequency) {
+          onConfirm(amount, frequency); // Pass amount and frequency to the callback
+          setProcessing(false);
+          setAutoSaveModalVisible(false);
+        }
+      } else {
+        setProcessing(false);
+        Alert.alert('AutoSave Activation Failed', 'Please try again later.');
+      }
+    } catch (error) {
+      console.error('Error activating AutoSave:', error);
+      setProcessing(false);
+      Alert.alert(
+        'Error',
+        'Failed to activate AutoSave. Please check your connection and try again later.'
+      );
+    }
   };
   
+  
+  
+
+
+
+
   
   const handleAmountPreset = (presetAmount) => {
     setAmount(presetAmount.toLocaleString('en-US'));
@@ -110,7 +174,13 @@ const AutoSaveModal = ({ navigation, autoSaveModalVisible, setAutoSave, setAutoS
     if (userCards.length > 0 && selectedCard === null) {
       setSelectedCard(userCards[0].id);
     }
-  }, [amount, selectedCard, userCards]);
+  
+    // Set initial frequency when AutoSaveModal opens
+    if (frequency === '') {
+      setFrequency('daily'); // Change 'hourly' to the default frequency you want
+    }
+  }, [amount, selectedCard, userCards, frequency]); // Include 'frequency' in the dependency array
+  
   
   
   
@@ -140,6 +210,9 @@ const AutoSaveModal = ({ navigation, autoSaveModalVisible, setAutoSave, setAutoS
   const disabledButtonStyle = isContinueButtonDisabled ? styles.disabledButton : {};
 
 
+
+  console.log('Selected card in AutoSaveModal:', selectedCard);
+  console.log('frequency:', frequency);
 
 
   return (
@@ -241,7 +314,7 @@ const AutoSaveModal = ({ navigation, autoSaveModalVisible, setAutoSave, setAutoS
 
                 <>
                   <View style={styles.inputContainer}>
-                    <Text style={styles.label3}>Which of them?     </Text>
+                    <Text style={styles.label3}>Select Card     </Text>
                     {userCards.length === 0 ? (
                       <TouchableOpacity onPress={handleAddCard}>
                       <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>No cards added yet... 
@@ -280,23 +353,31 @@ const AutoSaveModal = ({ navigation, autoSaveModalVisible, setAutoSave, setAutoS
 
               <View style={styles.buttonsContainer}>
               <TouchableOpacity
-                style={[styles.primaryButton, disabledButtonStyle]}
-                onPress={handleConfirmAutoSave}
-                disabled={isContinueButtonDisabled}
-              >
-                <Text style={styles.primaryButtonText}>Activate AutoSave Now</Text>
-              </TouchableOpacity>
+                  style={[
+                    styles.primaryButton,
+                    (isContinueButtonDisabled || processing) && styles.primaryButtonDisabled,
+                    { backgroundColor: processing ? 'green' : isContinueButtonDisabled ? 'grey' : '#4C28BC' },
+                  ]}
+                  onPress={handleConfirmAutoSave}
+                  disabled={isContinueButtonDisabled || processing}
+                >
+                  {processing ? (
+                    <>
+                      <ActivityIndicator color="white" style={styles.activityIndicator} />
+                      <Text style={[styles.primaryButtonText, styles.processingText]}> Activating AutoSave... Please wait...</Text>
+                    </>
+                  ) : (
+                    <Text style={styles.primaryButtonText}>Activate AutoSave Now!</Text>
+                  )}
+                </TouchableOpacity>
 
-          
           </View>
-         
                   </View>
                 </>
 
 
-              
+                <LoadingModal visible={processing} />
 
-     
         </View>
         </TouchableOpacity>
         </TouchableOpacity>
@@ -494,12 +575,22 @@ labelItem: {
     opacity: 0.9, // You can adjust the opacity as desired
   },
 
+  primaryButtonDisabled: {
+    flexDirection: 'row',
+    backgroundColor: 'grey', // Background color for disabled state
+    width: '85%',
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    opacity: 0.9, // Reduce opacity for disabled state
+  },
+
   primaryButtonText: {
     color: '#fff',
     fontSize: 18,
     fontFamily: 'ProductSans',
   },
-
 
 
 };

@@ -140,7 +140,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
   const handleQuickSave = async () => {
     setProcessing(true);
     try {
-      console.log('Selected card:', selectedCard);
+      console.log('Selected card ID:', selectedCardId);
       console.log('Amount Entered:', amount);
 
       // Send the QuickSave request to your API using axios
@@ -637,6 +637,7 @@ const styles = {
     justifyContent: 'center',
     borderRadius: 10,
   },
+  
   primaryButtonDisabled: {
     flexDirection: 'row',
     backgroundColor: 'grey', // Background color for disabled state

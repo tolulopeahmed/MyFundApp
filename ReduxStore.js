@@ -3,7 +3,7 @@
 import { combineReducers } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
 import Reducer from './ReduxReducers';
-import { setUserToken, fetchAccountBalances, fetchUserTransactions, fetchUserBankAccounts, fetchUserCards } from './ReduxActions'; // Import the updated action
+import { setUserToken, fetchAccountBalances, fetchUserTransactions, fetchUserBankAccounts, fetchUserCards, updateAutoSaveStatus } from './ReduxActions'; // Import the updated action
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 const rootReducer = combineReducers({
@@ -37,6 +37,21 @@ getInitialToken().then((initialToken) => {
     store.dispatch(fetchUserCards());
 
   }
+});
+
+const getInitialAutoSaveStatus = async () => {
+  try {
+    const autoSaveStatus = await AsyncStorage.getItem('autoSaveStatus');
+    return autoSaveStatus === 'true';
+  } catch (error) {
+    console.error('Error retrieving auto-save status from AsyncStorage:', error);
+    return false;
+  }
+};
+
+// Dispatch an action to set the initial auto-save status if available
+getInitialAutoSaveStatus().then((initialStatus) => {
+  store.dispatch(updateAutoSaveStatus(initialStatus));
 });
 
 export default store;

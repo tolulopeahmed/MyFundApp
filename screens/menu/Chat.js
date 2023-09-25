@@ -138,12 +138,12 @@ const Chat = ({ navigation }) => {
   
 
 
-  useEffect(() => {
-    setAuthentication(true); // User is in the chat section
-    return () => {
-      setAuthentication(false); // User is leaving the chat section
-    };
-  }, []);
+  // useEffect(() => {
+  //   setAuthentication(true); // User is in the chat section
+  //   return () => {
+  //     setAuthentication(false); // User is leaving the chat section
+  //   };
+  // }, []);
   
 
 

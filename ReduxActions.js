@@ -26,6 +26,9 @@ export const FETCH_CARDS_SUCCESS = 'FETCH_CARDS_SUCCESS';
 export const ADD_CARD_SUCCESS = 'ADD_CARD_SUCCESS';
 export const DELETE_CARD_SUCCESS = 'DELETE_CARD_SUCCESS';
 
+export const UPDATE_AUTO_SAVE_STATUS = 'UPDATE_AUTO_SAVE_STATUS';
+
+
 
 export const setUserToken = (token) => ({
   type: SET_USER_TOKEN,
@@ -111,7 +114,10 @@ export const deleteCardSuccess = (cardId) => ({
 });
 
 
-
+export const updateAutoSaveStatus = (status) => ({
+  type: UPDATE_AUTO_SAVE_STATUS,
+  payload: status,
+});
 
 // Fetch user data and update the Redux store with user information
 export const fetchUserData = () => async (dispatch, getState) => {

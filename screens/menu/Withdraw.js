@@ -132,6 +132,38 @@ const formatTime = (timeString) => {
       </ImageBackground>
 
 
+
+
+      <ImageBackground
+  source={require('./icb2.png')}
+  style={styles.walletContainer}
+  imageStyle={styles.backgroundImage}
+  >        
+  <View style={styles.walletDetails}>
+       
+     <View flexDirection='row' marginTop={-4}>  
+     <Ionicons name="home-outline" size={19} color="silver" />
+          <Text style={styles.walletTitle}>PROPERTIES ACQUIRED</Text> 
+          </View> 
+
+         <View style={styles.amountContainer2}> 
+         <Text style={styles.investmentBalance}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
+         </View>
+         <Text style={styles.walletMessage}>Completed sales attract <Text style={{color: 'orange'}}>5%</Text> fee.
+</Text>
+
+<View style={styles.quickWithdrawButtonContainer}>
+      <TouchableOpacity
+      style={styles.quickWithdrawButton2}
+      // onPress={() => setWithdrawModalVisible(true)} // Replace with the appropriate onPress function
+    >
+      <Text style={styles.quickWithdrawText}>Sell to User</Text>
+    </TouchableOpacity>
+    </View>
+        </View>
+      </ImageBackground>
+
+
       <ImageBackground
   source={require('./icb2.png')}
   style={styles.walletContainer}
@@ -167,6 +199,12 @@ const formatTime = (timeString) => {
 
         </View>      
       </ImageBackground>
+
+
+      
+     
+
+
       <TouchableOpacity style={styles.withdrawButton2} onPress={() => setWithdrawModalVisible(true)}>
           <Ionicons name="arrow-down-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
           <Text style={styles.withdrawText2}>Withdraw</Text>
@@ -519,6 +557,16 @@ quickWithdrawButtonContainer: {
 
 quickWithdrawButton: {
   backgroundColor: '#9D8CD7',
+  borderRadius: 8,
+  paddingVertical: 4,
+  paddingHorizontal: 9,
+  alignSelf: 'flex-end',
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
+quickWithdrawButton2: {
+  backgroundColor: 'grey',
   borderRadius: 8,
   paddingVertical: 4,
   paddingHorizontal: 9,

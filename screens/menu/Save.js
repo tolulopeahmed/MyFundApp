@@ -12,12 +12,12 @@ import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, fetchUserTransactions, fetchUserData } from '../../ReduxActions';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData, updateAutoSaveStatus } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import moment from 'moment';
 import Success from '../components/Success';
 import { useFocusEffect } from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Save = ({ navigation, route }) => {
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
@@ -29,18 +29,14 @@ const Save = ({ navigation, route }) => {
   const userTransactions = useSelector((state) => state.bank.userTransactions);
   const [currentMonth, setCurrentMonth] = useState('');
   const [isSuccessVisible, setIsSuccessVisible] = useState(false);
+  const [amount, setAmount] = useState('');
+  const [frequency, setFrequency] = useState('');
 
 
   const handleCloseSuccessModal = () => {
     setIsSuccessVisible(false);
   };
   
-  useFocusEffect(
-    React.useCallback(() => {
-      console.log('Save.js gained focus');
-    }, [])
-  );
-
   const [forceUpdateCounter, setForceUpdateCounter] = useState(0);
   const forceUpdate = () => {
     setForceUpdateCounter(forceUpdateCounter + 1);
@@ -54,13 +50,17 @@ const Save = ({ navigation, route }) => {
 
 
   const dispatch = useDispatch();
- 
+  const autoSaveStatus = useSelector((state) => state.bank.autoSave);
+
 
   useEffect(() => {
     dispatch(fetchAccountBalances()); // Fetch account balances using Redux action
     dispatch(fetchUserTransactions()); // Fetch user transactions using Redux action
     dispatch(fetchUserData(userInfo.token));
   }, []);
+
+
+  
 
   const iconMapping = {
     "Card Successful": "card-outline",
@@ -130,10 +130,21 @@ const formatTime = (timeString) => {
     }
   };  
 
-  const handleConfirmAutoSave = () => {
-    setAutoSave(true);
+  const handleConfirmAutoSave = (amount, frequency) => {
+    setAmount(amount);
+    setFrequency(frequency);
     setAutoSaveModalVisible(false);
+    
+    // Dispatch the auto-save status to Redux
+    dispatch(updateAutoSaveStatus(true));
+
+    // Store the auto-save status in AsyncStorage for persistence
+    AsyncStorage.setItem('autoSaveStatus', 'true')
+      .then(() => console.log('Auto-save status saved'))
+      .catch((error) => console.error('Error saving auto-save status:', error));
   };
+  
+  
   
 
   const handleConfirmDeactivateAutoSave = () => {
@@ -225,7 +236,7 @@ const formatTime = (timeString) => {
 
        
        <View style={styles.autoSaveContainer}>
-       <Ionicons name="car-outline" size={20} marginRight={5} marginTop={-3} style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]} />
+       <Ionicons name="car-outline" size={20} marginRight={5} marginTop={-1} style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]} />
  <Text style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]}>
     {autoSave ? 'AutoSave is ON' : 'AutoSave is OFF'}
         </Text>
@@ -239,15 +250,17 @@ const formatTime = (timeString) => {
             onValueChange={handleActivateAutoSave}
             value={autoSave}
           />
-        <AutoSaveModal
-        autoSave={autoSave}
-        setAutoSave={setAutoSave}
-        autoSaveModalVisible={autoSaveModalVisible}
-        setAutoSaveModalVisible={setAutoSaveModalVisible}
-        onConfirm={handleConfirmAutoSave}
-        navigation={navigation} // Pass the navigation prop here
 
-      />
+          <AutoSaveModal
+          autoSave={autoSave}
+          setAutoSave={setAutoSave}
+          autoSaveModalVisible={autoSaveModalVisible}
+          setAutoSaveModalVisible={setAutoSaveModalVisible}
+          onConfirm={handleConfirmAutoSave}
+          navigation={navigation}
+          amount={amount} // Pass the amount as a prop
+          frequency={frequency} // Pass the frequency as a prop
+          />
 
         
         <DeactivateAutoSaveModal
@@ -256,6 +269,9 @@ const formatTime = (timeString) => {
           deactivateAutoSaveModalVisible={deactivateAutoSaveModalVisible}
           setDeactivateAutoSaveModalVisible={setDeactivateAutoSaveModalVisible}
           onConfirm={handleConfirmDeactivateAutoSave}
+          frequency={frequency} // Pass the current frequency to the modal
+          navigation={navigation}
+
         />
 
         </View>
@@ -263,17 +279,16 @@ const formatTime = (timeString) => {
 
 
     
-    {autoSave && (
+          {autoSave && (
         <View style={styles.autoSaveSettingContainer}>
           <Text style={styles.autoSaveSetting}>
-            @₦30000/month   
-            <Ionicons name="checkmark-circle" size={20}  color="#0AA447" />
+            You're AutoSaving ₦{amount} {frequency} <Ionicons name="checkmark-circle" size={20} color="#0AA447" marginBottom={10} />
           </Text>
         </View>
       )}
 
 
-        <View style={styles.quickSaveButtonContainer}>
+        <View>
           <TouchableOpacity style={styles.quickSaveButton} onPress={handleQuickSave}>
           <Ionicons name="save-outline" size={22} color="#fff" style={{ marginRight: 4 }} />
           <Text style={styles.quickSaveText}>QuickSave</Text>
@@ -646,7 +661,7 @@ backgroundImage: {
       },
       autoSaveSetting: {
         color: '#04A447',
-        position: 'absolute',
+        position: 'relative',
         alignItems: 'center',
         alignSelf: 'center',
         fontFamily: 'proxima',
@@ -654,7 +669,7 @@ backgroundImage: {
 
      
     quickSaveButton: {
-      marginTop: 30,
+      marginTop: 15,
       flexDirection: 'row',
       backgroundColor: '#4C28BC',
       width: 140,
