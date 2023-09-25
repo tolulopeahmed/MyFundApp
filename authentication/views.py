@@ -919,12 +919,14 @@ def deactivate_autosave(request):
 
         # Send a confirmation email
         subject = "AutoSave Deactivated!"
-        message = f"Hi {user.first_name},\n\nYour AutoSave has been deactivated. \n\nKeep growing your funds.🥂\n\nMyFund"
+        message = f"Hi {user.first_name},\n\nYour AutoSave ({frequency}) has been deactivated. \n\nKeep growing your funds.🥂\n\nMyFund"
         from_email = "MyFund <info@myfundmobile.com>"
         recipient_list = [user.email]
 
         send_mail(subject, message, from_email, recipient_list)
 
+        # Delete the AutoSave object from the database
+        autosave.delete()
 
         # Return a success response indicating that AutoSave has been deactivated
         return Response({'message': 'AutoSave deactivated'}, status=status.HTTP_200_OK)

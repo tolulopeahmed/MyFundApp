@@ -191,7 +191,9 @@ class AutoSave(models.Model):
     frequency = models.CharField(
         max_length=10, choices=[('hourly', 'Hourly'), ('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly')]
     )
-    active = models.BooleanField(default=True)  # Add this field to track the AutoSave status
+    active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"AutoSave for {self.user.email} - {self.amount} ({self.frequency})"
+        user_name = f"{self.user.first_name} ({self.user.email})"
+        amount_saved = f"₦{self.amount}" if self.amount is not None else "Amount not available"
+        return f"AutoSave for {user_name} - {amount_saved} ({self.frequency})"
