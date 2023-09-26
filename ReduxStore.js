@@ -39,19 +39,6 @@ getInitialToken().then((initialToken) => {
   }
 });
 
-const getInitialAutoSaveStatus = async () => {
-  try {
-    const autoSaveStatus = await AsyncStorage.getItem('autoSaveStatus');
-    return autoSaveStatus === 'true';
-  } catch (error) {
-    console.error('Error retrieving auto-save status from AsyncStorage:', error);
-    return false;
-  }
-};
 
-// Dispatch an action to set the initial auto-save status if available
-getInitialAutoSaveStatus().then((initialStatus) => {
-  store.dispatch(updateAutoSaveStatus(initialStatus));
-});
 
 export default store;

@@ -220,7 +220,7 @@ const handleLogin = async () => {
         <ActivityIndicator color="white" size="small" />
       ) : null}
       <Text style={styles.loginButtonText}>
-        {isLoggingIn ? ' Logging in...' : 'LOG IN'}
+        {isLoggingIn ? '  Logging in...' : 'LOG IN'}
       </Text>
     </View>
   </TouchableOpacity>

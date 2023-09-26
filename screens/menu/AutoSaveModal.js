@@ -63,11 +63,10 @@ const getBackgroundColor = (bankName) => {
 const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, setAutoSave, setAutoSaveModalVisible}) => {
   const [amount, setAmount] = useState(''); // Changed from const [setAmount] = useState('');
   const [frequency, setFrequency] = useState(''); // Changed from const [setFrequency] = useState(''); 
-  const [paymentOption, setPaymentOption] = useState('');
   const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
   const [selectedCard, setSelectedCard] = useState(null);
   const userInfo = useSelector((state) => state.bank.userInfo);
-  const selectedCardId = selectedCard !== undefined && selectedCard !== null ? selectedCard : null;
+  // const selectedCardId = selectedCard !== undefined && selectedCard !== null ? selectedCard : null;
   const [processing, setProcessing] = useState(false);
   const userCards = useSelector((state) => state.bank.cards) || [];
   const dispatch = useDispatch();

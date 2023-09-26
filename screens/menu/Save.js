@@ -12,7 +12,7 @@ import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, fetchUserTransactions, fetchUserData, updateAutoSaveStatus } from '../../ReduxActions';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import moment from 'moment';
 import Success from '../components/Success';
@@ -137,7 +137,6 @@ const formatTime = (timeString) => {
     setAutoSaveModalVisible(false);
     
     // Dispatch the auto-save status to Redux
-    dispatch(updateAutoSaveStatus(true));
 
     // Store the auto-save status in AsyncStorage for persistence
     AsyncStorage.setItem('autoSaveStatus', 'true')
@@ -643,7 +642,7 @@ backgroundImage: {
 
       autoSaveText: {
         color: 'silver',
-        fontFamily: 'karla',
+        fontFamily: 'karla-italic',
         marginRight: 5,
       },
 

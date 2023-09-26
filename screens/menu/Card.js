@@ -94,17 +94,20 @@ const Card = ({ navigation, route }) => {
     dispatch(addCard(newCard)); // Dispatch the action to add the new card to Redux
   };
 
+
+  
+
   const confirmDeleteCard = async (cardId) => {
     Alert.alert(
-      'Delete Card',
-      'Are you sure you want to delete this card?',
+      'Delete Card?',
+      'Are you sure you want to delete this card? Note that this will deactivate any active AutoSave with this card.',
       [
         {
           text: 'Cancel',
           style: 'cancel',
         },
         {
-          text: 'Delete',
+          text: 'Yes, Delete',
           style: 'destructive',
           onPress: async () => {
             try {

@@ -159,7 +159,7 @@ const formatTime = (timeString) => {
             Alert.alert('Sell Property', "You're yet to acquire any property. Keep growing your funds.");
           }}
         >
-          <Text style={styles.quickWithdrawText}>Sell to User</Text>
+          <Text style={styles.quickWithdrawText}>Sell Property</Text>
         </TouchableOpacity>
     </View>
         </View>
