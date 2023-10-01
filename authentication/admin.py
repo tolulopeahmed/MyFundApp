@@ -52,10 +52,15 @@ class CardAdmin(admin.ModelAdmin):
     list_display = ('user', 'bank_name', 'card_number', 'expiry_date', 'cvv', 'is_default')
     list_filter = ('is_default',)
 
+
+class AutoSaveAdmin(admin.ModelAdmin):
+    list_display = ('user', 'frequency', 'amount', 'active')  # Add 'amount' to the list of displayed fields
+
+
 admin.site.register(Card, CardAdmin)
 admin.site.register(AccountBalance)
 admin.site.register(Transaction)
-admin.site.register(AutoSave)
+admin.site.register(AutoSave, AutoSaveAdmin)
 
 
 

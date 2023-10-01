@@ -834,7 +834,7 @@ def autosave(request):
         return Response({'error': 'Invalid frequency'}, status=status.HTTP_400_BAD_REQUEST)
 
     # Create an 'AutoSave' record
-    AutoSave.objects.create(user=user, frequency=frequency, active=True)
+    AutoSave.objects.create(user=user, frequency=frequency, amount=amount, active=True)
 
     # Use the card details to initiate a payment with Paystack periodically
     def auto_charge():
@@ -892,6 +892,9 @@ def autosave(request):
     # Start a new thread for the auto charge process
     threading.Thread(target=auto_charge).start()
 
+    user.autosave_enabled = True
+    user.save()
+
     # Send an immediate email alert for activation
     subject = "AutoSave Activated!"
     message = f"Well done {user.first_name},\n\nAutoSave ({frequency}) was successfully activated. You are now saving ₦{amount} {frequency} and your next autosave will happen in the next selected periodic interval. \n\nKeep growing your funds.🥂\n\nMyFund"
@@ -917,6 +920,12 @@ def deactivate_autosave(request):
         autosave.active = False
         autosave.save()
 
+        # Delete the AutoSave object from the database
+        autosave.delete()
+
+        user.autosave_enabled = False
+        user.save()
+
         # Send a confirmation email
         subject = "AutoSave Deactivated!"
         message = f"Hi {user.first_name},\n\nYour AutoSave ({frequency}) has been deactivated. \n\nKeep growing your funds.🥂\n\nMyFund"
@@ -925,11 +934,16 @@ def deactivate_autosave(request):
 
         send_mail(subject, message, from_email, recipient_list)
 
-        # Delete the AutoSave object from the database
-        autosave.delete()
-
         # Return a success response indicating that AutoSave has been deactivated
         return Response({'message': 'AutoSave deactivated'}, status=status.HTTP_200_OK)
 
     except AutoSave.DoesNotExist:
         return Response({'error': 'AutoSave not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_autosave_status(request):
+    user = request.user
+    autosave_enabled = user.autosave_enabled
+    return Response({'autosave_enabled': autosave_enabled}, status=status.HTTP_200_OK)

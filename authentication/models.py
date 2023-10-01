@@ -64,6 +64,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     properties = models.PositiveIntegerField(default=0)
     wallet = models.DecimalField(max_digits=11, decimal_places=2, default=0)
 
+    autosave_enabled = models.BooleanField(default=False)  # Add this field
 
 
     is_first_time_signup = models.BooleanField(default=True)
