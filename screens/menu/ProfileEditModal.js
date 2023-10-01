@@ -6,7 +6,7 @@ import axios from 'axios';  // Import axios for making API requests
 import { ipAddress } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserProfile, fetchUserData } from '../../ReduxActions';
-
+import LoadingModal from '../components/LoadingModal';
 
 const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVisible, setProfileEditModalVisible, onClose }) => {
   const [firstName, setFirstName] = useState('');
@@ -31,6 +31,9 @@ const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVis
   }, [firstName, lastName, mobileNumber]);
 
 
+
+
+
   const handleUpdateProfile = async () => {
     const updatedProfile = {
       first_name: firstName,
@@ -52,6 +55,7 @@ const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVis
       );
   
       if (response.status === 200) {
+        setUpdatingProfile(false);
         dispatch(updateUserProfile(updatedProfile));
                
         Alert.alert('Success', 'Profile updated successfully.', [
@@ -64,9 +68,11 @@ const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVis
           }, 1000);
         
         } else {
+          setUpdatingProfile(false);
           console.log('Profile update failed:', response.data);
         };
     } catch (error) {
+      setUpdatingProfile(false);
       console.log('Profile update error:', error);
     } finally {
       setUpdatingProfile(false);
@@ -169,6 +175,7 @@ const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVis
         </View>
         </TouchableOpacity>
         </TouchableOpacity>
+        <LoadingModal visible={setUpdatingProfile} />
 
     </Modal>
 

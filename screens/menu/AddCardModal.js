@@ -7,7 +7,7 @@ import axios from 'axios';
 import { ipAddress } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCard, fetchUserData, fetchUserCards } from '../../ReduxActions';
-
+import LoadingModal from '../components/LoadingModal';
 
 const bankOptions = [
   { id: 1, name: 'Access Bank', code: '044' },
@@ -445,6 +445,8 @@ An initial charge of ₦50 will be made and returned back as to your savings acc
               </TouchableOpacity>      
               </View>
         </View>
+
+        <LoadingModal visible={processing} />
 
     </TouchableOpacity>           
     </TouchableOpacity>           

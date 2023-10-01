@@ -55,7 +55,7 @@ const Bank = ({ navigation, initialBankRecords}) => {
       case "Stanbic IBTC Bank":
         return "#04009D";
       case "First Bank of Nigeria":
-        return "#13233C";
+        return "#0C2B5C";
       case "Keystone Bank":
         return "#014888";
       case "Sterling Bank":
@@ -73,11 +73,11 @@ const Bank = ({ navigation, initialBankRecords}) => {
       case "Fidelity Bank":
         return "#232B69";
       case "Opay":
-        return "#08A67C";
+          return "#08A67C";
       case "Palmpay":
-        return "#7F13CB";
+          return "#7F13CB";
       case "Moniepoint Microfinance Bank":
-        return "#0649C4";
+          return "#0649C4";
       default:
         return "#4C28BC"; // Default color
     }

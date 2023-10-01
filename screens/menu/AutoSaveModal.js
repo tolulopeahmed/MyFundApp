@@ -60,31 +60,37 @@ const getBackgroundColor = (bankName) => {
   }
 };
 
-const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, setAutoSave, setAutoSaveModalVisible}) => {
+const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, setAutoSave, setAutoSaveModalVisible, card}) => {
   const [amount, setAmount] = useState(''); // Changed from const [setAmount] = useState('');
   const [frequency, setFrequency] = useState(''); // Changed from const [setFrequency] = useState(''); 
   const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
-  const [selectedCard, setSelectedCard] = useState(null);
+  const [selectedCard, setSelectedCard] = useState({});
   const userInfo = useSelector((state) => state.bank.userInfo);
-  // const selectedCardId = selectedCard !== undefined && selectedCard !== null ? selectedCard : null;
   const [processing, setProcessing] = useState(false);
   const userCards = useSelector((state) => state.bank.cards) || [];
+  const [selectedCardId, setSelectedCardId] = useState(userCards.length > 0 ? userCards[0].id : null);
   const dispatch = useDispatch();
 
   const closeModal = () => {
     setAutoSaveModalVisible(false);
   };
   
+
+  console.log('Selected card ID:', selectedCardId);
+  console.log('Amount Entered:', amount);
+  console.log('Frequency:', frequency);
+
+
   const handleConfirmAutoSave = async () => {
     try {
       setProcessing(true);
-      console.log('Selected card:', selectedCard);
+      console.log('Selected card ID:', selectedCard);
       console.log('Amount Entered:', amount);
       // Make an API request to activate AutoSave
       const response = await axios.post(
         `${ipAddress}/api/activate-autosave/`,
         {
-          card_id: selectedCard,
+          card_id: selectedCardId,
           amount: parseFloat(amount.replace(/,/g, '')), // Parse the amount as a float
           frequency: frequency,
         },
@@ -143,7 +149,18 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
   
 
 
+  useEffect(() => {
+    // Check if userCards is not empty
+    if (userCards.length > 0) {
+      setSelectedCardId(userCards[0].id); // Set selectedCardId to the ID of the first card
+      setSelectedCard(userCards.find((card) => card.id === userCards[0].id)); // Set selectedCard to the first card object
+    }
+  }, [userCards]);
+  
+  
 
+  
+  
 
   
   const handleAmountPreset = (presetAmount) => {
@@ -196,10 +213,7 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
   };
   
   
-  const handleCardSelection = (value) => {
-    console.log('Selected Card Value:', value); // Add this line
-    setSelectedCard(value);
-  };
+  
 
   
   const handleAddCard = () => {
@@ -211,8 +225,13 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
 
 
 
-  console.log('Selected card in AutoSaveModal:', selectedCard);
+
+  console.log('CardID in AutoSaveModal:', selectedCardId);
   console.log('frequency:', frequency);
+  console.log('amount:', amount);
+  console.log('Selected bank_name:', selectedCard.bank_name);
+
+  
 
 
   return (
@@ -323,32 +342,40 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
                       </TouchableOpacity>
                     ) : (
                       
+
+
+
+
                       <View style={styles.inputContainer}>
+                      <View style={styles.iconContainer}> 
+                      <Ionicons
+                          name="card"
+                          size={28}
+                          color={selectedCard ? getBackgroundColor(selectedCard.bank_name) : null}
+                          zIndex={-1}
+                        />
+                        </View>
                       <View style={styles.dropdown}>
-
-                      <Picker
-                        style={styles.labelItem}
-                        selectedValue={selectedCard}
-                        onValueChange={(value) => {
-                          console.log('Selected Card Value:', value);
-                          handleCardSelection(value)
-                          }} 
-                      >
-                        {userCards.map((card) => (
-                          <Picker.Item
-                            label={`${card.bank_name} - **** ${card.card_number.slice(-4)}`}
-                            value={card.id} // Use the card's ID as the value
-                            key={card.id}
-                            color={getBackgroundColor(card.bank_name)}
-                          />
-                        ))}
-                      </Picker>
-
-
-
-
+                        <Picker
+                          style={styles.labelItem}
+                          selectedValue={selectedCardId}
+                          onValueChange={(value) => {
+                            console.log('Selected Card Value:', value);
+                            setSelectedCardId(value); // Set selectedCardId to the selected card's ID
+                          }}
+                        >
+                          {userCards.map((card) => (
+                            <Picker.Item
+                              label={`         ${card.bank_name} - **** ${card.card_number.slice(-4)}`}
+                              value={card.id} // Use the card's ID as the value
+                              key={card.id}
+                              //color={getBackgroundColor(card.bank_name)}
+                            />
+                          ))}
+                        </Picker>
                       </View>
-                      </View>
+                    </View>
+          
                     )}
 
               <View style={styles.buttonsContainer}>
@@ -537,20 +564,31 @@ labelItem: {
   marginLeft: -16,
   marginBottom: 30,
   fontFamily: 'karla',
-  //backgroundColor: '#fff',
   borderRadius: 10,
 },
 
-  dropdown: {
-    height: 50,
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    marginBottom: 1,
-    paddingLeft: 15,
-    paddingRight: 5,
 
-  },
+dropdown: {
+  //flexDirection: 'row', // Make the container a row to position icon and Picker side by side
+  //alignItems: 'flex-start', // Center vertically
+  height: 50,
+  width: '80%',
+  backgroundColor: 'white',
+  borderRadius: 10,
+  marginBottom: 1,
+  paddingLeft: 15,
+  paddingRight: 5,
+},
+
+iconContainer: {
+  position: 'absolute', // Use absolute positioning
+  left: 10, // Adjust the left position as needed
+  top: '50%', // Center vertically
+  marginLeft: 45,
+  zIndex: 1,
+  transform: [{ translateY: -12 }], // Adjust translateY to vertically center the icon
+},
+
 
   buttonsContainer: {
     flexDirection: 'row',

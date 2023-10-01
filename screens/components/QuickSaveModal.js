@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserCards, updateAccountBalances, } from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
-
+import LoadingModal from './LoadingModal';
 
 const getBackgroundColor = (bankName) => {
   switch (bankName) {
@@ -66,9 +66,11 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
   const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
   const [selectedCard, setSelectedCard] = useState(null);
   const userInfo = useSelector((state) => state.bank.userInfo);
-  const selectedCardId = selectedCard !== undefined && selectedCard !== null ? selectedCard : null;
+  //const selectedCardId = selectedCard !== undefined && selectedCard !== null ? selectedCard : null;
   const [processing, setProcessing] = useState(false);
   const userCards = useSelector((state) => state.bank.cards) || [];
+  const [selectedCardId, setSelectedCardId] = useState(userCards.length > 0 ? userCards[0].id : null);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -84,6 +86,17 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
   };
 
 
+  
+  useEffect(() => {
+    // Check if userCards is not empty
+    if (userCards.length > 0) {
+      setSelectedCardId(userCards[0].id); // Set selectedCardId to the ID of the first card
+      setSelectedCard(userCards.find((card) => card.id === userCards[0].id)); // Set selectedCard to the first card object
+    }
+  }, [userCards]);
+  
+
+
   useEffect(() => {
     // Check if both amount and selectedCard are not empty and selectedCard is not 'null'
     if (amount !== '' && selectedCard !== null) {
@@ -96,7 +109,13 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
     if (userCards.length > 0 && selectedCard === null) {
       setSelectedCard(userCards[0].id);
     }
-  }, [amount, selectedCard, userCards]);
+  
+    // Set initial frequency when AutoSaveModal opens
+    if (frequency === '') {
+      setFrequency('daily'); // Change 'hourly' to the default frequency you want
+    }
+  }, [amount, selectedCard, userCards, frequency]); // Include 'frequency' in the dependency array
+  
   
 
 
@@ -111,10 +130,10 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
     }
   };
   
-  const handleCardSelection = (value) => {
-    console.log('Selected Card Value:', value); // Add this line
-    setSelectedCard(value);
-  };
+  // const handleCardSelection = (value) => {
+  //   console.log('Selected Card Value:', value); // Add this line
+  //   setSelectedCard(value);
+  // };
 
   
   const handleAddCard = () => {
@@ -194,7 +213,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
 
 
   console.log('Selected card:', selectedCard);
-  console.log('userInfo:', userInfo.token);
+  console.log('Amount entered:', amount);
 
 
 
@@ -319,32 +338,38 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                       </TouchableOpacity>
                     ) : (
                       
+
+
                       <View style={styles.inputContainer}>
+                      <View style={styles.iconContainer}> 
+                      <Ionicons
+                          name="card"
+                          size={28}
+                          color={selectedCard ? getBackgroundColor(selectedCard.bank_name) : null}
+                          zIndex={-1}
+                        />
+                        </View>
                       <View style={styles.dropdown}>
-
-                      <Picker
-                        style={styles.labelItem}
-                        selectedValue={selectedCard}
-                        onValueChange={(value) => {
-                          console.log('Selected Card Value:', value);
-                          handleCardSelection(value)
-                          }} 
-                      >
-                        {userCards.map((card) => (
-                          <Picker.Item
-                            label={`${card.bank_name} - **** ${card.card_number.slice(-4)}`}
-                            value={card.id} // Use the card's ID as the value
-                            key={card.id}
-                            color={getBackgroundColor(card.bank_name)}
-                          />
-                        ))}
-                      </Picker>
-
-
-
-
+                        <Picker
+                          style={styles.labelItem}
+                          selectedValue={selectedCard}
+                          onValueChange={(value) => {
+                            console.log('Selected Card Value:', value);
+                            setSelectedCardId(value); // Set selectedCardId to the selected card's ID
+                          }}
+                        >
+                          {userCards.map((card) => (
+                            <Picker.Item
+                              label={`         ${card.bank_name} - **** ${card.card_number.slice(-4)}`}
+                              value={card.id} // Use the card's ID as the value
+                              key={card.id}
+                              color={getBackgroundColor(card.bank_name)}
+                            />
+                          ))}
+                        </Picker>
                       </View>
-                      </View>
+                    </View>
+
                     )}
 
                         <View style={styles.buttonsContainer}>
@@ -400,11 +425,14 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                 </>
               )}
             </View>
+
+            <LoadingModal visible={processing} />
+
             </ScrollView>
+
 
           </KeyboardAvoidingView>
         </TouchableOpacity>
-
         </TouchableWithoutFeedback>
 
       </Modal>
@@ -474,6 +502,7 @@ const styles = {
     marginBottom: 15,
     width: '100%',
     alignItems: 'center',
+    
   },
 
   presetAmountsContainer: {
@@ -580,7 +609,19 @@ const styles = {
     height: 50,
     width: '80%',
     marginTop: 5,
+    borderWidth: 0.5,
+    borderColor: 'silver',
   },
+
+  iconContainer: {
+    position: 'absolute', // Use absolute positioning
+    left: 10, // Adjust the left position as needed
+    top: '50%', // Center vertically
+    marginLeft: 45,
+    zIndex: 1,
+    transform: [{ translateY: -12 }], // Adjust translateY to vertically center the icon
+  },
+
   nairaSign: {
     fontSize: 16,
     marginLeft: 15,
@@ -593,6 +634,7 @@ const styles = {
     fontSize: 16,
     letterSpacing: -0.3,
     padding: 10,
+    
   },
   
   
@@ -602,10 +644,10 @@ const styles = {
     width: '80%',
     backgroundColor: 'white',
     borderRadius: 10,
-    marginBottom: 1,
     paddingLeft: 15,
     paddingRight: 5,
-
+    borderWidth: 0.5,
+    borderColor: 'silver',
   },
 
 

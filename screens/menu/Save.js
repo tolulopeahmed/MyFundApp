@@ -285,7 +285,7 @@ const formatTime = (timeString) => {
             You're AutoSaving ₦{amount} {frequency} <Ionicons name="checkmark-circle" size={20} color="#0AA447" marginBottom={10} />
           </Text>
           ) : (
-        <Text style={styles.autoSaveText} alignSelf='center' marginTop={10}>AutoSave is OFF: Use the switch to turn ON</Text>
+        <Text style={styles.autoSaveText} alignSelf='center' marginTop={10}>AutoSave is OFF: Use the switch above to turn ON</Text>
       )}
         </View>
 
@@ -662,6 +662,7 @@ backgroundImage: {
         marginTop: 10,
       },
       autoSaveSetting: {
+        marginTop: 5,
         color: '#04A447',
         position: 'relative',
         alignItems: 'center',
