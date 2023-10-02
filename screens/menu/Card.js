@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AddCardModal from './AddCardModal';
 import SectionTitle from '../components/SectionTitle';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserCards, deleteCardSuccess } from '../../ReduxActions';
+import { fetchUserCards, deleteCardSuccess, fetchAutoSaveSettings } from '../../ReduxActions';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
 
@@ -66,6 +66,8 @@ const Card = ({ navigation, route }) => {
   const userInfo = useSelector((state) => state.bank.userInfo);
   const cards = useSelector((state) => state.bank.cards);
   const userCards = useSelector((state) => state.bank.userCards); // Define and use userCards
+  const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
+
 
   useEffect(() => {
     if (route.params?.addCardModalVisible) {
@@ -100,39 +102,41 @@ const Card = ({ navigation, route }) => {
   const confirmDeleteCard = async (cardId) => {
     Alert.alert(
       'Delete Card?',
-      'Are you sure you want to delete this card? Note that this will deactivate any active AutoSave with this card.',
+      'Are you sure you want to delete this card? \nIf AutoSave is active, you will be redirected to deactivate it first.',
       [
         {
           text: 'Cancel',
           style: 'cancel',
         },
         {
-          text: 'Yes, Delete',
+          text: 'Yes, Proceed',
           style: 'destructive',
           onPress: async () => {
             try {
               // Get the user's token from Redux state
               const userToken = userInfo.token;
-  
+
               // Check if the userToken exists
               if (!userToken) {
                 console.error('User is not authenticated');
                 return;
               }
-  
-              // Set up authorization headers
-              const headers = {
-                Authorization: `Bearer ${userToken}`,
-              };
-  
-              // Make a DELETE request to the delete card API endpoint with authorization headers
-              const response = await axios.delete(`${ipAddress}/api/cards/${cardId}/`, { headers });
-  
-              if (response.status === 204) {
-                // Card deleted successfully, dispatch the action to remove it from Redux
-                dispatch(deleteCardSuccess(cardId));
-              } else {
-                console.error('Failed to delete card');
+
+              // Check if AutoSave is active
+              if (autoSaveSettings.active) {
+                // Redirect to the DeactivateAutoSaveModal
+                navigation.navigate('MainTab', {
+                  screen: 'Save',
+                  params: {
+                    deactivateAutoSaveModalVisible: true,
+                    fromCardDelete: true,
+                    cardId: cardId,// Pass the cardId here,
+                    userToken: userToken // Pass the userToken here,
+                  },
+                });
+                              } else {
+                // AutoSave is not active, proceed with card deletion
+                await deleteCard(cardId, userToken);
               }
             } catch (error) {
               console.error('Error deleting card:', error);
@@ -143,16 +147,39 @@ const Card = ({ navigation, route }) => {
       { cancelable: false }
     );
   };
+
+  const deleteCard = async (cardId, userToken) => {
+    try {
+      // Set up authorization headers
+      const headers = {
+        Authorization: `Bearer ${userToken}`,
+      };
+
+      // Make a DELETE request to the delete card API endpoint with authorization headers
+      const response = await axios.delete(`${ipAddress}/api/cards/${cardId}/`, { headers });
+
+      if (response.status === 204) {
+        // Card deleted successfully, dispatch the action to remove it from Redux
+        dispatch(deleteCardSuccess(cardId));
+      } else {
+        console.error('Failed to delete card');
+      }
+    } catch (error) {
+      console.error('Error deleting card:', error);
+    }
+  };
   
   
   
 
   
 
-  console.log('UserCards:', userCards);
-//  console.log('CardId:', cardId);
+  console.log('autoSaveSettings in Card:', autoSaveSettings.active);
 
   
+
+
+
   return (
     <View style={styles.container}>
 

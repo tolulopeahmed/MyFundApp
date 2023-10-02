@@ -9,11 +9,12 @@ import { fetchAutoSaveSettings, setAutoSaveOff } from '../../ReduxActions';
 import LoadingModal from '../components/LoadingModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const DeactivateAutoSaveModal = ({ navigation, frequency, deactivateAutoSaveModalVisible, onConfirm, setDeactivateAutoSaveModalVisible, setAutoSave }) => {
+const DeactivateAutoSaveModal = ({ navigation, route, frequency, deactivateAutoSaveModalVisible, onConfirm, setDeactivateAutoSaveModalVisible, setAutoSave }) => {
   const userInfo = useSelector((state) => state.bank.userInfo);
   const [isLoading, setIsLoading] = useState(false); // State to manage loading indicator
   const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
   const dispatch = useDispatch();
+  //const { fromCardDelete } = route.params;
 
 
   const closeModal = () => {
@@ -54,12 +55,15 @@ const DeactivateAutoSaveModal = ({ navigation, frequency, deactivateAutoSaveModa
           
           // Fetch the updated auto-save settings immediately after turning it off
           dispatch(fetchAutoSaveSettings());
+
+          // After successfully deactivating AutoSave, navigate back to the card deletion screen
         })
         .catch((error) => console.error('Error removing auto-save status:', error));
 
         // Show an alert confirming AutoSave deactivation
         Alert.alert('AutoSave Deactivated!', 'Your AutoSave has been deactivated successfully.');
       }
+      
     } catch (error) {
       console.error('Error deactivating AutoSave:', error);
       // Handle error, display a message to the user, or log it as needed

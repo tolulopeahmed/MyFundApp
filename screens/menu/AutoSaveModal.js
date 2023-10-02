@@ -41,7 +41,7 @@ const getBackgroundColor = (bankName) => {
       return "#88BB52";
     case "Citibank":
       return "#0275D0";
-    case "Heritage Bank Plc":
+    case "Heritage Bank":
       return "#439B2D";
     case "Standard Chartered Bank":
       return "#0671A9";

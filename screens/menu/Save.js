@@ -104,10 +104,12 @@ const formatTime = (timeString) => {
       setAutoSaveModalVisible(true);
     } else  if (route.params?.quickSaveModalVisible) {
       setQuickSaveModalVisible(true);
+    } else if (route.params?.deactivateAutoSaveModalVisible) {
+      setDeactivateAutoSaveModalVisible(true);
     }
   }, [route.params]);
 
- 
+
   
   const handleQuickSave = () => {
     setQuickSaveModalVisible(true);
@@ -283,7 +285,7 @@ console.log('autoSaveSettings.frequency:', autoSaveSettings.frequency)
           onConfirm={handleConfirmDeactivateAutoSave}
           frequency={frequency} // Pass the current frequency to the modal
           navigation={navigation}
-
+          route={route} // Pass the route prop here
         />
 
         </View>

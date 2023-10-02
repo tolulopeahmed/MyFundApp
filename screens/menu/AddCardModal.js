@@ -166,20 +166,17 @@ console.log('UserInfo Token before the API call:', userInfo.token); // Log the r
 
 
 const handleProceed = async () => {
-  setProcessing(true);
 
   console.log('Selected Bank:', selectedBank);
 
   if (!selectedBank) {
     Alert.alert('Error', 'Please select a bank');
-    setProcessing(false); // Reset processing state
     return;
   }
 
   
   if (!userInfo || !userInfo.token) {
     Alert.alert('Error', 'User information is missing. Please relog in.');
-    setProcessing(false); // Reset processing state
     return;
   }
 
@@ -191,18 +188,20 @@ const handleProceed = async () => {
       Alert.alert('Error', 'This card has already been added.');
       return;
     }
-
     const confirmation = await new Promise((resolve) => {
       Alert.alert(
         'Confirmation',
         'An initial charge of ₦50 will be made and returned back to your savings account just to confirm that your card works fine. Click OK to proceed.',
         [
           { text: 'Cancel', onPress: () => resolve(false), style: 'cancel' },
-          { text: 'OK', onPress: () => resolve(true) },
+          { text: 'OK', onPress: () => {
+            setProcessing(true); // Set processing to true when 'OK' is pressed
+            resolve(true);
+          }},
         ]
       );
     });
-  
+    
     if (!confirmation) {
       setProcessing(false); // Reset processing state
       return;
@@ -440,7 +439,7 @@ An initial charge of ₦50 will be made and returned back as to your savings acc
                   <Image source={require('./paystack.png')} style={styles.image} />
                 )}
                 <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
-                  {processing ? 'Paystack Processing...' : 'Proceed'}
+                  {processing ? 'Checking Card... Adding Card...' : 'Proceed'}
                 </Text>
               </TouchableOpacity>      
               </View>
