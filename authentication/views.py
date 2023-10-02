@@ -883,7 +883,7 @@ def autosave(request):
 
                 # Send a confirmation email
                 subject = "AutoSave Successful!"
-                message = f"Hi {user.first_name},\n\nYour AutoSave ({frequency}) of ₦{amount} was successful. It has been added to your SAVINGS account. \n\nKeep growing your funds.🥂\n\nMyFund"
+                message = f"Hi {user.first_name},\n\nYour AutoSave ({frequency}) of ₦{amount} was successful. It has been added to your SAVINGS account. \n\nKeep growing your funds.🥂\n\n\nMyFund \nSave, Buy Properties, Earn Rent \nwww.myfundmobile.com \n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
                 from_email = "MyFund <info@myfundmobile.com>"
                 recipient_list = [user.email]
 
@@ -897,7 +897,7 @@ def autosave(request):
 
     # Send an immediate email alert for activation
     subject = "AutoSave Activated!"
-    message = f"Well done {user.first_name},\n\nAutoSave ({frequency}) was successfully activated. You are now saving ₦{amount} {frequency} and your next autosave will happen in the next selected periodic interval. \n\nKeep growing your funds.🥂\n\nMyFund"
+    message = f"Well done {user.first_name},\n\nAutoSave ({frequency}) was successfully activated. You are now saving ₦{amount} {frequency} and your next autosave will happen in the next selected periodic interval. \n\n\nKeep growing your funds.🥂\n\nMyFund  \nSave, Buy Properties, Earn Rent \nwww.myfundmobile.com \n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
     from_email = "MyFund <info@myfundmobile.com>"
     recipient_list = [user.email]
 
@@ -928,7 +928,7 @@ def deactivate_autosave(request):
 
         # Send a confirmation email
         subject = "AutoSave Deactivated!"
-        message = f"Hi {user.first_name},\n\nYour AutoSave ({frequency}) has been deactivated. \n\nKeep growing your funds.🥂\n\nMyFund"
+        message = f"Hi {user.first_name},\n\nYour AutoSave ({frequency}) has been deactivated. \n\nKeep growing your funds.🥂\n\n\nMyFund  \nSave, Buy Properties, Earn Rent \nwww.myfundmobile.com \n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
         from_email = "MyFund <info@myfundmobile.com>"
         recipient_list = [user.email]
 
