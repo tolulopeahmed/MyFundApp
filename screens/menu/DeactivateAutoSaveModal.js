@@ -4,18 +4,26 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchAutoSaveSettings, setAutoSaveOff } from '../../ReduxActions';
 import LoadingModal from '../components/LoadingModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DeactivateAutoSaveModal = ({ navigation, frequency, deactivateAutoSaveModalVisible, onConfirm, setDeactivateAutoSaveModalVisible, setAutoSave }) => {
   const userInfo = useSelector((state) => state.bank.userInfo);
   const [isLoading, setIsLoading] = useState(false); // State to manage loading indicator
+  const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
+  const dispatch = useDispatch();
 
 
   const closeModal = () => {
     setDeactivateAutoSaveModalVisible(false);
   };
 
+    
+  useEffect(() => {
+    dispatch(fetchAutoSaveSettings()); // Fetch auto-save status and settings when the component mounts
+  }, [autoSaveSettings.active]);
 
   console.log('Autosave Frequency:', frequency);
 
@@ -28,7 +36,7 @@ const DeactivateAutoSaveModal = ({ navigation, frequency, deactivateAutoSaveModa
 
     try {
       const response = await axios.post(`${ipAddress}/api/deactivate-autosave/`, {
-        frequency: frequency,
+        frequency: autoSaveSettings.frequency,
       }, {
         headers: {
           Authorization: `Bearer ${userInfo.token}`,
@@ -36,8 +44,18 @@ const DeactivateAutoSaveModal = ({ navigation, frequency, deactivateAutoSaveModa
       });
 
       if (response.status === 200 && response.data.message === 'AutoSave deactivated') {
-        setAutoSave(false);
         setDeactivateAutoSaveModalVisible(false);
+        dispatch(setAutoSaveOff());
+
+          // Clear the auto-save status in AsyncStorage (if needed)
+        AsyncStorage.removeItem('autoSaveSettings')
+        .then(() => {
+          console.log('Auto-save status removed');
+          
+          // Fetch the updated auto-save settings immediately after turning it off
+          dispatch(fetchAutoSaveSettings());
+        })
+        .catch((error) => console.error('Error removing auto-save status:', error));
 
         // Show an alert confirming AutoSave deactivation
         Alert.alert('AutoSave Deactivated!', 'Your AutoSave has been deactivated successfully.');

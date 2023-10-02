@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserCards, updateAccountBalances, } from '../../ReduxActions'; // Import fetchUserCards
+import { fetchAutoSaveSettings, fetchautosaveSettings} from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
@@ -71,6 +71,7 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
   const [selectedCardId, setSelectedCardId] = useState(userCards.length > 0 ? userCards[0].id : null);
   const dispatch = useDispatch();
 
+
   const closeModal = () => {
     setAutoSaveModalVisible(false);
   };
@@ -106,11 +107,11 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
 
       if (response.status === 200) {
         const responseData = response.data;
+        dispatch(fetchAutoSaveSettings()); // Fetch and update auto-save status
         setProcessing(false);
+        setAutoSaveModalVisible(false);
+        setAutoSave(true); // Set autoSave state after success
 
-        setAutoSave(true);
-        // Show a success message alert
-        
         Alert.alert(
           'AutoSave Activated!',
           `Your AutoSave has been activated. You're now saving ₦${amount} ${frequency}. Well done! Keep growing your funds. 🥂`,
@@ -118,19 +119,14 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
             {
               text: 'OK',
               onPress: () => {
-                // Close the AutoSave modal
-                setAutoSaveModalVisible(false);
+                // Navigate to the Home screen
+                navigation.navigate('MyFund');
               },
             },
           ]
         );
+        
   
-        // Update the amount and frequency props in Save.js
-        if (amount && frequency) {
-          onConfirm(amount, frequency); // Pass amount and frequency to the callback
-          setProcessing(false);
-          setAutoSaveModalVisible(false);
-        }
       } else {
         setProcessing(false);
         Alert.alert('AutoSave Activation Failed', 'Please try again later.');
@@ -146,6 +142,10 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
   };
   
   
+  useEffect(() => {
+    // Fetch auto-save status and settings when the component mounts
+    dispatch(fetchAutoSaveSettings());
+  }, []);
   
 
 

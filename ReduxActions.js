@@ -26,7 +26,8 @@ export const FETCH_CARDS_SUCCESS = 'FETCH_CARDS_SUCCESS';
 export const ADD_CARD_SUCCESS = 'ADD_CARD_SUCCESS';
 export const DELETE_CARD_SUCCESS = 'DELETE_CARD_SUCCESS';
 
-export const SET_AUTO_SAVE_STATUS = 'SET_AUTO_SAVE_STATUS';
+export const SET_AUTO_SAVE_SETTINGS = 'SET_AUTO_SAVE_SETTINGS';
+export const SET_AUTO_SAVE_OFF = 'SET_AUTO_SAVE_OFF';
 
 
 
@@ -113,9 +114,15 @@ export const deleteCardSuccess = (cardId) => ({
   payload: cardId,
 });
 
-export const setAutoSaveStatus = (status) => ({
-  type: SET_AUTO_SAVE_STATUS,
-  payload: status,
+
+
+export const setAutoSaveSettings = (settings) => ({
+  type: SET_AUTO_SAVE_SETTINGS,
+  payload: settings,
+});
+
+export const setAutoSaveOff = () => ({
+  type: SET_AUTO_SAVE_OFF,
 });
 
 // Fetch user data and update the Redux store with user information
@@ -258,3 +265,30 @@ export const fetchUserCards = () => async (dispatch, getState) => {
     console.error('Fetch Error:', error);
   }
 };
+
+
+export const fetchAutoSaveSettings = () => async (dispatch, getState) => {
+  const userInfo = getState().bank.userInfo;
+  if (!userInfo || !userInfo.token) {
+    console.error('Authentication Error: User is not authenticated.');
+    return;
+  }
+
+  try {
+    // Make an API request to fetch auto-save status and settings
+    const response = await axios.get(`${ipAddress}/api/get-autosave-settings/`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      // Dispatch the action to set auto-save status and settings in the Redux store
+      dispatch(setAutoSaveSettings(response.data.autoSaveSettings));
+    }
+  } catch (error) {
+    console.error('Fetch Error:', error);
+  }
+};
+

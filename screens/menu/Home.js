@@ -9,7 +9,7 @@ import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { AutoInvestContext } from '../components/AutoInvestContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, fetchUserTransactions, fetchUserData, } from '../../ReduxActions';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import ImageContext from './ImageContext';
 
@@ -23,6 +23,7 @@ const Home = ({ navigation, route}) => {
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
   const dispatch = useDispatch();
+  const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
 
   const iconMapping = {
     "Card Successful": "card-outline",
@@ -80,6 +81,7 @@ const formatTime = (timeString) => {
     dispatch(fetchAccountBalances()); // Fetch account balances using Redux action
     dispatch(fetchUserTransactions()); // Fetch user transactions using Redux action
     dispatch(fetchUserData(userInfo.token));
+    dispatch(fetchAutoSaveSettings()); // Fetch auto-save status and settings when the component mounts
   }, []);
 
 
@@ -293,11 +295,11 @@ const formatTime = (timeString) => {
       
       <View style={styles.todoList1}>
       <TouchableOpacity
-        style={[styles.todoButton, autoSave && styles.disabledButton]}
+        style={[styles.todoButton, autoSaveSettings.active && styles.disabledButton]}
         onPress={handleActivateAutoSave}
         disabled={autoSave}
       >
-        {autoSave ? (
+        {autoSaveSettings.active ? (
           <>
             <Ionicons
               name="car-outline"

@@ -12,7 +12,7 @@ import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, fetchUserTransactions, fetchUserData } from '../../ReduxActions';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import moment from 'moment';
 import Success from '../components/Success';
@@ -31,33 +31,23 @@ const Save = ({ navigation, route }) => {
   const [isSuccessVisible, setIsSuccessVisible] = useState(false);
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
-
+  const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
+  
 
   const handleCloseSuccessModal = () => {
     setIsSuccessVisible(false);
   };
   
 
-  const [forceUpdateCounter, setForceUpdateCounter] = useState(0);
-  const forceUpdate = () => {
-    setForceUpdateCounter(forceUpdateCounter + 1);
-  };
-
-  useEffect(() => {
-    if (!isSuccessVisible) {
-      forceUpdate(); // Trigger a re-render when isSuccessVisible becomes false
-    }
-  }, [isSuccessVisible]);
-
 
   const dispatch = useDispatch();
-  const autoSaveStatus = useSelector((state) => state.bank.autoSave);
 
 
   useEffect(() => {
     dispatch(fetchAccountBalances()); // Fetch account balances using Redux action
     dispatch(fetchUserTransactions()); // Fetch user transactions using Redux action
     dispatch(fetchUserData(userInfo.token));
+    dispatch(fetchAutoSaveSettings()); // Fetch auto-save status and settings when the component mounts
   }, []);
 
 
@@ -123,23 +113,30 @@ const formatTime = (timeString) => {
     setQuickSaveModalVisible(true);
   };
 
+  // Function to handle toggling auto-save
   const handleActivateAutoSave = () => {
-    if (!autoSave) {
+    if (!autoSaveSettings.active) {
+      // If auto-save is currently OFF, open the auto-save modal
       setAutoSaveModalVisible(true);
     } else {
+      // If auto-save is currently ON, show a confirmation to deactivate
       setDeactivateAutoSaveModalVisible(true);
     }
-  };  
+  };
 
+  // Function to handle confirming auto-save settings
   const handleConfirmAutoSave = (amount, frequency) => {
+    // Set the amount and frequency in the component state
     setAmount(amount);
     setFrequency(frequency);
-    setAutoSaveModalVisible(false);
-    
-    // Dispatch the auto-save status to Redux
 
-    // Store the auto-save status in AsyncStorage for persistence
-    AsyncStorage.setItem('autoSaveStatus', 'true')
+    // Close the auto-save modal
+    setAutoSaveModalVisible(false);
+
+    // Dispatch the auto-save status to Redux (if needed)
+
+    // Store the auto-save status in AsyncStorage for persistence (if needed)
+    AsyncStorage.setItem('autoSaveSettings', 'true')
       .then(() => console.log('Auto-save status saved'))
       .catch((error) => console.error('Error saving auto-save status:', error));
   };
@@ -147,15 +144,30 @@ const formatTime = (timeString) => {
   
   
 
-  const handleConfirmDeactivateAutoSave = () => {
-    setDeactivateAutoSaveModalVisible(false);
-    setAutoSave(false);
-  };
+// Function to handle confirming deactivation of auto-save
+const handleConfirmDeactivateAutoSave = () => {
+  // Close the deactivation confirmation modal
+  setDeactivateAutoSaveModalVisible(false);
+
+  // Dispatch an action to update the auto-save status in Redux (if needed)
+
+  // Clear the auto-save status in AsyncStorage (if needed)
+  AsyncStorage.removeItem('autoSaveSettings')
+    .then(() => console.log('Auto-save status removed'))
+    .catch((error) => console.error('Error removing auto-save status:', error));
+};
+  
+
+useEffect(() => {
+  dispatch(fetchAutoSaveSettings()); // Fetch auto-save status and settings when the component mounts
+}, [autoSaveSettings.active]);
+ 
+console.log('autoSaveSettings.active:', autoSaveSettings.active)
+console.log('autoSaveSettings.amount:', autoSaveSettings.amount)
+console.log('autoSaveSettings.frequency:', autoSaveSettings.frequency)
   
 
 
-
-  
   return (
     <View style={styles.container}>
      <Header navigation={navigation} headerText='SAVE'/>
@@ -235,21 +247,21 @@ const formatTime = (timeString) => {
         </View>
 
        
-       <View style={styles.autoSaveContainer}>
-       <Ionicons name="car-outline" size={20} marginRight={5} marginTop={-1} style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]} />
- <Text style={[styles.autoSaveText, autoSave ? styles.greenText : styles.grayText]}>
-    {autoSave ? 'AutoSave is ON' : 'AutoSave is OFF'}
-        </Text>
+        <View style={styles.autoSaveContainer}>
+            <Ionicons name="car-outline" size={20} marginRight={5} marginTop={-1} style={[styles.autoSaveText, autoSaveSettings.active ? styles.greenText : styles.grayText]} />
+            <Text style={[styles.autoSaveText, autoSaveSettings.active ? styles.greenText : styles.grayText]}>
+              {autoSaveSettings.active ? 'AutoSave is ON' : 'AutoSave is OFF'}
+            </Text>
 
             <Switch
-          title="Open Modal" 
-          style={styles.switch}
-            trackColor={{ false: 'grey', true: '#0AA447' }}
-            thumbColor={autoSave ? '#43FF8E' : 'silver'}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={handleActivateAutoSave}
-            value={autoSave}
-          />
+              title="Open Modal" 
+              style={styles.switch}
+              trackColor={{ false: 'grey', true: '#0AA447' }}
+              thumbColor={autoSaveSettings.active ? '#43FF8E' : 'silver'}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={handleActivateAutoSave}
+              value={autoSaveSettings.active}
+            />
 
           <AutoSaveModal
           autoSave={autoSave}
@@ -279,14 +291,14 @@ const formatTime = (timeString) => {
 
 
     
-         <View>
-    {autoSave ? (
-          <Text style={styles.autoSaveSetting}>
-            You're AutoSaving ₦{amount} {frequency} <Ionicons name="checkmark-circle" size={20} color="#0AA447" marginBottom={10} />
-          </Text>
+    <View>
+          {autoSaveSettings.active ? (
+            <Text style={styles.autoSaveSetting}>
+              You're AutoSaving ₦{autoSaveSettings.amount} {autoSaveSettings.frequency} <Ionicons name="checkmark-circle" size={20} color="#0AA447" marginBottom={10} />
+            </Text>
           ) : (
-        <Text style={styles.autoSaveText} alignSelf='center' marginTop={10}>AutoSave is OFF: Use the switch above to turn ON</Text>
-      )}
+            <Text style={styles.autoSaveText} alignSelf='center' marginTop={10}>AutoSave is OFF: Use the switch above to turn ON</Text>
+          )}
         </View>
 
 

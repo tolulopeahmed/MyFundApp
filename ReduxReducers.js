@@ -17,7 +17,8 @@ import {
   ADD_CARD_SUCCESS,
   DELETE_CARD_SUCCESS,
   LOAD_CARDS,
-  SET_AUTO_SAVE_STATUS,
+  SET_AUTO_SAVE_SETTINGS,
+  SET_AUTO_SAVE_OFF,
 } from './ReduxActions';
 
 
@@ -34,7 +35,13 @@ const initialState = {
   bankAccounts: [], // Initial state should come from AsyncStorage or API if available
   cards: [], // Initialize cards state
   profileImageUri: null, // Add a new field to store the profile picture URI
-  autoSave: false, // Initial state
+
+  autoSaveSettings: {
+    active: false,
+    amount: 0,
+    frequency: '',
+  },
+
   userInfo: {
     // Initialize user-related fields here
     is_first_time_signup: false,
@@ -164,13 +171,23 @@ const Reducer = (state = initialState, action) => {
             ...state,
             userTransactions: action.payload,
           };
-          case SET_AUTO_SAVE_STATUS:
+
+      
+          case SET_AUTO_SAVE_SETTINGS:
             return {
               ...state,
-              autoSave: action.payload,
+              autoSaveSettings: {
+                ...action.payload,
+              },
             };
-
-         
+          case SET_AUTO_SAVE_OFF:
+            return {
+              ...state,
+              autoSaveSettings: {
+                ...state.autoSaveSettings,
+                active: false, // Set the 'active' field to false when turning off auto-save
+              },
+            };
      default:
       return state;
 
