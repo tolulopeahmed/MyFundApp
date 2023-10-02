@@ -64,5 +64,8 @@ urlpatterns = [
     path('deactivate-autosave/', views.deactivate_autosave, name='deactivate_autosave'),
     path('get-autosave-settings/', views.get_autosave_status, name='get_autosave_status'),
 
+    # Investment-related APIs
+    path('quickinvest/', views.quickinvest, name='quickinvest'),
+
     ]
 

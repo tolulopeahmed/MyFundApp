@@ -963,3 +963,73 @@ def get_autosave_status(request):
         }
     
     return Response({'autosave_enabled': autosave_enabled, 'autoSaveSettings': autoSaveSettings}, status=status.HTTP_200_OK)
+
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def quickinvest(request):
+    # Get the selected card details from the request
+    card_id = request.data.get('card_id')
+    amount = request.data.get('amount')
+
+    # Retrieve the card details from your database
+    try:
+        card = Card.objects.get(id=card_id)
+    except Card.DoesNotExist:
+        return Response({'error': 'Selected card not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Use the card details to initiate a payment with Paystack
+    paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"  # Use your actual secret key
+    paystack_url = "https://api.paystack.co/charge"
+
+    payload = {
+        "card": {
+            "number": card.card_number,
+            "cvv": card.cvv,
+            "expiry_month": card.expiry_date.split('/')[0],
+            "expiry_year": card.expiry_date.split('/')[1],
+        },
+        "email": request.user.email,  # Assuming you have a user authenticated with a JWT token
+        "amount": int(amount) * 100,  # Amount in kobo (multiply by 100)
+    }
+
+    headers = {
+        "Authorization": f"Bearer {paystack_secret_key}",
+        "Content-Type": "application/json",
+    }
+
+    response = requests.post(paystack_url, json=payload, headers=headers)
+    paystack_response = response.json()
+
+    if paystack_response.get("status"):
+        # Payment successful, update user's investments and create a transaction
+        user = request.user
+        user.investment += int(amount)
+        user.save()
+
+        # Send a confirmation email
+        subject = "QuickInvest Successful!"
+        message = f"Well done {user.first_name},\n\nYour QuickInvest was successful and ₦{amount} has been successfully added to your INVESTMENTS account. \n\nKeep growing your funds.🥂\n\n\nMyFund \nSave, Buy Properties, Earn Rent \nwww.myfundmobile.com \n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+        from_email = "MyFund <info@myfundmobile.com>"
+        recipient_list = [user.email]
+
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+        # Create a transaction record
+        transaction = Transaction.objects.create(
+            user=user,
+            transaction_type="credit",
+            amount=int(amount),
+            date=timezone.now().date(),
+            time=timezone.now().time(),
+            description=f"QuickInvest",
+            transaction_id=paystack_response.get("data", {}).get("reference"),
+        )
+
+        # Return a success response
+        return Response({'message': 'QuickInvest successful', 'transaction_id': transaction.transaction_id}, status=status.HTTP_200_OK)
+    else:
+        # Payment failed, return an error response
+        return Response({'error': 'QuickInvest failed'}, status=status.HTTP_400_BAD_REQUEST)
