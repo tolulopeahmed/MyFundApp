@@ -62,7 +62,7 @@ urlpatterns = [
     path('quicksave/', views.quicksave, name='quicksave'),
     path('activate-autosave/', views.autosave, name='autosave'),  # Make sure to use the correct view function
     path('deactivate-autosave/', views.deactivate_autosave, name='deactivate_autosave'),
-    path('get-autosave-status/', views.get_autosave_status, name='get_autosave_status'),
+    path('get-autosave-settings/', views.get_autosave_status, name='get_autosave_status'),
 
     ]
 

@@ -946,4 +946,20 @@ def deactivate_autosave(request):
 def get_autosave_status(request):
     user = request.user
     autosave_enabled = user.autosave_enabled
-    return Response({'autosave_enabled': autosave_enabled}, status=status.HTTP_200_OK)
+    
+    # You can retrieve the user's active auto-save settings here
+    try:
+        active_autosave = AutoSave.objects.get(user=user, active=True)
+        autoSaveSettings = {
+            'active': True,
+            'amount': active_autosave.amount,
+            'frequency': active_autosave.frequency,
+        }
+    except AutoSave.DoesNotExist:
+        autoSaveSettings = {
+            'active': False,
+            'amount': 0,
+            'frequency': '',
+        }
+    
+    return Response({'autosave_enabled': autosave_enabled, 'autoSaveSettings': autoSaveSettings}, status=status.HTTP_200_OK)
