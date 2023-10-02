@@ -11,8 +11,11 @@ import Subtitle from '../components/Subtitle';
 import { AutoInvestContext } from '../components/AutoInvestContext';
 import SectionTitle from '../components/SectionTitle';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateAutoInvest, confirmAutoInvest, confirmDeactivateAutoInvest } from '../../ReduxActions';
-
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
+import moment from 'moment';
+import Success from '../components/Success';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Sponsorship = ({ navigation, route }) => {
 // const [autoInvest, setAutoInvest] = React.useState(false);
@@ -24,8 +27,40 @@ const Sponsorship = ({ navigation, route }) => {
   const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
-
+  const [currentMonth, setCurrentMonth] = useState('');
+  const [isSuccessVisible, setIsSuccessVisible] = useState(false);
+  const [amount, setAmount] = useState('');
+  const [frequency, setFrequency] = useState('');
+  const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
   
+  
+  useEffect(() => {
+    dispatch(fetchAccountBalances()); // Fetch account balances using Redux action
+    dispatch(fetchUserTransactions()); // Fetch user transactions using Redux action
+    dispatch(fetchUserData(userInfo.token));
+    dispatch(fetchAutoSaveSettings()); // Fetch auto-save status and settings when the component mounts
+  }, []);
+
+ 
+  const handleCloseSuccessModal = () => {
+    setIsSuccessVisible(false);
+  };
+  
+
+  const iconMapping = {
+    "Card Successful": "card-outline",
+    "QuickSave": "save-outline",
+    "AutoSave": "car-outline",
+    "QuickInvest": "trending-up-outline",
+    "AutoInvest": "car-sport-outline",
+    "Withdrawal from Savings": "arrow-down-outline",
+    "Pending Referral Reward": "ellipsis-horizontal-circle-outline",
+    "Referral Reward": "checkmark-circle",
+    "Withdrawal from Investment": "arrow-down-outline",
+    "Property": "home-outline",
+  };
+
+
   useEffect(() => {
     if (route.params?.autoInvestModalVisible) {
       setAutoInvestModalVisible(true);
@@ -33,6 +68,53 @@ const Sponsorship = ({ navigation, route }) => {
         setQuickInvestModalVisible(true);
     }
   }, [route.params]);
+
+
+  useEffect(() => {
+    const monthName = moment().format('MMMM');
+    setCurrentMonth(monthName);
+  }, []);
+
+
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'short', day: '2-digit' };
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', options);
+};
+
+// Function to format the time
+const formatTime = (timeString) => {
+  const options = { hour: 'numeric', minute: '2-digit', hour12: true };
+  const time = new Date(`2023-01-01T${timeString}`);
+  return time.toLocaleTimeString('en-US', options);
+};
+
+  // Calculate the percentage
+  const percentage = (currentAmount) => {
+    const goalAmount = parseFloat(userInfo.savings_goal_amount);
+    return (accountBalances.savings / goalAmount) * 100;
+  };
+
+  const roundToNearestThousand = (value) => {
+    return Math.round(value / 1000) * 1000;
+  };
+
+  const formatWithCommas = (number) => {
+    return number.toLocaleString();
+  };
+
+  useEffect(() => {
+    if (route.params?.autoSaveModalVisible) {
+      setAutoInvestModalVisible(true);
+    } else  if (route.params?.quickSaveModalVisible) {
+      setQuickInvestModalVisible(true);
+    } else if (route.params?.deactivateAutoSaveModalVisible) {
+      setDeactivateAutoInvestModalVisible(true);
+    }
+  }, [route.params]);
+
+
+
 
 
   const handleQuickInvest = () => {
@@ -57,6 +139,11 @@ const handleConfirmDeactivateAutoInvest = () => {
   setDeactivateAutoInvestModalVisible(false);
   setAutoInvest(false);
 };
+
+
+
+
+
 
   
   return (
@@ -143,27 +230,34 @@ const handleConfirmDeactivateAutoInvest = () => {
         )}
 
         </View>
+      </ImageBackground>
 
-        <View style={styles.autoSaveSettingContainer}>
-            {autoInvest && <Text style={styles.autoSaveSetting}>@$20/month
-            <Ionicons name="checkmark" size={17} color="#0AA447" />          
 
-            </Text>}
-            </View> 
 
-        <View>
+      <View>
+          {autoSaveSettings.active ? (
+            <Text style={styles.autoSaveSetting}>
+              You're AutoInvesting ₦{autoSaveSettings.amount} {autoSaveSettings.frequency} <Ionicons name="checkmark-circle" size={20} color="#0AA447" marginBottom={10} />
+            </Text>
+          ) : (
+            <Text style={styles.autoSaveText} alignSelf='center' marginTop={10}>AutoSave is OFF: Use the switch above to turn ON</Text>
+          )}
+        </View>
+
+      <View>
           <TouchableOpacity style={styles.quickSaveButton} onPress={handleQuickInvest}>
           <Ionicons name="trending-up-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
           <Text style={styles.quickSaveText}>QuickInvest</Text>
         </TouchableOpacity>
         </View>
-      </ImageBackground>
 
       {quickInvestModalVisible && (
   <QuickInvestModal
   navigation={navigation}
   quickInvestModalVisible={quickInvestModalVisible} 
   setQuickInvestModalVisible={setQuickInvestModalVisible}
+  setIsSuccessVisible={setIsSuccessVisible} // Pass the setIsSuccessVisible function here
+
   />
 )}
 
@@ -173,105 +267,74 @@ const handleConfirmDeactivateAutoInvest = () => {
       <Divider />
       <SectionTitle>INVESTMENT TRANSACTIONS</SectionTitle>
 
-        <View style={styles.transactionsContainer}>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="car-sport-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>AutoInvest</Text>
-              <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+300.50</Text>
-            </View>
+       
+<View style={styles.transactionsContainer}>
+  {userTransactions.length > 0 ? (
+    userTransactions
+      .filter(
+        (transaction) =>
+          [
+            "QuickInvest",
+            "AutoInvest",
+          ].includes(transaction.description) // Filter transactions with these descriptions
+      )
+      .slice(0, 5)
+      .map((transaction, index) => (
+        // Inside your Save component where you are rendering transactions
+        <View key={index} style={styles.transactionItem}>
+          <Ionicons
+            name={iconMapping[transaction.description] || "card-outline"}
+            size={25}
+            style={styles.transactionIcon}
+          />
+          <View style={styles.transactionText}>
+            <Text style={styles.transactionDescription}>
+              {transaction.description}
+            </Text>
+            <Text style={styles.transactionDate}>
+              {formatDate(transaction.date)} | {formatTime(transaction.time)}
+            </Text>
+            <Text style={styles.transactionID}>
+              ID: {transaction.transaction_id}
+            </Text>
           </View>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="trending-up-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickInvest</Text>
-              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+1000.00</Text>
-            </View>
+          <View style={styles.transactionAmountContainer}>
+            <Text
+              style={
+                transaction.transaction_type === "debit"
+                  ? styles.negativeAmount
+                  : styles.transactionAmount
+              }
+            >
+              ₦{transaction.amount}
+            </Text>
           </View>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="arrow-down-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>
-                Withdrawal from Investment
-              </Text>
-              <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
-            </View>
-            <View style={styles.transactionAmountContainer}>
-            <Text style={styles.negativeAmount}>-500.00</Text>
-            </View>
-          </View>
-          </View>
-          {/* Add more transaction items here */}
-          <View style={styles.transactionsContainer}>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="car-sport-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>AutoInvest</Text>
-              <Text style={styles.transactionDate}>05 Mar, 2023, 11:30am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+300.50</Text>
-            </View>
-          </View>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="trending-up-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>QuickInvest</Text>
-              <Text style={styles.transactionDate}>03 Mar, 2023, 10:15am</Text>
-            </View>
-            <View>
-            <Text style={styles.transactionAmount}>+1000.00</Text>
-            </View>
-          </View>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="arrow-down-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>
-                Withdrawal from Investment
-              </Text>
-              <Text style={styles.transactionDate}>01 Mar, 2023, 9:30am</Text>
-            </View>
-            <View style={styles.transactionAmountContainer}>
-            <Text style={styles.negativeAmount}>-500.00</Text>
-            </View>
-          </View>
-          </View>
+        </View>
+      ))
+  ) : (
+    <View style={styles.noTransactionsContainer}>
+      <Text style={styles.noTransactionsMessage}>
+        Your most recent savings will appear here.
+      </Text>
+    </View>
+  )}
+</View>
+
+
+{isSuccessVisible && (
+      <Success  
+      isVisible={isSuccessVisible}
+      onClose={handleCloseSuccessModal} // Pass the callback function
+      navigation={navigation}
+      />
+      )}
+
     </SafeAreaView>
     </ScrollView>
 
 
     <TouchableOpacity
-        style={styles.quickInvestButtonCircle}
+        style={styles.quickSaveButtonCircle}
         onPress={handleQuickInvest}
       >
         <Ionicons name="trending-up-outline" size={25} color="#fff" />
@@ -342,8 +405,38 @@ const styles = StyleSheet.create({
     },
 
   
+
+  swiper: {
+    height: 125, 
+    width:'100%'
+  },
+
+  dot: {
+    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Customize the color of the inactive dots
+    width: 5,
+    height: 5,
+    borderRadius: 5,
+    marginLeft: 3,
+    marginRight: 3,
+    marginTop: 3,
+    marginBottom: 3,
+  },
+  activeDot: {
+    backgroundColor: '#4C28BC', // Customize the color of the active dot
+    width: 10,
+    height: 4,
+    borderRadius: 5,
+    marginLeft: 3,
+    marginRight: 3,
+    marginTop: 3,
+    marginBottom: 3,
+  },
+
+  paginationContainer: {
+    bottom: 0, // Adjust the value as per your requirement
+  },
   
-  
+
   propertyContainer: {
     alignItems: 'center',
     paddingHorizontal: 16,
@@ -352,8 +445,6 @@ const styles = StyleSheet.create({
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
-    marginTop: 1,
-    marginBottom: 10,
   },
   
   propertyText: {
@@ -395,10 +486,17 @@ const styles = StyleSheet.create({
     goalText:{
       flex: 1,
       fontSize: 14,
-      fontFamily: 'karla',
+      fontFamily: 'nexa',
       letterSpacing: -0.2,
-     color: '#4C28BC',
+      color: 'black',
+    },
 
+    percentageText:{
+      flex: 1,
+      fontSize: 14,
+      fontFamily: 'proxima',
+      letterSpacing: -0.2,
+      color: 'green',
     },
     restText:{
       flex: 1,
@@ -428,11 +526,13 @@ backgroundImage: {
   borderTopRightRadius: 10,
 },
 
+
     savingsLine1: {
       flexDirection: 'row',
     color: '#8E8E93',
     marginTop: 8,
     },
+    
     greyText: {
     marginLeft: 8,
     marginTop:8,
@@ -452,6 +552,7 @@ backgroundImage: {
 
     amountContainer: {
       flexDirection: 'row',
+      alignItems: 'flex-start'
     },
   
     dollarSign: {
@@ -483,7 +584,8 @@ backgroundImage: {
     marginBottom: -10,
       color: '#fff',
     },
-   
+
+     
 
       autoSaveContainer: {
         flexDirection: 'row',
@@ -492,7 +594,7 @@ backgroundImage: {
 
       autoSaveText: {
         color: 'silver',
-        fontFamily: 'karla',
+        fontFamily: 'karla-italic',
         marginRight: 5,
       },
 
@@ -512,23 +614,26 @@ backgroundImage: {
         marginTop: 10,
       },
       autoSaveSetting: {
-        color: '#0AA447',
-        position: 'absolute',
+        marginTop: 5,
+        color: '#04A447',
+        position: 'relative',
         alignItems: 'center',
         alignSelf: 'center',
+        fontFamily: 'proxima',
       },
 
-
+     
     quickSaveButton: {
-      marginTop: 30,
+      marginTop: 15,
       flexDirection: 'row',
       backgroundColor: '#4C28BC',
       width: 140,
       height: 40,
       alignItems: 'center',
       justifyContent: 'center',
+      alignSelf: 'center',
       borderRadius: 10,
-      marginBottom: 5,
+      marginBottom: 0,
     
     },
     quickSaveText: {
@@ -559,9 +664,10 @@ backgroundImage: {
       marginBottom: 2,
     },
     
+    
 
     transactionContainer: {
-      marginTop: 100,
+      marginTop: 25,
       flex: 1,
         },
 
@@ -593,7 +699,7 @@ backgroundImage: {
     transactionDescription: {
       color: '#4C28BC',
       letterSpacing: -1,
-      fontSize: 18,
+      fontSize: 19,
       fontFamily: 'karla',
       marginTop: 3,
       textAlign: 'left',
@@ -601,8 +707,19 @@ backgroundImage: {
     },
     transactionDate: {
       fontFamily: 'karla',
-      fontSize: 12,
-      marginTop: 3,
+      fontSize: 10,
+      marginTop: 1,
+    },
+    transactionTime: {
+      fontFamily: 'karla',
+      fontSize: 10,
+      marginTop: 1,
+    },
+    transactionID: {
+      fontFamily: 'nexa',
+      fontSize: 10,
+      marginTop: 1,
+      color: '#4C28BC',
     },
     transactionAmount: {
       color: 'green',
@@ -627,12 +744,23 @@ backgroundImage: {
       
     },
 
+    noTransactionsContainer: {
+      flex: 1,
+      justifyContent: 'center', // Center vertically
+      alignItems: 'center', // Center horizontally
+    },
+    noTransactionsMessage: {
+      fontSize: 15,
+      color: 'silver',
+      fontFamily: 'karla-italic',
+      marginTop: 140,
+      marginBottom: 100
+    },
 
-    
-    quickInvestButtonCircle: {
+    quickSaveButtonCircle: {
       position: 'absolute',
-      bottom: 30,
-      right: 30,
+      bottom: 20,
+      right: 20,
       backgroundColor: '#4C28BC',
       width: 60,
       height: 60,
@@ -646,5 +774,6 @@ backgroundImage: {
   
 
 });
+
 
 export default Sponsorship;

@@ -1,23 +1,41 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Modal, Text, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Modal, Text, Alert, KeyboardAvoidingView, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserCards } from '../../ReduxActions'; // Import fetchUserCards
+import { fetchUserCards, updateAccountBalances, } from '../../ReduxActions'; // Import fetchUserCards
+import { ipAddress } from '../../constants';
+import axios from 'axios';
+import LoadingModal from './LoadingModal';
+import bankOptions from './BankOptions';
 
-const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestModalVisible }) => {
+
+
+const getBackgroundColor = (bankName) => {
+  const bank = bankOptions.find((option) => option.name === bankName);
+  return bank ? bank.color : "#4C28BC"; // Default to your default color
+};
+
+
+const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestModalVisible, setIsSuccessVisible }) => {
   const [frequency, setFrequency] = useState('');
   const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
   const [amount, setAmount] = useState('');
-  const [selectedCard, setSelectedCard] = useState('null');
-
+  const [selectedCard, setSelectedCard] = useState(null);
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  //const selectedCardId = selectedCard !== undefined && selectedCard !== null ? selectedCard : null;
+  const [processing, setProcessing] = useState(false);
   const userCards = useSelector((state) => state.bank.cards) || [];
+  const [selectedCardId, setSelectedCardId] = useState(userCards.length > 0 ? userCards[0].id : null);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchUserCards());
   }, []);
+
+
 
   const handleAmountButtonPress = (presetAmount) => {
     handleAmountPreset(presetAmount);
@@ -30,15 +48,36 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
   };
 
 
+  
+  useEffect(() => {
+    // Check if userCards is not empty
+    if (userCards.length > 0) {
+      setSelectedCardId(userCards[0].id); // Set selectedCardId to the ID of the first card
+      setSelectedCard(userCards.find((card) => card.id === userCards[0].id)); // Set selectedCard to the first card object
+    }
+  }, [userCards]);
+  
+
 
   useEffect(() => {
     // Check if both amount and selectedCard are not empty and selectedCard is not 'null'
-    if (amount !== '' && selectedCard !== '' && selectedCard !== 'null') {
+    if (amount !== '' && selectedCard !== null) {
       setIsContinueButtonDisabled(false);
     } else {
       setIsContinueButtonDisabled(true);
     }
-  }, [amount, selectedCard]);
+  
+    // Set initial selectedCard when userCards are available
+    if (userCards.length > 0 && selectedCard === null) {
+      setSelectedCard(userCards[0].id);
+    }
+  
+    // Set initial frequency when AutoSaveModal opens
+    if (frequency === '') {
+      setFrequency('daily'); // Change 'hourly' to the default frequency you want
+    }
+  }, [amount, selectedCard, userCards, frequency]); // Include 'frequency' in the dependency array
+  
   
 
 
@@ -51,10 +90,6 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
     } else {
       setAmount('');
     }
-  };
-  
-  const handleCardSelection = (value) => {
-    setSelectedCard(value);
   };
 
   
@@ -73,10 +108,69 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
   const clearAmount = () => {
     setAmount('');
   };
+
+
   
-  console.log('User Cards in QuickInvestModal:', userCards);
 
 
+  const handleQuickInvest = async () => {
+    setProcessing(true);
+    try {
+      console.log('Selected card ID:', selectedCardId);
+      console.log('Amount Entered:', amount);
+
+      // Send the QuickSave request to your API using axios
+      const response = await axios.post(`${ipAddress}/api/quickinvest/`, // Updated API endpoint
+        {
+          card_id: selectedCardId,
+          amount: parseFloat(amount.replace(/,/g, '')),
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        // QuickSave was successful, update account balances and transactions
+        const responseData = response.data;
+        setIsSuccessVisible(true);
+
+        setQuickInvestModalVisible(false);
+          // Dispatch actions to update Redux store
+          dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
+      
+     
+      } else {
+        // Handle QuickInvest error here and show appropriate alerts
+        if (response.status === 400) {
+          setProcessing(false);
+          // Bad request, possibly due to invalid input
+          Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+        } else if (response.status === 401) {
+          setProcessing(false);
+          // Unauthorized, user not authenticated
+          Alert.alert('Error', 'You are not authorized. Please login again.');
+        } else {
+          // Other server errors
+          setProcessing(false);
+          Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+        }
+      }
+    } catch (error) {
+      console.error('QuickInvest Error:', error);
+      setProcessing(false);
+      // Handle network or other errors here and show an appropriate alert
+      Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+    }
+  };
+
+
+
+  console.log('Selected card in invest:', selectedCardId);
+  console.log('Amount entered in invest:', amount);
 
 
 
@@ -139,7 +233,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
 
                   onBlur={() => {
                     if (parseInt(amount) < 1000000) {
-                      Alert.alert('Invalid Amount', 'The minimum amount is 1,000,000. Please enter a valid amount.');
+                      Alert.alert('Invalid Amount', 'The minimum amount is 100,000. Please enter a valid amount.');
                     }
                   }}
                 />
@@ -179,6 +273,8 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
 
 
               <Text style={styles.modalSubText2} alignSelf='flex-start'>using...</Text>
+              
+              
               <View style={styles.inputContainer}>
                 <View style={styles.dropdown}>
                   <Picker
@@ -186,52 +282,83 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                     selectedValue={frequency}
                     onValueChange={(value) => setFrequency(value)}
                   >
-                    <Picker.Item color='#4C28BC' label="Select source of funding..." value="Select destination account" />
                     <Picker.Item label="My Saved Cards" value="My Saved Cards" />
                     <Picker.Item label="Add New Card" value="Add New Card" />
                     <Picker.Item label="Bank Transfer" value="Bank Transfer" />
                   </Picker>
                 </View>
               </View>
-              {frequency === 'My Saved Cards' && (
+
                 <>
-                  <View style={styles.paymentOptionsContainer}>
+                  <View style={styles.inputContainer}>
                     <Text style={styles.label3}>Which of them?     </Text>
-                    <Picker
-                      style={styles.labelItem2}
-                      selectedValue={selectedCard}
-                      onValueChange={(value) => handleCardSelection(value)}
-                      >
-                      <Picker.Item color='#4C28BC' label="Choose card..." value="null" />
-                      {userCards.map((card) => (
-                        <Picker.Item
-                          label={`${card.bank_name} - **** **** **** ${card.card_number.slice(-4)}`}
-                          value={card.cardId}
-                          key={card.id}
+                    {userCards.length === 0 ? (
+                      <TouchableOpacity onPress={handleAddCard}>
+                      <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>No cards added yet... 
+                      <Text style={{ color: '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>    Add Card Now!</Text>
+                      </Text>
+                      </TouchableOpacity>
+                    ) : (
+                      
+
+
+                      <View style={styles.inputContainer}>
+                      <View style={styles.iconContainer}> 
+                      <Ionicons
+                          name="card"
+                          size={28}
+                          color={selectedCard ? getBackgroundColor(selectedCard.bank_name) : null}
+                          zIndex={-1}
                         />
-                      ))}
-                    </Picker>
-                    <View style={styles.buttonsContainer}>
-
-
-                    <TouchableOpacity
-                      style={isContinueButtonDisabled ? styles.primaryButtonDisabled : styles.primaryButton}
-                      onPress={() => {
-                        if (!isContinueButtonDisabled) {
-                          navigation.navigate('Success');
-                        }
-                      }}
-                      disabled={isContinueButtonDisabled}
-                    >
-                      <Image source={require('./paystack.png')} style={styles.image} />
-                      <Text style={styles.primaryButtonText}>Continue</Text>
-                    </TouchableOpacity>
-
-
+                        </View>
+                      <View style={styles.dropdown}>
+                        <Picker
+                          style={styles.labelItem}
+                          selectedValue={selectedCard}
+                          onValueChange={(value) => {
+                            console.log('Selected Card Value:', value);
+                            setSelectedCardId(value); // Set selectedCardId to the selected card's ID
+                          }}
+                        >
+                          {userCards.map((card) => (
+                            <Picker.Item
+                              label={`         ${card.bank_name} - **** ${card.card_number.slice(-4)}`}
+                              value={card.id} // Use the card's ID as the value
+                              key={card.id}
+                              color={getBackgroundColor(card.bank_name)}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
                     </View>
+
+                    )}
+
+                        <View style={styles.buttonsContainer}>
+                          <TouchableOpacity
+                            style={[
+                              styles.primaryButton,
+                              (isContinueButtonDisabled || processing) && styles.primaryButtonDisabled,
+                              { backgroundColor: processing ? 'green' : isContinueButtonDisabled ? 'grey' : '#4C28BC' },
+                            ]}
+                            onPress={handleQuickInvest}
+                            disabled={isContinueButtonDisabled || processing}
+                          >
+                            {processing ? (
+                              <>
+                                <ActivityIndicator color="white" style={styles.activityIndicator} />
+                                <Image source={require('./paystack.png')} style={styles.image} />
+                              </>
+                            ) : (
+                              <Image source={require('./paystack.png')} style={styles.image} />
+                            )}
+                            <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
+                              {processing ? 'Paystack Processing...' : 'QuickInvest Now!'}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
                   </View>
                 </>
-              )}
 
 
               {frequency === "Add New Card" && (
@@ -260,17 +387,24 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                 </>
               )}
             </View>
+
+            <LoadingModal visible={processing} />
+
             </ScrollView>
+
 
           </TouchableOpacity>
         </TouchableOpacity>
-
         </TouchableWithoutFeedback>
 
       </Modal>
+
+
     </>
   );
 };
+
+
 
 const styles = {
   modalContainer: {
@@ -316,11 +450,46 @@ const styles = {
     letterSpacing: -0.5,
   },
 
+  modalSubText3: {
+    fontSize: 13,
+    fontFamily: 'karla-italic',
+    textAlign: 'center',
+    color: 'black',
+    textAlign: 'center',
+    marginHorizontal: 45,
+    marginTop: 25,
+    letterSpacing: -0.2,
+  },
+
   inputContainer: {
     marginTop: 5,
     marginBottom: 15,
     width: '100%',
     alignItems: 'center',
+    
+  },
+
+  presetAmountsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 40,
+    marginTop: 5,
+  },
+  presetAmountColumn: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+  presetAmountButton: {
+    backgroundColor: '#DCD1FF', // Background color changed to #DCD1FF
+    borderRadius: 5,
+    padding: 10,
+    margin: 5,
+    alignItems: 'center',
+  },
+  presetAmountText: {
+    color: 'black', // Text color changed to #4C28BC
+    fontSize: 15,
+    fontFamily: 'karla',
   },
 
   autoSaveSetting: {
@@ -334,6 +503,10 @@ const styles = {
 
   paymentOptionsContainer:{
     marginTop: -20,
+    marginLeft: 5,
+    marginRight: 5,
+    borderRadius: 10, // Add border radius here
+    overflow: 'hidden', // This ensures that the border radius is applied to the Picker
   },
 
   label: {
@@ -348,31 +521,27 @@ const styles = {
   label3: {
       fontSize: 17,
       fontFamily: 'proxima',
-      marginRight: 190,
-      marginTop: 20,
-      marginBottom: 10,
+      marginBottom: 5,
+      marginLeft: 45,
+      alignSelf: 'flex-start'
   },
 
   labelItem: {
-    color: 'grey',
+    color: 'black',
     textAlign: 'left',
     marginLeft: -16,
     marginBottom: 30,
     fontFamily: 'karla',
-    backgroundColor: '#fff',
+    //backgroundColor: '#fff',
     borderRadius: 10,
   },
 
-  labelItem2: {
-    color: 'grey',
-    textAlign: 'left',
-    marginLeft: -5,
-    marginBottom: 10,
-    fontFamily: 'karla',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-
+  pickerContainer: {
+    borderRadius: 10, // Add border radius here
+   overflow: 'hidden', // This ensures that the border radius is applied to the Picker
   },
+
+
 
   emailInput: {
     color: 'grey',
@@ -395,6 +564,17 @@ const styles = {
     height: 50,
     width: '80%',
     marginTop: 5,
+    borderWidth: 0.5,
+    borderColor: 'silver',
+  },
+
+  iconContainer: {
+    position: 'absolute', // Use absolute positioning
+    left: 10, // Adjust the left position as needed
+    top: '50%', // Center vertically
+    marginLeft: 45,
+    zIndex: 1,
+    transform: [{ translateY: -12 }], // Adjust translateY to vertically center the icon
   },
 
   nairaSign: {
@@ -402,7 +582,6 @@ const styles = {
     marginLeft: 15,
     marginRight: 0,
   },
-
   amountInput: {
     flex: 1,
     color: 'black',
@@ -410,43 +589,20 @@ const styles = {
     fontSize: 16,
     letterSpacing: -0.3,
     padding: 10,
+    
   },
-
   
-  presetAmountsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 40,
-    marginTop: 5,
-  },
-  presetAmountColumn: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  presetAmountButton: {
-    backgroundColor: '#DCD1FF', // Background color changed to #DCD1FF
-    borderRadius: 5,
-    padding: 10,
-    margin: 5,
-    alignItems: 'center',
-  },
-  presetAmountText: {
-    color: 'black', // Text color changed to #4C28BC
-    fontSize: 15,
-    fontFamily: 'karla',
-    letterSpacing: -0.5
-  },
-
+  
 
   dropdown: {
-    height: 45,
+    height: 50,
     width: '80%',
     backgroundColor: 'white',
     borderRadius: 10,
-    marginBottom: 15,
     paddingLeft: 15,
     paddingRight: 5,
-
+    borderWidth: 0.5,
+    borderColor: 'silver',
   },
 
 
@@ -478,7 +634,6 @@ const styles = {
     justifyContent: 'center',
     borderRadius: 10,
   },
-
   
   primaryButtonDisabled: {
     flexDirection: 'row',
@@ -492,6 +647,13 @@ const styles = {
   },
   
   primaryButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'ProductSans',
+    marginRight: 5,
+  },
+
+  processingText: {
     color: '#fff',
     fontSize: 18,
     fontFamily: 'ProductSans',
