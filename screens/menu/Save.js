@@ -85,11 +85,18 @@ const formatTime = (timeString) => {
   return time.toLocaleTimeString('en-US', options);
 };
 
-  // Calculate the percentage
-  const percentage = (currentAmount) => {
-    const goalAmount = parseFloat(userInfo.savings_goal_amount);
-    return (accountBalances.savings / goalAmount) * 100;
-  };
+// Calculate the percentage
+const percentage = () => {
+  const goalAmount = parseFloat(userInfo.savings_goal_amount);
+  const totalAmount = parseFloat(accountBalances.savings) + parseFloat(accountBalances.investment);
+  
+  if (goalAmount > 0) {
+    return (totalAmount / goalAmount) * 100;
+  } else {
+    return 0; // Handle the case when goalAmount is zero or negative
+  }
+};
+
 
   const roundToNearestThousand = (value) => {
     return Math.round(value / 1000) * 1000;
@@ -167,7 +174,10 @@ useEffect(() => {
 console.log('autoSaveSettings.active:', autoSaveSettings.active)
 console.log('autoSaveSettings.amount:', autoSaveSettings.amount)
 console.log('autoSaveSettings.frequency:', autoSaveSettings.frequency)
-  
+console.log('accountBalances.savings:', accountBalances.savings)
+console.log('accountBalances.investment:', accountBalances.investment)
+
+
 
 
   return (
