@@ -66,6 +66,9 @@ urlpatterns = [
 
     # Investment-related APIs
     path('quickinvest/', views.quickinvest, name='quickinvest'),
+    path('activate-autoinvest/', views.autoinvest, name='autoinvest'),
+    path('deactivate-autoinvest/', views.deactivate_autoinvest, name='deactivate_autoinvest'),
+    path('get-autoinvest-settings/', views.get_autoinvest_status, name='get_autoinvest_status'),
 
     ]
 

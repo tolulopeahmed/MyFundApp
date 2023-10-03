@@ -65,6 +65,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     wallet = models.DecimalField(max_digits=11, decimal_places=2, default=0)
 
     autosave_enabled = models.BooleanField(default=False)  # Add this field
+    autoinvest_enabled = models.BooleanField(default=False)  # Add this field
 
 
     is_first_time_signup = models.BooleanField(default=True)
@@ -198,3 +199,19 @@ class AutoSave(models.Model):
         user_name = f"{self.user.first_name} ({self.user.email})"
         amount_saved = f"₦{self.amount}" if self.amount is not None else "Amount not available"
         return f"AutoSave for {user_name} - {amount_saved} ({self.frequency})"
+    
+
+class AutoInvest(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, on_delete=models.CASCADE, null=True, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    frequency = models.CharField(
+        max_length=10, choices=[('daily', 'Daily'), ('weekly', 'Weekly'), ('monthly', 'Monthly')]
+    )
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        user_name = f"{self.user.first_name} ({self.user.email})"
+        amount_invested = f"₦{self.amount}" if self.amount is not None else "Amount not available"
+        return f"AutoInvest for {user_name} - {amount_invested} ({self.frequency})"
+

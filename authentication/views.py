@@ -897,7 +897,7 @@ def autosave(request):
 
     # Send an immediate email alert for activation
     subject = "AutoSave Activated!"
-    message = f"Well done {user.first_name},\n\nAutoSave ({frequency}) was successfully activated. You are now saving ₦{amount} {frequency} and your next autosave will happen in the next selected periodic interval. \n\n\nKeep growing your funds.🥂\n\nMyFund  \nSave, Buy Properties, Earn Rent \nwww.myfundmobile.com \n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+    message = f"Well done {user.first_name},\n\nAutoSave ({frequency}) was successfully activated. You are now saving ₦{amount} {frequency} and your next autosave transaction will happen in the next selected periodic interval. \n\n\nKeep growing your funds.🥂\n\nMyFund  \nSave, Buy Properties, Earn Rent \nwww.myfundmobile.com \n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
     from_email = "MyFund <info@myfundmobile.com>"
     recipient_list = [user.email]
 
@@ -1033,3 +1033,173 @@ def quickinvest(request):
     else:
         # Payment failed, return an error response
         return Response({'error': 'QuickInvest failed'}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+from .models import AutoInvest
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def autoinvest(request):
+    user = request.user
+    card_id = request.data.get('card_id')
+    amount = request.data.get('amount')
+    frequency = request.data.get('frequency')
+
+    # Validate frequency (should be one of 'hourly', 'daily', 'weekly', 'monthly')
+    valid_frequencies = ['hourly', 'daily', 'weekly', 'monthly']
+    if frequency not in valid_frequencies:
+        return Response({'error': 'Invalid frequency'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        active_autoinvest = AutoInvest.objects.get(user=user, active=True)
+        return Response({'error': 'User already has an active autoinvest'}, status=status.HTTP_400_BAD_REQUEST)
+    except AutoInvest.DoesNotExist:
+        pass
+
+    card = Card.objects.get(id=card_id)
+    if not card:
+        return Response({'error': 'Selected card not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Calculate the interval based on the selected frequency (in seconds)
+    intervals = {
+        'daily': 86400,
+        'weekly': 604800,
+        'monthly': 2419200,  # Approximation for 28-31 days
+    }
+
+    interval_seconds = intervals.get(frequency)
+
+    if not interval_seconds:
+        return Response({'error': 'Invalid frequency'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Create an 'AutoInvest' record
+    autoinvest = AutoInvest.objects.create(user=user, frequency=frequency, amount=amount, active=True)
+
+    # Set the 'autoinvest_enabled' field to True
+    user.autoinvest_enabled = True  # Add this line
+    user.save()
+
+    # Use the card details to initiate a payment with Paystack periodically
+    def auto_invest():
+        while True:
+            # Delay for the specified interval
+            time.sleep(interval_seconds)
+
+            # Perform the auto invest
+            paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"  # Use your actual secret key
+            paystack_url = "https://api.paystack.co/charge"
+
+            payload = {
+                "card": {
+                    "number": card.card_number,
+                    "cvv": card.cvv,
+                    "expiry_month": card.expiry_date.split('/')[0],
+                    "expiry_year": card.expiry_date.split('/')[1],
+                },
+                "email": user.email,
+                "amount": int(amount) * 100,  # Amount in kobo (multiply by 100)
+            }
+
+            headers = {
+                "Authorization": f"Bearer {paystack_secret_key}",
+                "Content-Type": "application/json",
+            }
+
+            response = requests.post(paystack_url, json=payload, headers=headers)
+            paystack_response = response.json()
+
+            if paystack_response.get("status"):
+                # Investment successful, update user's investments and create a transaction
+                user.investment += int(amount)
+                user.save()
+
+                # Create a transaction record
+                Transaction.objects.create(
+                    user=user,
+                    transaction_type="credit",
+                    amount=int(amount),
+                    date=timezone.now().date(),
+                    time=timezone.now().time(),
+                    description=f"AutoInvest",
+                    transaction_id=paystack_response.get("data", {}).get("reference"),
+                )
+
+                # Send a confirmation email
+                subject = "AutoInvest Successful!"
+                message = f"Hi {user.first_name},\n\nYour AutoInvest ({frequency}) of ₦{amount} was successful. It has been added to your INVESTMENTS account. \n\nKeep growing your funds.🥂\n\n\nMyFund \nSave, Buy Properties, Earn Rent \nwww.myfundmobile.com \n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+                from_email = "MyFund <info@myfundmobile.com>"
+                recipient_list = [user.email]
+
+                send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+    # Start a new thread for the auto invest process
+    threading.Thread(target=auto_invest).start()
+
+    # Send an immediate email alert for activation
+    subject = "AutoInvest Activated!"
+    message = f"Well done {user.first_name},\n\nAutoInvest ({frequency}) was successfully activated. You are now investing ₦{amount} {frequency} and your next AutoInvest transaction will happen in the next selected periodic interval. \n\n\nKeep growing your funds.🥂\n\nMyFund  \nSave, Buy Properties, Earn Rent \nwww.myfundmobile.com \n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+    from_email = "MyFund <info@myfundmobile.com>"
+    recipient_list = [user.email]
+
+    send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+    # Return a success response indicating that AutoInvest has been activated
+    return Response({'message': 'AutoInvest activated'}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deactivate_autoinvest(request):
+    user = request.user
+    frequency = request.data.get('frequency')
+
+    try:
+        # Find the active AutoInvest for the user with the given frequency
+        autoinvest = AutoInvest.objects.get(user=user, frequency=frequency, active=True)
+
+        # Deactivate the AutoInvest by setting it to False
+        autoinvest.active = False
+        autoinvest.save()
+
+        # Delete the AutoInvest object from the database
+        autoinvest.delete()
+
+        user.autoinvest_enabled = False
+        user.save()
+
+        # Send a confirmation email
+        subject = "AutoInvest Deactivated!"
+        message = f"Hi {user.first_name},\n\nYour AutoInvest ({frequency}) has been deactivated. \n\nKeep growing your funds.🥂\n\n\nMyFund  \nSave, Buy Properties, Earn Rent \nwww.myfundmobile.com \n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+        from_email = "MyFund <info@myfundmobile.com>"
+        recipient_list = [user.email]
+
+        send_mail(subject, message, from_email, recipient_list)
+
+        # Return a success response indicating that AutoInvest has been deactivated
+        return Response({'message': 'AutoInvest deactivated'}, status=status.HTTP_200_OK)
+
+    except AutoInvest.DoesNotExist:
+        return Response({'error': 'AutoInvest not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_autoinvest_status(request):
+    user = request.user
+    autoinvest_enabled = user.autoinvest_enabled
+    
+    # You can retrieve the user's active auto-invest settings here
+    try:
+        active_autoinvest = AutoInvest.objects.get(user=user, active=True)
+        autoInvestSettings = {
+            'active': True,
+            'amount': active_autoinvest.amount,
+            'frequency': active_autoinvest.frequency,
+        }
+    except AutoInvest.DoesNotExist:
+        autoInvestSettings = {
+            'active': False,
+            'amount': 0,
+            'frequency': '',
+        }
+    
+    return Response({'autoinvest_enabled': autoinvest_enabled, 'autoInvestSettings': autoInvestSettings}, status=status.HTTP_200_OK)
