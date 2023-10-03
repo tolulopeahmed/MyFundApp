@@ -19,6 +19,8 @@ import {
   LOAD_CARDS,
   SET_AUTO_SAVE_SETTINGS,
   SET_AUTO_SAVE_OFF,
+  SET_AUTO_INVEST_SETTINGS,
+  SET_AUTO_INVEST_OFF,
 } from './ReduxActions';
 
 
@@ -37,6 +39,12 @@ const initialState = {
   profileImageUri: null, // Add a new field to store the profile picture URI
 
   autoSaveSettings: {
+    active: false,
+    amount: 0,
+    frequency: '',
+  },
+
+  autoInvestSettings: {
     active: false,
     amount: 0,
     frequency: '',
@@ -185,9 +193,26 @@ const Reducer = (state = initialState, action) => {
               ...state,
               autoSaveSettings: {
                 ...state.autoSaveSettings,
-                active: false, // Set the 'active' field to false when turning off auto-save
+                active: false, 
               },
             };
+
+            case SET_AUTO_INVEST_SETTINGS:
+              return {
+                ...state,
+                autoInvestSettings: {
+                  ...action.payload,
+                },
+              };
+            case SET_AUTO_INVEST_OFF:
+              return {
+                ...state,
+                autoInvestSettings: {
+                  ...state.autoInvestSettings,
+                  active: false,
+                },
+              };
+
      default:
       return state;
 

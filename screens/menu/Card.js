@@ -8,56 +8,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserCards, deleteCardSuccess, fetchAutoSaveSettings } from '../../ReduxActions';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
+import bankOptions from '../components/BankOptions';
+
+
 
 const getBackgroundColor = (bankName) => {
-  switch (bankName) {
-    case "Access Bank":
-      return "#91A62A";
-    case "Guaranty Trust Bank":
-      return "#C3460E";
-    case "Zenith Bank":
-      return "#E6000D";
-    case "United Bank for Africa":
-      return "#D42C07";
-    case "First City Monument Bank":
-      return "#702699";
-    case "Wema Bank":
-      return "#72235A";
-    case "Polaris Bank":
-      return "#8834AE";
-    case "Union Bank":
-      return "#00ADEF";
-    case "Ecobank":
-      return "#00537F";
-    case "Stanbic IBTC Bank":
-      return "#04009D";
-    case "First Bank of Nigeria":
-      return "#0C2B5C";
-    case "Keystone Bank":
-      return "#014888";
-    case "Sterling Bank":
-      return "#DB3539";
-    case "Unity Bank Plc":
-      return "#88BB52";
-    case "Citibank":
-      return "#0275D0";
-    case "Heritage Bank Plc":
-      return "#439B2D";
-    case "Standard Chartered Bank":
-      return "#0671A9";
-    case "Jaiz Bank":
-      return "#0B411F";
-    case "Fidelity Bank":
-      return "#232B69";
-    case "Opay":
-        return "#08A67C";
-    case "Palmpay":
-        return "#7F13CB";
-    case "Moniepoint Microfinance Bank":
-        return "#0649C4";
-    default:
-      return "#4C28BC"; // Default color
-  }
+  const bank = bankOptions.find((option) => option.name === bankName);
+  return bank ? bank.color : "#4C28BC"; // Default to your default color
 };
 
 const Card = ({ navigation, route }) => {
@@ -67,6 +24,7 @@ const Card = ({ navigation, route }) => {
   const cards = useSelector((state) => state.bank.cards);
   const userCards = useSelector((state) => state.bank.userCards); // Define and use userCards
   const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
+  const autoInvestSettings = useSelector((state) => state.bank.autoInvestSettings);
 
 
   useEffect(() => {
@@ -98,11 +56,10 @@ const Card = ({ navigation, route }) => {
 
 
   
-
   const confirmDeleteCard = async (cardId) => {
     Alert.alert(
       'Delete Card?',
-      'Are you sure you want to delete this card? \nIf AutoSave is active, you will be redirected to deactivate it first.',
+      'Are you sure you want to delete this card? \nIf AutoSave or AutoInvest is active, you will be redirected to deactivate it first.',
       [
         {
           text: 'Cancel',
@@ -115,13 +72,13 @@ const Card = ({ navigation, route }) => {
             try {
               // Get the user's token from Redux state
               const userToken = userInfo.token;
-
+  
               // Check if the userToken exists
               if (!userToken) {
                 console.error('User is not authenticated');
                 return;
               }
-
+  
               // Check if AutoSave is active
               if (autoSaveSettings.active) {
                 // Redirect to the DeactivateAutoSaveModal
@@ -130,12 +87,15 @@ const Card = ({ navigation, route }) => {
                   params: {
                     deactivateAutoSaveModalVisible: true,
                     fromCardDelete: true,
-                    cardId: cardId,// Pass the cardId here,
-                    userToken: userToken // Pass the userToken here,
+                    cardId: cardId,
+                    userToken: userToken,
                   },
                 });
-                              } else {
-                // AutoSave is not active, proceed with card deletion
+              } else if (autoInvestSettings.active) {
+                navigation.navigate('Sponsorship', { deactivateAutoInvestModalVisible: true });
+
+              } else {
+                // Neither AutoSave nor AutoInvest is active, proceed with card deletion
                 await deleteCard(cardId, userToken);
               }
             } catch (error) {
@@ -147,6 +107,7 @@ const Card = ({ navigation, route }) => {
       { cancelable: false }
     );
   };
+  
 
   const deleteCard = async (cardId, userToken) => {
     try {

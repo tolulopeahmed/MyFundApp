@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAutoSaveSettings, fetchautosaveSettings} from '../../ReduxActions'; // Import fetchUserCards
+import { fetchAutoSaveSettings} from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
@@ -134,7 +134,7 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
 
   useEffect(() => {
     // Check if both amount and selectedCard are not empty and selectedCard is not 'null'
-    if (amount !== '' && selectedCard !== null) {
+    if (amount !== '' && selectedCard !== null && userCards.length > 0) {
       setIsContinueButtonDisabled(false);
     } else {
       setIsContinueButtonDisabled(true);

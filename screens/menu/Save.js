@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
   },
 
   dot: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Customize the color of the inactive dots
+    backgroundColor: 'rgba(0, 0, 0, 0.2)', 
     width: 5,
     height: 5,
     borderRadius: 5,
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   activeDot: {
-    backgroundColor: '#4C28BC', // Customize the color of the active dot
+    backgroundColor: '#4C28BC',
     width: 10,
     height: 4,
     borderRadius: 5,

@@ -225,7 +225,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                 <Text style={styles.nairaSign}>₦</Text>
                 <TextInput
                   style={styles.amountInput}
-                  placeholder="Minimum amount is 100,000"
+                  placeholder="Minimum amount is ₦100,000"
                   keyboardType="numeric"
                   onChangeText={(value) => handleAmountChange(value)}
                   value={amount}
@@ -233,7 +233,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
 
                   onBlur={() => {
                     if (parseInt(amount) < 1000000) {
-                      Alert.alert('Invalid Amount', 'The minimum amount is 100,000. Please enter a valid amount.');
+                      Alert.alert('Invalid Amount', 'The minimum amount is ₦100,000. Please enter a valid amount.');
                     }
                   }}
                 />

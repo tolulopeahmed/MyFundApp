@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAutoSaveSettings, fetchautosaveSettings} from '../../ReduxActions'; // Import fetchUserCards
+import { fetchAutoInvestSettings} from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
@@ -18,10 +18,9 @@ const getBackgroundColor = (bankName) => {
 };
 
 
-const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible, setAutoInvest }) => {
+const AutoInvestModal = ({ navigation, autoInvestModalVisible, setAutoInvestModalVisible, setAutoInvest }) => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
-  const [paymentOption, setPaymentOption] = useState('');
   const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
   const [selectedCard, setSelectedCard] = useState({});
   const userInfo = useSelector((state) => state.bank.userInfo);
@@ -42,9 +41,9 @@ const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible, se
       setProcessing(true);
       console.log('Selected card ID:', selectedCard);
       console.log('Amount Entered:', amount);
-      // Make an API request to activate AutoSave
+      // Make an API request to activate AutoInvest
       const response = await axios.post(
-        `${ipAddress}/api/activate-autosave/`,
+        `${ipAddress}/api/activate-autoinvest/`,
         {
           card_id: selectedCardId,
           amount: parseFloat(amount.replace(/,/g, '')), // Parse the amount as a float
@@ -62,14 +61,14 @@ const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible, se
 
       if (response.status === 200) {
         const responseData = response.data;
-        dispatch(fetchAutoSaveSettings()); // Fetch and update auto-save status
+        dispatch(fetchAutoInvestSettings()); // Fetch and update auto-invest status
         setProcessing(false);
         setAutoInvestModalVisible(false);
-        setAutoSave(true); // Set autoSave state after success
+        setAutoInvest(true); 
 
         Alert.alert(
-          'AutoSave Activated!',
-          `Your AutoSave has been activated. You're now saving ₦${amount} ${frequency}. Well done! Keep growing your funds. 🥂`,
+          'AutoInvest Activated!',
+          `Your AutoInvest has been activated. You're now investing ₦${amount} ${frequency}. Well done! Keep growing your funds. 🥂`,
           [
             {
               text: 'OK',
@@ -84,14 +83,14 @@ const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible, se
   
       } else {
         setProcessing(false);
-        Alert.alert('AutoSave Activation Failed', 'Please try again later.');
+        Alert.alert('AutoInvest Activation Failed', 'Please try again later.');
       }
     } catch (error) {
-      console.error('Error activating AutoSave:', error);
+      console.error('Error activating AutoInvest:', error);
       setProcessing(false);
       Alert.alert(
         'Error',
-        'Failed to activate AutoSave. Please check your connection and try again later.'
+        'Failed to activate AutoInvest. Please check your connection and try again later.'
       );
     }
   };
@@ -99,7 +98,7 @@ const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible, se
   
   useEffect(() => {
     // Fetch auto-save status and settings when the component mounts
-    dispatch(fetchAutoSaveSettings());
+    dispatch(fetchAutoInvestSettings());
   }, []);
   
 
@@ -147,7 +146,7 @@ const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible, se
       setSelectedCard(userCards[0].id);
     }
   
-    // Set initial frequency when AutoSaveModal opens
+    // Set initial frequency when AutoInvestModal opens
     if (frequency === '') {
       setFrequency('daily'); // Change 'hourly' to the default frequency you want
     }
@@ -228,10 +227,16 @@ const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible, se
                 <Text style={styles.nairaSign}>₦</Text>
                 <TextInput
                   style={styles.amountInput}
-                  placeholder="Amount (e.g. 20,000)"
+                  placeholder="Minimum amount is ₦100,000"
                   keyboardType="numeric"
                   onChangeText={(value) => handleAmountChange(value)}
                   value={amount}
+                  placeholderTextColor="silver"
+                  onBlur={() => {
+                    if (parseInt(amount) < 1000000) {
+                      Alert.alert('Invalid Amount', 'The minimum amount is ₦100,000. Please enter a valid amount.');
+                    }
+                  }}                  
                 />
                 
                 {amount !== '' && (
@@ -243,27 +248,27 @@ const AutoInvestModal = ({ autoInvestModalVisible, setAutoInvestModalVisible, se
 
               <View style={styles.presetAmountsContainer}>
                 <View style={styles.presetAmountColumn}>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(5000)}>
-                    <Text style={styles.presetAmountText}>5,000</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(20000)}>
-                    <Text style={styles.presetAmountText}>20,000</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.presetAmountColumn}>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(10000)}>
-                    <Text style={styles.presetAmountText}>10,000</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(40000)}>
-                    <Text style={styles.presetAmountText}>40,000</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.presetAmountColumn}>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(15000)}>
-                    <Text style={styles.presetAmountText}>15,000</Text>
-                  </TouchableOpacity>
                   <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(100000)}>
                     <Text style={styles.presetAmountText}>100,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(1000000)}>
+                    <Text style={styles.presetAmountText}>1,000,000</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(200000)}>
+                    <Text style={styles.presetAmountText}>200,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(2000000)}>
+                    <Text style={styles.presetAmountText}>2,000,000</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(500000)}>
+                    <Text style={styles.presetAmountText}>500,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(5000000)}>
+                    <Text style={styles.presetAmountText}>5,000,000</Text>
                   </TouchableOpacity>
                 </View>
               </View>

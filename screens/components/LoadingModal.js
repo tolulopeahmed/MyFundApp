@@ -1,7 +1,30 @@
-import React from 'react';
-import { Modal, Image, ActivityIndicator, View, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Modal, Text, ActivityIndicator, View, StyleSheet } from 'react-native';
 
 const LoadingModal = ({ visible }) => {
+  const [ellipses, setEllipses] = useState(''); // State to store the ellipses
+
+  useEffect(() => {
+    // Function to update the ellipses
+    const updateEllipses = () => {
+      setEllipses((prevEllipses) => {
+        if (prevEllipses === '...') {
+          return '';
+        } else {
+          return prevEllipses + '.';
+        }
+      });
+    };
+
+    // Start the animation with a delay and repeat every second
+    const interval = setInterval(updateEllipses, 1000);
+
+    return () => {
+      // Cleanup the interval when the component unmounts
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
     <Modal
       animationType="fade"
@@ -9,6 +32,7 @@ const LoadingModal = ({ visible }) => {
       visible={visible}
     >
       <View style={styles.modalContainer}>
+        <Text style={styles.waitText}>Please wait{ellipses}</Text>
         <View style={styles.indicatorContainer}>
           <ActivityIndicator size={70} color="#fff" />
           {/* Centered Logo */}
@@ -28,6 +52,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  waitText: {
+    color: '#fff',
+    fontSize: 18,
+    marginBottom: 20, 
+    fontFamily: 'nexa',
   },
   indicatorContainer: {
     justifyContent: 'center',

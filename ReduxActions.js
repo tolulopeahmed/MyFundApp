@@ -29,6 +29,8 @@ export const DELETE_CARD_SUCCESS = 'DELETE_CARD_SUCCESS';
 export const SET_AUTO_SAVE_SETTINGS = 'SET_AUTO_SAVE_SETTINGS';
 export const SET_AUTO_SAVE_OFF = 'SET_AUTO_SAVE_OFF';
 
+export const SET_AUTO_INVEST_SETTINGS = 'SET_AUTO_INVEST_SETTINGS';
+export const SET_AUTO_INVEST_OFF = 'SET_AUTO_INVEST_OFF';
 
 
 export const setUserToken = (token) => ({
@@ -124,6 +126,24 @@ export const setAutoSaveSettings = (settings) => ({
 export const setAutoSaveOff = () => ({
   type: SET_AUTO_SAVE_OFF,
 });
+
+export const setAutoInvestSettings = (settings) => ({
+  type: SET_AUTO_INVEST_SETTINGS,
+  payload: settings,
+});
+
+export const setAutoInvestOff = () => ({
+  type: SET_AUTO_INVEST_OFF,
+});
+
+
+
+
+
+
+
+
+
 
 // Fetch user data and update the Redux store with user information
 export const fetchUserData = () => async (dispatch, getState) => {
@@ -292,3 +312,30 @@ export const fetchAutoSaveSettings = () => async (dispatch, getState) => {
   }
 };
 
+
+
+
+export const fetchAutoInvestSettings = () => async (dispatch, getState) => {
+  const userInfo = getState().bank.userInfo;
+  if (!userInfo || !userInfo.token) {
+    console.error('Authentication Error: User is not authenticated.');
+    return;
+  }
+
+  try {
+    // Make an API request to fetch auto-invest status and settings
+    const response = await axios.get(`${ipAddress}/api/get-autoinvest-settings/`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      // Dispatch the action to set auto-invest status and settings in the Redux store
+      dispatch(setAutoInvestSettings(response.data.autoInvestSettings));
+    }
+  } catch (error) {
+    console.error('Fetch Error:', error);
+  }
+};

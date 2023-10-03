@@ -24,6 +24,7 @@ const Home = ({ navigation, route}) => {
   const userTransactions = useSelector((state) => state.bank.userTransactions);
   const dispatch = useDispatch();
   const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
+  const autoInvestSettings = useSelector((state) => state.bank.autoInvestSettings);
 
   const iconMapping = {
     "Card Successful": "card-outline",
@@ -332,11 +333,11 @@ const formatTime = (timeString) => {
         
         <View style={styles.todoList1}>
         <TouchableOpacity
-        style={[styles.todoButton, autoInvest && styles.disabledButton]}
+        style={[styles.todoButton, autoInvestSettings.active && styles.disabledButton]}
         onPress={handleActivateAutoInvest}
         disabled={autoInvest}
       >
-        {autoInvest ? (
+        {autoInvestSettings.active ? (
           <>
             <Ionicons
               name="car-sport-outline"

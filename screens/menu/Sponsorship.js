@@ -11,10 +11,9 @@ import Subtitle from '../components/Subtitle';
 import { AutoInvestContext } from '../components/AutoInvestContext';
 import SectionTitle from '../components/SectionTitle';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData, fetchAutoInvestSettings } from '../../ReduxActions';
 import moment from 'moment';
 import Success from '../components/Success';
-import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Sponsorship = ({ navigation, route }) => {
@@ -31,14 +30,14 @@ const Sponsorship = ({ navigation, route }) => {
   const [isSuccessVisible, setIsSuccessVisible] = useState(false);
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
-  const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
+  const autoInvestSettings = useSelector((state) => state.bank.autoInvestSettings);
   
   
   useEffect(() => {
     dispatch(fetchAccountBalances()); // Fetch account balances using Redux action
     dispatch(fetchUserTransactions()); // Fetch user transactions using Redux action
     dispatch(fetchUserData(userInfo.token));
-    dispatch(fetchAutoSaveSettings()); // Fetch auto-save status and settings when the component mounts
+    dispatch(fetchAutoInvestSettings()); // Fetch auto-save status and settings when the component mounts
   }, []);
 
  
@@ -61,13 +60,7 @@ const Sponsorship = ({ navigation, route }) => {
   };
 
 
-  useEffect(() => {
-    if (route.params?.autoInvestModalVisible) {
-      setAutoInvestModalVisible(true);
-    } else if (route.params?.quickInvestModalVisible) {
-        setQuickInvestModalVisible(true);
-    }
-  }, [route.params]);
+ 
 
 
   useEffect(() => {
@@ -104,11 +97,11 @@ const formatTime = (timeString) => {
   };
 
   useEffect(() => {
-    if (route.params?.autoSaveModalVisible) {
+    if (route.params?.autoInvestModalVisible) {
       setAutoInvestModalVisible(true);
-    } else  if (route.params?.quickSaveModalVisible) {
+    } else  if (route.params?.quickInvestModalVisible) {
       setQuickInvestModalVisible(true);
-    } else if (route.params?.deactivateAutoSaveModalVisible) {
+    } else if (route.params?.deactivateAutoInvestModalVisible) {
       setDeactivateAutoInvestModalVisible(true);
     }
   }, [route.params]);
@@ -121,26 +114,61 @@ const formatTime = (timeString) => {
     setQuickInvestModalVisible(true);
   };
 
-const handleActivateAutoInvest = () => {
-  if (!autoInvest) {
-    setAutoInvestModalVisible(true);
-  } else {
-    setDeactivateAutoInvestModalVisible(true);
-  }
-};
+  // Function to handle toggling auto-save
+  const handleActivateAutoInvest = () => {
+    if (!autoInvestSettings.active) {
+      // If auto-save is currently OFF, open the auto-save modal
+      setAutoInvestModalVisible(true);
+    } else {
+      // If auto-save is currently ON, show a confirmation to deactivate
+      setDeactivateAutoInvestModalVisible(true);
+    }
+  };
 
+  // Function to handle confirming auto-save settings
+  const handleConfirmAutoInvest = (amount, frequency) => {
+    // Set the amount and frequency in the component state
+    setAmount(amount);
+    setFrequency(frequency);
 
-const handleConfirmAutoInvest = () => {
-  setAutoSave(true);
-  setAutoInvestModalVisible(false);
-};
+    // Close the auto-save modal
+    setAutoInvestModalVisible(false);
 
+    // Dispatch the auto-save status to Redux (if needed)
+
+    // Store the auto-save status in AsyncStorage for persistence (if needed)
+    AsyncStorage.setItem('autoInvestSettings', 'true')
+      .then(() => console.log('Auto-invest status saved'))
+      .catch((error) => console.error('Error saving auto-invest status:', error));
+  };
+  
+  
+  
+
+// Function to handle confirming deactivation of auto-save
 const handleConfirmDeactivateAutoInvest = () => {
+  // Close the deactivation confirmation modal
   setDeactivateAutoInvestModalVisible(false);
-  setAutoInvest(false);
+
+  // Dispatch an action to update the auto-save status in Redux (if needed)
+
+  // Clear the auto-save status in AsyncStorage (if needed)
+  AsyncStorage.removeItem('autoInvestSettings')
+    .then(() => console.log('Auto-invest status removed'))
+    .catch((error) => console.error('Error removing auto-invest status:', error));
 };
+  
+
+useEffect(() => {
+  dispatch(fetchAutoInvestSettings()); // Fetch auto-save status and settings when the component mounts
+}, [autoInvestSettings.active]);
+ 
 
 
+
+console.log('autoInvestSettings.active:', autoInvestSettings.active)
+console.log('autoInvestSettings.amount:', autoInvestSettings.amount)
+console.log('autoInvestSettings.frequency:', autoInvestSettings.frequency)
 
 
 
@@ -192,9 +220,9 @@ const handleConfirmDeactivateAutoInvest = () => {
         </View>
        
        <View style={styles.autoSaveContainer}>
-       <Ionicons name="car-sport-outline" size={20} marginRight={5} marginTop={-3} style={[styles.autoSaveText, autoInvest ? styles.greenText : styles.grayText]} />
-        <Text style={[styles.autoSaveText, autoInvest ? styles.greenText : styles.grayText]}>
-    {autoInvest ? 'AutoInvest is ON' : 'AutoInvest is OFF'}
+       <Ionicons name="car-sport-outline" size={20} marginRight={5} marginTop={-3} style={[styles.autoSaveText, autoInvestSettings.active ? styles.greenText : styles.grayText]} />
+        <Text style={[styles.autoSaveText, autoInvestSettings.active ? styles.greenText : styles.grayText]}>
+    {autoInvestSettings.active ? 'AutoInvest is ON' : 'AutoInvest is OFF'}
         </Text>
 
 
@@ -202,10 +230,10 @@ const handleConfirmDeactivateAutoInvest = () => {
           title="Open Modal" 
           style={styles.switch}
             trackColor={{ false: 'grey', true: '#0AA447' }}
-            thumbColor={autoInvest ? '#43FF8E' : 'silver'}
+            thumbColor={autoInvestSettings.active ? '#43FF8E' : 'silver'}
             ios_backgroundColor="#3e3e3e"
             onValueChange={handleActivateAutoInvest}
-            value={autoInvest}
+            value={autoInvestSettings.active}
           />
 
 {autoInvestModalVisible && (
@@ -215,9 +243,12 @@ const handleConfirmDeactivateAutoInvest = () => {
         autoInvestModalVisible={autoInvestModalVisible} 
         setAutoInvestModalVisible={setAutoInvestModalVisible} 
         onConfirm={handleConfirmAutoInvest}
-
+        navigation={navigation}
+        amount={amount} // Pass the amount as a prop
+        frequency={frequency} // Pass the frequency as a prop
         />
         )}
+
 
 {deactivateAutoInvestModalVisible && (
 <DeactivateAutoInvestModal
@@ -226,6 +257,9 @@ const handleConfirmDeactivateAutoInvest = () => {
           deactivateAutoInvestModalVisible={deactivateAutoInvestModalVisible}
           setDeactivateAutoInvestModalVisible={setDeactivateAutoInvestModalVisible}
           onConfirm={handleConfirmDeactivateAutoInvest}
+          frequency={frequency} // Pass the current frequency to the modal
+          navigation={navigation}
+          route={route} // Pass the route prop here
         />
         )}
 
@@ -235,12 +269,12 @@ const handleConfirmDeactivateAutoInvest = () => {
 
 
       <View>
-          {autoSaveSettings.active ? (
+          {autoInvestSettings.active ? (
             <Text style={styles.autoSaveSetting}>
-              You're AutoInvesting ₦{autoSaveSettings.amount} {autoSaveSettings.frequency} <Ionicons name="checkmark-circle" size={20} color="#0AA447" marginBottom={10} />
+              You're AutoInvesting ₦{autoInvestSettings.amount} {autoInvestSettings.frequency} <Ionicons name="checkmark-circle" size={20} color="#0AA447" marginBottom={10} />
             </Text>
           ) : (
-            <Text style={styles.autoSaveText} alignSelf='center' marginTop={10}>AutoSave is OFF: Use the switch above to turn ON</Text>
+            <Text style={styles.autoSaveText} alignSelf='center' marginTop={10}>AutoInvest is OFF: Use the switch above to turn ON</Text>
           )}
         </View>
 
@@ -445,6 +479,7 @@ const styles = StyleSheet.create({
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
+    marginBottom: 15,
   },
   
   propertyText: {

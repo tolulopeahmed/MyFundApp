@@ -1,19 +1,76 @@
-import React, { useState } from 'react';
-import { Modal, Text, StyleSheet, View, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Modal, Alert, Text, StyleSheet, ActivityIndicator, View, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider';
+import axios from 'axios';
+import { ipAddress } from '../../constants';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchAutoInvestSettings, setAutoInvestOff } from '../../ReduxActions';
+import LoadingModal from '../components/LoadingModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const DeactivateAutoInvestModal = ({ deactivateAutoInvestModalVisible, setDeactivateAutoInvestModalVisible, setAutoInvest }) => {
+
+const DeactivateAutoInvestModal = ({ navigation, route, frequency, deactivateAutoInvestModalVisible, onConfirm, setDeactivateAutoInvestModalVisible, setAutoInvest }) => {
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  const [isLoading, setIsLoading] = useState(false); // State to manage loading indicator
+  const autoInvestSettings = useSelector((state) => state.bank.autoInvestSettings);
+  const dispatch = useDispatch();
+  //const { fromCardDelete } = route.params;
 
 
   const closeModal = () => {
     setDeactivateAutoInvestModalVisible(false);
   };
 
-  const handleConfirmDeactivateAutoInvest = () => {
-    setAutoInvest(false);
-    setDeactivateAutoInvestModalVisible(false);
+    
+  useEffect(() => {
+    dispatch(fetchAutoInvestSettings()); // Fetch auto-save status and settings when the component mounts
+  }, [autoInvestSettings.active]);
 
+  console.log('Autoinvest Frequency:', frequency);
+
+
+
+
+
+  const handleConfirmDeactivateAutoInvest = async () => {
+    setIsLoading(true); // Start loading indicator
+
+    try {
+      const response = await axios.post(`${ipAddress}/api/deactivate-autoinvest/`, {
+        frequency: autoInvestSettings.frequency,
+      }, {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      });
+
+      if (response.status === 200 && response.data.message === 'AutoInvest deactivated') {
+        setDeactivateAutoInvestModalVisible(false);
+        dispatch(setAutoInvestOff());
+
+          // Clear the auto-save status in AsyncStorage (if needed)
+        AsyncStorage.removeItem('autoInvestSettings')
+        .then(() => {
+          console.log('Auto-invest status removed');
+          
+          // Fetch the updated auto-save settings immediately after turning it off
+          dispatch(fetchAutoInvestSettings());
+
+          // After successfully deactivating AutoInvest, navigate back to the card deletion screen
+        })
+        .catch((error) => console.error('Error removing auto-save status:', error));
+
+        // Show an alert confirming AutoInvest deactivation
+        Alert.alert('AutoInvest Deactivated!', 'Your AutoInvest has been deactivated successfully.');
+      }
+      
+    } catch (error) {
+      console.error('Error deactivating AutoInvest:', error);
+      // Handle error, display a message to the user, or log it as needed
+    } finally {
+      setIsLoading(false); // Stop loading indicator
+     }
   };
   
 
@@ -53,6 +110,8 @@ const DeactivateAutoInvestModal = ({ deactivateAutoInvestModalVisible, setDeacti
               </TouchableOpacity>
             </View>
           </View>
+          <LoadingModal visible={isLoading} />
+
         </TouchableOpacity>
       </TouchableOpacity>
     </Modal>
