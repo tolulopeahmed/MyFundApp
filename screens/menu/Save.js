@@ -339,44 +339,28 @@ console.log('accountBalances.investment:', accountBalances.investment)
 
 
 <View style={styles.transactionsContainer}>
-  {userTransactions.length > 0 ? (
+  {userTransactions.some((transaction) =>
+    ["QuickSave", "AutoSave"].includes(transaction.description)
+  ) ? (
     userTransactions
-      .filter(
-        (transaction) =>
-          [
-            "Card Successful",
-            "QuickSave",
-            "AutoSave",
-          ].includes(transaction.description) // Filter transactions with these descriptions
+      .filter((transaction) =>
+        ["QuickSave", "AutoSave"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
-        // Inside your Save component where you are rendering transactions
         <View key={index} style={styles.transactionItem}>
           <Ionicons
-            name={iconMapping[transaction.description] || "card-outline"}
+            name={iconMapping[transaction.description] || "arrow-down-outline"}
             size={25}
             style={styles.transactionIcon}
           />
           <View style={styles.transactionText}>
-            <Text style={styles.transactionDescription}>
-              {transaction.description}
-            </Text>
-            <Text style={styles.transactionDate}>
-              {formatDate(transaction.date)} | {formatTime(transaction.time)}
-            </Text>
-            <Text style={styles.transactionID}>
-              ID: {transaction.transaction_id}
-            </Text>
+            <Text style={styles.transactionDescription}>{transaction.description}</Text>
+            <Text style={styles.transactionDate}>{formatDate(transaction.date)} | {formatTime(transaction.time)}</Text>
+            <Text style={styles.transactionID}>ID: {transaction.transaction_id}</Text>
           </View>
           <View style={styles.transactionAmountContainer}>
-            <Text
-              style={
-                transaction.transaction_type === "debit"
-                  ? styles.negativeAmount
-                  : styles.transactionAmount
-              }
-            >
+            <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
               ₦{transaction.amount}
             </Text>
           </View>
@@ -384,9 +368,7 @@ console.log('accountBalances.investment:', accountBalances.investment)
       ))
   ) : (
     <View style={styles.noTransactionsContainer}>
-      <Text style={styles.noTransactionsMessage}>
-        Your most recent savings will appear here.
-      </Text>
+      <Text style={styles.noTransactionsMessage}>You're yet to make a Savings.</Text>
     </View>
   )}
 </View>
@@ -825,8 +807,8 @@ backgroundImage: {
       fontSize: 15,
       color: 'silver',
       fontFamily: 'karla-italic',
-      marginTop: 140,
-      marginBottom: 100
+      marginTop: 60,
+      marginBottom: 60
     },
 
     quickSaveButtonCircle: {

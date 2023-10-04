@@ -18,57 +18,6 @@ const getBackgroundColor = (bankName) => {
 };
 
 
-// const getBackgroundColor = (bankName) => {
-//   switch (bankName) {
-//     case "Access Bank":
-//       return "#91A62A";
-//     case "Guaranty Trust Bank":
-//       return "#C3460E";
-//     case "Zenith Bank":
-//       return "#E6000D";
-//     case "United Bank for Africa":
-//       return "#D42C07";
-//     case "First City Monument Bank":
-//       return "#702699";
-//     case "Wema Bank":
-//       return "#72235A";
-//     case "Polaris Bank":
-//       return "#8834AE";
-//     case "Union Bank":
-//       return "#00ADEF";
-//     case "Ecobank":
-//       return "#00537F";
-//     case "Stanbic IBTC Bank":
-//       return "#04009D";
-//     case "First Bank of Nigeria":
-//       return "#0C2B5C";
-//     case "Keystone Bank":
-//       return "#014888";
-//     case "Sterling Bank":
-//       return "#DB3539";
-//     case "Unity Bank Plc":
-//       return "#88BB52";
-//     case "Citibank":
-//       return "#0275D0";
-//     case "Heritage Bank":
-//       return "#439B2D";
-//     case "Standard Chartered Bank":
-//       return "#0671A9";
-//     case "Jaiz Bank":
-//       return "#0B411F";
-//     case "Fidelity Bank":
-//       return "#232B69";
-//     case "Opay":
-//         return "#08A67C";
-//     case "Palmpay":
-//         return "#7F13CB";
-//     case "Moniepoint Microfinance Bank":
-//         return "#0649C4";
-//     default:
-//       return "#4C28BC"; // Default color
-//   }
-// };
-
 const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVisible, setIsSuccessVisible }) => {
   const [frequency, setFrequency] = useState('');
   const [amount, setAmount] = useState('');
@@ -181,14 +130,15 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
       );
   
       if (response.status === 200) {
+       
         // QuickSave was successful, update account balances and transactions
         const responseData = response.data;
+        dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
         setIsSuccessVisible(true);
 
         setQuickSaveModalVisible(false);
-          // Dispatch actions to update Redux store
-          dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
-      
+        setProcessing(false);
+
      
       } else {
         // Handle QuickSave error here and show appropriate alerts

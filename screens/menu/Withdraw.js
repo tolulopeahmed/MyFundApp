@@ -217,22 +217,19 @@ const formatTime = (timeString) => {
       <SafeAreaView style={styles.transactionContainer}>
       <SectionTitle>WITHDRAWAL TRANSACTIONS</SectionTitle>
 
-      
+      {console.log('User Transactions outside Transaction container:', userTransactions)}
+
 
       <View style={styles.transactionsContainer}>
-  {userTransactions.length > 0 ? (
+  {userTransactions.some((transaction) =>
+    ["Withdrawal"].includes(transaction.description)
+  ) ? (
     userTransactions
-      .filter(
-        (transaction) =>
-          [
-            "Withdrawal from Savings",
-            "Withdrawal from Investment",
-            "Withdrawal from Wallet",
-          ].includes(transaction.description)
+      .filter((transaction) =>
+        ["Withdrawal"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
-        // Inside your withdrawal screen component where you are rendering transactions
         <View key={index} style={styles.transactionItem}>
           <Ionicons
             name={iconMapping[transaction.description] || "arrow-down-outline"}
@@ -240,24 +237,12 @@ const formatTime = (timeString) => {
             style={styles.transactionIcon}
           />
           <View style={styles.transactionText}>
-            <Text style={styles.transactionDescription}>
-              {transaction.description}
-            </Text>
-            <Text style={styles.transactionDate}>
-              {formatDate(transaction.date)} | {formatTime(transaction.time)}
-            </Text>
-            <Text style={styles.transactionID}>
-              ID: {transaction.transaction_id}
-            </Text>
+            <Text style={styles.transactionDescription}>{transaction.description}</Text>
+            <Text style={styles.transactionDate}>{formatDate(transaction.date)} | {formatTime(transaction.time)}</Text>
+            <Text style={styles.transactionID}>ID: {transaction.transaction_id}</Text>
           </View>
           <View style={styles.transactionAmountContainer}>
-            <Text
-              style={
-                transaction.transaction_type === "debit"
-                  ? styles.negativeAmount
-                  : styles.transactionAmount
-              }
-            >
+            <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
               ₦{transaction.amount}
             </Text>
           </View>
@@ -265,12 +250,12 @@ const formatTime = (timeString) => {
       ))
   ) : (
     <View style={styles.noTransactionsContainer}>
-      <Text style={styles.noTransactionsMessage}>
-      {userTransactions.length === 0 ? "You're yet to make a withdrawal." : "Your most recent withdrawals will appear here."}
-      </Text>
+      <Text style={styles.noTransactionsMessage}>You're yet to make a withdrawal.</Text>
     </View>
   )}
 </View>
+
+
 
 
     </SafeAreaView>
@@ -708,8 +693,10 @@ quickWithdrawText: {
     fontSize: 15,
     color: 'silver',
     fontFamily: 'karla-italic',
-    marginTop: 140,
-    marginBottom: 100
+    marginTop: 60,
+    marginBottom: 60,
+    textAlign: 'center', // Center the text
+
   },
 
 });

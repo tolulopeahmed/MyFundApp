@@ -134,13 +134,14 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
       );
   
       if (response.status === 200) {
+       
+        dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
         // QuickSave was successful, update account balances and transactions
         const responseData = response.data;
         setIsSuccessVisible(true);
 
         setQuickInvestModalVisible(false);
           // Dispatch actions to update Redux store
-          dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
       
      
       } else {

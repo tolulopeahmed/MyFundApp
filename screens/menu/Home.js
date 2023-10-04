@@ -391,52 +391,41 @@ const formatTime = (timeString) => {
 
 <SectionTitle>MY RECENT TRANSACTIONS</SectionTitle>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={styles.transactionsContainer}>
-      {userTransactions.length > 0 ? (
-  userTransactions.slice(0, 5).map((transaction, index) => (
-    <View key={index} style={styles.transactionItem}>
-      <Ionicons
-        name={iconMapping[transaction.description] || "card-outline"}
-        size={25}
-        style={styles.transactionIcon}
-      />
-      <View style={styles.transactionText}>
-        <Text style={styles.transactionDescription}>
-          {transaction.description}
-        </Text>
-        <Text style={styles.transactionDate}>
-          {formatDate(transaction.date)} | {formatTime(transaction.time)}
-        </Text>
-        <Text style={styles.transactionID}>
-          ID: {transaction.transaction_id}
-        </Text>
-      </View>
-      <View style={styles.transactionAmountContainer}>
-        <Text
-          style={
-            transaction.transaction_type === "debit"
-              ? styles.negativeAmount
-              : styles.transactionAmount
-          }
-        >
-          ₦{transaction.amount}
-        </Text>
-      </View>
+<View style={styles.transactionsContainer}>
+  {userTransactions.some((transaction) =>
+    ["QuickSave", "AutoSave", "Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal", "Property"].includes(transaction.description)
+  ) ? (
+    userTransactions
+      .filter((transaction) =>
+        ["QuickSave", "AutoSave", "Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal", "Property"].includes(transaction.description)
+      )
+      .slice(0, 5)
+      .map((transaction, index) => (
+        <View key={index} style={styles.transactionItem}>
+          <Ionicons
+            name={iconMapping[transaction.description] || "arrow-down-outline"}
+            size={25}
+            style={styles.transactionIcon}
+          />
+          <View style={styles.transactionText}>
+            <Text style={styles.transactionDescription}>{transaction.description}</Text>
+            <Text style={styles.transactionDate}>{formatDate(transaction.date)} | {formatTime(transaction.time)}</Text>
+            <Text style={styles.transactionID}>ID: {transaction.transaction_id}</Text>
+          </View>
+          <View style={styles.transactionAmountContainer}>
+            <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
+              ₦{transaction.amount}
+            </Text>
+          </View>
+        </View>
+      ))
+  ) : (
+    <View style={styles.noTransactionsContainer}>
+      <Text style={styles.noTransactionsMessage}>You're yet to make any transactions.</Text>
     </View>
-  ))
-) : (
-  <View style={styles.noTransactionsContainer}>
-    <Text style={styles.noTransactionsMessage}>
-      Your most recent transactions will appear here.
-    </Text>
-  </View>
-)}
+  )}
+</View>
 
-
-            </View>
-
-          </ScrollView>
     </SafeAreaView>
      
 </ScrollView>
@@ -902,8 +891,8 @@ noTransactionsMessage: {
   fontSize: 15,
   color: 'silver',
   fontFamily: 'karla-italic',
-  marginTop: 140,
-  marginBottom: 100
+  marginTop: 60,
+  marginBottom: 60
 },
 
 });

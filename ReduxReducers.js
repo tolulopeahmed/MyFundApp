@@ -31,6 +31,7 @@ const initialState = {
     properties: 0,
     wallet: 0,
   },
+  
   userTransactions: [],
   messages: [],
   authToken: null, // Add a new property to store the authentication token

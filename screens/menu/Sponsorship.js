@@ -302,44 +302,29 @@ console.log('autoInvestSettings.frequency:', autoInvestSettings.frequency)
       <SectionTitle>INVESTMENT TRANSACTIONS</SectionTitle>
 
        
-<View style={styles.transactionsContainer}>
-  {userTransactions.length > 0 ? (
+      <View style={styles.transactionsContainer}>
+  {userTransactions.some((transaction) =>
+    ["QuickInvest", "AutoInvest"].includes(transaction.description)
+  ) ? (
     userTransactions
-      .filter(
-        (transaction) =>
-          [
-            "QuickInvest",
-            "AutoInvest",
-          ].includes(transaction.description) // Filter transactions with these descriptions
+      .filter((transaction) =>
+        ["QuickInvest", "AutoInvest"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
-        // Inside your Save component where you are rendering transactions
         <View key={index} style={styles.transactionItem}>
           <Ionicons
-            name={iconMapping[transaction.description] || "card-outline"}
+            name={iconMapping[transaction.description] || "arrow-down-outline"}
             size={25}
             style={styles.transactionIcon}
           />
           <View style={styles.transactionText}>
-            <Text style={styles.transactionDescription}>
-              {transaction.description}
-            </Text>
-            <Text style={styles.transactionDate}>
-              {formatDate(transaction.date)} | {formatTime(transaction.time)}
-            </Text>
-            <Text style={styles.transactionID}>
-              ID: {transaction.transaction_id}
-            </Text>
+            <Text style={styles.transactionDescription}>{transaction.description}</Text>
+            <Text style={styles.transactionDate}>{formatDate(transaction.date)} | {formatTime(transaction.time)}</Text>
+            <Text style={styles.transactionID}>ID: {transaction.transaction_id}</Text>
           </View>
           <View style={styles.transactionAmountContainer}>
-            <Text
-              style={
-                transaction.transaction_type === "debit"
-                  ? styles.negativeAmount
-                  : styles.transactionAmount
-              }
-            >
+            <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
               ₦{transaction.amount}
             </Text>
           </View>
@@ -347,9 +332,7 @@ console.log('autoInvestSettings.frequency:', autoInvestSettings.frequency)
       ))
   ) : (
     <View style={styles.noTransactionsContainer}>
-      <Text style={styles.noTransactionsMessage}>
-        Your most recent savings will appear here.
-      </Text>
+      <Text style={styles.noTransactionsMessage}>You're yet to make an investment.</Text>
     </View>
   )}
 </View>
@@ -788,8 +771,8 @@ backgroundImage: {
       fontSize: 15,
       color: 'silver',
       fontFamily: 'karla-italic',
-      marginTop: 140,
-      marginBottom: 100
+      marginTop: 60,
+      marginBottom: 60
     },
 
     quickSaveButtonCircle: {
