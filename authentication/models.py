@@ -180,7 +180,7 @@ class Transaction(models.Model):
     date = models.DateField()
     time = models.TimeField()
     description = models.CharField(max_length=255, default="No description available")
-    transaction_id = models.CharField(max_length=255, default='')
+    transaction_id = models.CharField(max_length=255, default='', unique=True)
 
     def __str__(self):
         return f'{self.transaction_type} - {self.amount} - {self.date}'
