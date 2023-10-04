@@ -219,7 +219,7 @@ const formatTime = (timeString) => {
 
       
 
-<View style={styles.transactionsContainer}>
+      <View style={styles.transactionsContainer}>
   {userTransactions.length > 0 ? (
     userTransactions
       .filter(
@@ -266,20 +266,12 @@ const formatTime = (timeString) => {
   ) : (
     <View style={styles.noTransactionsContainer}>
       <Text style={styles.noTransactionsMessage}>
-        {!userTransactions.some(
-          (transaction) =>
-            [
-              "Withdrawal from Savings",
-              "Withdrawal from Investment",
-              "Withdrawal from Wallet",
-            ].includes(transaction.description)
-        )
-          ? "Your most recent withdrawals will appear here."
-          : "You're yet to make a withdrawal."} {/* Updated message */}
+      {userTransactions.length === 0 ? "You're yet to make a withdrawal." : "Your most recent withdrawals will appear here."}
       </Text>
     </View>
   )}
 </View>
+
 
     </SafeAreaView>
     </ScrollView>

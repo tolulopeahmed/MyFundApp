@@ -175,7 +175,7 @@ const formatTime = (timeString) => {
 
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
-        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: "#4C28BC" }}></Text><Text style={{fontFamily: 'proxima'}}>Every January and July</Text>, you'll earn 10% p.a. on Savings and 20% p.a. on your Investments until you've saved enough to buy properties and earn lifetime rent.. Keep growing your funds.</Text>
+        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: "#4C28BC" }}></Text><Text style={{fontFamily: 'proxima'}}>Every January and July</Text>, you'll earn 10% p.a. on Savings and 20% p.a. on your Investments until you've saved enough to buy properties and earn lifetime rent. Keep growing your funds.</Text>
       </View>
 
 
