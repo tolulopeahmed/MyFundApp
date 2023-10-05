@@ -4,7 +4,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Swiper from 'react-native-swiper';
 import * as Clipboard from 'expo-clipboard';
 import { MaterialIcons } from '@expo/vector-icons';
-
+import { useSelector } from 'react-redux';
+import SectionTitle from '../components/SectionTitle';
 
 const images = [
   require('./refer.png'),
@@ -13,7 +14,8 @@ const images = [
 
 const ReferAndEarn = ({ navigation, firstName }) => {
   const [isCopied, setIsCopied] = useState(false);
-  const referralID = 'name@email.com'; // Replace with your referral ID or email
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  const referralID = userInfo.email; // Assuming 'userInfo.email' contains the user's email
 
 
   const handleCopyReferralID = () => {
@@ -42,6 +44,9 @@ const ReferAndEarn = ({ navigation, firstName }) => {
       message,
     });
   };
+
+
+
 
   return (
     <View style={styles.container}>
@@ -96,7 +101,7 @@ const ReferAndEarn = ({ navigation, firstName }) => {
       </View>
 
       <View style={styles.transactionContainer}>
-        <Text style={styles.todoList}>REFERRAL LIST</Text>
+       <SectionTitle>REFERRAL LIST</SectionTitle> 
 
         <View style={styles.containerHead}>
           <View style={styles.column}>
@@ -248,7 +253,7 @@ const styles = StyleSheet.create({
     marginLeft: 15
   },
   copiedContainer: {
-    marginLeft: 15,
+    marginLeft: 5,
     alignItems: 'center',
     flexDirection: 'row'
   },
@@ -293,6 +298,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: 40,
     borderRadius: 5,
+    marginTop: 10,
   },
   column: {
     alignItems: 'center',

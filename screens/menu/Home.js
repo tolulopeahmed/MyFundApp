@@ -393,11 +393,11 @@ const formatTime = (timeString) => {
 
 <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["QuickSave", "AutoSave", "Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal", "Property"].includes(transaction.description)
+    ["QuickSave", "AutoSave", "Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal", "Withdrawal from Savings","Property"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["QuickSave", "AutoSave", "Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal", "Property"].includes(transaction.description)
+        ["QuickSave", "AutoSave", "Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal", "Withdrawal from Savings","Property"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
@@ -869,7 +869,7 @@ transactionAmount2: {
 },
 
 negativeAmount: {
-  color: 'red',
+  color: 'brown',
   fontSize: 23,
   fontFamily: 'karla',
   letterSpacing: -1,

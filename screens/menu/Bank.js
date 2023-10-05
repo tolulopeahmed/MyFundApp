@@ -10,7 +10,7 @@ import axios from 'axios';
 import { ipAddress } from '../../constants';
 import bankOptions from '../components/BankOptions';
 
-const Bank = ({ navigation, initialBankRecords}) => {
+const Bank = ({ navigation, route, initialBankRecords}) => {
   const [addBankModalVisible, setAddBankModalVisible] = useState(false); // define modalVisible state
   const bankAccounts = useSelector((state) => state.bank.bankAccounts);
   const dispatch = useDispatch();
@@ -22,7 +22,11 @@ const Bank = ({ navigation, initialBankRecords}) => {
     dispatch(fetchUserBankAccounts()); // Use the correct action name here
   }, []);
 
-
+  useEffect(() => {
+    if (route.params?.addBankModalVisible) {
+      setAddBankModalVisible(true);
+    }
+  }, [route.params]);
 
   useEffect(() => {
     console.log('Bank Accounts:', bankAccounts); // Log bankAccounts

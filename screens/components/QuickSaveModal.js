@@ -28,12 +28,25 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
   const [processing, setProcessing] = useState(false);
   const userCards = useSelector((state) => state.bank.cards) || [];
   const [selectedCardId, setSelectedCardId] = useState(userCards.length > 0 ? userCards[0].id : null);
+  const [showQuickSaveButton, setShowQuickSaveButton] = useState(true);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchUserCards());
   }, []);
+
+
+  useEffect(() => {
+    if (frequency === "Bank Transfer") {
+      setShowQuickSaveButton(false);
+    } else {
+      setShowQuickSaveButton(true);
+    }
+  }, [frequency]);
+
+  
+
 
   const handleAmountButtonPress = (presetAmount) => {
     handleAmountPreset(presetAmount);
@@ -166,11 +179,6 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
 
 
 
-  console.log('Selected card:', selectedCard);
-  console.log('Amount entered:', amount);
-
-
-
 
 
 
@@ -275,13 +283,15 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                     onValueChange={(value) => setFrequency(value)}
                   >
                     <Picker.Item label="My Saved Cards" value="My Saved Cards" />
-                    <Picker.Item label="Add New Card" value="Add New Card" />
                     <Picker.Item label="Bank Transfer" value="Bank Transfer" />
                   </Picker>
                 </View>
               </View>
 
                 <>
+
+                {showQuickSaveButton ? (
+
                   <View style={styles.inputContainer}>
                     <Text style={styles.label3}>Which of them?     </Text>
                     {userCards.length === 0 ? (
@@ -350,34 +360,22 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                           </TouchableOpacity>
                         </View>
                   </View>
+
+                    ) : (
+
+                      <View style={styles.paymentOptionsContainer}>
+                      <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. Click 'Submit' after payment and your account will be updated within 12 hours.</Text>
+                      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} Vcorp Systems Limited</Text>
+                      <View style={styles.buttonsContainer}>
+                        <TouchableOpacity style={styles.primaryButton}>
+                          <Text style={styles.primaryButtonText}>Submit</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )}
+
                 </>
 
-
-              {frequency === "Add New Card" && (
-                <>
-                  <View style={styles.paymentOptionsContainer}>
-                    <Text style={styles.modalSubText3} alignSelf='center'>Tap the button below to add a new card first...</Text>
-                    <View style={styles.buttonsContainer}>
-                      <TouchableOpacity style={styles.primaryButton} onPress={handleAddCard}>
-                        <Text style={styles.primaryButtonText}>Add Card Now</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </>
-              )}
-              {frequency === "Bank Transfer" && (
-                <>
-                  <View style={styles.paymentOptionsContainer}>
-                    <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. Click 'Submit' after payment and your account will be updated within 12 hours.</Text>
-                    <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} Vcorp Systems Limited</Text>
-                    <View style={styles.buttonsContainer}>
-                      <TouchableOpacity style={styles.primaryButton}>
-                        <Text style={styles.primaryButtonText}>Submit</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </>
-              )}
             </View>
 
             <LoadingModal visible={processing} />

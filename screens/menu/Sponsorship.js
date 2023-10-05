@@ -31,7 +31,7 @@ const Sponsorship = ({ navigation, route }) => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
   const autoInvestSettings = useSelector((state) => state.bank.autoInvestSettings);
-  
+
   
   useEffect(() => {
     dispatch(fetchAccountBalances()); // Fetch account balances using Redux action

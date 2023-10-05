@@ -222,11 +222,11 @@ const formatTime = (timeString) => {
 
       <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["Withdrawal"].includes(transaction.description)
+    ["Withdrawal", "Withdrawal from Savings"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["Withdrawal"].includes(transaction.description)
+        ["Withdrawal", "Withdrawal from Savings"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (

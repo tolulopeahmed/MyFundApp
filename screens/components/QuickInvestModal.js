@@ -28,6 +28,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
   const [processing, setProcessing] = useState(false);
   const userCards = useSelector((state) => state.bank.cards) || [];
   const [selectedCardId, setSelectedCardId] = useState(userCards.length > 0 ? userCards[0].id : null);
+  const [showQuickInvestButton, setShowQuickInvestButton] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -35,7 +36,13 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
     dispatch(fetchUserCards());
   }, []);
 
-
+  useEffect(() => {
+    if (frequency === "Bank Transfer") {
+      setShowQuickInvestButton(false);
+    } else {
+      setShowQuickInvestButton(true);
+    }
+  }, [frequency]);
 
   const handleAmountButtonPress = (presetAmount) => {
     handleAmountPreset(presetAmount);
@@ -217,6 +224,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
              <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setQuickInvestModalVisible(false)}/>
          </View>
           <Divider />
+
           <Text style={styles.modalSubText}>
           Manually move multiples of N100,000 from your local bank acount into your Sponsorship Investment Account with a few taps to enjoy <Text style={{fontFamily: 'proxima'}}>20% ROI p.a. </Text> {'\n'}
             {'\n'}QuickInvest...
@@ -284,13 +292,14 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                     onValueChange={(value) => setFrequency(value)}
                   >
                     <Picker.Item label="My Saved Cards" value="My Saved Cards" />
-                    <Picker.Item label="Add New Card" value="Add New Card" />
                     <Picker.Item label="Bank Transfer" value="Bank Transfer" />
                   </Picker>
                 </View>
               </View>
 
                 <>
+
+                {showQuickInvestButton ? (
                   <View style={styles.inputContainer}>
                     <Text style={styles.label3}>Which of them?     </Text>
                     {userCards.length === 0 ? (
@@ -301,8 +310,6 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                       </TouchableOpacity>
                     ) : (
                       
-
-
                       <View style={styles.inputContainer}>
                       <View style={styles.iconContainer}> 
                       <Ionicons
@@ -354,40 +361,29 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                               <Image source={require('./paystack.png')} style={styles.image} />
                             )}
                             <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
-                              {processing ? 'Paystack Processing...' : 'QuickInvest Now!'}
+                              {processing ? 'Paystack Processing...' : 'QuickSave Now!'}
                             </Text>
                           </TouchableOpacity>
                         </View>
                   </View>
-                </>
 
+                    ) : (
 
-              {frequency === "Add New Card" && (
-                <>
-                  <View style={styles.paymentOptionsContainer}>
-                    <Text style={styles.modalSubText3} alignSelf='center'>Tap the button below to add a new card first...</Text>
-                    <View style={styles.buttonsContainer}>
-                      <TouchableOpacity style={styles.primaryButton} onPress={handleAddCard}>
-                        <Text style={styles.primaryButtonText}>Add Card Now</Text>
-                      </TouchableOpacity>
+                      <View style={styles.paymentOptionsContainer}>
+                      <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. Click 'Submit' after payment and your account will be updated within 12 hours.</Text>
+                      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} Vcorp Systems Limited</Text>
+                      <View style={styles.buttonsContainer}>
+                        <TouchableOpacity style={styles.primaryButton}>
+                          <Text style={styles.primaryButtonText}>Submit</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
+                  )}
+
+                  </>
+
                   </View>
-                </>
-              )}
-              {frequency === "Bank Transfer" && (
-                <>
-                  <View style={styles.paymentOptionsContainer}>
-                    <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. Click 'Submit' after payment and your account will be updated within 12 hours.</Text>
-                    <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} Vcorp Systems Limited</Text>
-                    <View style={styles.buttonsContainer}>
-                      <TouchableOpacity style={styles.primaryButton}>
-                        <Text style={styles.primaryButtonText}>Submit</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </>
-              )}
-            </View>
+
 
             <LoadingModal visible={processing} />
 
@@ -431,6 +427,7 @@ const styles = {
     color: '#4C28BC',
     flex: 1,
   },
+  
   modalSubText: {
     fontSize: 14,
     fontFamily: 'karla',
