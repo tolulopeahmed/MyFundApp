@@ -70,5 +70,8 @@ urlpatterns = [
     path('deactivate-autoinvest/', views.deactivate_autoinvest, name='deactivate_autoinvest'),
     path('get-autoinvest-settings/', views.get_autoinvest_status, name='get_autoinvest_status'),
 
+    # Withdrawals-related APIs
+    path('savings-to-investment/', views.savings_to_investment, name='savings-to-investment'),
+
     ]
 

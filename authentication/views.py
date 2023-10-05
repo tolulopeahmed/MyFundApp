@@ -1203,3 +1203,46 @@ def get_autoinvest_status(request):
         }
     
     return Response({'autoinvest_enabled': autoinvest_enabled, 'autoInvestSettings': autoInvestSettings}, status=status.HTTP_200_OK)
+
+
+
+from decimal import Decimal
+import uuid  # Import the uuid library
+random_uuid = uuid.uuid4()
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def savings_to_investment(request):
+    user = request.user
+    amount = Decimal(request.data.get('amount', 0))
+
+    # Validate that the user has enough savings
+    if user.savings < amount:
+        return Response({'error': 'Insufficient savings balance.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Generate a unique transaction ID
+    transaction_id = str(uuid.uuid4())[:16]
+
+    try:
+        # Create a transaction record with the details
+        transaction = Transaction(
+            user=user,
+            transaction_type='debit',
+            amount=amount,
+            date=timezone.now().date(),
+            time=timezone.now().time(),
+            description='Withdrawal from Savings',
+            transaction_id=transaction_id
+        )
+        transaction.save()
+
+        # Perform the savings to investment transfer
+        user.savings -= amount
+        user.investment += amount
+        user.save()
+
+        return Response({'message': 'Savings to investment transfer successful.', 'transaction_id': transaction_id}, status=status.HTTP_200_OK)
+
+    except IntegrityError:
+        # Handle the case where a unique constraint (transaction_id) is violated
+        return Response({'error': 'Transaction ID conflict. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)

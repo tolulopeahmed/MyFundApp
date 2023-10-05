@@ -277,3 +277,9 @@ class AutoSaveSerializer(serializers.ModelSerializer):
 class QuickInvestSerializer(serializers.Serializer):
     card_id = serializers.IntegerField()
     amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = '__all__' 
