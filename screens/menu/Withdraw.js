@@ -9,6 +9,7 @@ import Subtitle from '../components/Subtitle';
 import { useSelector, useDispatch } from 'react-redux'; 
 import { updateAccountBalances, updateUserTransactions, fetchAccountBalances, fetchUserTransactions } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
+import Success from '../components/Success';
 
 const Withdraw = ({ navigation, route }) => {
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false); // define modalVisible state
@@ -16,7 +17,11 @@ const Withdraw = ({ navigation, route }) => {
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
   const userInfo = useSelector((state) => state.bank.userInfo);
+  const [isSuccessVisible, setIsSuccessVisible] = useState(false);
+  const [defaultFromAccount, setDefaultFromAccount] = useState('Savings'); // Set the initial default account
+  const [fromAccount, setFromAccount ] = useState(defaultFromAccount); // Set the default account from prop
 
+  
   const iconMapping = {
     "Card Successful": "card-outline",
     "QuickSave": "save-outline",
@@ -45,7 +50,10 @@ const formatTime = (timeString) => {
 };
 
 
-  
+const handleCloseSuccessModal = () => {
+  setIsSuccessVisible(false);
+};
+
 
   useEffect(() => {
     if (route.params?.withdrawModalVisible) {
@@ -91,8 +99,10 @@ const formatTime = (timeString) => {
       <View style={styles.quickWithdrawButtonContainer}>
       <TouchableOpacity
       style={styles.quickWithdrawButton}
-      onPress={() => setWithdrawModalVisible(true)} // Replace with the appropriate onPress function
-    >
+      onPress={() => {
+        setFromAccount('Savings'); // Set the fromAccount to 'Investment'
+        setWithdrawModalVisible(true);
+      }}    >
       <Text style={styles.quickWithdrawText}>Withdraw</Text>
     </TouchableOpacity>
     </View>
@@ -123,8 +133,11 @@ const formatTime = (timeString) => {
 <View style={styles.quickWithdrawButtonContainer}>
       <TouchableOpacity
       style={styles.quickWithdrawButton}
-      onPress={() => setWithdrawModalVisible(true)} // Replace with the appropriate onPress function
-    >
+      onPress={() => {
+        setFromAccount('Investment'); // Set the fromAccount to 'Investment'
+        setWithdrawModalVisible(true);
+      }}
+      >
       <Text style={styles.quickWithdrawText}>Withdraw</Text>
     </TouchableOpacity>
     </View>
@@ -188,13 +201,21 @@ const formatTime = (timeString) => {
         <WithdrawModal 
         navigation={navigation} 
         withdrawModalVisible={withdrawModalVisible} 
-        setWithdrawModalVisible={setWithdrawModalVisible} />
+        setWithdrawModalVisible={setWithdrawModalVisible} 
+        setIsSuccessVisible={setIsSuccessVisible} // Pass the function here
+        defaultFromAccount={defaultFromAccount} // Pass the defaultFromAccount prop here
+        setFromAccount={setFromAccount} // Pass the setFromAccount function as a prop
+       // fromAccount={fromAccount}
+        />
 
       <View style={styles.quickWithdrawButtonContainer}>
       <TouchableOpacity
       style={styles.quickWithdrawButton}
-      onPress={() => setWithdrawModalVisible(true)} // Replace with the appropriate onPress function
-    >
+      onPress={() => {
+        setWithdrawModalVisible(true);
+        setDefaultFromAccount('Wallet');
+      }}
+      >
       <Text style={styles.quickWithdrawText}>Withdraw</Text>
     </TouchableOpacity>
     </View>
@@ -222,11 +243,11 @@ const formatTime = (timeString) => {
 
       <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["Withdrawal", "Withdrawal from Savings"].includes(transaction.description)
+    ["From Savings to Investment", "From Investment to Savings", "From Wallet to Savings", "From Wallet to Investment"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["Withdrawal", "Withdrawal from Savings"].includes(transaction.description)
+        ["From Savings to Investment", "From Investment to Savings", "From Wallet to Savings", "From Wallet to Investment"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
@@ -243,7 +264,8 @@ const formatTime = (timeString) => {
           </View>
           <View style={styles.transactionAmountContainer}>
             <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
-              ₦{transaction.amount}
+            <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
+              </Text>
             </Text>
           </View>
         </View>
@@ -256,7 +278,13 @@ const formatTime = (timeString) => {
 </View>
 
 
-
+{isSuccessVisible && (
+      <Success  
+      isVisible={isSuccessVisible}
+      onClose={handleCloseSuccessModal} // Pass the callback function
+      navigation={navigation}
+      />
+      )}
 
     </SafeAreaView>
     </ScrollView>
@@ -650,10 +678,14 @@ quickWithdrawText: {
   },
   transactionDate: {
     fontFamily: 'karla',
-    fontSize: 12,
-    marginTop: 3,
+    fontSize: 10,
+    marginTop: 1,
   },
-
+  transactionTime: {
+    fontFamily: 'karla',
+    fontSize: 10,
+    marginTop: 1,
+  },
   transactionID: {
     fontFamily: 'nexa',
     fontSize: 10,

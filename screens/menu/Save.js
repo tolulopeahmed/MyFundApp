@@ -12,7 +12,7 @@ import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData, updateAccountBalances, fetchAutoSaveSettings } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import moment from 'moment';
 import Success from '../components/Success';
@@ -361,7 +361,8 @@ console.log('accountBalances.investment:', accountBalances.investment)
           </View>
           <View style={styles.transactionAmountContainer}>
             <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
-              ₦{transaction.amount}
+            <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
+              </Text>
             </Text>
           </View>
         </View>

@@ -27,6 +27,7 @@ const Notifications = ({ navigation, firstName }) => {
     "Pending Referral Reward": "ellipsis-horizontal-circle-outline",
     "Referral Reward": "checkmark-circle",
     "Withdrawal from Investment": "arrow-down-outline",
+    "Withdrawal from Wallet": "arrow-down-outline",
     "Property": "home-outline",
   };
   
@@ -182,16 +183,11 @@ const formatTime = (timeString) => {
               </Text>
             </View>
             <View style={styles.transactionAmountContainer}>
-              <Text
-                style={
-                  transaction.transaction_type === "debit"
-                    ? styles.negativeAmount
-                    : styles.transactionAmount
-                }
-              >
-                ₦{transaction.amount}
+            <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
+            <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
               </Text>
-            </View>
+            </Text>
+          </View>
           </View>
 
   ))
@@ -391,7 +387,7 @@ const styles = StyleSheet.create({
     },
 
     negativeAmount: {
-      color: 'red',
+      color: 'brown',
       fontSize: 23,
       fontFamily: 'karla',
       letterSpacing: -1,

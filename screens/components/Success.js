@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Modal from 'react-native-modal'; // Import the Modal component
+import Modal from 'react-native-modal';
 
 const Success = ({ isVisible, onClose, navigation }) => {
   const [animation] = useState(new Animated.Value(0));
@@ -24,6 +24,9 @@ const Success = ({ isVisible, onClose, navigation }) => {
       backdropOpacity={0.6}
       style={styles.modal}
       onBackdropPress={onClose}
+      animationIn="slideInUp" // Slide in from bottom animation
+      animationOut="slideOutDown" // Slide out to bottom animation
+      useNativeDriver={true}
     >
       <View style={styles.modalContent}>
         <View style={styles.modalHeaderContainer}>
@@ -47,8 +50,10 @@ const Success = ({ isVisible, onClose, navigation }) => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.primaryButton}
-            onPress={() => navigation.navigate('Withdraw')}          
-            >
+            onPress={() => {
+              onClose(); // Close the modal
+            }}
+          >
             <Text style={styles.primaryButtonText}>OK</Text>
           </TouchableOpacity>
         </View>
@@ -91,7 +96,7 @@ const styles = {
   },
   checkmarkContainer: {
     marginBottom: 20,
-    alignItems: 'center', // Center the checkmark
+    alignItems: 'center',
   },
   buttonContainer: {
     marginTop: 10,

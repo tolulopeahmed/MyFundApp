@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserCards, updateAccountBalances, } from '../../ReduxActions'; // Import fetchUserCards
+import { fetchUserCards, updateAccountBalances, fetchAccountBalances, fetchUserTransactions } from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from './LoadingModal';
@@ -147,8 +147,10 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
         // QuickSave was successful, update account balances and transactions
         const responseData = response.data;
         dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
-        setIsSuccessVisible(true);
+        dispatch(fetchAccountBalances()); // Add this line   
+        dispatch(fetchUserTransactions()); // Add this line
 
+        setIsSuccessVisible(true);
         setQuickSaveModalVisible(false);
         setProcessing(false);
 

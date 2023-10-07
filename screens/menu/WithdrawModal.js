@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserBankAccounts, updateAccountBalances, } from '../../ReduxActions'; 
+import { fetchUserBankAccounts, updateAccountBalances, fetchUserTransactions, fetchAccountBalances} from '../../ReduxActions'; 
 import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
@@ -12,9 +12,8 @@ import { MaterialIcons } from '@expo/vector-icons'; // Add this import statement
 import bankOptions from '../components/BankOptions';
 
 
-
-const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisible }) => {
-  const [fromAccount, setFromAccount] = useState('Savings');
+const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisible, setIsSuccessVisible, defaultFromAccount }) => {
+  const [fromAccount, setFromAccount ] = useState(defaultFromAccount); // Set the default account from prop
   const [toAccount, setToAccount] = useState('Investment'); // You can set the default value to your preferred option
 
   const [amount, setAmount] = useState('');
@@ -22,11 +21,15 @@ const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisib
   const [processing, setProcessing] = useState(false);
   const bankAccounts = useSelector((state) => state.bank.bankAccounts);
   const [selectedBankAccount, setSelectedBankAccount] = useState('');
+  const accountBalances = useSelector((state) => state.bank.accountBalances);
+  const userTransactions = useSelector((state) => state.bank.userTransactions);
 
   const dispatch = useDispatch();
   const [toAccountOptions, setToAccountOptions] = useState(['Investment', 'Bank Account']);
-  
+  const [withdrawButtonDisabled, setWithdrawButtonDisabled] = useState(true); // State to control the button disabled state
 
+
+  
 // Inside your component function/componentDidMount
 useEffect(() => {
   dispatch(fetchUserBankAccounts());
@@ -52,6 +55,10 @@ console.log("Selected Bank Color:", selectedBankAccount); // A
   }
 
   
+  useEffect(() => {
+    console.log("From Account1...........:", fromAccount);
+    console.log("To Account2.............:", toAccount);
+  }, [fromAccount, toAccount]);
  
 
     const handleFromAccountChange = (value) => {
@@ -74,7 +81,23 @@ console.log("Selected Bank Color:", selectedBankAccount); // A
     
       // Update the toAccountOptions state
       setToAccountOptions(updatedToAccountOptions);
+
+      console.log("From Account...........:", fromAccount); // Add this line
+      console.log("To Account.............:", toAccount); // Add this line
+
     };
+
+
+    useEffect(() => {
+      // Check if the amount is empty, and update the button disabled state accordingly
+      if (amount === '') {
+        setWithdrawButtonDisabled(true);
+      } else {
+        setWithdrawButtonDisabled(false);
+      }
+    }, [amount]);
+
+
 
     const clearAmount = () => {
       setAmount('');
@@ -88,18 +111,23 @@ console.log("Selected Bank Color:", selectedBankAccount); // A
         <View style={styles.inputContainer2}>
           <Text style={styles.nairaSign}>₦</Text>
           <TextInput
-            style={styles.amountInput}
-            placeholder="Minimum amount is ₦100,000"
-            keyboardType="numeric"
-            onChangeText={(value) => handleAmountChange(value)}
-            value={amount}
-            placeholderTextColor="silver"
-            onBlur={() => {
-              if (parseInt(amount) < 1000000) {
-                Alert.alert('Invalid Amount', 'The minimum amount is ₦100,000. Please enter a valid amount.');
-              }
-            }}
-          />
+              style={styles.amountInput}
+              placeholder="Minimum amount is ₦100,000"
+              keyboardType="numeric"
+              onChangeText={(value) => handleAmountChange(value)}
+              value={amount} // Set the value to the state variable 'amount'
+              placeholderTextColor="silver"
+              onBlur={() => {
+                if (parseInt(amount.replace(/,/g, '')) < 100000) {
+                  Alert.alert(
+                    'Invalid Amount',
+                    'The minimum amount is ₦100,000. Please enter a valid amount.'
+                  );
+                }
+              }}
+            />
+
+
           {amount !== '' && (
             <TouchableOpacity onPress={clearAmount}>
               <Ionicons name="close-circle-outline" size={24} color="grey" marginRight={10} />
@@ -249,36 +277,64 @@ const bankAccountField = (
   };
 
 
-
-  
-
   const handleAmountChange = (value) => {
     const numericValue = parseFloat(value.replace(/,/g, ''));
-
-    if (!isNaN(numericValue) && numericValue > 0 && selectedCard !== '') {
+  
+    if (!isNaN(numericValue) && numericValue > 0) { // Check if it's a valid amount
       setAmount(numericValue.toLocaleString('en-US'));
     } else {
       setAmount('');
     }
   };
-
   
 
-  
 
+
+  
 
   const handleWithdraw = async () => {
     setProcessing(true);
-    try {
-      console.log('Selected card ID:', selectedCardId);
-      console.log('Amount Entered:', amount);
+    console.log("From Account (in handleWithdraw):", fromAccount); // Add this line
+    console.log("To Account (in handleWithdraw):", toAccount); // Add this line
+  
+    if (fromAccount === 'Savings' && toAccount === 'Investment') {
+      handleSavingsToInvestmentTransfer();
+    } else if (fromAccount === 'Investment' && toAccount === 'Savings') {
+      handleInvestmentToSavingsTransfer();    
+    } else if (fromAccount === 'Wallet' && toAccount === 'Savings') {
+      handleWalletToSavingsTransfer();    
+    } else if (fromAccount === 'Wallet' && toAccount === 'Investment') {
+      handleWalletToInvestmentTransfer();    
+    }
+  };
+  
 
-      // Send the QuickSave request to your API using axios
-      const response = await axios.post(`${ipAddress}/api/quickinvest/`, // Updated API endpoint
-        {
-          card_id: selectedCardId,
-          amount: parseFloat(amount.replace(/,/g, '')),
-        },
+
+
+
+  console.log('Amount Entered:', amount); // Log the requestData
+
+  const handleSavingsToInvestmentTransfer = async () => {
+    try {
+      const requestedAmount = parseFloat(amount.replace(/,/g, ''));
+      const savingsBalance = accountBalances.savings; // Replace with the actual balance value from your state
+  
+      if (requestedAmount > savingsBalance) {
+        // Display an alert for insufficient balance
+        Alert.alert('Insufficient Balance', 'You do not have enough balance in your SAVINGS account for this withdrawal.');
+        return;
+      }
+  
+      // Prepare the data to send to the backend API
+      const requestData = {
+        amount: requestedAmount,
+      };
+  
+      console.log('Request Data:', requestData); // Log the requestData
+  
+      const response = await axios.post(
+        `${ipAddress}/api/savings-to-investment/`,
+        requestData,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -287,46 +343,241 @@ const bankAccountField = (
         }
       );
   
+      console.log('API Response:', response); // Log the API response
+  
       if (response.status === 200) {
-       
-        dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
-        // QuickSave was successful, update account balances and transactions
-        const responseData = response.data;
-        setIsSuccessVisible(true);
-
-        setWithdrawModalVisible(false);
-          // Dispatch actions to update Redux store
-      
      
+        const responseData = response.data;
+        dispatch(updateAccountBalances(responseData.newAccountBalances));  
+        dispatch(fetchAccountBalances()); // Add this line   
+        dispatch(fetchUserTransactions()); // Add this line
+ 
+        setIsSuccessVisible(true);
+        setWithdrawModalVisible(false);
+        setProcessing(false);
+
       } else {
-        // Handle QuickInvest error here and show appropriate alerts
+        // Handle API errors here and show appropriate alerts
         if (response.status === 400) {
           setProcessing(false);
-          // Bad request, possibly due to invalid input
           Alert.alert('Error', 'Invalid input. Please check your data and try again.');
         } else if (response.status === 401) {
           setProcessing(false);
-          // Unauthorized, user not authenticated
           Alert.alert('Error', 'You are not authorized. Please login again.');
         } else {
-          // Other server errors
           setProcessing(false);
           Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
         }
       }
     } catch (error) {
-      console.error('QuickInvest Error:', error);
-      setProcessing(false);
+      console.error('Savings to Investment Transfer Error:', error);
       // Handle network or other errors here and show an appropriate alert
       Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+    } finally {
+      // Reset the processing state
+      setProcessing(false);
     }
   };
 
 
 
+  const handleInvestmentToSavingsTransfer = async () => {
+    try {
+      const requestedAmount = parseFloat(amount.replace(/,/g, ''));
+      const investmentBalance = accountBalances.investment; // Replace with the actual balance value from your state
+  
+      if (requestedAmount > investmentBalance) {
+        // Display an alert for insufficient balance
+        Alert.alert('Insufficient Balance', 'You do not have enough balance in your INVESTMENT account for this withdrawal.');
+        return;
+      }
+  
+      // Prepare the data to send to the backend API
+      const requestData = {
+        amount: requestedAmount,
+      };
+  
+      console.log('Request Data:', requestData); // Log the requestData
+  
+      const response = await axios.post(
+        `${ipAddress}/api/investment-to-savings/`,
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+  
+      console.log('API Response:', response); // Log the API response
+  
+      if (response.status === 200) {
+     
+        const responseData = response.data;
+        dispatch(updateAccountBalances(responseData.newAccountBalances));  
+        dispatch(fetchAccountBalances()); // Add this line 
+        dispatch(fetchUserTransactions()); // Add this line
+   
+        setIsSuccessVisible(true);
+        setWithdrawModalVisible(false);
+        setProcessing(false);
+
+      } else {
+        // Handle API errors here and show appropriate alerts
+        if (response.status === 400) {
+          setProcessing(false);
+          Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+        } else if (response.status === 401) {
+          setProcessing(false);
+          Alert.alert('Error', 'You are not authorized. Please login again.');
+        } else {
+          setProcessing(false);
+          Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+        }
+      }
+    } catch (error) {
+      console.error('Savings to Investment Transfer Error:', error);
+      // Handle network or other errors here and show an appropriate alert
+      Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+    } finally {
+      // Reset the processing state
+      setProcessing(false);
+    }
+  };
+  
+  
+  
+
+  const handleWalletToSavingsTransfer = async () => {
+    try {
+      const requestedAmount = parseFloat(amount.replace(/,/g, ''));
+      const walletBalance = accountBalances.wallet; // Replace with the actual balance value from your state
+  
+      if (requestedAmount > walletBalance) {
+        // Display an alert for insufficient balance
+        Alert.alert('Insufficient Balance', 'You do not have enough balance in your WALLET for this withdrawal.');
+        return;
+      }
+  
+      // Prepare the data to send to the backend API
+      const requestData = {
+        amount: requestedAmount,
+      };
+  
+      console.log('Request Data:', requestData); // Log the requestData
+  
+      const response = await axios.post(
+        `${ipAddress}/api/wallet-to-savings/`,
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+  
+      console.log('API Response:', response); // Log the API response
+  
+      if (response.status === 200) {
+     
+        const responseData = response.data;
+        dispatch(updateAccountBalances(responseData.newAccountBalances));  
+        dispatch(fetchAccountBalances()); // Add this line   
+        dispatch(fetchUserTransactions()); // Add this line
+        setIsSuccessVisible(true);
+        setWithdrawModalVisible(false);
+        setProcessing(false);
+
+      } else {
+        // Handle API errors here and show appropriate alerts
+        if (response.status === 400) {
+          setProcessing(false);
+          Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+        } else if (response.status === 401) {
+          setProcessing(false);
+          Alert.alert('Error', 'You are not authorized. Please login again.');
+        } else {
+          setProcessing(false);
+          Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+        }
+      }
+    } catch (error) {
+      console.error('Savings to Investment Transfer Error:', error);
+      // Handle network or other errors here and show an appropriate alert
+      Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+    } finally {
+      // Reset the processing state
+      setProcessing(false);
+    }
+  };
 
 
+  
+  const handleWalletToInvestmentTransfer = async () => {
+    try {
+      const requestedAmount = parseFloat(amount.replace(/,/g, ''));
+      const walletBalance = accountBalances.wallet; // Replace with the actual balance value from your state
+  
+      if (requestedAmount > walletBalance) {
+        // Display an alert for insufficient balance
+        Alert.alert('Insufficient Balance', 'You do not have enough balance in your WALLET for this withdrawal.');
+        return;
+      }
+  
+      // Prepare the data to send to the backend API
+      const requestData = {
+        amount: requestedAmount,
+      };
+  
+      console.log('Request Data:', requestData); // Log the requestData
+  
+      const response = await axios.post(
+        `${ipAddress}/api/wallet-to-savings/`,
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+  
+      console.log('API Response:', response); // Log the API response
+  
+      if (response.status === 200) {
+     
+        const responseData = response.data;
+        dispatch(updateAccountBalances(responseData.newAccountBalances));  
+        dispatch(fetchAccountBalances()); // Add this line   
+        dispatch(fetchUserTransactions()); // Add this line
+        setIsSuccessVisible(true);
+        setWithdrawModalVisible(false);
+        setProcessing(false);
 
+      } else {
+        // Handle API errors here and show appropriate alerts
+        if (response.status === 400) {
+          setProcessing(false);
+          Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+        } else if (response.status === 401) {
+          setProcessing(false);
+          Alert.alert('Error', 'You are not authorized. Please login again.');
+        } else {
+          setProcessing(false);
+          Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+        }
+      }
+    } catch (error) {
+      console.error('Savings to Investment Transfer Error:', error);
+      // Handle network or other errors here and show an appropriate alert
+      Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+    } finally {
+      // Reset the processing state
+      setProcessing(false);
+    }
+  };
 
 
   return (
@@ -375,30 +626,35 @@ const bankAccountField = (
           <Text style={styles.modalSubText2} alignSelf='flex-start' marginTop={20}>Withdraw from...</Text>
       <View style={styles.inputContainer}>
         <View style={styles.dropdown}>
-          <Picker
-            style={styles.labelItem}
-            selectedValue={fromAccount}
-            onValueChange={(value) => handleFromAccountChange(value)}
-          >
-            <Picker.Item label="Savings" value="Savings" />
-            <Picker.Item label="Investment" value="Investment" />
-            <Picker.Item label="Wallet" value="Wallet" />
-          </Picker>
+            <Picker
+              style={styles.labelItem}
+              selectedValue={fromAccount}
+              onValueChange={(value) => handleFromAccountChange(value)}
+            >
+              <Picker.Item label={`Savings (₦${Math.floor(accountBalances.savings).toLocaleString()})`} value="Savings" />
+              <Picker.Item label={`Investment (₦${Math.floor(accountBalances.investment).toLocaleString()})`} value="Investment" />
+              <Picker.Item label={`Wallet (₦${Math.floor(accountBalances.wallet).toLocaleString()})`} value="Wallet" />
+            </Picker>
+
         </View>
       </View>
 
       <Text style={styles.modalSubText2} alignSelf='flex-start' marginTop={20}>Withdraw to...</Text>
       <View style={styles.inputContainer}>
         <View style={styles.dropdown}>
-          <Picker
-            style={styles.labelItem}
-            selectedValue={toAccount}
-            onValueChange={(value) => setToAccount(value)}
-          >
-            {toAccountOptions.map((option) => (
-              <Picker.Item key={option} label={option} value={option} />
-            ))}
-          </Picker>
+            <Picker
+              style={styles.labelItem}
+              selectedValue={toAccount}
+              onValueChange={(value) => {
+                setToAccount(value);
+                console.log("Value of ToAccount field when changed:", value); // Moved outside the callback
+              }}
+            >
+              {toAccountOptions.map((option) => (
+                <Picker.Item key={option} label={option} value={option} />
+              ))}
+            </Picker>
+
         </View>
       </View>
 
@@ -415,13 +671,27 @@ const bankAccountField = (
 
 
            <View style={styles.buttonsContainer}>
-              <TouchableOpacity
-                    style={styles.primaryButton} // Use your existing primary button style
-                    onPress={handleWithdraw}
-                  >
-                    <Ionicons name="arrow-down" size={24} color="white" style={{ marginRight: 10 }} />
-                    <Text style={styles.primaryButtonText}>Withdraw</Text>
-                  </TouchableOpacity>
+                  <TouchableOpacity
+                      style={[
+                        styles.primaryButton,
+                        {
+                          backgroundColor: withdrawButtonDisabled
+                            ? 'grey'
+                            : '#4C28BC',
+                        },
+                      ]}
+                      onPress={handleWithdraw}
+                      disabled={withdrawButtonDisabled}
+                    >
+                      {processing ? (
+                      <ActivityIndicator color="white" style={styles.activityIndicator} />
+                      ) : (
+                        <>
+                        <Ionicons name="arrow-down" size={24} color="white" style={{ marginRight: 10 }} />
+                        <Text style={styles.primaryButtonText}>Withdraw</Text>
+                        </>
+                        )}
+                    </TouchableOpacity>
                   </View>
                   </View>
 
@@ -504,7 +774,7 @@ const styles = {
     marginTop: 5,
     width: '100%',
     alignItems: 'center',
-    
+
   },
 
   presetAmountsContainer: {
@@ -512,7 +782,6 @@ const styles = {
     justifyContent: 'space-between',
     marginHorizontal: 40,
     marginTop: 5,
-    marginBottom: 20,
 
   },
   presetAmountColumn: {
@@ -659,7 +928,7 @@ const styles = {
 
   buttonsContainer: {
     flexDirection: 'row',
-    marginTop: 15,
+    marginTop: 35,
     position: 'relative',
     marginBottom: 35,
     alignSelf: 'center'
