@@ -723,6 +723,7 @@ class CustomGraphQLView(GraphQLView):
 
 
 
+paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"  # Use your actual secret key
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -738,7 +739,6 @@ def quicksave(request):
         return Response({'error': 'Selected card not found'}, status=status.HTTP_404_NOT_FOUND)
 
     # Use the card details to initiate a payment with Paystack
-    paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"  # Use your actual secret key
     paystack_url = "https://api.paystack.co/charge"
 
     payload = {
@@ -843,7 +843,6 @@ def autosave(request):
             time.sleep(interval_seconds)
 
             # Perform the auto charge
-            paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"  # Use your actual secret key
             paystack_url = "https://api.paystack.co/charge"
 
             payload = {
@@ -981,7 +980,6 @@ def quickinvest(request):
         return Response({'error': 'Selected card not found'}, status=status.HTTP_404_NOT_FOUND)
 
     # Use the card details to initiate a payment with Paystack
-    paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"  # Use your actual secret key
     paystack_url = "https://api.paystack.co/charge"
 
     payload = {
@@ -1086,7 +1084,6 @@ def autoinvest(request):
             time.sleep(interval_seconds)
 
             # Perform the auto invest
-            paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"  # Use your actual secret key
             paystack_url = "https://api.paystack.co/charge"
 
             payload = {
@@ -1227,11 +1224,11 @@ def savings_to_investment(request):
         # Create a transaction record with the details
         transaction = Transaction(
             user=user,
-            transaction_type='debit',
+            transaction_type='credit',
             amount=amount,
             date=timezone.now().date(),
             time=timezone.now().time(),
-            description='Withdrawal from Savings',
+            description='From Savings to Investment',
             transaction_id=transaction_id
         )
         transaction.save()
@@ -1246,3 +1243,210 @@ def savings_to_investment(request):
     except IntegrityError:
         # Handle the case where a unique constraint (transaction_id) is violated
         return Response({'error': 'Transaction ID conflict. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def investment_to_savings(request):
+    user = request.user
+    amount = Decimal(request.data.get('amount', 0))
+
+    # Validate that the user has enough investment balance
+    if user.investment < amount:
+        return Response({'error': 'Insufficient investment balance.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Generate a unique transaction ID
+    transaction_id = str(uuid.uuid4())[:16]
+
+    try:
+        # Create a transaction record with the details
+        transaction = Transaction(
+            user=user,
+            transaction_type='credit',  # Change to 'credit' for funds going back to savings
+            amount=amount,
+            date=timezone.now().date(),
+            time=timezone.now().time(),
+            description='From Investment to Savings',  # Update description
+            transaction_id=transaction_id
+        )
+        transaction.save()
+
+        # Perform the investment to savings transfer
+        user.investment -= amount
+        user.savings += amount  # Adjust savings
+        user.save()
+
+        return Response({'message': 'Investment to savings transfer successful.', 'transaction_id': transaction_id}, status=status.HTTP_200_OK)
+
+    except IntegrityError:
+        # Handle the case where a unique constraint (transaction_id) is violated
+        return Response({'error': 'Transaction ID conflict. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def wallet_to_savings(request):
+    user = request.user
+    amount = Decimal(request.data.get('amount', 0))
+
+    # Validate that the user has enough wallet balance
+    if user.wallet < amount:
+        return Response({'error': 'Insufficient wallet balance.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Generate a unique transaction ID
+    transaction_id = str(uuid.uuid4())[:16]
+
+    try:
+        # Create a transaction record with the details
+        transaction = Transaction(
+            user=user,
+            transaction_type='credit',  # Debit for withdrawal
+            amount=amount,
+            date=timezone.now().date(),
+            time=timezone.now().time(),
+            description='From Wallet to Savings',
+            transaction_id=transaction_id
+        )
+        transaction.save()
+
+        # Perform the wallet to savings transfer
+        user.wallet -= amount
+        user.savings += amount
+        user.save()
+
+        return Response({'message': 'Wallet to savings transfer successful.', 'transaction_id': transaction_id}, status=status.HTTP_200_OK)
+
+    except IntegrityError:
+        # Handle the case where a unique constraint (transaction_id) is violated
+        return Response({'error': 'Transaction ID conflict. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def wallet_to_investment(request):
+    user = request.user
+    amount = Decimal(request.data.get('amount', 0))
+
+    # Validate that the user has enough wallet balance
+    if user.wallet < amount:
+        return Response({'error': 'Insufficient wallet balance.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Generate a unique transaction ID
+    transaction_id = str(uuid.uuid4())[:16]
+
+    try:
+        # Create a transaction record with the details
+        transaction = Transaction(
+            user=user,
+            transaction_type='credit',  # Debit for withdrawal
+            amount=amount,
+            date=timezone.now().date(),
+            time=timezone.now().time(),
+            description='From Wallet to Investment',
+            transaction_id=transaction_id
+        )
+        transaction.save()
+
+        # Perform the wallet to investment transfer
+        user.wallet -= amount
+        user.investment += amount
+        user.save()
+
+        return Response({'message': 'Wallet to investment transfer successful.', 'transaction_id': transaction_id}, status=status.HTTP_200_OK)
+
+    except IntegrityError:
+        # Handle the case where a unique constraint (transaction_id) is violated
+        return Response({'error': 'Transaction ID conflict. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def withdraw_to_local_bank(request):
+    user = request.user
+    source_account = request.data.get('source_account', '')  # 'savings', 'investment', 'wallet'
+    target_bank_account_id = request.data.get('target_bank_account_id', '')
+    amount = Decimal(request.data.get('amount', 0))
+
+    # Validate that the user has enough balance in the source account
+    if source_account == 'savings' and user.savings < amount:
+        return Response({'error': 'Insufficient savings balance.'}, status=status.HTTP_400_BAD_REQUEST)
+    elif source_account == 'investment' and user.investment < amount:
+        return Response({'error': 'Insufficient investment balance.'}, status=status.HTTP_400_BAD_REQUEST)
+    elif source_account == 'wallet' and user.wallet < amount:
+        return Response({'error': 'Insufficient wallet balance.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Validate that the target_bank_account_id belongs to the user
+    try:
+        target_bank_account = BankAccount.objects.get(id=target_bank_account_id, user=user)
+    except BankAccount.DoesNotExist:
+        return Response({'error': 'Target bank account not found.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Calculate the service charge based on the source account
+    service_charge_percentage = 0.0
+    if source_account == 'savings':
+        service_charge_percentage = 2.5
+    elif source_account == 'investment':
+        service_charge_percentage = 5.0
+
+    # Calculate the service charge and total withdrawal amount
+    service_charge = (service_charge_percentage / 100) * amount
+    total_amount = amount + service_charge
+
+    # Generate a unique transaction ID
+    transaction_id = str(uuid.uuid4())[:16]
+
+    try:
+        # Create a transaction record with the details
+        transaction = Transaction(
+            user=user,
+            transaction_type='withdrawal',
+            amount=amount,
+            service_charge=service_charge,
+            total_amount=total_amount,
+            date=timezone.now().date(),
+            time=timezone.now().time(),
+            description=f'Withdrawal to Local Bank from {source_account.capitalize()}',
+            transaction_id=transaction_id
+        )
+        transaction.save()
+
+        # Perform the withdrawal to the local bank using Paystack API
+        paystack_response = make_withdrawal_to_local_bank(user, target_bank_account, total_amount)
+
+        if paystack_response.get('status') == 'success':
+            # Deduct the total amount (including service charge) from the source account
+            if source_account == 'savings':
+                user.savings -= total_amount
+            elif source_account == 'investment':
+                user.investment -= total_amount
+            elif source_account == 'wallet':
+                user.wallet -= total_amount
+
+            user.save()
+
+            return Response({'message': 'Withdrawal to local bank successful.', 'transaction_id': transaction_id}, status=status.HTTP_200_OK)
+        else:
+            # Handle Paystack withdrawal failure
+            return Response({'error': 'Withdrawal to local bank failed. Please try again later.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    except IntegrityError:
+        # Handle the case where a unique constraint (transaction_id) is violated
+        return Response({'error': 'Transaction ID conflict. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
+
+def make_withdrawal_to_local_bank(user, target_bank_account, amount):
+    # Make a withdrawal request to Paystack API
+    url = 'https://api.paystack.co/transfer'
+    headers = {
+        'Authorization': f'Bearer {paystack_secret_key}',
+        'Content-Type': 'application/json',
+    }
+    data = {
+        'source': 'balance',
+        'amount': int(amount * 100),  # Amount in kobo (100 kobo = 1 Naira)
+        'recipient': target_bank_account.paystack_recipient_code,  # Paystack recipient code of the target bank account
+    }
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()

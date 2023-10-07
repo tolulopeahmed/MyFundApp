@@ -72,6 +72,9 @@ urlpatterns = [
 
     # Withdrawals-related APIs
     path('savings-to-investment/', views.savings_to_investment, name='savings-to-investment'),
+    path('investment-to-savings/', views.investment_to_savings, name='investment_to_savings'),
+    path('wallet-to-savings/', views.wallet_to_savings, name='wallet_to_savings'),
+    path('wallet-to-investment/', views.wallet_to_investment, name='wallet_to_investment'),
 
     ]
 
