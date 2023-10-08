@@ -75,6 +75,7 @@ urlpatterns = [
     path('investment-to-savings/', views.investment_to_savings, name='investment_to_savings'),
     path('wallet-to-savings/', views.wallet_to_savings, name='wallet_to_savings'),
     path('wallet-to-investment/', views.wallet_to_investment, name='wallet_to_investment'),
+    path('withdraw-to-bank/', views.withdraw_to_local_bank, name='withdraw_to_local_bank'),
 
     ]
 

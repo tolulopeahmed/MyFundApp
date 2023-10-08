@@ -141,6 +141,9 @@ class BankAccount(models.Model):
     account_name = models.CharField(max_length=100, default="Default Account Name")
     is_default = models.BooleanField(default=False)
 
+    bank_code = models.CharField(max_length=10, default='')  # Add a default value
+    paystack_recipient_code = models.CharField(max_length=255, blank=True, null=True)
+
     def __str__(self):
         return f"{self.user.email} - {self.bank_name} ({self.account_number})"
 
@@ -181,6 +184,8 @@ class Transaction(models.Model):
     time = models.TimeField()
     description = models.CharField(max_length=255, default="No description available")
     transaction_id = models.CharField(max_length=255, default='', unique=True)
+    service_charge = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Define a default value
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0) 
 
     def __str__(self):
         return f'{self.transaction_type} - {self.amount} - {self.date}'

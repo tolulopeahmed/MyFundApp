@@ -54,28 +54,28 @@ def signup(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# @api_view(['POST'])
-# @permission_classes([AllowAny])
-# @csrf_exempt
-# def confirm_otp(request):
-#     serializer = ConfirmOTPSerializer(data=request.data)
-#     if serializer.is_valid():
-#         otp = serializer.validated_data['otp']
+@api_view(['POST'])
+@permission_classes([AllowAny])
+@csrf_exempt
+def confirm_otp(request):
+    serializer = ConfirmOTPSerializer(data=request.data)
+    if serializer.is_valid():
+        otp = serializer.validated_data['otp']
 
-#         try:
-#             user = CustomUser.objects.get(otp=otp)
-#             if user.is_active:
-#                 return Response({'message': 'Account already confirmed.'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = CustomUser.objects.get(otp=otp)
+            if user.is_active:
+                return Response({'message': 'Account already confirmed.'}, status=status.HTTP_400_BAD_REQUEST)
             
-#             user.is_active = True
-#             user.save()
-#             print("Account confirmed successfully.")
-#             return Response({'message': 'Account confirmed successfully.'}, status=status.HTTP_200_OK)
-#         except CustomUser.DoesNotExist:
-#             print("Invalid OTP.")
-#             return Response({'message': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+            user.is_active = True
+            user.save()
+            print("Account confirmed successfully.")
+            return Response({'message': 'Account confirmed successfully.'}, status=status.HTTP_200_OK)
+        except CustomUser.DoesNotExist:
+            print("Invalid OTP.")
+            return Response({'message': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
 
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -509,58 +509,105 @@ class BankAccountViewSet(viewsets.ModelViewSet):
         else:
             return None
 
-    def perform_create(self, serializer):
-        account_number = self.request.data.get("account_number")
-        bank_code = self.request.data.get("bank_code")
+def perform_create(self, serializer):
+    account_number = self.request.data.get("accountNumber")
+    bank_code = self.request.data.get("bankCode")
 
-        if account_number and bank_code:
-            account_name = self.resolve_account(account_number, bank_code)
+    if account_number and bank_code:
+        account_name = self.resolve_account(account_number, bank_code)
 
-            if account_name is not None:
-                serializer.save(user=self.request.user, bank_name=account_name, account_number=account_number)
+        if account_name is not None:
+            # Create a dictionary with all the data to save
+            data_to_save = {
+                "user": self.request.user,
+                "bank_name": serializer.validated_data.get("bank_name", ""),
+                "account_number": account_number,
+                "bank_code": bank_code,
+                "account_name": account_name,
+            }
+
+            paystack_recipient_code = create_paystack_recipient(account_name, account_number, bank_code)
+            data_to_save["paystack_recipient_code"] = paystack_recipient_code
+
+            serializer = BankAccountSerializer(data=data_to_save)
+
+            if serializer.is_valid():
+                serializer.save()
                 return Response({"message": "Bank account added successfully."}, status=status.HTTP_201_CREATED)
             else:
-                return Response({"message": "Failed to resolve account details."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            serializer.save(user=self.request.user)
-            return Response({"message": "Bank account added without account details resolution."}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Failed to resolve account details."}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        data_to_save = {
+            "user": self.request.user,
+            "bank_name": "",
+            "account_number": "",
+            "bank_code": "",
+            "account_name": "",
+        }
 
+        serializer = BankAccountSerializer(data=data_to_save)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Bank account added without account details resolution."}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 from django.db import IntegrityError
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_bank_account(request):
-    account_number = request.data.get("accountNumber")
     bank_name = request.data.get("bankName")
+    account_number = request.data.get("accountNumber")
     account_name = request.data.get("accountName")
+    bank_code = request.data.get("bankCode")  # Add this line to get the bank_code
 
-    if account_number and bank_name and account_name:
+    if bank_name and account_number and account_name and bank_code:
         try:
-            bank_account = BankAccount(
-                user=request.user,
-                bank_name=bank_name,
-                account_number=account_number,
-                account_name=account_name,
-                is_default=False
-            )
-            bank_account.save()
+            paystack_recipient_code = create_paystack_recipient(bank_name, account_number, bank_code)  # Pass bank_code
 
-            serializer = BankAccountSerializer(bank_account)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            if paystack_recipient_code:
+                bank_account = BankAccount(
+                    user=request.user,
+                    bank_name=bank_name,
+                    account_number=account_number,
+                    account_name=account_name,
+                    bank_code=bank_code,  # Include bank_code here
+                    is_default=False,
+                    paystack_recipient_code=paystack_recipient_code  # Store the recipient code
+                )
+                bank_account.save()
+
+                serializer = BankAccountSerializer(bank_account)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                error_message = "Failed to create Paystack recipient."
+                logger.error(error_message)
+                return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
 
         except IntegrityError:
-            return Response(
-                {"error": "This bank account is already associated with another user."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            error_message = "This bank account is already associated with another user."
+            logger.error(error_message)
+            return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            error_message = f"An error occurred: {str(e)}"
+            logger.error(error_message)
+            return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
 
     else:
-        return Response(
-            {"error": "Account number, bank name, and account name are required."},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        error_message = "accountNumber, bankName, bankCode, and accountName are required."
+        logger.error(error_message)
+        return Response({"error": error_message}, status=status.HTTP_400_BAD_REQUEST)
+
     
     
 from django.db.models import Count
@@ -1228,7 +1275,7 @@ def savings_to_investment(request):
             amount=amount,
             date=timezone.now().date(),
             time=timezone.now().time(),
-            description='From Savings to Investment',
+            description='Withdrawal (Savings > Investment)',
             transaction_id=transaction_id
         )
         transaction.save()
@@ -1267,7 +1314,7 @@ def investment_to_savings(request):
             amount=amount,
             date=timezone.now().date(),
             time=timezone.now().time(),
-            description='From Investment to Savings',  # Update description
+            description='Withdrawal (Investment > Savings)',  # Update description
             transaction_id=transaction_id
         )
         transaction.save()
@@ -1305,7 +1352,7 @@ def wallet_to_savings(request):
             amount=amount,
             date=timezone.now().date(),
             time=timezone.now().time(),
-            description='From Wallet to Savings',
+            description='Withdrawal (Wallet > Savings)',
             transaction_id=transaction_id
         )
         transaction.save()
@@ -1343,7 +1390,7 @@ def wallet_to_investment(request):
             amount=amount,
             date=timezone.now().date(),
             time=timezone.now().time(),
-            description='From Wallet to Investment',
+            description='Withdrawal (Wallet > Investment)',
             transaction_id=transaction_id
         )
         transaction.save()
@@ -1358,6 +1405,7 @@ def wallet_to_investment(request):
     except IntegrityError:
         # Handle the case where a unique constraint (transaction_id) is violated
         return Response({'error': 'Transaction ID conflict. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
@@ -1392,8 +1440,8 @@ def withdraw_to_local_bank(request):
         service_charge_percentage = 5.0
 
     # Calculate the service charge and total withdrawal amount
-    service_charge = (service_charge_percentage / 100) * amount
-    total_amount = amount + service_charge
+    service_charge = (service_charge_percentage / 100) * float(amount)
+    total_amount = float(amount) + service_charge
 
     # Generate a unique transaction ID
     transaction_id = str(uuid.uuid4())[:16]
@@ -1402,32 +1450,59 @@ def withdraw_to_local_bank(request):
         # Create a transaction record with the details
         transaction = Transaction(
             user=user,
-            transaction_type='withdrawal',
-            amount=amount,
+            transaction_type='debit',
+            amount=total_amount,
             service_charge=service_charge,
             total_amount=total_amount,
             date=timezone.now().date(),
             time=timezone.now().time(),
-            description=f'Withdrawal to Local Bank from {source_account.capitalize()}',
+            description=f'Withdrawal ({source_account.capitalize()} > Bank)',
             transaction_id=transaction_id
         )
         transaction.save()
 
         # Perform the withdrawal to the local bank using Paystack API
         paystack_response = make_withdrawal_to_local_bank(user, target_bank_account, total_amount)
+        print(paystack_response)  # Log the Paystack API response
 
-        if paystack_response.get('status') == 'success':
+        if paystack_response.get('data', {}).get('status') == 'success':
             # Deduct the total amount (including service charge) from the source account
+            # Convert total_amount to Decimal
+            total_amount_decimal = Decimal(str(total_amount))
+            print(f"Total amount to deduct ({source_account}): {total_amount_decimal}")
+
+            # Deduct the total_amount (including service charge) from the source account
             if source_account == 'savings':
-                user.savings -= total_amount
+                user.savings -= total_amount_decimal
             elif source_account == 'investment':
-                user.investment -= total_amount
+                user.investment -= total_amount_decimal
             elif source_account == 'wallet':
-                user.wallet -= total_amount
+                user.wallet -= total_amount_decimal
 
             user.save()
+            print(f"After deduction - {source_account.capitalize()} balance: {user.savings if source_account == 'savings' else user.investment if source_account == 'investment' else user.wallet}")
 
-            return Response({'message': 'Withdrawal to local bank successful.', 'transaction_id': transaction_id}, status=status.HTTP_200_OK)
+            updated_balance = {
+                'savings': user.savings,
+                'investment': user.investment,
+                'wallet': user.wallet,
+            }
+
+            bank_name = target_bank_account.bank_name
+            # Send a confirmation email to the user
+            subject = f"Withdrawal from {source_account.capitalize()} Successful!"
+            message = f"Hi {user.first_name},\n\nYour withdrawal of ₦{amount} from your {source_account.capitalize()} account has been sent to your {bank_name} account successfully.\n\nThank you for using MyFund.\n\nKeep growing your funds.🥂\n\n\nMyFund \nSave, Buy Properties, Earn Rent \nwww.myfundmobile.com \n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+            from_email = "MyFund <info@myfundmobile.com>"
+            recipient_list = [user.email]
+
+
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+            return Response({
+                'message': 'Withdrawal to local bank successful.',
+                'transaction_id': transaction_id,
+                'updated_balance': updated_balance,  # Include the updated balance here
+            }, status=status.HTTP_200_OK)        
         else:
             # Handle Paystack withdrawal failure
             return Response({'error': 'Withdrawal to local bank failed. Please try again later.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -1435,6 +1510,44 @@ def withdraw_to_local_bank(request):
     except IntegrityError:
         # Handle the case where a unique constraint (transaction_id) is violated
         return Response({'error': 'Transaction ID conflict. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+def create_paystack_recipient(bank_name, account_number, bank_code):
+    try:
+        # Make a request to the Paystack API to create a recipient
+        url = 'https://api.paystack.co/transferrecipient'
+        headers = {
+            'Authorization': f'Bearer {paystack_secret_key}',
+            'Content-Type': 'application/json',
+        }
+        data = {
+            'type': 'nuban',
+            'name': bank_name,
+            'account_number': account_number,
+            'bank_code': bank_code,  # Use the actual bank code
+            'currency': 'NGN',
+        }
+        
+        response = requests.post(url, headers=headers, json=data)
+        
+        if response.status_code == status.HTTP_201_CREATED:
+            recipient_data = response.json().get('data', {})
+            return recipient_data.get('recipient_code')
+        else:
+            error_message = f"Failed to create Paystack recipient. Paystack API Response: {response.status_code}, {response.text}"
+            logger.error(error_message)
+            return None
+    except Exception as e:
+        error_message = f"An error occurred while creating Paystack recipient: {str(e)}"
+        logger.error(error_message)
+        return None
+
+
+
 
 def make_withdrawal_to_local_bank(user, target_bank_account, amount):
     # Make a withdrawal request to Paystack API
@@ -1448,5 +1561,18 @@ def make_withdrawal_to_local_bank(user, target_bank_account, amount):
         'amount': int(amount * 100),  # Amount in kobo (100 kobo = 1 Naira)
         'recipient': target_bank_account.paystack_recipient_code,  # Paystack recipient code of the target bank account
     }
+
+    # Log the Paystack API request
+    print("Paystack API Request:")
+    print("URL:", url)
+    print("Headers:", headers)
+    print("Data:", data)
+    
     response = requests.post(url, headers=headers, json=data)
+    
+    # Log the Paystack API response for debugging
+    print("Paystack API Response Status Code:", response.status_code)
+    print("Paystack API Response Text:", response.text)  # This will print the response body
+
     return response.json()
+

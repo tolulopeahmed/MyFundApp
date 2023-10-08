@@ -123,7 +123,7 @@ from rest_framework.permissions import IsAuthenticated
 class BankAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = BankAccount
-        fields = '__all__'
+        fields = '__all__'  # Or list the specific fields you want to include
 
 
 class CardSerializer(serializers.ModelSerializer):
