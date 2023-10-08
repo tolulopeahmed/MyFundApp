@@ -1451,7 +1451,7 @@ def withdraw_to_local_bank(request):
         transaction = Transaction(
             user=user,
             transaction_type='debit',
-            amount=total_amount,
+            amount=amount,
             service_charge=service_charge,
             total_amount=total_amount,
             date=timezone.now().date(),
@@ -1463,23 +1463,38 @@ def withdraw_to_local_bank(request):
 
         # Perform the withdrawal to the local bank using Paystack API
         paystack_response = make_withdrawal_to_local_bank(user, target_bank_account, total_amount)
-        print(paystack_response)  # Log the Paystack API response
+        print("Paystack API Response:", paystack_response)
 
         if paystack_response.get('data', {}).get('status') == 'success':
             # Deduct the total amount (including service charge) from the source account
             # Convert total_amount to Decimal
-            total_amount_decimal = Decimal(str(total_amount))
-            print(f"Total amount to deduct ({source_account}): {total_amount_decimal}")
+            total_amount_decimal = Decimal(total_amount)
+            print(f"Before deduction - {source_account.capitalize()} balance: {user.savings if source_account == 'savings' else user.investment if source_account == 'investment' else user.wallet}")
 
-            # Deduct the total_amount (including service charge) from the source account
+            # Deduct the total amount (including service charge) from the source account
+            # Convert total_amount to Decimal
+            total_amount_decimal = Decimal(total_amount)
+            print(f"Before deduction - {source_account.capitalize()} balance: {user.savings if source_account == 'savings' else user.investment if source_account == 'investment' else user.wallet}")
+
             if source_account == 'savings':
-                user.savings -= total_amount_decimal
+                if user.savings >= total_amount_decimal:
+                    user.savings -= total_amount_decimal
+                    user.save()
+                else:
+                    return Response({'error': 'Insufficient savings balance.'}, status=status.HTTP_400_BAD_REQUEST)
             elif source_account == 'investment':
-                user.investment -= total_amount_decimal
+                if user.investment >= total_amount_decimal:
+                    user.investment -= total_amount_decimal
+                    user.save()
+                else:
+                    return Response({'error': 'Insufficient investment balance.'}, status=status.HTTP_400_BAD_REQUEST)
             elif source_account == 'wallet':
-                user.wallet -= total_amount_decimal
+                if user.wallet >= total_amount_decimal:
+                    user.wallet -= total_amount_decimal
+                    user.save()
+                else:
+                    return Response({'error': 'Insufficient wallet balance.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            user.save()
             print(f"After deduction - {source_account.capitalize()} balance: {user.savings if source_account == 'savings' else user.investment if source_account == 'investment' else user.wallet}")
 
             updated_balance = {
@@ -1487,6 +1502,9 @@ def withdraw_to_local_bank(request):
                 'investment': user.investment,
                 'wallet': user.wallet,
             }
+
+            user.save()
+
 
             bank_name = target_bank_account.bank_name
             # Send a confirmation email to the user
