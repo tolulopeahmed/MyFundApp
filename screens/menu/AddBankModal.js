@@ -7,7 +7,7 @@ import axios from 'axios'; // Import axios for making API requests
 import { ipAddress } from '../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { addBankAccount } from '../../ReduxActions';
-
+import LoadingModal from '../components/LoadingModal';
 
 const bankOptions = [
     { id: 1, name: 'Access Bank', code: '044' },
@@ -148,6 +148,8 @@ const bankOptions = [
 
 
     const handleProceed = async () => {
+      setIsLoading(true);
+
       if (!userInfo || !selectedBank) {
         console.error('User info or selected bank is undefined');
         return;
@@ -167,7 +169,7 @@ const bankOptions = [
       }
     
       try {
-        // Make the API request to add the bank account
+        setIsLoading(true);
         const response = await axios.post(
           `${ipAddress}/api/add-bank-account/`,
           {
@@ -184,13 +186,15 @@ const bankOptions = [
         );
     
         if (response.status === 201) {
-          // If the addition was successful on the backend, update the Redux store
+          setIsLoading(false);
           setAddBankModalVisible(false);
           const newBankRecord = {
             bank_name: selectedBank.name,
             account_number: accountNumber.trim(),
             account_name: resolvedAccountName.trim(),
+            bank_code: selectedBank.code,  // Include bank_code in the newBankRecord object
           };
+          
     
           // Dispatch the action to add the bank account to Redux
           dispatch(addBankAccount(newBankRecord));
@@ -199,10 +203,12 @@ const bankOptions = [
             { text: 'OK' },
           ]);
         } else {
+          setIsLoading(false);
           console.error('Failed to add bank account:', response.data);
           Alert.alert('Error', 'Failed to add bank account. Please try again later.');
         }
       } catch (error) {
+        setIsLoading(false);
         console.error('An error occurred while adding bank account:', error);
     
         if (
@@ -216,6 +222,7 @@ const bankOptions = [
             'This bank account is already added by another MyFund user.'
           );
         } else {
+          setIsLoading(false);
           Alert.alert(
             'Error',
             'An error occurred while adding bank account. Please try again later.'
@@ -381,13 +388,11 @@ const bankOptions = [
   </TouchableOpacity>
 </View>
 
-
-
-
-
         </View>
         </TouchableOpacity>
         </TouchableOpacity>
+        
+        <LoadingModal visible={isLoading} />
 
     </Modal>
 

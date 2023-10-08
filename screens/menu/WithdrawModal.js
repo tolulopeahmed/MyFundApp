@@ -27,8 +27,13 @@ const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisib
   const dispatch = useDispatch();
   const [toAccountOptions, setToAccountOptions] = useState(['Investment', 'Bank Account']);
   const [withdrawButtonDisabled, setWithdrawButtonDisabled] = useState(true); // State to control the button disabled state
+  const [selectedBankAccountId, setSelectedBankAccountId] = useState('');
 
-
+  useEffect(() => {
+    if (bankAccounts && bankAccounts.length > 0) { // Check if bankAccounts is defined and not empty
+      setSelectedBankAccountId(bankAccounts[0].id);
+    }
+  }, [bankAccounts]);
   
 // Inside your component function/componentDidMount
 useEffect(() => {
@@ -173,7 +178,7 @@ console.log("Selected Bank Color:", selectedBankAccount); // A
           <TextInput
             style={styles.amountInput}
             placeholder="e.g. ₦20,000"
-            keyboardType="numeric"
+            keyboardType="decimal-pad" // Change this line
             onChangeText={(value) => handleAmountChange(value)}
             value={amount}
             placeholderTextColor="silver"
@@ -238,15 +243,15 @@ const bankAccountField = (
         <View style={styles.dropdown}>
           <Picker
             style={styles.labelItem}
-            selectedValue={selectedBankAccount} // Use a selected value for banks
+            selectedValue={selectedBankAccountId} // Use the state variable here
             onValueChange={(value) => {
-              setSelectedBankAccount(value);
+              setSelectedBankAccountId(value); // Update the selected bank account ID
             }}
           >
             {bankAccounts.map((bankAccount, index) => (
               <Picker.Item
                 label={`         ${bankAccount.bank_name} - ${bankAccount.account_name}`}
-                value={bankAccount.account_number} // Set the value to the account number
+                value={bankAccount.id} // Convert ID to a string
                 key={`${bankAccount.account_number}-${index}`}
               />
             ))}
@@ -260,6 +265,52 @@ const bankAccountField = (
         </Text>
       </TouchableOpacity>
     )}
+
+
+<Text style={styles.modalSubText2} alignSelf='flex-start' marginTop={20}>Amount</Text>
+        <View style={styles.inputContainer2}>
+          <Text style={styles.nairaSign}>₦</Text>
+          <TextInput
+            style={styles.amountInput}
+            placeholder="e.g. ₦20,000"
+            keyboardType="numeric"
+            onChangeText={(value) => handleAmountChange(value)}
+            value={amount}
+            placeholderTextColor="silver"
+          />
+          {amount !== '' && (
+            <TouchableOpacity onPress={clearAmount}>
+              <Ionicons name="close-circle-outline" size={24} color="grey" marginRight={10} />
+            </TouchableOpacity>
+          )}
+        </View>
+       
+        <View style={styles.presetAmountsContainer}>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(5000)}>
+                    <Text style={styles.presetAmountText}>5,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(20000)}>
+                    <Text style={styles.presetAmountText}>20,000</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(10000)}>
+                    <Text style={styles.presetAmountText}>10,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(40000)}>
+                    <Text style={styles.presetAmountText}>40,000</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.presetAmountColumn}>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(15000)}>
+                    <Text style={styles.presetAmountText}>15,000</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(100000)}>
+                    <Text style={styles.presetAmountText}>100,000</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
   </>
 );
 
@@ -278,14 +329,39 @@ const bankAccountField = (
 
 
   const handleAmountChange = (value) => {
-    const numericValue = parseFloat(value.replace(/,/g, ''));
+    // Remove any non-numeric characters except for the decimal point
+    const numericValue = value.replace(/[^0-9.]/g, '');
   
-    if (!isNaN(numericValue) && numericValue > 0) { // Check if it's a valid amount
-      setAmount(numericValue.toLocaleString('en-US'));
-    } else {
+    // Check if the numericValue is empty or NaN
+    if (numericValue === '' || isNaN(parseFloat(numericValue))) {
+      // If empty or NaN, set the amount to an empty string
       setAmount('');
+    } else {
+      // Ensure there is only one decimal point in the value
+      const parts = numericValue.split('.');
+      
+      if (parts.length === 1) {
+        // No decimal point, format as integer
+        setAmount(parseFloat(parts[0]).toLocaleString('en-US'));
+      } else if (parts.length === 2) {
+        // One decimal point, format with 2 decimal places
+        const integerPart = parseFloat(parts[0]).toLocaleString('en-US');
+        const decimalPart = parts[1].substring(0, 2); // Maximum 2 decimal places
+        setAmount(`${integerPart}.${decimalPart}`);
+      }
     }
   };
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
 
 
@@ -294,19 +370,22 @@ const bankAccountField = (
 
   const handleWithdraw = async () => {
     setProcessing(true);
-    console.log("From Account (in handleWithdraw):", fromAccount); // Add this line
-    console.log("To Account (in handleWithdraw):", toAccount); // Add this line
+    console.log("From Account (in handleWithdraw):", fromAccount);
+    console.log("To Account (in handleWithdraw):", toAccount);
   
     if (fromAccount === 'Savings' && toAccount === 'Investment') {
       handleSavingsToInvestmentTransfer();
     } else if (fromAccount === 'Investment' && toAccount === 'Savings') {
-      handleInvestmentToSavingsTransfer();    
+      handleInvestmentToSavingsTransfer();
     } else if (fromAccount === 'Wallet' && toAccount === 'Savings') {
-      handleWalletToSavingsTransfer();    
+      handleWalletToSavingsTransfer();
     } else if (fromAccount === 'Wallet' && toAccount === 'Investment') {
-      handleWalletToInvestmentTransfer();    
+      handleWalletToInvestmentTransfer();
+    } else {
+      handleTransferToBankAccount();
     }
   };
+  
   
 
 
@@ -580,6 +659,69 @@ const bankAccountField = (
   };
 
 
+    const handleTransferToBankAccount = async () => {
+      setProcessing(true);
+    
+      try {
+        // Prepare the request data based on user selections
+        const requestData = {
+          source_account: fromAccount,
+          target_bank_account_id: selectedBankAccountId, // Use the selected bank account ID
+          amount: parseFloat(amount.replace(/,/g, '')), // Convert amount to a float
+        };
+    
+        const response = await axios.post(
+          `${ipAddress}/api/withdraw-to-bank/`,
+          requestData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${userInfo.token}`,
+            },
+          }
+        );
+    
+        // Handle the API response
+        if (response.status === 200) {
+          const responseData = response.data;
+          dispatch(updateAccountBalances(responseData.newAccountBalances));
+          dispatch(fetchAccountBalances());
+          dispatch(fetchUserTransactions());
+          setIsSuccessVisible(true);
+          setWithdrawModalVisible(false);
+          setProcessing(false);
+          // Show a success message to the user
+          Alert.alert('Success', 'Withdrawal to local bank successful.');
+        } else {
+          // Handle API errors and show appropriate error messages
+          if (response.status === 400) {
+            setProcessing(false);
+            Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+          } else if (response.status === 401) {
+            setProcessing(false);
+            Alert.alert('Error', 'You are not authorized. Please login again.');
+          } else if (response.status === 402) {
+            setProcessing(false);
+            Alert.alert('Error', 'Insufficient balance. You do not have enough funds for this withdrawal.');
+          } else {
+            setProcessing(false);
+            Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+          }
+        }
+      } catch (error) {
+        // Handle network or other errors and show an appropriate error message
+        setProcessing(false);
+        Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+      }
+    };
+    
+    console.log('selected Bank::'); // Log the API response
+
+    console.log('Bank account array::', bankAccounts); // Log the API response
+    console.log('target_bank_account_id::', selectedBankAccountId); // Log the API response
+    console.log('source_account::', fromAccount); // Log the API response
+
+
   return (
 <>
       <Modal
@@ -662,7 +804,7 @@ const bankAccountField = (
 
           {toAccount === 'Investment' && investmentAmountField}
                 {toAccount === 'Savings' && savingsAmountField}
-                {toAccount === 'Bank Account' && bankAccountField}
+                {toAccount === 'Bank Account' && bankAccountField }
 
             
 
@@ -723,8 +865,9 @@ const styles = {
   },
   modalContent: {
     backgroundColor: '#F6F3FF',
-    width: '100%',
+    width: '105%',
     alignItems: 'center',
+    alignSelf: 'center',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     borderBottomLeftRadius: 0,
@@ -841,7 +984,6 @@ const styles = {
     marginLeft: -16,
     marginBottom: 30,
     fontFamily: 'karla',
-    //backgroundColor: '#fff',
     borderRadius: 10,
   },
 

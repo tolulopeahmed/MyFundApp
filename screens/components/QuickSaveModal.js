@@ -92,12 +92,26 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
 
 
   const handleAmountChange = (value) => {
-    const numericValue = parseFloat(value.replace(/,/g, ''));
-
-    if (!isNaN(numericValue) && numericValue > 0 && selectedCard !== '') {
-      setAmount(numericValue.toLocaleString('en-US'));
-    } else {
+    // Remove any non-numeric characters except for the decimal point
+    const numericValue = value.replace(/[^0-9.]/g, '');
+  
+    // Check if the numericValue is empty or NaN
+    if (numericValue === '' || isNaN(parseFloat(numericValue))) {
+      // If empty or NaN, set the amount to an empty string
       setAmount('');
+    } else {
+      // Ensure there is only one decimal point in the value
+      const parts = numericValue.split('.');
+      
+      if (parts.length === 1) {
+        // No decimal point, format as integer
+        setAmount(parseFloat(parts[0]).toLocaleString('en-US'));
+      } else if (parts.length === 2) {
+        // One decimal point, format with 2 decimal places
+        const integerPart = parseFloat(parts[0]).toLocaleString('en-US');
+        const decimalPart = parts[1].substring(0, 2); // Maximum 2 decimal places
+        setAmount(`${integerPart}.${decimalPart}`);
+      }
     }
   };
 
@@ -603,7 +617,6 @@ const styles = {
     borderWidth: 0.5,
     borderColor: 'silver',
   },
-
 
 
   image: {

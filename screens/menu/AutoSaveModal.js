@@ -134,34 +134,51 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
 
   useEffect(() => {
     // Check if both amount and selectedCard are not empty and selectedCard is not 'null'
-    if (amount !== '' && selectedCard !== null && userCards.length > 0) {
+    if (amount !== '' && selectedCardId !== null) {
       setIsContinueButtonDisabled(false);
     } else {
       setIsContinueButtonDisabled(true);
     }
   
     // Set initial selectedCard when userCards are available
-    if (userCards.length > 0 && selectedCard === null) {
-      setSelectedCard(userCards[0].id);
+    if (userCards.length > 0 && selectedCardId === null) {
+      setSelectedCardId(userCards[0].id); // Set selectedCardId to the ID of the first card
+      setSelectedCard(userCards.find((card) => card.id === userCards[0].id)); // Set selectedCard to the first card object
     }
   
-    // Set initial frequency when AutoSaveModal opens
+    // Set initial frequency when AutoInvestModal opens
     if (frequency === '') {
       setFrequency('daily'); // Change 'hourly' to the default frequency you want
     }
-  }, [amount, selectedCard, userCards, frequency]); // Include 'frequency' in the dependency array
+  }, [amount, selectedCardId, userCards, frequency]); // Include 'frequency' in the dependency array
   
+  
+
   
   
   
 
   const handleAmountChange = (value) => {
-    const numericValue = parseFloat(value.replace(/,/g, ''));
-
-    if (!isNaN(numericValue) && numericValue > 0 && selectedCard !== '') {
-      setAmount(numericValue.toLocaleString('en-US'));
-    } else {
+    // Remove any non-numeric characters except for the decimal point
+    const numericValue = value.replace(/[^0-9.]/g, '');
+  
+    // Check if the numericValue is empty or NaN
+    if (numericValue === '' || isNaN(parseFloat(numericValue))) {
+      // If empty or NaN, set the amount to an empty string
       setAmount('');
+    } else {
+      // Ensure there is only one decimal point in the value
+      const parts = numericValue.split('.');
+      
+      if (parts.length === 1) {
+        // No decimal point, format as integer
+        setAmount(parseFloat(parts[0]).toLocaleString('en-US'));
+      } else if (parts.length === 2) {
+        // One decimal point, format with 2 decimal places
+        const integerPart = parseFloat(parts[0]).toLocaleString('en-US');
+        const decimalPart = parts[1].substring(0, 2); // Maximum 2 decimal places
+        setAmount(`${integerPart}.${decimalPart}`);
+      }
     }
   };
   
@@ -451,6 +468,8 @@ const styles = {
     height: 50,
     width: '80%',
     marginTop: 5,
+    borderWidth: 0.5,
+    borderColor: 'silver',
   },
 
   nairaSign: {
@@ -522,15 +541,14 @@ labelItem: {
 
 
 dropdown: {
-  //flexDirection: 'row', // Make the container a row to position icon and Picker side by side
-  //alignItems: 'flex-start', // Center vertically
   height: 50,
   width: '80%',
   backgroundColor: 'white',
   borderRadius: 10,
-  marginBottom: 1,
   paddingLeft: 15,
   paddingRight: 5,
+  borderWidth: 0.5,
+  borderColor: 'silver',
 },
 
 iconContainer: {

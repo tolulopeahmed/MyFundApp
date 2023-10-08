@@ -55,9 +55,9 @@ const styles = StyleSheet.create({
   },
   waitText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 14,
     marginBottom: 20, 
-    fontFamily: 'nexa',
+    fontFamily: 'karla-italic',
   },
   indicatorContainer: {
     justifyContent: 'center',

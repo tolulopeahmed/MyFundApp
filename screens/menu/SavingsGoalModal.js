@@ -107,15 +107,29 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
 
 
   const handleAmountChange = (value) => {
-    // Remove commas from the input value and parse it as a float
-    const numericValue = parseFloat(value.replace(/,/g, ''));
+    // Remove any non-numeric characters except for the decimal point
+    const numericValue = value.replace(/[^0-9.]/g, '');
   
-    if (!isNaN(numericValue) && numericValue >= 0) {
-      setAmount(Math.round(numericValue).toString()); // Store it as a string without commas
-    } else {
+    // Check if the numericValue is empty or NaN
+    if (numericValue === '' || isNaN(parseFloat(numericValue))) {
+      // If empty or NaN, set the amount to an empty string
       setAmount('');
+    } else {
+      // Ensure there is only one decimal point in the value
+      const parts = numericValue.split('.');
+      
+      if (parts.length === 1) {
+        // No decimal point, format as integer
+        setAmount(parseFloat(parts[0]).toLocaleString('en-US'));
+      } else if (parts.length === 2) {
+        // One decimal point, format with 2 decimal places
+        const integerPart = parseFloat(parts[0]).toLocaleString('en-US');
+        const decimalPart = parts[1].substring(0, 2); // Maximum 2 decimal places
+        setAmount(`${integerPart}.${decimalPart}`);
+      }
     }
   };
+  
   
   
   
@@ -186,7 +200,6 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
                 selectedValue={frequency}
                 onValueChange={(value) => setFrequency(value)}
               >
-                <Picker.Item color='#4C28BC' label="Select asset..." value="Select Asset" />
                 <Picker.Item label="Real Estate (MyFund Hostels)" value="Real Estate" />
                 <Picker.Item label="Paper Assets" value="Paper Assets" />
               </Picker>
@@ -198,17 +211,19 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
                 <Text style={styles.nairaSign}>₦</Text>
                 <TextInput
                   style={styles.amountInput}
-                  placeholder="Minimum amount is 1,000,000"
+                  placeholder="Minimum savings goal is 1,000,000"
                   keyboardType="numeric"
                   onChangeText={(value) => handleAmountChange(value)}
                   value={amount}
                   placeholderTextColor="silver"
 
                   onBlur={() => {
-                    if (parseInt(amount) < 1000000) {
+                    const numericAmount = parseFloat(amount.replace(/,/g, ''));
+                    if (numericAmount < 1000000) {
                       Alert.alert('Invalid Amount', 'The minimum amount is 1,000,000. Please enter a valid amount.');
                     }
                   }}
+                  
                 />
                 {amount !== '' && (
                   <TouchableOpacity onPress={clearAmount}>
@@ -254,7 +269,6 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
                 selectedValue={year}
                 onValueChange={(value) => setYear(value)}
               >
-                <Picker.Item color='blue' label="Select number of years..." value="Select years" />
                 <Picker.Item label="1 year" value="1" />
                 <Picker.Item label="2 years" value="2" />
                 <Picker.Item label="3 years" value="3" />
@@ -371,25 +385,14 @@ const styles = {
   },
 
   labelItem: {
-    color: 'black',
+    color: 'grey',
     textAlign: 'left',
     marginLeft: -16,
     marginBottom: 30,
     fontFamily: 'karla',
-    backgroundColor: '#fff',
     borderRadius: 10,
   },
 
-  labelItem2: {
-    color: 'black',
-    textAlign: 'left',
-    marginLeft: -5,
-    marginBottom: 10,
-    fontFamily: 'karla',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-
-  },
 
   emailInput: {
     color: 'grey',
@@ -412,6 +415,8 @@ const styles = {
     height: 50,
     width: '80%',
     marginTop: 5,
+    borderWidth: 0.5,
+    borderColor: 'silver',
   },
 
   nairaSign: {
@@ -455,17 +460,16 @@ const styles = {
 
 
   dropdown: {
-    height: 45,
+    height: 50,
     width: '80%',
     backgroundColor: 'white',
     borderRadius: 10,
-    marginBottom: 15,
     paddingLeft: 15,
     paddingRight: 5,
-    color: 'red',
-
-
+    borderWidth: 0.5,
+    borderColor: 'silver',
   },
+
 
 
   buttonsContainer: {

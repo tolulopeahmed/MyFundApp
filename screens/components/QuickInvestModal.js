@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserCards, updateAccountBalances, } from '../../ReduxActions'; // Import fetchUserCards
+import { fetchUserCards, updateAccountBalances, fetchUserTransactions, fetchAccountBalances } from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from './LoadingModal';
@@ -90,12 +90,26 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
 
 
   const handleAmountChange = (value) => {
-    const numericValue = parseFloat(value.replace(/,/g, ''));
-
-    if (!isNaN(numericValue) && numericValue > 0 && selectedCard !== '') {
-      setAmount(numericValue.toLocaleString('en-US'));
-    } else {
+    // Remove any non-numeric characters except for the decimal point
+    const numericValue = value.replace(/[^0-9.]/g, '');
+  
+    // Check if the numericValue is empty or NaN
+    if (numericValue === '' || isNaN(parseFloat(numericValue))) {
+      // If empty or NaN, set the amount to an empty string
       setAmount('');
+    } else {
+      // Ensure there is only one decimal point in the value
+      const parts = numericValue.split('.');
+      
+      if (parts.length === 1) {
+        // No decimal point, format as integer
+        setAmount(parseFloat(parts[0]).toLocaleString('en-US'));
+      } else if (parts.length === 2) {
+        // One decimal point, format with 2 decimal places
+        const integerPart = parseFloat(parts[0]).toLocaleString('en-US');
+        const decimalPart = parts[1].substring(0, 2); // Maximum 2 decimal places
+        setAmount(`${integerPart}.${decimalPart}`);
+      }
     }
   };
 
@@ -141,15 +155,14 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
       );
   
       if (response.status === 200) {
-       
-        dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
-        // QuickSave was successful, update account balances and transactions
         const responseData = response.data;
-        setIsSuccessVisible(true);
+        dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
+        dispatch(fetchAccountBalances()); // Add this line   
+        dispatch(fetchUserTransactions()); // Add this line
 
+        setIsSuccessVisible(true);
         setQuickInvestModalVisible(false);
-          // Dispatch actions to update Redux store
-      
+        setProcessing(false);      
      
       } else {
         // Handle QuickInvest error here and show appropriate alerts
@@ -241,10 +254,12 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                   placeholderTextColor="silver"
 
                   onBlur={() => {
-                    if (parseInt(amount) < 1000000) {
-                      Alert.alert('Invalid Amount', 'The minimum amount is ₦100,000. Please enter a valid amount.');
+                    const numericAmount = parseFloat(amount.replace(/,/g, ''));
+                    if (numericAmount < 100000) {
+                      Alert.alert('Invalid Amount', 'The minimum amount is 1,000,000. Please enter a valid amount.');
                     }
                   }}
+                  
                 />
                 {amount !== '' && (
                   <TouchableOpacity onPress={clearAmount}>
@@ -591,7 +606,6 @@ const styles = {
   },
   
   
-
   dropdown: {
     height: 50,
     width: '80%',
