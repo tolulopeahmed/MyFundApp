@@ -243,7 +243,6 @@ const handleCloseSuccessModal = () => {
       <SafeAreaView style={styles.transactionContainer}>
       <SectionTitle>WITHDRAWAL TRANSACTIONS</SectionTitle>
 
-      {console.log('User Transactions outside Transaction container:', userTransactions)}
 
 
       <View style={styles.transactionsContainer}>

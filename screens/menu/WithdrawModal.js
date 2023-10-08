@@ -13,14 +13,14 @@ import bankOptions from '../components/BankOptions';
 
 
 const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisible, setIsSuccessVisible, defaultFromAccount }) => {
-  const [fromAccount, setFromAccount ] = useState(defaultFromAccount); // Set the default account from prop
+  const [fromAccount, setFromAccount ] = useState(defaultFromAccount.toLowerCase()); // Set the default account from prop
   const [toAccount, setToAccount] = useState('Investment'); // You can set the default value to your preferred option
 
   const [amount, setAmount] = useState('');
   const userInfo = useSelector((state) => state.bank.userInfo);
   const [processing, setProcessing] = useState(false);
   const bankAccounts = useSelector((state) => state.bank.bankAccounts);
-  const [selectedBankAccount, setSelectedBankAccount] = useState('');
+  const [selectedBankName, setSelectedBankName] = useState(''); // New state variable to hold the selected bank's name
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
 
@@ -29,11 +29,6 @@ const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisib
   const [withdrawButtonDisabled, setWithdrawButtonDisabled] = useState(true); // State to control the button disabled state
   const [selectedBankAccountId, setSelectedBankAccountId] = useState('');
 
-  useEffect(() => {
-    if (bankAccounts && bankAccounts.length > 0) { // Check if bankAccounts is defined and not empty
-      setSelectedBankAccountId(bankAccounts[0].id);
-    }
-  }, [bankAccounts]);
   
 // Inside your component function/componentDidMount
 useEffect(() => {
@@ -41,15 +36,27 @@ useEffect(() => {
 }, []);
 
 
-const getBackgroundColor = (bankName) => {
-  const bank = bankOptions.find((option) => option.name === bankName);
-  console.log("Selected Bank:", bankName); // Add this line
-  console.log("Selected Bank Color:", bank ? bank.color : "#4C28BC"); // Add this line
-  return bank ? bank.color : "#4C28BC"; // Default to your default color
+const getBackgroundColor = (selectedBankName) => {
+  const bank = bankOptions.find((option) => option.name === selectedBankName);
+  return bank ? bank.color : "#4C28BC"; // Default to your default color if not found
 };
 
 
-console.log("Selected Bank Color:", selectedBankAccount); // A
+useEffect(() => {
+  if (bankAccounts && bankAccounts.length > 0) {
+    setSelectedBankAccountId(bankAccounts[0].id);
+  }
+}, [bankAccounts]);
+
+// Update the selected bank's name based on the selected bank account ID
+useEffect(() => {
+  const selectedBankAccount = bankAccounts.find(account => account.id === selectedBankAccountId);
+  if (selectedBankAccount) {
+    setSelectedBankName(selectedBankAccount.bank_name);
+  }
+}, [bankAccounts, selectedBankAccountId]);
+
+
 
   const closeModal = () => {
     setWithdrawModalVisible(false);
@@ -61,8 +68,6 @@ console.log("Selected Bank Color:", selectedBankAccount); // A
 
   
   useEffect(() => {
-    console.log("From Account1...........:", fromAccount);
-    console.log("To Account2.............:", toAccount);
   }, [fromAccount, toAccount]);
  
 
@@ -71,13 +76,13 @@ console.log("Selected Bank Color:", selectedBankAccount); // A
     
       // Update the options for the second dropdown (toAccount) based on the selected value
       let updatedToAccountOptions = [];
-      if (value === 'Savings') {
+      if (value === 'savings') {
         setToAccount('Investment'); // Set the default value to 'Investment'
         updatedToAccountOptions = ['Investment', 'Bank Account'];
-      } else if (value === 'Investment') {
+      } else if (value === 'investment') {
         setToAccount('Savings'); // Set the default value to 'Savings'
         updatedToAccountOptions = ['Savings', 'Bank Account'];
-      } else if (value === 'Wallet') {
+      } else if (value === 'wallet') {
         setToAccount('Savings'); // Set the default value to 'Savings'
         updatedToAccountOptions = ['Savings', 'Investment', 'Bank Account'];
       } else {
@@ -86,10 +91,6 @@ console.log("Selected Bank Color:", selectedBankAccount); // A
     
       // Update the toAccountOptions state
       setToAccountOptions(updatedToAccountOptions);
-
-      console.log("From Account...........:", fromAccount); // Add this line
-      console.log("To Account.............:", toAccount); // Add this line
-
     };
 
 
@@ -236,7 +237,7 @@ const bankAccountField = (
           <MaterialIcons 
           name="account-balance" 
           size={28} 
-          color={selectedBankAccount ? getBackgroundColor(selectedBankAccount.bank_name) : "#4C28BC"} 
+          color={getBackgroundColor(selectedBankName)} // Set the icon color based on selected bank's name
           marginLeft={2} 
           /> 
         </View>
@@ -659,17 +660,25 @@ const bankAccountField = (
   };
 
 
+
+
+
+
+  const formattedAmount = parseFloat(amount.replace(/,/g, '')).toFixed(2);
+
     const handleTransferToBankAccount = async () => {
-      setProcessing(true);
-    
+      setProcessing(true);    
       try {
         // Prepare the request data based on user selections
         const requestData = {
           source_account: fromAccount,
           target_bank_account_id: selectedBankAccountId, // Use the selected bank account ID
-          amount: parseFloat(amount.replace(/,/g, '')), // Convert amount to a float
+          amount: formattedAmount, // Use the formatted amount
         };
     
+        console.log('formatted Amount in api call:', formattedAmount); // Log the API response
+        console.log('Request Data:', requestData);
+
         const response = await axios.post(
           `${ipAddress}/api/withdraw-to-bank/`,
           requestData,
@@ -684,6 +693,8 @@ const bankAccountField = (
         // Handle the API response
         if (response.status === 200) {
           const responseData = response.data;
+          console.log('API Response:', response.data);
+
           dispatch(updateAccountBalances(responseData.newAccountBalances));
           dispatch(fetchAccountBalances());
           dispatch(fetchUserTransactions());
@@ -715,9 +726,8 @@ const bankAccountField = (
       }
     };
     
-    console.log('selected Bank::'); // Log the API response
 
-    console.log('Bank account array::', bankAccounts); // Log the API response
+    console.log('formatted Amount:', formattedAmount); // Log the API response
     console.log('target_bank_account_id::', selectedBankAccountId); // Log the API response
     console.log('source_account::', fromAccount); // Log the API response
 
@@ -773,9 +783,9 @@ const bankAccountField = (
               selectedValue={fromAccount}
               onValueChange={(value) => handleFromAccountChange(value)}
             >
-              <Picker.Item label={`Savings (₦${Math.floor(accountBalances.savings).toLocaleString()})`} value="Savings" />
-              <Picker.Item label={`Investment (₦${Math.floor(accountBalances.investment).toLocaleString()})`} value="Investment" />
-              <Picker.Item label={`Wallet (₦${Math.floor(accountBalances.wallet).toLocaleString()})`} value="Wallet" />
+              <Picker.Item label={`Savings (₦${Math.floor(accountBalances.savings).toLocaleString()})`} value="savings" />
+              <Picker.Item label={`Investment (₦${Math.floor(accountBalances.investment).toLocaleString()})`} value="investment" />
+              <Picker.Item label={`Wallet (₦${Math.floor(accountBalances.wallet).toLocaleString()})`} value="wallet" />
             </Picker>
 
         </View>
