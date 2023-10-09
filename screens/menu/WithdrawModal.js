@@ -9,7 +9,7 @@ import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
 import { MaterialIcons } from '@expo/vector-icons'; // Add this import statement
-import bankOptions from '../components/BankOptions';
+import bankOptions from '../components/BankOptions'; // Add this import statement
 
 
 const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisible, setIsSuccessVisible, defaultFromAccount }) => {
@@ -22,13 +22,12 @@ const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisib
   const bankAccounts = useSelector((state) => state.bank.bankAccounts);
   const [selectedBankName, setSelectedBankName] = useState(''); // New state variable to hold the selected bank's name
   const accountBalances = useSelector((state) => state.bank.accountBalances);
-  const userTransactions = useSelector((state) => state.bank.userTransactions);
+  const [setBankAccounts] = useState([]);
 
   const dispatch = useDispatch();
   const [toAccountOptions, setToAccountOptions] = useState(['Investment', 'Bank Account']);
   const [withdrawButtonDisabled, setWithdrawButtonDisabled] = useState(true); // State to control the button disabled state
-  const [selectedBankAccountId, setSelectedBankAccountId] = useState('');
-
+  const [selectedBankAccountId, setSelectedBankAccountId] = useState(null); // Initialize with null or another suitable default value
   
 // Inside your component function/componentDidMount
 useEffect(() => {
@@ -37,24 +36,45 @@ useEffect(() => {
 
 
 const getBackgroundColor = (selectedBankName) => {
-  const bank = bankOptions.find((option) => option.name === selectedBankName);
+  console.log("Selected bank name:", selectedBankName); // Debugging statement
+  const bank = selectedBankName ? bankOptions.find((option) => option.name === selectedBankName) : null; // Check if selectedBankName is defined
+  console.log("Bank:", bank); // Debugging statement
   return bank ? bank.color : "#4C28BC"; // Default to your default color if not found
 };
+
+
+
+
+
+
+useEffect(() => {
+  if (selectedBankAccountId !== null) { // Add this check
+    const selectedBankAccount = bankAccounts ? bankAccounts.find(account => account.id === selectedBankAccountId) : null;
+    if (selectedBankAccount) {
+      setSelectedBankName(selectedBankAccount.bank_name);
+    }
+  }
+  console.log("Selected Bank Account ID:", selectedBankAccountId);
+}, [bankAccounts, selectedBankAccountId]);
+
+
 
 
 useEffect(() => {
   if (bankAccounts && bankAccounts.length > 0) {
     setSelectedBankAccountId(bankAccounts[0].id);
+    setSelectedBankName(bankAccounts[0].bank_name); // Initialize selectedBankName
+  } else {
+    setSelectedBankAccountId(null);
+    setSelectedBankName(''); // Set it to an appropriate default value
+    console.log("No bank accounts available.");
   }
 }, [bankAccounts]);
 
-// Update the selected bank's name based on the selected bank account ID
-useEffect(() => {
-  const selectedBankAccount = bankAccounts.find(account => account.id === selectedBankAccountId);
-  if (selectedBankAccount) {
-    setSelectedBankName(selectedBankAccount.bank_name);
-  }
-}, [bankAccounts, selectedBankAccountId]);
+
+
+
+
 
 
 
@@ -237,7 +257,7 @@ const bankAccountField = (
           <MaterialIcons 
           name="account-balance" 
           size={28} 
-          color={getBackgroundColor(selectedBankName)} // Set the icon color based on selected bank's name
+          color={selectedBankName ? getBackgroundColor(selectedBankName) : "#4C28BC"} // Check if selectedBankName is defined
           marginLeft={2} 
           /> 
         </View>
