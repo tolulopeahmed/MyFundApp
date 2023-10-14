@@ -2,12 +2,77 @@ import React, { useState } from 'react';
 import { View, Text, Image, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Title from '../components/Title';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAccountBalances, updateAccountBalances, } from '../../ReduxActions';
 
 const WealthMap = ({ navigation, firstName }) => {
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  const accountBalances = useSelector((state) => state.bank.accountBalances);
 
-
+ 
+  const wealthStages = [
+    {
+      stage: 1,
+      text: "Debt",
+      description: "Your income is less than your expenses",
+      condition: accountBalances.savings == 0 && accountBalances.investment == 0,
+    },
+    {
+      stage: 2,
+      text: "No Debt",
+      description: "Your income is equal to your expenses",
+      condition: accountBalances.savings > 0 && accountBalances.investment == 0,
+    },
+    {
+      stage: 3,
+      text: "Surplus",
+      description: "Your income is greater than your expenses",
+      condition: accountBalances.savings > 0 && accountBalances.investment > 0 && accountBalances.properties === 0,
+    },
+    {
+      stage: 4,
+      text: "Savings",
+      description: "You have cash flow, and your savings are growing.",
+      condition: accountBalances.savings + accountBalances.investment >= 250000,
+    },
+    {
+      stage: 5,
+      text: "Millions",
+      description: "You have a cash asset and are ready for true investment",
+      condition: accountBalances.savings + accountBalances.investment >= 1000000,
+    },
+    {
+      stage: 6,
+      text: "Assets",
+      description: "You have acquired one or more properties",
+      condition: accountBalances.properties > 0 && accountBalances.wallet < 300000,
+    },
+    {
+      stage: 7,
+      text: "Passive Income",
+      description: "You have earned your first rental income",
+      condition: accountBalances.wallet >= 300000 && accountBalances.properties > 0,
+    },
+    {
+      stage: 8,
+      text: "Financially Free",
+      description: "Your passive income is greater than your living expenses",
+      condition: accountBalances.wallet >= 500000 && accountBalances.properties > 0,
+    },
+    {
+      stage: 9,
+      text: "You're Financially Free indeed",
+      description: "Your wallet is at least N1000000, and you have properties",
+      condition: accountBalances.wallet >= 1000000 && accountBalances.properties > 0,
+    },
+  ];
   
+  const currentStage = wealthStages.find((stage) => stage.condition);
+
+
+
+
+
   return (
     <View style={styles.container}>
 
@@ -29,19 +94,19 @@ const WealthMap = ({ navigation, firstName }) => {
       <View style={styles.propertyContainer}>
         <Ionicons name="cellular-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}>Based on your usage, your financial status is <Text style={{fontFamily: 'proxima', color: 'green'}}>Stage 6: Assets.</Text> Keep growing your funds to move up the 9 stages to financial freedom.</Text>
+        <Text style={styles.propertyText}>Based on your usage, your financial status is <Text style={{fontFamily: 'proxima', color: 'green'}}>Stage {currentStage.stage}: {(currentStage.text).toUpperCase()}</Text> Keep growing your funds to move up the 9 stages to financial freedom.</Text>
       </View>
       </View>
       
       <View style={styles.savingsContainer}>
         <View style={styles.savingsLine1}>
           <Ionicons name="cellular-outline" size={17} color="#43FF8E" style={{ marginLeft: 16 }} />
-          <Text style={styles.greyText}>Stage 6              </Text>
+          <Text style={styles.greyText}>Stage {currentStage.stage}</Text>
         </View>
         <View style={styles.amountContainer}>
-        <Text style={styles.savingsAmount}>Assets</Text>
+        <Text style={styles.savingsAmount}>{currentStage.text}</Text>
         </View>
-        <Text style={styles.greyText2}>You have acquired one or more properties</Text>
+        <Text style={styles.greyText2}>{currentStage.description}</Text>
       </View>
 
       <Image source={require('./9steps.png')} style={styles.image} />
@@ -209,7 +274,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 20,
     alignItems: 'center',
-    height: 125,
+    height: 135,
     },
     savingsLine1: {
       flexDirection: 'row',
@@ -229,7 +294,7 @@ const styles = StyleSheet.create({
     greyText2: {
       marginLeft: 8,
       fontSize: 12,
-      marginTop: -10,
+      marginTop: 1,
       color: '#8E8E93',
       fontFamily: 'karla',
       textAlign: 'center',
@@ -252,11 +317,12 @@ const styles = StyleSheet.create({
 
     savingsAmount: {
     fontSize: 70,
-    fontFamily: 'karla',
+    fontFamily: 'nexa',
     textAlign: 'center',
     letterSpacing: -4,
     marginRight: 0,
-    marginTop: -5,
+    marginTop: -8,
+    marginBottom: 5,
       color: '#fff',
 },
 

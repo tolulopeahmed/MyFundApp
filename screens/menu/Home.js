@@ -25,6 +25,15 @@ const Home = ({ navigation, route}) => {
   const dispatch = useDispatch();
   const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
   const autoInvestSettings = useSelector((state) => state.bank.autoInvestSettings);
+  const [currentStatus, setCurrentStatus] = useState('');
+
+
+
+  useEffect(() => {
+    if (currentStage) {
+      setCurrentStatus(currentStage.text);
+    }
+  }, [currentStage]);
 
   const iconMapping = {
     "Card Successful": "card-outline",
@@ -43,6 +52,72 @@ const Home = ({ navigation, route}) => {
     "Withdrawal (Wallet > Bank)": "arrow-down-outline",
     "Property": "home-outline",
   };
+
+
+  console.log("accountBalances.properties.....1:", accountBalances.properties);
+
+  const wealthStages = [
+    {
+      stage: 1,
+      text: "Debt",
+      description: "Your income is less than your expenses",
+      condition: accountBalances.savings == 0 && accountBalances.investment == 0,
+    },
+    {
+      stage: 2,
+      text: "No Debt",
+      description: "Your income is equal to your expenses",
+      condition: accountBalances.savings > 0 && accountBalances.investment == 0,
+    },
+    {
+      stage: 3,
+      text: "Surplus",
+      description: "Your income is greater than your expenses",
+      condition: accountBalances.savings > 0 && accountBalances.investment > 0 && accountBalances.properties === 0,
+    },
+    {
+      stage: 4,
+      text: "Savings",
+      description: "You have cash flow, and your savings are growing.",
+      condition: (accountBalances.savings + accountBalances.investment) >= 250000,
+    },
+    {
+      stage: 5,
+      text: "Millions",
+      description: "You have a cash asset and are ready for true investment",
+      condition: accountBalances.savings + accountBalances.investment >= 1000000,
+    },
+    {
+      stage: 6,
+      text: "Assets",
+      description: "You have acquired one or more properties",
+      condition: accountBalances.properties > 0 && accountBalances.wallet < 300000,
+    },
+    {
+      stage: 7,
+      text: "Passive Income",
+      description: "You have earned your first rental income",
+      condition: accountBalances.wallet >= 300000 && accountBalances.properties > 0,
+    },
+    {
+      stage: 8,
+      text: "Financially Free",
+      description: "Your passive income is greater than your living expenses",
+      condition: accountBalances.wallet >= 500000 && accountBalances.properties > 0,
+    },
+    {
+      stage: 9,
+      text: "You're Financially Free indeed",
+      description: "Your wallet is at least N1000000, and you have properties",
+      condition: accountBalances.wallet >= 1000000 && accountBalances.properties > 0,
+    },
+  ];
+  
+  
+  const currentStage = wealthStages.find((stage) => stage.condition);
+
+  console.log("accountBalances.properties......:", accountBalances.savings);
+  console.log("accountBalances.wallet......:", accountBalances.wallet);
 
 
 const formatDate = (dateString) => {
@@ -384,6 +459,17 @@ const formatTime = (timeString) => {
           <Ionicons name="shield-checkmark-outline" size={23} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
           <Text style={styles.todoText}>Update KYC</Text>
         </TouchableOpacity>
+        </View>
+
+
+        <View style={styles.todoList1}>
+        <View style={styles.disabledButton} onPress={() => navigation.push('WealthMap')}>
+          <Ionicons name="cellular-outline" size={23} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
+          <Text style={styles.todoText}>Financial Level: </Text>
+         <Pressable onPress={() => navigation.push('WealthMap')}> 
+          <Text style={styles.todoText2}>{currentStage ? currentStage.text.toUpperCase() : 'Unknown'}</Text>
+          </Pressable>
+        </View>
         </View>
 
       </View>
@@ -763,6 +849,12 @@ fontFamily: 'karla',
 color: 'grey',
 },
 
+todoText2: {
+  marginTop: 3,
+fontSize: 16,
+fontFamily: 'karla',
+color: 'green',
+},
 
 tabNavigator: {
 flexDirection: 'row',

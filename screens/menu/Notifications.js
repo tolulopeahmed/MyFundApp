@@ -17,17 +17,22 @@ const Notifications = ({ navigation, firstName }) => {
     dispatch(fetchUserData(userInfo.token));
   }, []);  
   
+
   const iconMapping = {
     "Card Successful": "card-outline",
     "QuickSave": "save-outline",
     "AutoSave": "car-outline",
     "QuickInvest": "trending-up-outline",
     "AutoInvest": "car-sport-outline",
-    "Withdrawal from Savings": "arrow-down-outline",
     "Pending Referral Reward": "ellipsis-horizontal-circle-outline",
     "Referral Reward": "checkmark-circle",
-    "Withdrawal from Investment": "arrow-down-outline",
-    "Withdrawal from Wallet": "arrow-down-outline",
+    "Withdrawal (Savings > Investment)": "arrow-down-outline",
+    "Withdrawal (Investment > Savings)": "arrow-down-outline",
+    "Withdrawal (Wallet > Savings)": "arrow-down-outline",
+    "Withdrawal (Wallet > Investment)": "arrow-down-outline",
+    "Withdrawal (Savings > Bank)": "arrow-down-outline",
+    "Withdrawal (Investment > Bank)": "arrow-down-outline",
+    "Withdrawal (Wallet > Bank)": "arrow-down-outline",
     "Property": "home-outline",
   };
   
