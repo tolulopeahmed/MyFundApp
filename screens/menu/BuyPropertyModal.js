@@ -10,15 +10,15 @@ import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
 import bankOptions from '../components/BankOptions';
 
+
 const getBackgroundColor = (bankName) => {
   const bank = bankOptions.find((option) => option.name === bankName);
   return bank ? bank.color : "#4C28BC"; // Default to your default color
 };
-
-const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVisible, setIsSuccessVisible }) => {
+const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVisible, isSuccessVisible, setIsSuccessVisible, selectedProperty }) => {
   const [frequency, setFrequency] = useState('');
   const [amount, setAmount] = useState('');
-  const [units, setUnits] = useState('');
+  const [units, setUnits] = useState('1'); // Set an initial value for units
   const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
   const [selectedCard, setSelectedCard] = useState(null);
   const userInfo = useSelector((state) => state.bank.userInfo);
@@ -28,7 +28,10 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
     userCards.length > 0 ? userCards[0].id : null
   );
   const [showBuyPropertyButton, setShowBuyPropertyButton] = useState(true);
+  const [showCardSection, setShowCardSection] = useState(false);
+  const [showSubmitButton, setShowSubmitButton] = useState(false);
   const accountBalances = useSelector((state) => state.bank.accountBalances);
+  const [totalAmount, setTotalAmount] = useState(0);
 
   const dispatch = useDispatch();
 
@@ -36,11 +39,33 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
     dispatch(fetchUserCards());
   }, []);
 
+
+  const calculateTotalAmount = () => {
+    const unitPrice = selectedProperty.price; // Get the price per unit from your data
+    const numberOfUnits = parseInt(units); // Convert the selected units to an integer
+    const total = unitPrice * numberOfUnits;
+    setTotalAmount(total);
+  };
+
   useEffect(() => {
-    if (frequency === 'Bank Transfer') {
-      setShowBuyPropertyButton(false);
-    } else {
+    calculateTotalAmount();
+  }, [units, selectedProperty]);
+
+
+
+  useEffect(() => {
+    if (frequency === 'Savings' || frequency === 'Investment' || frequency === 'Wallet') {
       setShowBuyPropertyButton(true);
+      setShowCardSection(false);
+      setShowSubmitButton(false);
+    } else if (frequency === 'My Saved Cards') {
+      setShowBuyPropertyButton(true);
+      setShowCardSection(true);
+      setShowSubmitButton(false);
+    } else if (frequency === 'Bank Transfer') {
+      setShowBuyPropertyButton(false);
+      setShowCardSection(false);
+      setShowSubmitButton(true);
     }
   }, [frequency]);
 
@@ -67,27 +92,9 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
     }
 
     if (frequency === '') {
-      setFrequency('daily');
+      setFrequency('Savings');
     }
   }, [amount, selectedCard, userCards, frequency]);
-
-  const handleAmountChange = (value) => {
-    const numericValue = value.replace(/[^0-9.]/g, '');
-
-    if (numericValue === '' || isNaN(parseFloat(numericValue))) {
-      setAmount('');
-    } else {
-      const parts = numericValue.split('.');
-
-      if (parts.length === 1) {
-        setAmount(parseFloat(parts[0]).toLocaleString('en-US'));
-      } else if (parts.length === 2) {
-        const integerPart = parseFloat(parts[0]).toLocaleString('en-US');
-        const decimalPart = parts[1].substring(0, 2);
-        setAmount(`${integerPart}.${decimalPart}`);
-      }
-    }
-  };
 
   const handleAddCard = () => {
     navigation.navigate('Card', { addCardModalVisible: true });
@@ -97,56 +104,97 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
     setPropertyModalVisible(false);
   };
 
-  const handleBuyProperty = async () => {
-    setProcessing(true);
-    try {
-      console.log('Selected card ID:', selectedCardId);
-      console.log('Amount Entered:', amount);
 
-      const response = await axios.post(
-        `${ipAddress}/api/buy-property/`,
-        {
-          card_id: selectedCardId,
-          amount: parseFloat(amount.replace(/,/g, '')),
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-        }
-      );
 
-      if (response.status === 200) {
-        const responseData = response.data;
-        dispatch(updateAccountBalances(responseData.newAccountBalances));
-        dispatch(fetchAccountBalances());
-        dispatch(fetchUserTransactions());
+const handleBuyProperty = async () => {
+  setProcessing(true);
 
-        setIsSuccessVisible(true);
-        setPropertyModalVisible(false);
-        setProcessing(false);
-      } else {
-        if (response.status === 400) {
-          setProcessing(false);
-          Alert.alert('Error', 'Invalid input. Please check your data and try again.');
-        } else if (response.status === 401) {
-          setProcessing(false);
-          Alert.alert('Error', 'You are not authorized. Please login again.');
-        } else {
-          setProcessing(false);
-          Alert.alert(
-            'Error',
-            'An error occurred while processing your request. Please try again later.'
-          );
-        }
-      }
-    } catch (error) {
-      console.error('Buy Property Error:', error);
-      setProcessing(false);
-      Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+  try {
+    let paymentData = {};
+
+    if (frequency === 'Savings' || frequency === 'Investment' || frequency === 'Wallet') {
+      paymentData = {
+        property: selectedProperty.id,
+        num_units: parseInt(units),
+        payment_source: frequency.toLowerCase(),
+      };
+    } else if (frequency === 'My Saved Cards') {
+      paymentData = {
+        property: selectedProperty.id,
+        num_units: parseInt(units),
+        payment_source: 'saved_cards',
+        card_id: selectedCardId,
+      };
+    } else if (frequency === 'Bank Transfer') {
+      // Handle bank transfer logic here
+      // ...
+      return;
     }
-  };
+
+    // Check the user's account balances or card balance before making the purchase
+    if (
+      (frequency === 'Savings' && totalAmount > accountBalances.savings) ||
+      (frequency === 'Investment' && totalAmount > accountBalances.investment) ||
+      (frequency === 'Wallet' && totalAmount > accountBalances.wallet)
+    ) {
+      setProcessing(false);
+      Alert.alert('Insufficient Balance', 'You do not have sufficient funds in your account for this purchase.');
+      return;
+    }
+
+    // Make the API call to buy the property
+    const response = await axios.post(
+      `${ipAddress}/api/buy-property/`,
+      paymentData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      const responseData = response.data;
+      dispatch(updateAccountBalances(responseData.newAccountBalances));
+      dispatch(fetchAccountBalances());
+      dispatch(fetchUserTransactions());
+
+      setIsSuccessVisible(true);
+      setPropertyModalVisible(false);
+      setProcessing(false);
+    } else {
+      if (response.status === 400) {
+        setProcessing(false);
+        Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+      } else if (response.status === 401) {
+        setProcessing(false);
+        Alert.alert('Error', 'You are not authorized. Please login again.');
+      } else {
+        setProcessing(false);
+        Alert.alert(
+          'Error',
+          'An error occurred while processing your request. Please try again later.'
+        );
+      }
+    }
+  } catch (error) {
+    console.error('Buy Property Error:', error);
+    setProcessing(false);
+    Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+  }
+};
+
+
+
+  
+
+console.log('selectedProperty.id:', selectedProperty.id);
+console.log('num_units:', units);
+console.log('payment_source:', frequency.toLowerCase());
+console.log('selectedCardId:', selectedCardId);
+
+
 
   return (
     <>
@@ -169,22 +217,30 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
           <TouchableOpacity style={styles.modalContainer} activeOpacity={1} onPress={closeModal}>
             <KeyboardAvoidingView activeOpacity={1} style={styles.modalContent} onPress={dismissKeyboard}>
               <ScrollView>
-                <View style={styles.modalContent}>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 30 }}>
+              <View style={styles.modalContent}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', paddingLeft: 30 }}>
                     <Text style={styles.modalHeader}>Buy Property</Text>
                     <Ionicons name="close-outline" size={24} color="grey" marginTop={22} paddingRight={25} onPress={() => setPropertyModalVisible(false)} />
                   </View>
-                  <Divider />
-                  <Text style={styles.modalSubText}>
-                    Buy Kings and Queen Hostels, at Harmony Estate, Federal University of Agriculture, Abeokuta, FUNAAB. {'\n'}
-                    {'\n'}
-                    Pay: <Text style={{ color: '#4C28BC', fontFamily: 'proxima' }}>N5 million/unit</Text> {'\n'}
-                    Earn <Text style={{ color: 'green', fontFamily: 'proxima' }}>N250,000/year</Text>
-                    {'\n'}
-                    {'\n'}
-                    Select how many units you want to buy.
-                  </Text>
+                <Divider />
 
+                <View style={{ flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: 10 }}>
+                  <View style={styles.propertyImageContainer}>
+                    <Image source={selectedProperty.image} style={styles.propertyImage} />
+                  </View>
+                  <View style={styles.propertyDetails}>
+                    <Text style={styles.modalSubText}>
+                      Buy {selectedProperty.name}, at {selectedProperty.location}. {'\n'}
+                      {'\n'}
+                      Pay: <Text style={{ color: '#4C28BC', fontFamily: 'proxima' }}>₦{Math.floor(selectedProperty.price).toLocaleString()}/unit</Text> {'\n'}
+                      Earn: <Text style={{ color: 'green', fontFamily: 'proxima' }}>₦{Math.floor(selectedProperty.rent).toLocaleString()}/year</Text>{'\n'}
+                      {/* ROI: <Text style={{ color: 'green', fontFamily: 'proxima' }}>{(selectedProperty.rent) / (selectedProperty.price) * 100}% p.a.</Text> */}
+                    </Text>
+                  </View>
+                </View>
+
+
+                  <Text style={styles.modalSubText2} alignSelf="flex-start">Select how many units you want to buy...</Text>
                   <View style={styles.inputContainer}>
                     <View style={styles.dropdown}>
                       <Picker
@@ -192,19 +248,26 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
                         selectedValue={units}
                         onValueChange={(value) => setUnits(value)}
                       >
-                        <Picker.Item label="1 unit" value="1" />
-                        <Picker.Item label="2 units" value="1" />
-                        <Picker.Item label="3 units" value="1" />
-                        <Picker.Item label="4 units" value="1" />
-                        <Picker.Item label="5 units" value="1" />
-                        <Picker.Item label="6 units" value="1" />
-                        <Picker.Item label="7 units" value="1" />
-                        <Picker.Item label="8 units" value="1" />
-                        <Picker.Item label="9 units" value="1" />
-                        <Picker.Item label="10 units" value="1" />
+                      <Picker.Item label="1 unit" value="1" />
+                      <Picker.Item label="2 units" value="2" />
+                      <Picker.Item label="3 units" value="3" />
+                      <Picker.Item label="4 units" value="4" />
+                      <Picker.Item label="5 units" value="5" />
+                      <Picker.Item label="6 units" value="6" />
+                      <Picker.Item label="7 units" value="7" />
+                      <Picker.Item label="8 units" value="8" />
+                      <Picker.Item label="9 units" value="9" />
+                      <Picker.Item label="10 units" value="10" />
                       </Picker>
                     </View>
                   </View>
+
+                  <Text style={styles.modalSubText5} alignSelf="flex-end">
+      <Text style={{fontSize: 10, }}>Total:</Text> ₦{totalAmount.toLocaleString()}
+    </Text>
+
+
+
                   <Text style={styles.modalSubText2} alignSelf="flex-start">using...</Text>
 
                   <View style={styles.inputContainer}>
@@ -214,84 +277,92 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
                         selectedValue={frequency}
                         onValueChange={(value) => setFrequency(value)}
                       >
-                        <Picker.Item label={`Savings (₦${Math.floor(accountBalances.savings).toLocaleString()})`} value="savings" />
-                        <Picker.Item label={`Investment (₦${Math.floor(accountBalances.investment).toLocaleString()})`} value="investment" />
-                        <Picker.Item label={`Wallet (₦${Math.floor(accountBalances.wallet).toLocaleString()})`} value="wallet" />
+                        <Picker.Item label={`Savings (₦${Math.floor(accountBalances.savings).toLocaleString()})`} value="Savings" />
+                        <Picker.Item label={`Investment (₦${Math.floor(accountBalances.investment).toLocaleString()})`} value="Investment" />
+                        <Picker.Item label={`Wallet (₦${Math.floor(accountBalances.wallet).toLocaleString()})`} value="Wallet" />
                         <Picker.Item label="My Saved Cards" value="My Saved Cards" />
                         <Picker.Item label="Bank Transfer" value="Bank Transfer" />
                       </Picker>
                     </View>
                   </View>
 
-                  {showBuyPropertyButton ? (
+                  {showBuyPropertyButton && (
                     <View style={styles.inputContainer}>
-                      <Text style={styles.label3}>Which of them?     </Text>
-                      {userCards.length === 0 ? (
-                        <TouchableOpacity onPress={handleAddCard}>
-                          <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>No cards added yet...
-                            <Text style={{ color: '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>    Add Card Now!</Text>
-                          </Text>
-                        </TouchableOpacity>
-                      ) : (
+                      {showCardSection && (
                         <View style={styles.inputContainer}>
-                          <View style={styles.iconContainer}>
-                            <Ionicons
-                              name="card"
-                              size={28}
-                              color={selectedCard ? getBackgroundColor(selectedCard.bank_name) : null}
-                              zIndex={-1}
-                            />
-                          </View>
-                          <View style={styles.dropdown}>
-                            <Picker
-                              style={styles.labelItem}
-                              selectedValue={selectedCardId}
-                              onValueChange={(value) => {
-                                console.log('Selected Card Value:', value);
-                                setSelectedCardId(value);
-                              }}
-                            >
-                              {userCards.map((card) => (
-                                <Picker.Item
-                                  label={`         ${card.bank_name} - **** ${card.card_number.slice(-4)}`}
-                                  value={card.id}
-                                  key={card.id}
-                                  color={getBackgroundColor(card.bank_name)}
+                       <Text style={styles.modalSubText2} alignSelf="flex-start">Which of them?</Text>
+
+                          {userCards.length === 0 ? (
+                            <TouchableOpacity onPress={handleAddCard}>
+                              <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>No cards added yet...
+                                <Text style={{ color: '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>    Add Card Now!</Text>
+                              </Text>
+                            </TouchableOpacity>
+                          ) : (
+                            <View style={styles.inputContainer}>
+                              <View style={styles.iconContainer}>
+                                <Ionicons
+                                  name="card"
+                                  size={28}
+                                  color={selectedCard ? getBackgroundColor(selectedCard.bank_name) : null}
+                                  zIndex={-1}
                                 />
-                              ))}
-                            </Picker>
-                          </View>
+                              </View>
+                              <View style={styles.dropdown}>
+                                <Picker
+                                  style={styles.labelItem}
+                                  selectedValue={selectedCardId}
+                                  onValueChange={(value) => {
+                                    console.log('Selected Card Value:', value);
+                                    setSelectedCardId(value);
+                                  }}
+                                >
+                                  {userCards.map((card) => (
+                                    <Picker.Item
+                                      label={`         ${card.bank_name} - **** ${card.card_number.slice(-4)}`}
+                                      value={card.id}
+                                      key={card.id}
+                                      color={getBackgroundColor(card.bank_name)}
+                                    />
+                                  ))}
+                                </Picker>
+                              </View>
+                            </View>
+                          )}
                         </View>
                       )}
-                      <Text style={styles.modalSubText4}>By clicking Buy Now, you agree to the <Text style={{ color: '#4C28BC', fontFamily: 'proxima' }}>Deed of Agreement.</Text></Text>
-                      <View style={styles.buttonsContainer}>
-                        <TouchableOpacity
-                          style={[
-                            styles.primaryButton,
-                            (isContinueButtonDisabled || processing) && styles.primaryButtonDisabled,
-                            { backgroundColor: processing ? 'green' : isContinueButtonDisabled ? 'grey' : '#4C28BC' },
-                          ]}
-                          onPress={handleBuyProperty}
-                          disabled={isContinueButtonDisabled || processing}
-                        >
-                          {processing ? (
-                            <>
-                              <ActivityIndicator color="white" style={styles.activityIndicator} />
-                              <Image source={require('./paystack.png')} style={styles.image} />
-                            </>
-                          ) : (
-                            <Image source={require('./paystack.png')} style={styles.image} />
-                          )}
-                          <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
-                            {processing ? 'Processing... Please Wait...' : 'Buy Now!'}
-                          </Text>
-                        </TouchableOpacity>
-                      </View>
+
+                            <View style={styles.buttonsContainer}>
+                              <TouchableOpacity
+                                style={[
+                                  styles.primaryButton,
+                                  { backgroundColor: processing ? 'green' : '#4C28BC' },
+                                ]}
+                                onPress={handleBuyProperty}
+                                disabled={processing}
+                              >
+                                {processing ? (
+                                  <>
+                                    <ActivityIndicator color="white" style={styles.activityIndicator} />
+                                    <Image source={require('./paystack.png')} style={styles.image} />
+                                  </>
+                                ) : (
+                                  <Image source={require('./paystack.png')} style={styles.image} />
+                                )}
+                                <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
+                                  {processing ? 'Processing... Please Wait...' : 'Buy Now!'}
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+
+                      <Text style={styles.modalSubText4}>By clicking Buy Now, you agree to the  <Text style={{ color: '#4C28BC', fontFamily: 'proxima' }}>Deed of Agreement.</Text></Text>
                     </View>
-                  ) : (
+                  )}
+
+                  {showSubmitButton && (
                     <View style={styles.paymentOptionsContainer}>
-                      <Text style={styles.modalSubText2} alignSelf="center">
-                        Transfer the exact amount you entered above to the account below. Click 'Submit' after payment and your account will be updated within 12 hours.
+                      <Text style={styles.modalSubText3} alignSelf="center">
+                        Transfer the exact total amount above to the account below. Click 'Submit' after payment and your purchase would be processed.
                       </Text>
                       <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} Vcorp Systems Limited</Text>
                       <View style={styles.buttonsContainer}>
@@ -299,6 +370,7 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
                           <Text style={styles.primaryButtonText}>Submit</Text>
                         </TouchableOpacity>
                       </View>
+                      <Text style={styles.modalSubText4}>By clicking Submit, you agree to the  <Text style={{ color: '#4C28BC', fontFamily: 'proxima' }}>Deed of Agreement.</Text></Text>
                     </View>
                   )}
                 </View>
@@ -329,6 +401,7 @@ const styles = {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,      
   },
+
   modalHeader: {
     marginTop: 20,
     fontSize: 25,
@@ -336,6 +409,7 @@ const styles = {
     color: '#4C28BC',
     flex: 1,
   },
+  
   modalSubText: {
     fontSize: 14,
     fontFamily: 'karla',
@@ -344,6 +418,7 @@ const styles = {
     marginHorizontal: 30,
     marginTop: 5,
   },
+   
   modalSubText2: {
     fontSize: 14,
     fontFamily: 'karla',
@@ -354,6 +429,7 @@ const styles = {
     marginTop: 5,
     letterSpacing: -0.5,
   },
+
   modalSubText3: {
     fontSize: 13,
     fontFamily: 'karla-italic',
@@ -364,6 +440,7 @@ const styles = {
     marginTop: 25,
     letterSpacing: -0.2,
   },
+
   modalSubText4: {
     fontSize: 13,
     fontFamily: 'karla-italic',
@@ -372,14 +449,48 @@ const styles = {
     textAlign: 'center',
     marginHorizontal: 45,
     marginTop: 25,
+    marginBottom: 20,
     letterSpacing: -0.2,
   },
+
+  modalSubText5: {
+    fontSize: 15,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    color: 'black',
+    textAlign: 'center',
+    marginHorizontal: 45,
+    letterSpacing: -0.5,
+  },
+
   inputContainer: {
     marginTop: 5,
-    marginBottom: 15,
+    marginBottom: 5,
     width: '100%',
     alignItems: 'center',
+    
   },
+
+  propertyImageContainer: {
+    flex: 1,
+    padding: 1,
+    alignItems: 'center',
+  },
+  propertyImage: {
+    width: '110%',
+    height: 120,
+    resizeMode: 'cover',
+    borderRadius: 9,
+    marginLeft: 75,
+    marginTop: 15,
+  },
+  propertyDetails: {
+    flex: 1.8,
+    padding: 10,
+    marginLeft: 20
+  },
+  
+
   presetAmountsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -391,31 +502,35 @@ const styles = {
     flexDirection: 'column',
   },
   presetAmountButton: {
-    backgroundColor: '#DCD1FF',
+    backgroundColor: '#DCD1FF', // Background color changed to #DCD1FF
     borderRadius: 5,
     padding: 10,
     margin: 5,
     alignItems: 'center',
   },
   presetAmountText: {
-    color: 'black',
+    color: 'black', // Text color changed to #4C28BC
     fontSize: 15,
     fontFamily: 'karla',
   },
+
   autoSaveSetting: {
     fontSize: 17,
     fontFamily: 'proxima',
     marginLeft: 40,
     alignSelf: 'flex-start',
     marginBottom: 10,
+
   },
+
   paymentOptionsContainer:{
     marginTop: -20,
     marginLeft: 5,
     marginRight: 5,
-    borderRadius: 10,
-    overflow: 'hidden',
+    borderRadius: 10, // Add border radius here
+    overflow: 'hidden', // This ensures that the border radius is applied to the Picker
   },
+
   label: {
     fontSize: 17,
     fontFamily: 'proxima',
@@ -424,6 +539,7 @@ const styles = {
     textAlign: 'center',
     letterSpacing: -0.5,
   },
+
   label3: {
       fontSize: 17,
       fontFamily: 'proxima',
@@ -431,17 +547,24 @@ const styles = {
       marginLeft: 45,
       alignSelf: 'flex-start'
   },
+
   labelItem: {
     color: 'black',
     textAlign: 'left',
     marginLeft: -16,
     marginBottom: 30,
     fontFamily: 'karla',
-  },
-  pickerContainer: {
+    //backgroundColor: '#fff',
     borderRadius: 10,
-    overflow: 'hidden',
   },
+
+  pickerContainer: {
+    borderRadius: 10, // Add border radius here
+   overflow: 'hidden', // This ensures that the border radius is applied to the Picker
+  },
+
+
+
   emailInput: {
     color: 'grey',
     textAlign: 'left',
@@ -454,6 +577,7 @@ const styles = {
     padding: 10,
     borderRadius: 10,
   },
+
   inputContainer2: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -465,14 +589,16 @@ const styles = {
     borderWidth: 0.5,
     borderColor: 'silver',
   },
+
   iconContainer: {
-    position: 'absolute',
-    left: 10,
-    top: '50%',
+    position: 'absolute', // Use absolute positioning
+    left: 10, // Adjust the left position as needed
+    top: '50%', // Center vertically
     marginLeft: 45,
     zIndex: 1,
-    transform: [{ translateY: -12 }],
+    transform: [{ translateY: -12 }], // Adjust translateY to vertically center the icon
   },
+
   nairaSign: {
     fontSize: 16,
     marginLeft: 15,
@@ -485,7 +611,10 @@ const styles = {
     fontSize: 16,
     letterSpacing: -0.3,
     padding: 10,
+    
   },
+  
+  
   dropdown: {
     height: 50,
     width: '80%',
@@ -496,6 +625,9 @@ const styles = {
     borderWidth: 0.5,
     borderColor: 'silver',
   },
+
+
+
   image: {
     marginTop: 5,
     marginRight: 5,
@@ -505,13 +637,15 @@ const styles = {
     resizeMode: 'contain',
     marginBottom: 5,
   },
+
   buttonsContainer: {
     flexDirection: 'row',
     marginTop: 15,
     position: 'relative',
-    marginBottom: 35,
+    marginBottom: 10,
     alignSelf: 'center'
   },
+
   primaryButton: {
     flexDirection: 'row',
     backgroundColor: '#4C28BC',
@@ -521,28 +655,32 @@ const styles = {
     justifyContent: 'center',
     borderRadius: 10,
   },
+  
   primaryButtonDisabled: {
     flexDirection: 'row',
-    backgroundColor: 'grey',
+    backgroundColor: 'grey', // Background color for disabled state
     width: '85%',
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    opacity: 0.7,
+    opacity: 0.7, // Reduce opacity for disabled state
   },
+  
   primaryButtonText: {
     color: '#fff',
     fontSize: 18,
     fontFamily: 'ProductSans',
     marginRight: 5,
   },
+
   processingText: {
     color: '#fff',
     fontSize: 18,
     fontFamily: 'ProductSans',
     marginRight: 5,
   },
+
 };
 
 export default BuyPropertyModal;

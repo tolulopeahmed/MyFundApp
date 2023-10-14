@@ -5,9 +5,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHouseCircleCheck } from '@fortawesome/free-solid-svg-icons';import { ProgressBar } from 'react-native-paper';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAccountBalances, fetchUserTransactions, updateAccountBalances } from '../../ReduxActions';
 
 const PropertyList = ({ navigation, firstName }) => {
-
+  const accountBalances = useSelector((state) => state.bank.accountBalances);
+  const userTransactions = useSelector((state) => state.bank.userTransactions);
   
   return (
     <View style={styles.container}>
@@ -44,7 +47,7 @@ const PropertyList = ({ navigation, firstName }) => {
           <Text style={styles.greyText}>Number of Properties    <Text style={styles.rateText}>@30%+ p.a.</Text> </Text>
         </View>
         <View style={styles.amountContainer}>
-        <Text style={styles.savingsAmount}>02</Text>
+        <Text style={styles.savingsAmount}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
         </View>
       </View>
           <TouchableOpacity style={styles.quickSaveButton} onPress={() => navigation.navigate('Ownership')}>

@@ -6,14 +6,112 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import BuyPropertyModal from './BuyPropertyModal'
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
+import Success from '../components/Success';
 
 
 
 const Ownership = ({navigation}) => {
     const [propertyModalVisible, setPropertyModalVisible] = useState(false);
+    const [selectedProperty, setSelectedProperty] = useState(null);
+    const [isSuccessVisible, setIsSuccessVisible] = useState(false);
 
+
+    const propertyData = [
+      {
+        id: 1,
+        name: 'K&Q Hostels, FUNAAB',
+        location: 'At Harmony Estate opposite FUNAAB.',
+        units: {
+          'Selfcon': 26,
+        },
+        price: 5000000, // Price per unit
+        rent: 450000,  // Annual rent
+        roi: 3,        // ROI in percentage
+        image: require('./funaab.png'), // Include the image source
+      },
+
+      {
+        id: 2,
+        name: 'K&Q Hostels, FUNAAB',
+        location: 'At Harmony Estate opposite FUNAAB.',
+        units: {
+          'R/P': 14,
+        },
+        price: 8500000, // Price per unit
+        rent: 350000,  // Annual rent
+        roi: 3,        // ROI in percentage
+        image: require('./phase3.jpeg'), // Include the image source
+      },
+
+      {
+        id: 3,
+        name: 'Amethyst Hall, Lagos',
+        location: 'At Harmony Estate opposite FUNAAB.',
+        units: {
+          'Selfcon': 0,
+        },
+        price: 7000000,
+        rent: 250000,
+        roi: 5,
+        image: require('./amethyst.png'), // Include the image source
+      },
+      {
+        id: 4,
+        name: 'Ruby Residence, Abuja',
+        location: 'At a prime location in Abuja.',
+        units: {
+          'Selfcon': 0,
+          'R/P': 0,
+        },
+        price: 8000000,
+        rent: 350000,
+        roi: 4,
+        image: require('./phase2.png'), // Include the image source
+      },
+      {
+        id: 5,
+        name: 'Topaz Towers, Lagos',
+        location: 'Luxury living in Lagos.',
+        units: {
+          'Selfcon': 0,
+          'R/P': 0,
+        },
+        price: 7000000,
+        rent: 300000,
+        roi: 4.5,
+        image: require('./phase3.png'), // Include the image source
+      },
+      {
+        id: 6,
+        name: 'Sapphire Suites, Port Harcourt',
+        location: 'Waterfront property in Port Harcourt.',
+        units: {
+          'Selfcon': 0,
+          'R/P': 0,
+        },
+        price: 6000000,
+        rent: 280000,
+        roi: 4.7,
+        image: require('./amethyst.png'), // Include the image source
+      },
+    ];
+    
+    
+    const openPropertyModal = (property) => {
+      setSelectedProperty(property);
+      setPropertyModalVisible(true);
+    };
+
+    const handleCloseSuccessModal = () => {
+      setIsSuccessVisible(false); 
+      navigation.navigate('PropertyList');
+
+    };
     
 
+
+
+    
   return (
     <>
     <View style={styles.header}>
@@ -25,111 +123,67 @@ const Ownership = ({navigation}) => {
       </View>
   </View>              
   
-      <ScrollView style={styles.container}>
+  <ScrollView style={styles.container}>
+        <Title>Own</Title>
+        <Subtitle>Buy properties and earn lifetime rental income</Subtitle>
 
-      <Title>Own</Title>
-      <Subtitle>Buy properties and earn lifetime rental income</Subtitle>
+        {propertyData.map((property, index) => (
+          <View style={styles.itemContainer} key={index}>
+            <View style={styles.imageContainer}>
+              <Image source={property.image} style={styles.propertyImage} />
+            </View>
+            <View style={styles.detailsContainer}>
+              <Text style={styles.headerText2}>{property.name}</Text>
+              <Text style={styles.subText1}>{property.location}</Text>
+              {Object.entries(property.units).map(([unitType, unitCount]) => (
+                <Text style={styles.subText2} key={unitType}>
+                  {unitType}: {unitCount} units
+                </Text>
+              ))}
+              <Text style={{ color: '#4C28BC', marginLeft: 4, marginTop: 6, marginBottom: -2, letterSpacing: -0.4, alignSelf: 'flex-start', fontFamily: 'proxima', fontSize: 18 }}>
+              ₦{Math.floor(property.price).toLocaleString()}<Text style={{fontSize: 11}}>/unit</Text>
+              </Text>
+              <Text style={styles.rate}>₦{Math.floor(property.rent).toLocaleString()} p.a. </Text>
+             
+              {property.units['Selfcon'] > 0 || property.units['R/P'] > 0 ? (
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => openPropertyModal(property)} // Open modal and pass property details
 
+                  >
+                  <FontAwesomeIcon icon={faHouseCircleCheck} style={styles.buttonIcon} />
+                  <Text style={styles.buttonText}>Buy Now!</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={styles.soldButton} disabled>
+                  <FontAwesomeIcon icon={faHouseCircleCheck} style={styles.soldButtonIcon} />
+                  <Text style={styles.soldButtonText}>Sold Out</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        ))}
+      </ScrollView>
 
-
-            <View style={styles.itemContainer}>
-      <View style={styles.imageContainer}>
-        <Image source={require('./funaab.png')} style={styles.image} />
-      </View>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.headerText2}>K&Q Hostels, FUNAAB</Text>
-        <Text style={styles.subText1}>At Harmony Estate opposite FUNAAB.</Text>
-        <Text style={styles.subText2}>1 Bed/Self-contain: 26 units</Text>
-        <Text style={styles.subText2}>Room and Parlour: 14 units</Text>
-        <Text style={{color: '#4C28BC', marginLeft: 4, alignSelf: 'flex-start', fontFamily: 'proxima', fontSize: 15}}>N5million/unit</Text>
-        <Text style={styles.rate}>N150,000 p.a.</Text>
-        <TouchableOpacity style={styles.button} onPress={() => setPropertyModalVisible(true)}>
-        <FontAwesomeIcon icon={faHouseCircleCheck} style={styles.buttonIcon} />
-          <Text style={styles.buttonText}>Buy Now!</Text>
-        </TouchableOpacity>
-      </View>
-      </View>
-
-      {propertyModalVisible && (
-<BuyPropertyModal 
-      navigation={navigation} 
-      propertyModalVisible={propertyModalVisible} 
-      setPropertyModalVisible={setPropertyModalVisible} />
+      
+{isSuccessVisible && (
+      <Success  
+      isVisible={isSuccessVisible}
+      onClose={handleCloseSuccessModal} // Pass the callback function
+      navigation={navigation}
+      />
       )}
 
 
-      <View style={styles.itemContainer}>
-      <View style={styles.imageContainer}>
-        <Image source={require('./amethyst.png')} style={styles.image} />
-      </View>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.headerText2}>Amethyst Hall, Lagos</Text>
-        <Text style={styles.subText1}>At Harmony Estate opposite FUNAAB.</Text>
-        <Text style={styles.subText2}>1 Bed/Self-contain: 26 units</Text>
-        <Text style={styles.subText2}>Room and Parlour: 14 units</Text>
-        <Text style={{color: '#4C28BC', marginLeft: 4, alignSelf: 'flex-start', fontFamily: 'proxima', fontSize: 15}}>N5million/unit</Text>
-        <Text style={styles.rate}>N250,000 p.a.</Text>
-        <TouchableOpacity style={styles.soldButton}>
-        <FontAwesomeIcon icon={faHouseCircleCheck} animation="beat" style={styles.soldButtonIcon} />
-          <Text style={styles.soldButtonText}>Sold Out</Text>
-        </TouchableOpacity>
-      </View>
-      </View>
-
-
-      <View style={styles.itemContainer}>
-      <View style={styles.imageContainer}>
-        <Image source={require('./phase2.png')} style={styles.image} />
-      </View>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.headerText2}>WLA Legacy Hall, Lagos</Text>
-        <Text style={styles.subText1}>At Harmony Estate opposite FUNAAB.{'\n'}<Text style={{color: '#4C28BC', fontFamily: 'proxima', fontSize: 15}}>N5million/unit</Text></Text>
-        <Text style={styles.subText2}>1 Bed/Self-contain: 26 units</Text>
-        <Text style={styles.subText2}>Room and Parlour: 14 units</Text>
-        <Text style={styles.rate}>N200,000 p.a.</Text>
-        <TouchableOpacity style={styles.soldButton}>
-        <FontAwesomeIcon icon={faHouseCircleCheck} animation="beat" style={styles.soldButtonIcon} />
-          <Text style={styles.soldButtonText}>Sold Out</Text>
-        </TouchableOpacity>
-      </View>
-      </View>
-
-      <View style={styles.itemContainer}>
-      <View style={styles.imageContainer}>
-        <Image source={require('./phase3.png')} style={styles.image} />
-      </View>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.headerText2}>MyFund Hall, Lagos</Text>
-        <Text style={styles.subText1}>At Harmony Estate opposite FUNAAB.</Text>
-        <Text style={styles.subText2}>1 Bed/Self-contain: 26 units</Text>
-        <Text style={styles.subText2}>Room and Parlour: 14 units</Text>
-        <Text style={{color: '#4C28BC', fontFamily: 'proxima', fontSize: 15}}>N5million/unit</Text>
-        <Text style={styles.rate}>N250,000 p.a.</Text>
-        <TouchableOpacity style={styles.soldButton}>
-        <FontAwesomeIcon icon={faHouseCircleCheck} animation="beat" style={styles.soldButtonIcon} />
-          <Text style={styles.soldButtonText}>Sold Out</Text>
-        </TouchableOpacity>
-      </View>
-      </View>
-
-      <View style={styles.itemContainer}>
-      <View style={styles.imageContainer}>
-        <Image source={require('./amethyst.png')} style={styles.image} />
-      </View>
-      <View style={styles.detailsContainer}>
-        <Text style={styles.headerText2}>Wonderland, Lagos</Text>
-        <Text style={styles.subText1}>At Harmony Estate opposite FUNAAB.{'\n'}<Text style={{color: '#4C28BC', fontFamily: 'proxima', fontSize: 15}}>N5million/unit</Text></Text>
-        <Text style={styles.subText2}>1 Bed/Self-contain: 26 units</Text>
-        <Text style={styles.subText2}>Room and Parlour: 14 units</Text>
-        <Text style={styles.rate}>N250,000 p.a.</Text>
-        <TouchableOpacity style={styles.soldButton}>
-        <FontAwesomeIcon icon={faHouseCircleCheck} animation="beat" style={styles.soldButtonIcon} />
-          <Text style={styles.soldButtonText}>Sold Out</Text>
-        </TouchableOpacity>
-      </View>
-      </View>
-      
-    </ScrollView>
+    {propertyModalVisible && (
+<BuyPropertyModal 
+      navigation={navigation} 
+      propertyModalVisible={propertyModalVisible} 
+      setPropertyModalVisible={setPropertyModalVisible} 
+      selectedProperty={selectedProperty} // Pass selected property details to the modal
+      setIsSuccessVisible={setIsSuccessVisible} // Pass the function here
+      />
+      )}
     </>
   );
 };
@@ -215,7 +269,7 @@ bell: {
     padding: 5,
     borderRadius: 10,
   },
-  image: {
+  propertyImage: {
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
@@ -256,11 +310,11 @@ bell: {
   },
 
   rate: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'karla',
     color: 'green',
     marginBottom: 50,
-    letterSpacing: -0.5,
+    letterSpacing: -0.7,
     alignSelf: 'flex-start',
     marginLeft: 4,
   },
@@ -292,7 +346,7 @@ bell: {
 
 
   soldButton: {
-    backgroundColor: 'white',
+    backgroundColor: 'silver',
     position: 'absolute', // Position the button absolutely inside the item container
     bottom: 10, // Adjust the value as per your requirement
     right: 10, // Adjust the value as per your requirement
@@ -307,11 +361,11 @@ bell: {
   },
 
   soldButtonIcon: {
-    color: 'silver',
+    color: 'grey',
     marginRight: 7,
   },
   soldButtonText: {
-    color: 'silver',
+    color: 'grey',
     fontFamily: 'ProductSans',
     fontSize: 14,
   },
