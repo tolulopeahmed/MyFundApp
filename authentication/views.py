@@ -1647,6 +1647,7 @@ def schedule_rent_reward(user_id, rent_reward, transaction_id, property_name):
 class BuyPropertyView(generics.CreateAPIView):
     queryset = Property.objects.all()
     serializer_class = BuyPropertySerializer
+    permission_classes = [IsAuthenticated]  # Make sure the user is authenticated
 
     def create(self, request, *args, **kwargs):
         user = request.user
@@ -1656,7 +1657,7 @@ class BuyPropertyView(generics.CreateAPIView):
         property = serializer.validated_data['property']
         num_units = serializer.validated_data['num_units']
         payment_source = serializer.validated_data.get('payment_source')
-        card_id = serializer.validated_data.get('card_id')
+        card_id = request.data.get('card_id')
 
         if property.units_available < num_units:
             return Response({"detail": "Not enough units available for purchase."}, status=status.HTTP_400_BAD_REQUEST)
@@ -1705,7 +1706,7 @@ class BuyPropertyView(generics.CreateAPIView):
 
             subject = f"Congratulations {user.first_name} on Your Property Purchase!"
             num_units_text = "unit" if num_units == 1 else "units"
-            message = f"Hi {user.first_name},\n\nYou've successfully purchased {num_units} {num_units_text} of {property.name} property.\n\nYou will earn an annual rental income of ₦{rent_reward} on this property.\n\nCongratulations on being a landlord!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+            message = f"Hi {user.first_name},\n\nYou've successfully purchased {num_units} {num_units_text} of {property.name} property valued at {property.price}.\n\nYou will earn an annual rental income of ₦{rent_reward} on this property.\n\nCongratulations on being a landlord!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
             from_email = "MyFund <info@myfundmobile.com>"
             recipient_list = [user.email]
 
@@ -1713,12 +1714,15 @@ class BuyPropertyView(generics.CreateAPIView):
 
             schedule_rent_reward(user.id, rent_reward, uuid.uuid4(), property.name)
 
-        elif payment_source == 'saved_cards':
+
+            total_price = float(property.price) * num_units
+
+
+        if payment_source == 'saved_cards':
             try:
+                # Retrieve the card information
                 card = Card.objects.get(id=card_id)
-                print("Received card_id:", card_id)
             except Card.DoesNotExist:
-                print("Card not found:", card_id)
                 return Response({"detail": "Selected card not found."}, status=status.HTTP_404_NOT_FOUND)
 
             card_number = card.card_number
@@ -1726,6 +1730,7 @@ class BuyPropertyView(generics.CreateAPIView):
             expiry_month = card.expiry_date.split('/')[0]
             expiry_year = card.expiry_date.split('/')[1]
 
+            # Define your payment gateway credentials and headers
             paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"
             headers = {
                 'Authorization': f'Bearer {paystack_secret_key}',
@@ -1743,10 +1748,13 @@ class BuyPropertyView(generics.CreateAPIView):
             }
 
             try:
+                # Make a payment request to the payment gateway
                 response = requests.post('https://api.paystack.co/charge', json=payload, headers=headers)
                 response_data = response.json()
+                print("Payment gateway response:", response_data)  # Log the response for debugging
+
                 if response.status_code == 200 and response_data.get('status') is True:
-                    # Payment successful, update the property ownership
+                    # Payment successful, update property ownership and user's properties
                     property.units_available -= num_units
                     property.owner = user
                     property.save()
@@ -1756,6 +1764,8 @@ class BuyPropertyView(generics.CreateAPIView):
 
                     rent_reward = total_price * 0.3
 
+                    transaction_id = str(uuid.uuid4())
+
                     transaction = Transaction(
                         user=user,
                         transaction_type='debit',
@@ -1764,12 +1774,15 @@ class BuyPropertyView(generics.CreateAPIView):
                         property_name=property.name,
                         property_value=property.price,
                         rent_earned_annually=rent_reward,
+                        date=timezone.now().date(),
+                        time=timezone.now().time(),
+                        transaction_id=transaction_id  # Use the generated unique transaction_id
                     )
                     transaction.save()
 
                     subject = f"Congratulations {user.first_name} on Your Property Purchase!"
                     num_units_text = "unit" if num_units == 1 else "units"
-                    message = f"Hi {user.first_name},\n\nYou've successfully purchased {num_units} {num_units_text} of {property.name} property.\n\nYou will earn an annual rental income of ₦{rent_reward} on this property.\n\nCongratulations on being a landlord!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+                    message = f"Hi {user.first_name},\n\nYou've successfully purchased {num_units} {num_units_text} of {property.name} property valued at {property.price}.\n\nYou will earn an annual rental income of ₦{rent_reward} on this property.\n\nCongratulations on being a landlord!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
                     from_email = "MyFund <info@myfundmobile.com>"
                     recipient_list = [user.email]
 
@@ -1779,6 +1792,7 @@ class BuyPropertyView(generics.CreateAPIView):
                 else:
                     return Response({"detail": "Payment failed. Please check your card details."}, status=status.HTTP_400_BAD_REQUEST)
             except Exception as e:
+                print("Payment processing error:", str(e))
                 return Response({"detail": "Payment processing error."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         elif payment_source == 'bank_transfer':

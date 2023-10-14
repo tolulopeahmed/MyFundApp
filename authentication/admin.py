@@ -45,21 +45,21 @@ admin.site.add_action(reply_to_messages)
 
 
 class BankAccountAdmin(admin.ModelAdmin):
-    list_display = ('user', 'bank_name', 'account_number', 'account_name', 'is_default')
+    list_display = ('id','user', 'bank_name', 'account_number', 'account_name', 'is_default')
     list_filter = ('is_default',)
 
 admin.site.register(BankAccount, BankAccountAdmin)
 
 class CardAdmin(admin.ModelAdmin):
-    list_display = ('user', 'bank_name', 'card_number', 'expiry_date', 'cvv', 'is_default')
+    list_display = ('id', 'user', 'bank_name', 'card_number', 'expiry_date', 'cvv', 'is_default')
     list_filter = ('is_default',)
 
 
 class AutoSaveAdmin(admin.ModelAdmin):
-    list_display = ('user', 'frequency', 'amount', 'active')  # Add 'amount' to the list of displayed fields
+    list_display = ('id','user', 'frequency', 'amount', 'active')  # Add 'amount' to the list of displayed fields
 
 class AutoInvestAdmin(admin.ModelAdmin):
-    list_display = ('user', 'frequency', 'amount', 'active')
+    list_display = ('id','user', 'frequency', 'amount', 'active')
 
 class TransactionAdmin(admin.ModelAdmin):
     list_display = (
