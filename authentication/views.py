@@ -1690,17 +1690,23 @@ class BuyPropertyView(generics.CreateAPIView):
             rent_reward = float(total_price) * 0.15
             transaction_id = uuid.uuid4()
 
+            # Generate a unique ID with 15 characters
+            def generate_short_id():
+                unique_id = str(uuid.uuid4().int)
+                return unique_id[:15]
+
+
             transaction = Transaction(
                 user=user,
-                transaction_type=f'Property ({property.name})',
+                transaction_type='credit',
                 amount=total_price,
-                description=f"Purchased {num_units} units of {property.name}",
+                description=f"{property.name}",
                 property_name=property.name,
                 property_value=property.price,
                 rent_earned_annually=rent_reward,
                 date=timezone.now().date(),
                 time=timezone.now().time(),
-                transaction_id=transaction_id
+                transaction_id = generate_short_id()
             )
             transaction.save()
 
@@ -1762,21 +1768,26 @@ class BuyPropertyView(generics.CreateAPIView):
                     user.properties += num_units
                     user.save()
 
-                    rent_reward = total_price * 0.3
+                    rent_reward = total_price * 0.075
 
                     transaction_id = str(uuid.uuid4())
+                    # Generate a unique ID with 15 characters
+                    def generate_short_id():
+                        unique_id = str(uuid.uuid4().int)
+                        return unique_id[:15]
+
 
                     transaction = Transaction(
                         user=user,
-                        transaction_type='debit',
+                        transaction_type='credit',
                         amount=total_price,
-                        description=f"Purchased {num_units} units of {property.name}",
+                        description=f"{property.name}",
                         property_name=property.name,
                         property_value=property.price,
                         rent_earned_annually=rent_reward,
                         date=timezone.now().date(),
                         time=timezone.now().time(),
-                        transaction_id=transaction_id  # Use the generated unique transaction_id
+                        transaction_id = generate_short_id()
                     )
                     transaction.save()
 
