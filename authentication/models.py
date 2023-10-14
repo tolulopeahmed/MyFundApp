@@ -180,12 +180,18 @@ class Transaction(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    date = models.DateField()
-    time = models.TimeField()
+    date = models.DateTimeField(auto_now_add=True)
+    time = models.TimeField(auto_now_add=True)
     description = models.CharField(max_length=255, default="No description available")
     transaction_id = models.CharField(max_length=255, default='', unique=True)
     service_charge = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Define a default value
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0) 
+
+    # New fields
+    property_name = models.CharField(max_length=255, default='', blank=True)
+    property_value = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
+    rent_earned_annually = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
+    rent_earned_monthly = models.DecimalField(max_digits=10, decimal_places=2, default=0, blank=True)
 
     def __str__(self):
         return f'{self.transaction_type} - {self.amount} - {self.date}'
@@ -220,3 +226,15 @@ class AutoInvest(models.Model):
         amount_invested = f"₦{self.amount}" if self.amount is not None else "Amount not available"
         return f"AutoInvest for {user_name} - {amount_invested} ({self.frequency})"
 
+
+
+class Property(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=11, decimal_places=2)
+    rent_reward = models.DecimalField(max_digits=11, decimal_places=2)
+    units_available = models.PositiveIntegerField()
+    owner = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, related_name='owned_properties')
+    
+    def __str__(self):
+        return self.name

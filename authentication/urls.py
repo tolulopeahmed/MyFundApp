@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from django.urls import re_path
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from .views import CardListCreateView, CardDetailView, UserTransactionListView, UserCardListView, AccountBalancesAPIView
+from .views import CardListCreateView, CardDetailView, BuyPropertyView, UserTransactionListView, UserCardListView, AccountBalancesAPIView
 from django.views.decorators.csrf import csrf_exempt
 from authentication.views import CustomGraphQLView
 from authentication.schema import schema  # Adjust the import path
@@ -76,6 +76,9 @@ urlpatterns = [
     path('wallet-to-savings/', views.wallet_to_savings, name='wallet_to_savings'),
     path('wallet-to-investment/', views.wallet_to_investment, name='wallet_to_investment'),
     path('withdraw-to-bank/', views.withdraw_to_local_bank, name='withdraw_to_local_bank'),
+
+    # Property-related APIs
+    path('buy-property/', BuyPropertyView.as_view(), name='buy-property'),
 
     ]
 

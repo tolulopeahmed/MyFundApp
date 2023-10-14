@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Message, BankAccount, Card, AutoInvest, Transaction, AutoSave
+from .models import CustomUser, Message, Property, BankAccount, Card, AutoInvest, Transaction, AutoSave
 
 class CustomUserAdmin(admin.ModelAdmin):
     list_display = (
@@ -70,11 +70,15 @@ class TransactionAdmin(admin.ModelAdmin):
 
 
 
+class PropertyAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'price', 'rent_reward', 'units_available']
+    list_editable = ['units_available']  # Make the units_available field editable in the list view
 
 admin.site.register(Card, CardAdmin)
 admin.site.register(Transaction, TransactionAdmin)
 admin.site.register(AutoSave, AutoSaveAdmin)
 admin.site.register(AutoInvest, AutoInvestAdmin) 
+admin.site.register(Property, PropertyAdmin)
 
 
 

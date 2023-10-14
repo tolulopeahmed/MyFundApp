@@ -283,3 +283,11 @@ class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = '__all__' 
+
+
+
+from .models import Property
+class BuyPropertySerializer(serializers.Serializer):
+    property = serializers.PrimaryKeyRelatedField(queryset=Property.objects.all())
+    num_units = serializers.IntegerField()
+    payment_source = serializers.ChoiceField(choices=['savings', 'investment', 'wallet', 'saved_cards', 'bank_transfer'])

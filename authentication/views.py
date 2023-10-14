@@ -1594,3 +1594,195 @@ def make_withdrawal_to_local_bank(user, target_bank_account, amount):
 
     return response.json()
 
+
+
+
+
+from .models import Property, Transaction
+from .serializers import BuyPropertySerializer
+
+
+from rest_framework import generics, status
+from rest_framework.response import Response
+from .models import Property, Transaction
+from .serializers import BuyPropertySerializer
+from datetime import datetime, timedelta
+from django.core.mail import send_mail
+#from myfundproject.celery import shared_task  # Import shared_task from celery
+from django.utils import timezone
+import uuid
+
+
+def schedule_rent_reward(user_id, rent_reward, transaction_id, property_name):
+    # Calculate the next payment date (365 days from now)
+    next_payment_date = timezone.now() + timedelta(days=1)
+
+    # Create a transaction for the rent reward with the unique transaction_id
+    transaction = Transaction(
+        user_id=user_id,
+        transaction_type='credit',
+        amount=rent_reward,
+        description="Annual rental income reward",
+        date=timezone.now().date(),
+        time=timezone.now().time(),
+        transaction_id=transaction_id  # Include the unique transaction_id
+    )
+    transaction.save()
+
+    # Update the user's wallet with the rent reward
+    user = transaction.user
+    user.wallet += Decimal(rent_reward)  # Convert rent_reward to Decimal
+    user.save()
+
+    # Send an email to the user for the rental income
+    subject = "You've Earned a Rental Income!"
+    message = f"Hi {user.first_name},\n\nYou've received an annual rental income of ₦{rent_reward} from your {property_name} property. Keep growing your portfolio to enjoy more returns on your investment.🥂 \n\nThank you for using MyFund!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+    from_email = "MyFund <info@myfundmobile.com>"
+    recipient_list = [user.email]
+
+    send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+
+
+class BuyPropertyView(generics.CreateAPIView):
+    queryset = Property.objects.all()
+    serializer_class = BuyPropertySerializer
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        property = serializer.validated_data['property']
+        num_units = serializer.validated_data['num_units']
+        payment_source = serializer.validated_data.get('payment_source')
+        card_id = serializer.validated_data.get('card_id')
+
+        if property.units_available < num_units:
+            return Response({"detail": "Not enough units available for purchase."}, status=status.HTTP_400_BAD_REQUEST)
+
+        total_price = float(property.price) * num_units
+
+        if payment_source == 'savings' and float(user.savings) < total_price:
+            return Response({"detail": "Insufficient funds in savings account."}, status=status.HTTP_400_BAD_REQUEST)
+        elif payment_source == 'investment' and float(user.investment) < total_price:
+            return Response({"detail": "Insufficient funds in investment account."}, status=status.HTTP_400_BAD_REQUEST)
+        elif payment_source == 'wallet' and float(user.wallet) < total_price:
+            return Response({"detail": "Insufficient funds in wallet."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if payment_source in ['savings', 'investment', 'wallet']:
+            if payment_source == 'savings':
+                user.savings = float(user.savings) - total_price
+            elif payment_source == 'investment':
+                user.investment = float(user.investment) - total_price
+            else:  # 'wallet'
+                user.wallet = float(user.wallet) - total_price
+            user.save()
+
+            property.units_available -= num_units
+            property.owner = user
+            property.save()
+
+            user.properties += num_units
+            user.save()
+
+            rent_reward = float(total_price) * 0.15
+            transaction_id = uuid.uuid4()
+
+            transaction = Transaction(
+                user=user,
+                transaction_type=f'Property ({property.name})',
+                amount=total_price,
+                description=f"Purchased {num_units} units of {property.name}",
+                property_name=property.name,
+                property_value=property.price,
+                rent_earned_annually=rent_reward,
+                date=timezone.now().date(),
+                time=timezone.now().time(),
+                transaction_id=transaction_id
+            )
+            transaction.save()
+
+            subject = f"Congratulations {user.first_name} on Your Property Purchase!"
+            num_units_text = "unit" if num_units == 1 else "units"
+            message = f"Hi {user.first_name},\n\nYou've successfully purchased {num_units} {num_units_text} of {property.name} property.\n\nYou will earn an annual rental income of ₦{rent_reward} on this property.\n\nCongratulations on being a landlord!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+            from_email = "MyFund <info@myfundmobile.com>"
+            recipient_list = [user.email]
+
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+            schedule_rent_reward(user.id, rent_reward, uuid.uuid4(), property.name)
+
+        elif payment_source == 'saved_cards':
+            try:
+                card = Card.objects.get(id=card_id)
+                print("Received card_id:", card_id)
+            except Card.DoesNotExist:
+                print("Card not found:", card_id)
+                return Response({"detail": "Selected card not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            card_number = card.card_number
+            cvv = card.cvv
+            expiry_month = card.expiry_date.split('/')[0]
+            expiry_year = card.expiry_date.split('/')[1]
+
+            paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"
+            headers = {
+                'Authorization': f'Bearer {paystack_secret_key}',
+                'Content-Type': 'application/json',
+            }
+            payload = {
+                "email": user.email,
+                "amount": total_price * 100,  # Amount in kobo
+                "card": {
+                    "number": card_number,
+                    "cvv": cvv,
+                    "expiry_month": expiry_month,
+                    "expiry_year": expiry_year,
+                },
+            }
+
+            try:
+                response = requests.post('https://api.paystack.co/charge', json=payload, headers=headers)
+                response_data = response.json()
+                if response.status_code == 200 and response_data.get('status') is True:
+                    # Payment successful, update the property ownership
+                    property.units_available -= num_units
+                    property.owner = user
+                    property.save()
+
+                    user.properties += num_units
+                    user.save()
+
+                    rent_reward = total_price * 0.3
+
+                    transaction = Transaction(
+                        user=user,
+                        transaction_type='debit',
+                        amount=total_price,
+                        description=f"Purchased {num_units} units of {property.name}",
+                        property_name=property.name,
+                        property_value=property.price,
+                        rent_earned_annually=rent_reward,
+                    )
+                    transaction.save()
+
+                    subject = f"Congratulations {user.first_name} on Your Property Purchase!"
+                    num_units_text = "unit" if num_units == 1 else "units"
+                    message = f"Hi {user.first_name},\n\nYou've successfully purchased {num_units} {num_units_text} of {property.name} property.\n\nYou will earn an annual rental income of ₦{rent_reward} on this property.\n\nCongratulations on being a landlord!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+                    from_email = "MyFund <info@myfundmobile.com>"
+                    recipient_list = [user.email]
+
+                    send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+                    return Response({"detail": "Property purchased successfully."}, status=status.HTTP_200_OK)
+                else:
+                    return Response({"detail": "Payment failed. Please check your card details."}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return Response({"detail": "Payment processing error."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        elif payment_source == 'bank_transfer':
+            # Implement bank transfer payment confirmation logic here
+            pass  # Add your implementation here
+
+        return Response({"detail": "Property purchased successfully."}, status=status.HTTP_200_OK)
