@@ -52,7 +52,7 @@ const Sidebar = ({ navigation, }) => {
           <Ionicons name="home-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
           <Text style={styles.menuText}>Buy Properties</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Wallet')}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('PropertyList')}>
           <Ionicons name="wallet-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
           <Text style={styles.menuText}>Earn Rent</Text>
         </TouchableOpacity>

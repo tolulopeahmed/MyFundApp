@@ -689,7 +689,7 @@ backgroundImage: {
   fontSize: 80,
   fontFamily: 'karla',
   textAlign: 'center',
-  letterSpacing: -4,
+  letterSpacing: -5.5,
   marginRight: 5,
   marginLeft: 5,
   marginTop: -10,

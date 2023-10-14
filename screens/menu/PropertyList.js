@@ -7,11 +7,37 @@ import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAccountBalances, fetchUserTransactions, updateAccountBalances } from '../../ReduxActions';
+import SectionTitle from '../components/SectionTitle';
+
 
 const PropertyList = ({ navigation, firstName }) => {
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
   
+
+
+
+  const iconMapping = {
+ "FUNAAB": "home-outline",
+    "Property": "home-outline",
+  };
+
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'short', day: '2-digit' };
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', options);
+  };
+  
+  // Function to format the time
+  const formatTime = (timeString) => {
+    const options = { hour: 'numeric', minute: '2-digit', hour12: true };
+    const time = new Date(`2023-01-01T${timeString}`);
+    return time.toLocaleTimeString('en-US', options);
+  };
+  
+
+
   return (
     <View style={styles.container}>
 
@@ -56,14 +82,14 @@ const PropertyList = ({ navigation, firstName }) => {
         </TouchableOpacity>
 
       <SafeAreaView style={styles.transactionContainer}>
-      <Text style={styles.todoList}>ACQUIRED PROPERTIES</Text>
+<SectionTitle>ACQUIRED PROPERTIES</SectionTitle>
 
       <View style={styles.containerHead}>
       <View style={styles.column}>
         <Text style={styles.text}>Acquired </Text>
       </View>
       <View style={styles.column}>
-        <Text style={styles.text}>          Value</Text>
+        <Text style={styles.text}> Value</Text>
       </View>
       <View style={styles.column}>
         <Text style={styles.text2}>          Yearly Rent</Text>
@@ -71,41 +97,48 @@ const PropertyList = ({ navigation, firstName }) => {
     </View>
 
       <ScrollView showsVerticalScrollIndicator={false}>
+
+
         <View style={styles.transactionsContainer}>
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="home-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>FUNAAB</Text>
-              <Text style={styles.transactionDate}>05 Mar, 2023</Text>
-            </View>
-            <View flexDirection='row' alignContent='space-between'>
-            <Text style={styles.transactionAmount}>5000000           </Text>
-            <Text style={styles.transactionAmount2}>200000</Text>
-            </View>
+  {userTransactions.some((transaction) =>
+    ["FUNAAB", "IBADAN", "OAU"].includes(transaction.description)
+  ) ? (
+    userTransactions
+      .filter((transaction) =>
+        ["FUNAAB", "IBADAN", "OAU"].includes(transaction.description)
+      )
+      .slice(0, 5)
+      .map((transaction, index) => (
+        <View key={index} style={styles.transactionItem}>
+          <Ionicons
+            name={iconMapping[transaction.description] || "arrow-down-outline"}
+            size={25}
+            style={styles.transactionIcon}
+          />
+          <View style={styles.transactionText}>
+            <Text style={styles.transactionDescription}>{transaction.description} (<Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
+            </Text>)</Text>
+            <Text style={styles.transactionDate}>{formatDate(transaction.date)} | {formatTime(transaction.time)}</Text>
+            <Text style={styles.transactionID}>ID: {transaction.transaction_id}</Text>
           </View>
-
-
-          <View style={styles.transactionItem}>
-            <Ionicons
-              name="home-outline"
-              size={25}
-              style={styles.transactionIcon}
-            />
-            <View style={styles.transactionText}>
-              <Text style={styles.transactionDescription}>IBADAN</Text>
-              <Text style={styles.transactionDate}>05 Jun, 2023</Text>
-            </View>
-            <View flexDirection='row' alignContent='space-between'>
-            <Text style={styles.transactionAmount}>5000000           </Text>
-            <Text style={styles.transactionAmount2}>200000</Text>
-            </View>
+          <View style={styles.transactionAmountContainer}>
+            <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
+      
+            <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.rent_earned_annually).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
+              </Text>
+            </Text>
           </View>
+        </View>
+      ))
+  ) : (
+    <View style={styles.noTransactionsContainer}>
+      <Text style={styles.noTransactionsMessage}>You're yet to acquire a property.</Text>
+    </View>
+  )}
+</View>
+
+   
           
-          </View>
           </ScrollView>
     </SafeAreaView>
     </View>
@@ -380,6 +413,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         height: 40,
         borderRadius: 5,
+        marginTop: 10,
       },
       column: {
         alignItems: 'center',
@@ -398,81 +432,100 @@ const styles = StyleSheet.create({
       },
 
 
-    transactionContainer: {
-      marginTop: 30,
-      flex: 1,
-        },
-
-    transactionsContainer: {
-      borderRadius: 10,
-      marginHorizontal: 20,
-      marginTop: 5,
-    },
-    transactionItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingVertical: 10,
-      borderBottomWidth: 1,
-      borderBottomColor: '#ccc',
-    },
-    transactionIcon: {
-      backgroundColor: '#DEE4FC',
-      color: '#4C28BC',
-      padding: 8,
-      borderRadius: 10,
-      marginRight: 10,
-    },
-    transactionText: {
-      flex: 1,
-      alignItems: 'flex-start',
-
-    },
-    transactionDescription: {
-      color: '#4C28BC',
-      letterSpacing: -1,
-      fontSize: 18,
-      fontFamily: 'karla',
-      marginTop: 3,
-      textAlign: 'left',
-      alignItems: 'flex-start',
-    },
-    transactionDate: {
-      fontFamily: 'karla',
-      fontSize: 12,
-      marginTop: 3,
-    },
-    transactionAmount: {
-      color: '#4C28BC',
-      fontSize: 20,
-      fontFamily: 'karla',
-      letterSpacing: -1,
-      marginTop: 10,
-      textAlign: 'right',
-    },
-
-    transactionAmount2: {
+      transactionContainer: {
+        marginTop: 15,
+        flex: 1,
+          },
+    
+      transactionsContainer: {
+        borderRadius: 10,
+        marginHorizontal: 20,
+        marginTop: 5,
+      },
+      transactionItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+      },
+      transactionIcon: {
+        backgroundColor: '#DEE4FC',
+        color: '#4C28BC',
+        padding: 8,
+        borderRadius: 10,
+        marginRight: 10,
+      },
+      transactionText: {
+        flex: 1,
+        alignItems: 'flex-start',
+    
+      },
+      transactionDescription: {
+        color: '#4C28BC',
+        letterSpacing: -1,
+        fontSize: 18,
+        fontFamily: 'karla',
+        marginTop: 3,
+        textAlign: 'left',
+        alignItems: 'flex-start',
+      },
+      transactionDate: {
+        fontFamily: 'karla',
+        fontSize: 10,
+        marginTop: 1,
+      },
+      transactionTime: {
+        fontFamily: 'karla',
+        fontSize: 10,
+        marginTop: 1,
+      },
+      transactionID: {
+        fontFamily: 'nexa',
+        fontSize: 10,
+        marginTop: 1,
+        color: '#4C28BC',
+      },
+      transactionAmount: {
         color: 'green',
-        fontSize: 20,
+        fontSize: 23,
         fontFamily: 'karla',
         letterSpacing: -1,
         marginTop: 10,
         textAlign: 'right',
       },
-    negativeAmount: {
-      color: 'red',
-      fontSize: 23,
-      fontFamily: 'karla',
-      letterSpacing: -1,
-      marginTop: 10,
-      textAlign: 'right',
-    },
+    
+      negativeAmount: {
+        color: 'brown',
+        fontSize: 23,
+        fontFamily: 'karla',
+        letterSpacing: -1,
+        marginTop: 10,
+        textAlign: 'right',
+      },
+    
+      transactionAmountContainer: {
+        textAlign: 'right',
+        
+      },
+    
 
-    transactionAmountContainer: {
-      textAlign: 'right',
-      
-    },
+    
+  noTransactionsContainer: {
+    flex: 1,
+    justifyContent: 'center', // Center vertically
+    alignItems: 'center', // Center horizontally
+  },
+  noTransactionsMessage: {
+    fontSize: 15,
+    color: 'silver',
+    fontFamily: 'karla-italic',
+    marginTop: 60,
+    marginBottom: 60,
+    textAlign: 'center', // Center the text
 
+  },
 
 });
 
