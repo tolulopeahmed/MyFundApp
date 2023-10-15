@@ -707,6 +707,7 @@ backgroundImage: {
     marginTop: -10,
     marginBottom: -10,
       color: 'yellow',
+      letterSpacing: -5.5,
     },
 
     savingsAmount3: {
@@ -719,6 +720,7 @@ backgroundImage: {
       marginTop: -10,
       marginBottom: -10,
         color: 'gold',
+        letterSpacing: -5.5,
       },
 
       savingsAmount4: {
@@ -731,6 +733,7 @@ backgroundImage: {
         marginTop: -10,
         marginBottom: -10,
           color: '#43FF8E',
+          letterSpacing: -5.5,
         },
    
 

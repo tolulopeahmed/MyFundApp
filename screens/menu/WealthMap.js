@@ -69,7 +69,18 @@ const WealthMap = ({ navigation, firstName }) => {
   
   const currentStage = wealthStages.find((stage) => stage.condition);
 
+  const stageImageSources = {
+    1: require('./9steps1.png'),
+    2: require('./9steps2.png'),
+    3: require('./9steps3.png'),
+    4: require('./9steps4.png'),
+    5: require('./9steps5.png'),
+    6: require('./9steps6.png'),
+    7: require('./9steps7.png'),
+    8: require('./9steps8.png'),
+    9: require('./9steps9.png'),
 
+  };
 
 
 
@@ -109,7 +120,7 @@ const WealthMap = ({ navigation, firstName }) => {
         <Text style={styles.greyText2}>{currentStage.description}</Text>
       </View>
 
-      <Image source={require('./9steps.png')} style={styles.image} />
+      <Image source={stageImageSources[currentStage.stage]} style={styles.image} />
 
           
       <View style={styles.buttonsContainer}>

@@ -86,13 +86,11 @@ const PropertyList = ({ navigation, firstName }) => {
 
       <View style={styles.containerHead}>
       <View style={styles.column}>
-        <Text style={styles.text}>Acquired </Text>
+        <Text style={styles.text}>Acquired [Value] </Text>
       </View>
+ 
       <View style={styles.column}>
-        <Text style={styles.text}> Value</Text>
-      </View>
-      <View style={styles.column}>
-        <Text style={styles.text2}>          Yearly Rent</Text>
+        <Text style={styles.text2}>                         Yearly Rent</Text>
       </View>
     </View>
 
@@ -116,8 +114,8 @@ const PropertyList = ({ navigation, firstName }) => {
             style={styles.transactionIcon}
           />
           <View style={styles.transactionText}>
-            <Text style={styles.transactionDescription}>{transaction.description} (<Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
-            </Text>)</Text>
+            <Text style={styles.transactionDescription}>{transaction.description} [ <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
+            </Text> ]</Text>
             <Text style={styles.transactionDate}>{formatDate(transaction.date)} | {formatTime(transaction.time)}</Text>
             <Text style={styles.transactionID}>ID: {transaction.transaction_id}</Text>
           </View>
