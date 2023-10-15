@@ -1687,7 +1687,7 @@ class BuyPropertyView(generics.CreateAPIView):
             user.properties += num_units
             user.save()
 
-            rent_reward = float(total_price) * 0.15
+            rent_reward = float(total_price) * 0.075
             transaction_id = uuid.uuid4()
 
             # Generate a unique ID with 15 characters
