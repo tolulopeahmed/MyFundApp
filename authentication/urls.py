@@ -53,7 +53,6 @@ urlpatterns = [
 
     # Accounts-related APIs
     path('get-account-balances/', AccountBalancesAPIView.as_view(), name='get-account-balances'),
-
     path('user-transactions/', UserTransactionListView.as_view(), name='user-transactions'),
 
     path('graphql/', csrf_exempt(jwt_cookie(CustomGraphQLView.as_view(graphiql=True, schema=schema)))),
@@ -76,6 +75,7 @@ urlpatterns = [
     path('wallet-to-savings/', views.wallet_to_savings, name='wallet_to_savings'),
     path('wallet-to-investment/', views.wallet_to_investment, name='wallet_to_investment'),
     path('withdraw-to-bank/', views.withdraw_to_local_bank, name='withdraw_to_local_bank'),
+    path('wallet-to-wallet/', views.initiate_wallet_transfer, name='initiate-wallet-transfer'),
 
     # Property-related APIs
     path('buy-property/', BuyPropertyView.as_view(), name='buy-property'),

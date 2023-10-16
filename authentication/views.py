@@ -356,8 +356,8 @@ from .serializers import MessageSerializer  # Create a serializer for AdminMessa
 from .models import AutoSave, Message
 from django.contrib.auth import get_user_model
 from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 from rest_framework.parsers import MultiPartParser
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -1595,11 +1595,74 @@ def make_withdrawal_to_local_bank(user, target_bank_account, amount):
     return response.json()
 
 
+from decimal import Decimal
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def initiate_wallet_transfer(request):
+    sender = request.user
+    data = request.data
+    target_email = data.get('recipient_email')  # Update to match the key in the request data
+    amount = Decimal(data.get('amount'))
 
+    # Verify that the sender has enough balance in their wallet
+    if sender.wallet < amount:
+        return Response({'error': 'Insufficient balance in the wallet.'}, status=status.HTTP_BAD_REQUEST)
 
-from .models import Property, Transaction
-from .serializers import BuyPropertySerializer
+    # Find the target user by email
+    try:
+        target_user = CustomUser.objects.get(email=target_email)
+    except CustomUser.DoesNotExist:
+        return Response({'error': 'Target user not found.'}, status=status.HTTP_NOT_FOUND)
+
+    # Perform the wallet-to-wallet transfer
+    sender.wallet -= amount
+    target_user.wallet += amount
+    sender.save()
+    target_user.save()
+
+    # Generate unique transaction IDs
+    sender_transaction_id = str(uuid.uuid4())[:16]
+    target_transaction_id = str(uuid.uuid4())[:16]
+
+    # Create transaction records for sender and target
+    sender_transaction = Transaction(
+        user=sender,
+        transaction_type='debit',
+        amount=amount,
+        date=timezone.now().date(),
+        time=timezone.now().time(),
+        description=f'Sent to User',
+        transaction_id=sender_transaction_id
+    )
+    sender_transaction.save()
+
+    target_transaction = Transaction(
+        user=target_user,
+        transaction_type='credit',
+        amount=amount,
+        date=timezone.now().date(),
+        time=timezone.now().time(),
+        description=f'Received from User',
+        transaction_id=target_transaction_id
+    )
+    target_transaction.save()
+
+    # Send confirmation emails to both users
+    subject_sender = f'You Sent ₦{amount} to {target_user.first_name}'
+    message_sender = f'Hi {sender.first_name}, \n\nYou have successfully transferred {amount} to {target_user.first_name} ({target_user.email}). \n\nThank you for using MyFund!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria.'
+    from_email_sender = "MyFund <info@myfundmobile.com>"  # Replace with a valid sender email
+    recipient_list_sender = [sender.email]
+
+    subject_target = f'You Received ₦{amount} from {sender.first_name}'
+    message_target = f'Hi {target_user.first_name}, \n\nYou have received {amount} from {sender.first_name} ({sender.email}). \n\nThank you for using MyFund!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria.'
+    from_email_target = "MyFund <info@myfundmobile.com>"  # Replace with a valid target email
+    recipient_list_target = [target_user.email]
+
+    send_mail(subject_sender, message_sender, from_email_sender, recipient_list_sender, fail_silently=False)
+    send_mail(subject_target, message_target, from_email_target, recipient_list_target, fail_silently=False)
+
+    return Response({'success': True})
 
 
 from rest_framework import generics, status
@@ -1607,8 +1670,6 @@ from rest_framework.response import Response
 from .models import Property, Transaction
 from .serializers import BuyPropertySerializer
 from datetime import datetime, timedelta
-from django.core.mail import send_mail
-#from myfundproject.celery import shared_task  # Import shared_task from celery
 from django.utils import timezone
 import uuid
 

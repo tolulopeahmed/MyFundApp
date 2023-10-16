@@ -16,8 +16,11 @@ import os
 from channels_redis.core import RedisChannelLayer
 import redis
 
+# Set your OpenAI API key
+
 
 SSL_PORT = 8443  # You can choose any available port number
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

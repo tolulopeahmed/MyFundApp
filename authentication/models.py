@@ -113,6 +113,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 from django.db import models
 from django.contrib.auth import get_user_model
 
+
+class GPTMessage(models.Model):
+    sender = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']
+
+    def __str__(self):
+        return f"From {self.sender}: {self.content}"
+    
+
 class Message(models.Model):
     sender = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='sent_messages')
     recipient = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='received_messages')
