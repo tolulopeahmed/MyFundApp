@@ -455,9 +455,9 @@ const styles = {
 
   modalSubText5: {
     fontSize: 15,
-    fontFamily: 'karla',
+    fontFamily: 'proxima',
     textAlign: 'center',
-    color: 'black',
+    color: '#4C28BC',
     textAlign: 'center',
     marginHorizontal: 45,
     letterSpacing: -0.5,

@@ -30,15 +30,16 @@ const Withdraw = ({ navigation, route }) => {
     "AutoInvest": "car-sport-outline",
     "Pending Referral Reward": "ellipsis-horizontal-circle-outline",
     "Referral Reward": "checkmark-circle",
-    "Withdrawal (Savings > Investment)": "arrow-down-outline",
-    "Withdrawal (Investment > Savings)": "arrow-down-outline",
-    "Withdrawal (Wallet > Savings)": "arrow-down-outline",
-    "Withdrawal (Wallet > Investment)": "arrow-down-outline",
+    "Withdrawal (Savings > Investment)": "arrow-up-outline",
+    "Withdrawal (Investment > Savings)": "arrow-up-outline",
+    "Withdrawal (Wallet > Savings)": "arrow-up-outline",
+    "Withdrawal (Wallet > Investment)": "arrow-up-outline",
     "Withdrawal (Savings > Bank)": "arrow-down-outline",
+    "Sent to User": "arrow-up-outline",
+    "Received from User": "arrow-down-outline",
     "Withdrawal (Investment > Bank)": "arrow-down-outline",
     "Withdrawal (Wallet > Bank)": "arrow-down-outline",
-    "Property": "home-outline",
-  };
+};
 
 
 const formatDate = (dateString) => {
@@ -247,11 +248,11 @@ const handleCloseSuccessModal = () => {
 
       <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+    ["Withdrawal (Savings > Investment)", `Sent to User`, "Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+        ["Withdrawal (Savings > Investment)", `Sent to User`,"Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (

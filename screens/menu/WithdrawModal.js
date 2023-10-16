@@ -28,7 +28,8 @@ const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisib
   const [toAccountOptions, setToAccountOptions] = useState(['Investment', 'Bank Account']);
   const [withdrawButtonDisabled, setWithdrawButtonDisabled] = useState(true); // State to control the button disabled state
   const [selectedBankAccountId, setSelectedBankAccountId] = useState(null); // Initialize with null or another suitable default value
-  
+  const [userEmail, setUserEmail] = useState('');
+
 // Inside your component function/componentDidMount
 useEffect(() => {
   dispatch(fetchUserBankAccounts());
@@ -73,6 +74,9 @@ useEffect(() => {
 
 
 
+const handleUserEmailChange = (value) => {
+  setUserEmail(value);
+};
 
 
 
@@ -104,7 +108,7 @@ useEffect(() => {
         updatedToAccountOptions = ['Savings', 'Bank Account'];
       } else if (value === 'wallet') {
         setToAccount('Savings'); // Set the default value to 'Savings'
-        updatedToAccountOptions = ['Savings', 'Investment', 'Bank Account'];
+        updatedToAccountOptions = ['Savings', 'Investment', 'Bank Account', 'Another User']; // Add "Another User" option
       } else {
         setToAccount(''); // Clear the second field if an unknown value is selected
       }
@@ -128,7 +132,35 @@ useEffect(() => {
     const clearAmount = () => {
       setAmount('');
     };
-  
+    const clearEmail = () => {
+      setUserEmail('');
+    };
+
+    const renderPresetAmounts = (amounts) => {
+      const rows = [];
+      for (let i = 0; i < amounts.length; i += 2) {
+        const row = amounts.slice(i, i + 2);
+        rows.push(row);
+      }
+    
+      return (
+        <View style={styles.presetAmountsContainer}>
+          {rows.map((row, rowIndex) => (
+            <View style={styles.presetAmountColumn} key={rowIndex}>
+              {row.map((presetAmount, index) => (
+                <TouchableOpacity style={styles.presetAmountButton} key={index} onPress={() => handleAmountButtonPress(presetAmount)}>
+                  <Text style={styles.presetAmountText}>{presetAmount.toLocaleString()}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          ))}
+        </View>
+      );
+    };
+    
+    
+    const presetAmounts = [5000, 20000, 10000, 40000, 15000, 100000];
+
     
   
     const investmentAmountField = (
@@ -210,33 +242,9 @@ useEffect(() => {
             </TouchableOpacity>
           )}
         </View>
-       
-        <View style={styles.presetAmountsContainer}>
-                <View style={styles.presetAmountColumn}>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(5000)}>
-                    <Text style={styles.presetAmountText}>5,000</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(20000)}>
-                    <Text style={styles.presetAmountText}>20,000</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.presetAmountColumn}>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(10000)}>
-                    <Text style={styles.presetAmountText}>10,000</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(40000)}>
-                    <Text style={styles.presetAmountText}>40,000</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.presetAmountColumn}>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(15000)}>
-                    <Text style={styles.presetAmountText}>15,000</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(100000)}>
-                    <Text style={styles.presetAmountText}>100,000</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+
+        {renderPresetAmounts(presetAmounts)}
+
       </>
     );
  
@@ -306,37 +314,13 @@ const bankAccountField = (
           )}
         </View>
        
-        <View style={styles.presetAmountsContainer}>
-                <View style={styles.presetAmountColumn}>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(5000)}>
-                    <Text style={styles.presetAmountText}>5,000</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(20000)}>
-                    <Text style={styles.presetAmountText}>20,000</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.presetAmountColumn}>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(10000)}>
-                    <Text style={styles.presetAmountText}>10,000</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(40000)}>
-                    <Text style={styles.presetAmountText}>40,000</Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={styles.presetAmountColumn}>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(15000)}>
-                    <Text style={styles.presetAmountText}>15,000</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.presetAmountButton} onPress={() => handleAmountButtonPress(100000)}>
-                    <Text style={styles.presetAmountText}>100,000</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+            {renderPresetAmounts(presetAmounts)}
+
   </>
 );
 
-  
-  
+
+
 
   const handleAmountButtonPress = (presetAmount) => {
     handleAmountPreset(presetAmount);
@@ -396,16 +380,19 @@ const bankAccountField = (
   
     if (fromAccount === 'Savings' && toAccount === 'Investment') {
       handleSavingsToInvestmentTransfer();
-    } else if (fromAccount === 'Investment' && toAccount === 'Savings') {
+    } else if (fromAccount === 'investment' && toAccount === 'Savings') {
       handleInvestmentToSavingsTransfer();
-    } else if (fromAccount === 'Wallet' && toAccount === 'Savings') {
+    } else if (fromAccount === 'wallet' && toAccount === 'Savings') {
       handleWalletToSavingsTransfer();
-    } else if (fromAccount === 'Wallet' && toAccount === 'Investment') {
+    } else if (fromAccount === 'wallet' && toAccount === 'Investment') {
       handleWalletToInvestmentTransfer();
+    } else if (fromAccount === 'wallet' && toAccount === 'Another User') {
+      transferToWallet();
     } else {
       handleTransferToBankAccount();
     }
   };
+  
   
   
 
@@ -745,11 +732,78 @@ const bankAccountField = (
         Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
       }
     };
-    
 
-    console.log('formatted Amount:', formattedAmount); // Log the API response
-    console.log('target_bank_account_id::', selectedBankAccountId); // Log the API response
-    console.log('source_account::', fromAccount); // Log the API response
+
+    
+    const transferToWallet = async () => {
+      try {
+        const requestedAmount = parseFloat(amount.replace(/,/g, ''));
+        if (userEmail === userInfo.email) {
+          // User is trying to send money to themselves
+          Alert.alert('Send Error', "You cannot send money to yourself. Please enter another user's email");
+          return;
+        }
+    
+        // Prepare the data to send to the backend API
+        const requestData = {
+          recipient_email: userEmail,  // Replace with the recipient's email
+          amount: requestedAmount,
+        };
+    
+        console.log('Request Data:', requestData);
+    
+        const response = await axios.post(
+          `${ipAddress}/api/wallet-to-wallet/`,
+          requestData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${userInfo.token}`,
+            },
+          }
+        );
+    
+        console.log('API Response:', response);
+    
+        if (response.status === 200) {
+          const responseData = response.data;
+          // Handle success, e.g., show a success message
+          setIsSuccessVisible(true);
+          setWithdrawModalVisible(false);
+          setProcessing(false);
+          dispatch(updateAccountBalances(responseData.newAccountBalances));
+          dispatch(fetchAccountBalances());
+          dispatch(fetchUserTransactions());
+          Alert.alert('Success!', `You've successfully transferred N${requestedAmount} to ${userEmail}.`);
+
+        } else {
+          // Handle API errors here and show appropriate alerts
+          if (response.status === 400) {
+            setProcessing(false);
+            Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+          } else if (response.status === 401) {
+            setProcessing(false);
+            Alert.alert('Error', 'You are not authorized. Please login again.');
+          } else {
+            setProcessing(false);
+            Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+          }
+        }
+      } catch (error) {
+        console.error('Wallet Transfer Error:', error);
+        // Handle network or other errors here and show an appropriate alert
+        Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+      } finally {
+        // Reset the processing state
+        setProcessing(false);
+      }
+    };
+    
+    console.log('formatted Amount:', amount); // Log the API response
+    console.log('recipient_email::', userEmail); // Log the API response
+    console.log('fromAccount::', fromAccount); // Log the API response
+    console.log('toAccount::', toAccount); // Log the API response
+    console.log('sender Email::', userInfo.email); // Log the API response
 
 
   return (
@@ -835,7 +889,46 @@ const bankAccountField = (
           {toAccount === 'Investment' && investmentAmountField}
                 {toAccount === 'Savings' && savingsAmountField}
                 {toAccount === 'Bank Account' && bankAccountField }
+                {toAccount === 'Another User' && (
+                  <>
+                    <Text style={styles.modalSubText2} alignSelf='flex-start' marginTop={20}>Enter User's Email</Text>
+                    <View style={styles.inputContainer2}>
+                      <TextInput
+                        style={styles.amountInput}
+                        placeholder="Make sure the email is correct"
+                        keyboardType="email-address"
+                        onChangeText={(value) => handleUserEmailChange(value)}
+                        value={userEmail}
+                        placeholderTextColor="silver"
+                      />
+                          {userEmail !== '' && (
+                        <TouchableOpacity onPress={clearEmail}>
+                          <Ionicons name="close-circle-outline" size={24} color="grey" marginRight={10} />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                    <Text style={styles.modalSubText2} alignSelf='flex-start' marginTop={20}>Amount</Text>
+                    <View style={styles.inputContainer2}>
+                      <Text style={styles.nairaSign}>₦</Text>
+                      <TextInput
+                        style={styles.amountInput}
+                        placeholder="e.g. ₦20,000"
+                        keyboardType="numeric"
+                        onChangeText={(value) => handleAmountChange(value)}
+                        value={amount}
+                        placeholderTextColor="silver"
+                      />
+                      {amount !== '' && (
+                        <TouchableOpacity onPress={clearAmount}>
+                          <Ionicons name="close-circle-outline" size={24} color="grey" marginRight={10} />
+                        </TouchableOpacity>
+                      )}
+                      
+                    </View>
+                    {renderPresetAmounts(presetAmounts)}
 
+                  </>
+                )}
             
 
 
@@ -843,27 +936,35 @@ const bankAccountField = (
 
 
            <View style={styles.buttonsContainer}>
-                  <TouchableOpacity
-                      style={[
-                        styles.primaryButton,
-                        {
-                          backgroundColor: withdrawButtonDisabled
-                            ? 'grey'
-                            : '#4C28BC',
-                        },
-                      ]}
-                      onPress={handleWithdraw}
-                      disabled={withdrawButtonDisabled}
-                    >
-                      {processing ? (
-                      <ActivityIndicator color="white" style={styles.activityIndicator} />
-                      ) : (
-                        <>
-                        <Ionicons name="arrow-down" size={24} color="white" style={{ marginRight: 10 }} />
-                        <Text style={styles.primaryButtonText}>Withdraw</Text>
-                        </>
+           <TouchableOpacity
+                    style={[
+                      styles.primaryButton,
+                      {
+                        backgroundColor: withdrawButtonDisabled ? 'grey' : '#4C28BC',
+                      },
+                    ]}
+                    onPress={handleWithdraw}
+                    disabled={withdrawButtonDisabled}
+                  >
+                    {processing ? (
+                      <><ActivityIndicator color="white" style={styles.activityIndicator} /> 
+                      <Text style={styles.primaryButtonText}>  Processing... Please wait...</Text>
+                      </>
+                    ) : (
+                      <>
+                        {toAccount === "Another User" ? (
+                          <Ionicons name="send" size={21} color="white" style={{ marginRight: 10 }} />
+                        ) : (
+                          <Ionicons name="arrow-down" size={24} color="white" style={{ marginRight: 10 }} />
                         )}
-                    </TouchableOpacity>
+                        <Text style={styles.primaryButtonText}>
+                          {toAccount === "Another User" ?   " Send to User" : "Withdraw"}
+                        </Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+
+
                   </View>
                   </View>
 
