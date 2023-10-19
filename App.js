@@ -33,6 +33,7 @@ import { UserProvider } from './UserContext';
 import store from './ReduxStore';
 import { Provider } from 'react-redux';
 
+
 const Stack = createStackNavigator();
 
 const App = ({ styles, darkModeStyles, }) => {

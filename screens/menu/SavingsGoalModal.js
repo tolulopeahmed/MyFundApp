@@ -10,8 +10,8 @@ import { updateSavingsGoal } from '../../ReduxActions';
 
 
 const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible }) => {
-  const [frequency, setFrequency] = useState('');
-  const [year, setYear] = useState('');
+  const [frequency, setFrequency] = useState('Real Estate');
+  const [year, setYear] = useState('5');
   const [amount, setAmount] = useState('');
   const [isUpdateEnabled, setIsUpdateEnabled] = useState(false); // State for button enabling
   const dispatch = useDispatch(); // Get the dispatch function from Redux

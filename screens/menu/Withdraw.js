@@ -21,6 +21,39 @@ const Withdraw = ({ navigation, route }) => {
   const [defaultFromAccount, setDefaultFromAccount] = useState('Savings'); // Set the initial default account
   const [fromAccount, setFromAccount ] = useState(defaultFromAccount); // Set the default account from prop
 
+
+  // Function to set the default 'fromAccount' based on the selected type
+  const setDefaultFromAccountByType = (type) => {
+    switch (type) {
+      case 'savings':
+        setDefaultFromAccount('Savings');
+        break;
+      case 'investment':
+        setDefaultFromAccount('Investment');
+        break;
+      case 'wallet':
+        setDefaultFromAccount('Wallet');
+        break;
+      default:
+        setDefaultFromAccount('Savings'); // Default to Savings if none matches
+        break;
+    }
+  };
+
+  useEffect(() => {
+    console.log("useEffect is running!"); // Add this line for debugging
+    if (route.params?.withdrawModalVisible) {
+      setWithdrawModalVisible(true);
+      const selectedWithdrawType = route.params.selectedWithdrawType;
+      console.log("Selected Withdraw Type:", selectedWithdrawType);
+      setDefaultFromAccountByType(selectedWithdrawType);
+    }
+    // ... (other useEffect code)
+  }, [route.params]);
+  
+
+
+
   
   const iconMapping = {
     "Card Successful": "card-outline",
@@ -61,13 +94,6 @@ const handleCloseSuccessModal = () => {
 };
 
 
-  useEffect(() => {
-    if (route.params?.withdrawModalVisible) {
-      setWithdrawModalVisible(true);
-    }
-    dispatch(fetchAccountBalances()); // Replace with your action to fetch account balances
-    dispatch(fetchUserTransactions()); // Replace with your action to fetch user transactions
-  }, [route.params]);
 
 
   return (
@@ -106,8 +132,10 @@ const handleCloseSuccessModal = () => {
       <TouchableOpacity
       style={styles.quickWithdrawButton}
       onPress={() => {
-        setFromAccount('Savings'); // Set the fromAccount to 'Investment'
+        setDefaultFromAccountByType('savings'); // Set the type to 'savings'
         setWithdrawModalVisible(true);
+        setFromAccount('Savings'); // Set the fromAccount to 'Savings'
+
       }}    >
       <Text style={styles.quickWithdrawText}>Withdraw</Text>
     </TouchableOpacity>
@@ -140,8 +168,9 @@ const handleCloseSuccessModal = () => {
       <TouchableOpacity
       style={styles.quickWithdrawButton}
       onPress={() => {
-        setFromAccount('Investment'); // Set the fromAccount to 'Investment'
+        setDefaultFromAccountByType('investment'); // Set the type to 'savings'
         setWithdrawModalVisible(true);
+        setFromAccount('Investment'); // Set the fromAccount to 'Investment'
       }}
       >
       <Text style={styles.quickWithdrawText}>Withdraw</Text>
@@ -173,13 +202,18 @@ const handleCloseSuccessModal = () => {
 
         <View style={styles.quickWithdrawButtonContainer}>
         <TouchableOpacity
-          style={styles.quickWithdrawButton2}
-          onPress={() => {
-            Alert.alert('Sell Property', "You're yet to acquire any property. Keep growing your funds.");
-          }}
-        >
-          <Text style={styles.quickWithdrawText}>Sell Property</Text>
-        </TouchableOpacity>
+              style={styles.quickWithdrawButton2}
+              onPress={() => {
+                if (accountBalances.properties == 0) {
+                  Alert.alert('Sell Property', "You're yet to acquire any property. Keep growing your funds.");
+                } else {
+                  navigation.navigate('PropertyList');
+                }
+              }}
+            >
+              <Text style={styles.quickWithdrawText}>Sell Property</Text>
+            </TouchableOpacity>
+
     </View>
         </View>
       </ImageBackground>
@@ -214,12 +248,15 @@ const handleCloseSuccessModal = () => {
        // fromAccount={fromAccount}
         />
 
+
       <View style={styles.quickWithdrawButtonContainer}>
       <TouchableOpacity
       style={styles.quickWithdrawButton}
       onPress={() => {
+        setDefaultFromAccountByType('wallet'); 
         setWithdrawModalVisible(true);
-        setDefaultFromAccount('Wallet');
+        setFromAccount('Wallet'); // Set the fromAccount to 'Wallet'
+
       }}
       >
       <Text style={styles.quickWithdrawText}>Withdraw</Text>

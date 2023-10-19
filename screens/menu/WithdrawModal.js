@@ -738,6 +738,12 @@ const bankAccountField = (
     const transferToWallet = async () => {
       try {
         const requestedAmount = parseFloat(amount.replace(/,/g, ''));
+        if (!isValidEmail(userEmail)) {
+          // Check for invalid email format
+          Alert.alert('Send Error', "Invalid email format. Please enter a valid email.");
+          return;
+        }
+    
         if (userEmail === userInfo.email) {
           // User is trying to send money to themselves
           Alert.alert('Send Error', "You cannot send money to yourself. Please enter another user's email");
@@ -775,29 +781,38 @@ const bankAccountField = (
           dispatch(fetchAccountBalances());
           dispatch(fetchUserTransactions());
           Alert.alert('Success!', `You've successfully transferred N${requestedAmount} to ${userEmail}.`);
-
-        } else {
-          // Handle API errors here and show appropriate alerts
-          if (response.status === 400) {
-            setProcessing(false);
-            Alert.alert('Error', 'Invalid input. Please check your data and try again.');
-          } else if (response.status === 401) {
-            setProcessing(false);
-            Alert.alert('Error', 'You are not authorized. Please login again.');
-          } else {
-            setProcessing(false);
-            Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
-          }
         }
       } catch (error) {
         console.error('Wallet Transfer Error:', error);
-        // Handle network or other errors here and show an appropriate alert
-        Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
-      } finally {
-        // Reset the processing state
-        setProcessing(false);
+        setProcessing(false); // Reset the processing state
+    
+        if (error.response && error.response.status === 404) {
+          // Handle the case when the recipient email is not found
+          Alert.alert('User Not Found!', 'Recipient email not found on the platform. Please check the email and try again.');
+        } else if (error.response && error.response.status === 400) {
+          // Handle API errors when the input is invalid
+          Alert.alert('Error', 'Invalid input. Please check your entry and try again.');
+        } else if (error.response && error.response.status === 401) {
+          // Handle unauthorized access
+          Alert.alert('Error', 'You are not authorized. Please login again.');
+        } else if (error.response && error.response.status === 500) {
+          // Handle other API errors and show an appropriate alert
+          Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+        } else {
+          // Handle other unanticipated errors
+          Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+        }
       }
     };
+    
+    
+
+    const isValidEmail = (email) => {
+      // Regular expression to check for a valid email format
+      const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+      return emailRegex.test(email);
+    };
+    
     
     console.log('formatted Amount:', amount); // Log the API response
     console.log('recipient_email::', userEmail); // Log the API response
@@ -806,6 +821,13 @@ const bankAccountField = (
     console.log('sender Email::', userInfo.email); // Log the API response
 
 
+
+
+
+
+
+
+    
   return (
 <>
       <Modal

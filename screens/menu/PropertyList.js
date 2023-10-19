@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 import { View, Text, SafeAreaView, ScrollView, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faHouseCircleCheck } from '@fortawesome/free-solid-svg-icons';import { ProgressBar } from 'react-native-paper';
+import { faHouseCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAccountBalances, fetchUserTransactions, updateAccountBalances } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
+import SellPropertyModal from './SellPropertyModal';
 
-
-const PropertyList = ({ navigation, firstName }) => {
+const PropertyList = ({ navigation, properties }) => {
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
-  
+  const [sellPropertyModalVisible, setSellPropertyModalVisible] = useState(false); // define modalVisible state
+  const [selectedProperty, setSelectedProperty] = useState(null); // Add this state variable
 
 
 
@@ -60,6 +61,8 @@ const PropertyList = ({ navigation, firstName }) => {
       <Subtitle>Buy more or sell your acquired properties</Subtitle>
 
 
+      <ScrollView showsVerticalScrollIndicator={false}>
+
       <View style={styles.propertyContainer}>
         <Ionicons name="home-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
@@ -81,7 +84,7 @@ const PropertyList = ({ navigation, firstName }) => {
           <Text style={styles.quickSaveText}>Buy Property</Text>
         </TouchableOpacity>
 
-      <SafeAreaView style={styles.transactionContainer}>
+      <View style={styles.transactionContainer}>
 <SectionTitle>ACQUIRED PROPERTIES</SectionTitle>
 
       <View style={styles.containerHead}>
@@ -94,7 +97,6 @@ const PropertyList = ({ navigation, firstName }) => {
       </View>
     </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
 
 
         <View style={styles.transactionsContainer}>
@@ -105,7 +107,6 @@ const PropertyList = ({ navigation, firstName }) => {
       .filter((transaction) =>
         ["FUNAAB", "IBADAN", "OAU"].includes(transaction.description)
       )
-      .slice(0, 5)
       .map((transaction, index) => (
         <View key={index} style={styles.transactionItem}>
           <Ionicons
@@ -125,6 +126,16 @@ const PropertyList = ({ navigation, firstName }) => {
             <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.rent_earned_annually).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
               </Text>
             </Text>
+            <TouchableOpacity
+                  style={styles.sellPropertyButton}
+                  onPress={() => {
+                    setSelectedProperty(transaction); // Set the selected property to the current transaction
+                    setSellPropertyModalVisible(true);
+                  }}
+                >
+                <Text style={styles.sellPropertyButtonText}>Sell Property</Text>
+              </TouchableOpacity>
+
           </View>
         </View>
       ))
@@ -136,9 +147,20 @@ const PropertyList = ({ navigation, firstName }) => {
 </View>
 
    
-          
-          </ScrollView>
-    </SafeAreaView>
+        
+<SellPropertyModal 
+        navigation={navigation} 
+        sellPropertyModalVisible={sellPropertyModalVisible} 
+        setSellPropertyModalVisible={setSellPropertyModalVisible} 
+        properties={properties} // Pass the properties as a prop
+        transactions={userTransactions} // Pass the transactions as a prop
+        selectedProperty={selectedProperty} // Pass the selected property to the modal
+
+        />
+
+    </View>
+    </ScrollView>
+
     </View>
   );
 };
@@ -522,8 +544,25 @@ const styles = StyleSheet.create({
     marginTop: 60,
     marginBottom: 60,
     textAlign: 'center', // Center the text
-
   },
+
+  sellPropertyButton: {
+    flexDirection: 'row',
+    backgroundColor: 'silver',
+    height: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 4,
+    width: '52%',
+    alignSelf: 'flex-end'
+  },
+  sellPropertyButtonText: {
+    color: '#fff',
+    fontSize: 9,
+    fontFamily: 'ProductSans',
+    paddingHorizontal: 7,
+  },
+
 
 });
 
