@@ -1613,7 +1613,7 @@ def initiate_wallet_transfer(request):
     try:
         target_user = CustomUser.objects.get(email=target_email)
     except CustomUser.DoesNotExist:
-        return Response({'error': 'Target user not found.'}, status=status.HTTP_NOT_FOUND)
+        return Response({'error': 'Target user not found.'}, status=status.HTTP_404_NOT_FOUND)  # Use the correct status code
 
     # Perform the wallet-to-wallet transfer
     sender.wallet -= amount
@@ -1650,12 +1650,12 @@ def initiate_wallet_transfer(request):
 
     # Send confirmation emails to both users
     subject_sender = f'You Sent ₦{amount} to {target_user.first_name}'
-    message_sender = f'Hi {sender.first_name}, \n\nYou have successfully transferred {amount} to {target_user.first_name} ({target_user.email}). \n\nThank you for using MyFund!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria.'
+    message_sender = f'Hi {sender.first_name}, \n\nYou have successfully transferred ₦{amount} to {target_user.first_name} ({target_user.email}). \n\nThank you for using MyFund!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria.'
     from_email_sender = "MyFund <info@myfundmobile.com>"  # Replace with a valid sender email
     recipient_list_sender = [sender.email]
 
     subject_target = f'You Received ₦{amount} from {sender.first_name}'
-    message_target = f'Hi {target_user.first_name}, \n\nYou have received {amount} from {sender.first_name} ({sender.email}). \n\nThank you for using MyFund!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria.'
+    message_target = f'Hi {target_user.first_name}, \n\nYou have received ₦{amount} from {sender.first_name} ({sender.email}). \n\nThank you for using MyFund!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria.'
     from_email_target = "MyFund <info@myfundmobile.com>"  # Replace with a valid target email
     recipient_list_target = [target_user.email]
 
