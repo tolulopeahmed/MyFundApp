@@ -11,10 +11,12 @@ class CustomUserAdmin(admin.ModelAdmin):
     list_filter = ('is_staff', 'is_active')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal Info', {'fields': ('first_name', 'last_name', 'phone_number', 'profile_picture', 'referral')}),
+        ('Personal Info', {'fields': ('first_name', 'last_name', 'phone_number', 'profile_picture')}),
         ('Permissions', {'fields': ('is_staff', 'is_active', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Account Balances', {'fields': ('savings', 'investment', 'properties', 'wallet')})  # Add account balances fields
+        ('Account Balances', {'fields': ('savings', 'investment', 'properties', 'wallet')}),  # Add account balances fields
+        ('Referral', {'fields': ('pending_referral_reward',)}),
     )
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -23,6 +25,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     )
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
+
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
@@ -68,11 +71,12 @@ class TransactionAdmin(admin.ModelAdmin):
     list_filter = ('transaction_type', 'date')
     search_fields = ('user__email', 'description', 'transaction_id', 'transaction_type', 'amount')
 
-
-
 class PropertyAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'price', 'rent_reward', 'units_available']
     list_editable = ['units_available']  # Make the units_available field editable in the list view
+
+
+
 
 admin.site.register(Card, CardAdmin)
 admin.site.register(Transaction, TransactionAdmin)

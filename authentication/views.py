@@ -31,8 +31,8 @@ from .serializers import ProfilePictureUpdateSerializer
 from rest_framework.parsers import FileUploadParser
 from datetime import datetime
 from django.utils.safestring import mark_safe
-
-
+from django.db.models import F
+import uuid
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -42,12 +42,42 @@ def signup(request):
     if serializer.is_valid():
         user = serializer.save()
 
+        # Check if the user has a referrer (referral relationship)
+        if user.referral:
+            transaction_id = str(uuid.uuid4())[:9]  # Generate a UUID and truncate it to 10 characters
+
+            # Create pending credit transactions for both the referrer and the referred user
+            credit_transaction_referrer = Transaction.objects.create(
+                user=user.referral,
+                transaction_type='credit',
+                amount=1000,
+                description="Referral Reward (Pending)",
+                transaction_id=transaction_id,
+            )
+            credit_transaction_referrer.save()
+
+            transaction_id = str(uuid.uuid4())[:9]  # Generate a UUID and truncate it to 10 characters
+            credit_transaction_referred = Transaction.objects.create(
+                user=user,
+                transaction_type='credit',
+                amount=1000,
+                description="Referral Reward (Pending)",
+                transaction_id=transaction_id,
+            )
+            credit_transaction_referred.save()
+
+            # Update the user and referrer's pending reward
+            user.referral.pending_referral_reward = F('pending_referral_reward') + 1000
+            user.pending_referral_reward = F('pending_referral_reward') + 1000
+
+            user.referral.save()
+            
         # Generate OTP (you can use your own logic here)
         otp = generate_otp()
         user.otp = otp
         user.save()
 
-        # Send OTP to user's email
+        # Send OTP to the user's email
         send_otp_email(user, otp)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -84,12 +114,9 @@ def generate_otp():
     return ''.join(random.choices('0123456789', k=6))
 
 def send_otp_email(user, otp):
-    subject = "[OTP] Did you just signup?"
-
+    subject = "[OTP] Did You Just Signup?"
     current_year = datetime.now().year  # Get the current year
-
     logo_url = "https://drive.google.com/uc?export=view&id=1MorbW_xLg4k2txNQdhUnBVxad8xeni-N"
-
     message = f"""
     <p><img src="{logo_url}" alt="MyFund Logo" style="display: block; margin: 0 auto; max-width: 100px; height: auto;"></p>
 
@@ -101,20 +128,21 @@ def send_otp_email(user, otp):
 
     <p>If you did not request to create a MyFund account, kindly ignore this email. Otherwise, buckle up, you're in for a treat!</p>
 
-    <p>Cheers!<br>Your friends at MyFund</p>
+    <p>Cheers! 🥂</p>
 
     
     ...
-    <p>Save, Buy Properties, Earn Rent<br>
-    13, Gbajabiamila Street, Ayobo, Lagos.<br>
-    www.myfundmobile.com</p>
+    <p>MyFund <br>
+    Save, Buy Properties, Earn Rent<br>
+    www.myfundmobile.com<br>
+    13, Gbajabiamila Street, Ayobo, Lagos.</p>
 
     <p>MyFund ©{current_year}</p>
 
 
     """
 
-    from_email = settings.EMAIL_HOST_USER
+    from_email = "MyFund <info@myfundmobile.com>"
     recipient_list = [user.email]
 
     send_mail(subject, mark_safe(message), from_email, recipient_list, html_message=mark_safe(message))
@@ -813,6 +841,8 @@ def quicksave(request):
         user.savings += int(amount)
         user.save()
 
+        # Call the confirm_referral_rewards method here
+        user.confirm_referral_rewards()
 
         # Send a confirmation email
         subject = "QuickSave Successful!"
@@ -830,7 +860,7 @@ def quicksave(request):
             date=timezone.now().date(),
             time=timezone.now().time(),
             description=f"QuickSave",
-            transaction_id=paystack_response.get("data", {}).get("reference"),
+            transaction_id=paystack_response.get("data", {}).get("reference"), 
         )
 
         # Return a success response
@@ -926,6 +956,9 @@ def autosave(request):
                     description=f"AutoSave",
                     transaction_id=paystack_response.get("data", {}).get("reference"),
                 )
+
+                # Call the confirm_referral_rewards method here
+                user.confirm_referral_rewards()
 
                 # Send a confirmation email
                 subject = "AutoSave Successful!"
@@ -1054,6 +1087,9 @@ def quickinvest(request):
         user.investment += int(amount)
         user.save()
 
+        # Call the confirm_referral_rewards method here
+        user.confirm_referral_rewards()
+
         # Send a confirmation email
         subject = "QuickInvest Successful!"
         message = f"Well done {user.first_name},\n\nYour QuickInvest was successful and ₦{amount} has been successfully added to your INVESTMENTS account. \n\nKeep growing your funds.🥂\n\n\nMyFund \nSave, Buy Properties, Earn Rent \nwww.myfundmobile.com \n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
@@ -1167,6 +1203,9 @@ def autoinvest(request):
                     description=f"AutoInvest",
                     transaction_id=paystack_response.get("data", {}).get("reference"),
                 )
+
+                # Call the confirm_referral_rewards method here
+                user.confirm_referral_rewards()
 
                 # Send a confirmation email
                 subject = "AutoInvest Successful!"

@@ -5,15 +5,31 @@ from .models import CustomUser, Message
 
 
 class SignupSerializer(serializers.ModelSerializer):
+    referral = serializers.CharField(max_length=40, required=False)  # Allow referral code to be optional
+
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'email', 'phone_number', 'password', 'referral']
 
     def create(self, validated_data):
+        # Extract the referral code and remove it from the data dictionary
+        referral_code = validated_data.pop('referral', None)
+
+        # Create a new user
         password = validated_data.pop('password')
         user = CustomUser(**validated_data)
         user.set_password(password)
         user.save()
+
+        # Check if a referrer exists with the given referral code
+        if referral_code:
+            try:
+                referrer = CustomUser.objects.get(email=referral_code)
+                user.referral = referrer
+                user.save()
+            except CustomUser.DoesNotExist:
+                pass  # Handle invalid referral codes here
+    
         return user
 
 class ConfirmOTPSerializer(serializers.Serializer):

@@ -38,6 +38,7 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
+import uuid
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
@@ -49,6 +50,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     reset_token_expires = models.DateTimeField(null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     is_confirmed = models.BooleanField(default=False)
+
+    referral = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    pending_referral_reward = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     
     myfund_pin = models.CharField(max_length=4, null=True, blank=True)
 
@@ -107,6 +111,62 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         msg = EmailMultiAlternatives(subject, text_message, from_email, recipient_list)
         msg.attach_alternative(html_message, "text/html")
         msg.send()
+
+    def confirm_referral_rewards(self):
+        if self.savings >= 20000 or self.investment > 0:
+            # Check if there is a pending referral reward
+            if self.pending_referral_reward > 0:
+                # Create a confirmed credit transaction for the referrer
+                referrer_transaction_id = str(uuid.uuid4())[:9]  # Generate a unique UUID for the referrer
+                credit_transaction_referrer = Transaction.objects.create(
+                    user=self,
+                    transaction_type='credit',
+                    amount=1000,
+                    description="Referral Reward (Confirmed)",
+                    transaction_id=referrer_transaction_id,
+                )
+                credit_transaction_referrer.save()
+
+                # Create a confirmed credit transaction for the referred user
+                referred_transaction_id = str(uuid.uuid4())[:9]  # Generate a unique UUID for the referred user
+                credit_transaction_referred = Transaction.objects.create(
+                    user=self.referral,
+                    transaction_type='credit',
+                    amount=1000,
+                    description="Referral Reward (Confirmed)",
+                    transaction_id=referred_transaction_id,
+                )
+                credit_transaction_referred.save()
+
+                # Deduct the credited amount from the pending referral rewards
+                self.pending_referral_reward -= 1000
+                self.referral.pending_referral_reward -= 1000
+
+                # Update the wallets of both users
+                self.wallet += 1000
+                self.referral.wallet += 1000
+
+                # Save the changes to the database for both users
+                self.save()
+                self.referral.save()
+
+                # Debugging: Print the updated wallet balances
+                print(f"Referrer's wallet balance after credit: {self.wallet}")
+                print(f"Referred user's wallet balance after credit: {self.referral.wallet}")
+
+                # Send confirmation emails to both the referrer and referred user
+                self.send_referral_confirmation_email(referrer_transaction_id, self.referral)
+                self.referral.send_referral_confirmation_email(referred_transaction_id, self)
+
+
+    def send_referral_confirmation_email(self, transaction_id, recipient_user):
+        subject = "Referral Reward Confirmation"
+        message = f"Hi {recipient_user.first_name},\n\nYou have received a referral reward of ₦{self.pending_referral_reward} in your MyFund wallet.\n\nThank you for using MyFund!\n\nKeep growing your funds.🥂\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+        from_email = "MyFund <info@myfundmobile.com>"
+        recipient_list = [recipient_user.email]
+
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
 
 
 
