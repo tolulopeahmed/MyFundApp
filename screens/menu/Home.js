@@ -41,8 +41,6 @@ const Home = ({ navigation, route}) => {
     "AutoSave": "car-outline",
     "QuickInvest": "trending-up-outline",
     "AutoInvest": "car-sport-outline",
-    "Pending Referral Reward": "ellipsis-horizontal-circle-outline",
-    "Referral Reward": "checkmark-circle",
     "Withdrawal (Savings > Investment)": "arrow-down-outline",
     "Withdrawal (Investment > Savings)": "arrow-down-outline",
     "Withdrawal (Wallet > Savings)": "arrow-down-outline",
@@ -51,6 +49,8 @@ const Home = ({ navigation, route}) => {
     "Withdrawal (Investment > Bank)": "arrow-down-outline",
     "Withdrawal (Wallet > Bank)": "arrow-down-outline",
     "Property": "home-outline",
+    "Referral Reward (Pending)": "ellipsis-horizontal-circle-outline",
+    "Referral Reward (confirmed)": "checkmark-circle",
   };
 
 
@@ -484,11 +484,11 @@ const formatTime = (timeString) => {
 
 <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["QuickSave", "AutoSave", "Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+    ["QuickSave", "AutoSave", "Referral Reward (confirmed)", "Referral Reward (Pending)", "Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["QuickSave", "AutoSave", "Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+        ["QuickSave", "AutoSave", "Referral Reward (confirmed)","Referral Reward (Pending)","Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (

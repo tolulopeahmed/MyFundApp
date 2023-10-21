@@ -34,6 +34,8 @@ const Notifications = ({ navigation, firstName }) => {
     "Withdrawal (Investment > Bank)": "arrow-down-outline",
     "Withdrawal (Wallet > Bank)": "arrow-down-outline",
     "Property": "home-outline",
+    "Referral Reward (Pending)": "ellipsis-horizontal-circle-outline",
+    "Referral Reward (confirmed)": "checkmark-circle",
   };
   
 

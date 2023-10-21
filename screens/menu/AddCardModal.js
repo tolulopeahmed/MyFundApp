@@ -439,7 +439,7 @@ An initial charge of ₦50 will be made and returned back as to your savings acc
                   <Image source={require('./paystack.png')} style={styles.image} />
                 )}
                 <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
-                  {processing ? 'Checking Card... Adding Card...' : 'Proceed'}
+                  {processing ? 'Adding Card...' : 'Proceed'}
                 </Text>
               </TouchableOpacity>      
               </View>

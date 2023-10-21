@@ -32,6 +32,7 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
   const [showSubmitButton, setShowSubmitButton] = useState(false);
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [isCardsAvailable, setIsCardsAvailable] = useState(userCards.length > 0);
 
   const dispatch = useDispatch();
 
@@ -62,12 +63,23 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
       setShowBuyPropertyButton(true);
       setShowCardSection(true);
       setShowSubmitButton(false);
+  
+      // Check if no cards are added and disable the button accordingly
+      if (userCards.length === 0) {
+        setIsContinueButtonDisabled(true);
+      } else {
+        setIsContinueButtonDisabled(false);
+      }
     } else if (frequency === 'Bank Transfer') {
       setShowBuyPropertyButton(false);
       setShowCardSection(false);
       setShowSubmitButton(true);
     }
-  }, [frequency]);
+  }, [frequency, selectedCardId, selectedCard]);
+  
+  
+
+
 
   const dismissKeyboard = () => {
     Keyboard.dismiss();
@@ -339,8 +351,8 @@ console.log('selectedCardId:', selectedCardId);
                                   { backgroundColor: processing ? 'green' : '#4C28BC' },
                                 ]}
                                 onPress={handleBuyProperty}
-                                disabled={processing}
-                              >
+                                disabled={isContinueButtonDisabled || processing} // Disable the button conditionally
+                                >
                                 {processing ? (
                                   <>
                                     <ActivityIndicator color="white" style={styles.activityIndicator} />

@@ -166,7 +166,7 @@ const Card = ({ navigation, route }) => {
 
       <View style={styles.propertyContainer}>
         <Ionicons name="card-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
-        <Text style={styles.propertyText}>Set up your cards so you can perform faster transactions including AutoSave, AutoInvest, etc.</Text>
+        <Text style={styles.propertyText}>Set up your cards so you can perform faster transactions including AutoSave, AutoInvest, Buy Property, etc.</Text>
       </View>
       
     <SectionTitle>LIST OF CARDS</SectionTitle>

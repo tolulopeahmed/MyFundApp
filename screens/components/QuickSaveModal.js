@@ -371,7 +371,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                               <Image source={require('./paystack.png')} style={styles.image} />
                             )}
                             <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
-                              {processing ? 'Paystack Processing...' : 'QuickSave Now!'}
+                              {processing ? 'Funding Your Account...' : 'QuickSave Now!'}
                             </Text>
                           </TouchableOpacity>
                         </View>
