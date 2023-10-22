@@ -72,6 +72,7 @@ const Withdraw = ({ navigation, route }) => {
     "Received from User": "arrow-down-outline",
     "Withdrawal (Investment > Bank)": "arrow-down-outline",
     "Withdrawal (Wallet > Bank)": "arrow-down-outline",
+    "Referral Reward (Confirmed)": "arrow-up-outline"
 };
 
 
@@ -195,7 +196,7 @@ const handleCloseSuccessModal = () => {
           </View> 
 
          <View style={styles.amountContainer2}> 
-         <Text style={styles.investmentBalance}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
+         <Text style={styles.propertiesBalance}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
          </View>
          <Text style={styles.walletMessage}>Completed sales attract <Text style={{color: 'orange'}}>5%</Text> fee.
 </Text>
@@ -285,11 +286,11 @@ const handleCloseSuccessModal = () => {
 
       <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["Withdrawal (Savings > Investment)", `Sent to User`, "Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+    ["Withdrawal (Savings > Investment)", `Sent to User`, "Referral Reward (Confirmed)", "Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["Withdrawal (Savings > Investment)", `Sent to User`,"Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+        ["Withdrawal (Savings > Investment)", `Sent to User`,"Referral Reward (Confirmed)","Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
@@ -302,7 +303,7 @@ const handleCloseSuccessModal = () => {
           <View style={styles.transactionText}>
             <Text style={styles.transactionDescription}>{transaction.description}</Text>
             <Text style={styles.transactionDate}>{formatDate(transaction.date)} | {formatTime(transaction.time)}</Text>
-            <Text style={styles.transactionID}>ID: {transaction.transaction_id}</Text>
+            <Text style={styles.transactionID}>ID: {transaction.transaction_id} - <Text style={{fontFamily: 'proxima'}}>{transaction.referral_email}</Text></Text>
           </View>
           <View style={styles.transactionAmountContainer}>
             <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
@@ -425,6 +426,17 @@ const styles = StyleSheet.create({
     marginBottom: -25,
     marginTop: -1,
       color: 'yellow',
+      padding: 1.5,
+  },
+
+  propertiesBalance: {
+    fontSize: 61,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    letterSpacing: -3,
+    marginBottom: -25,
+    marginTop: -1,
+      color: 'gold',
       padding: 1.5,
   },
 

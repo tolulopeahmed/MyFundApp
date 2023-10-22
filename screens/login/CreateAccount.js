@@ -3,6 +3,7 @@ import { View, Text, ActivityIndicator, StyleSheet, SafeAreaView, ScrollView, Im
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
+import LoadingModal from '../components/LoadingModal';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,6 +24,7 @@ const CreateAccount = ({ navigation }) => {
   const [validConfirmPassword, setValidConfirmPassword] = useState(true);
   const [referralValue, setReferralValue] = useState('');
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+  const [referralEmail, setReferralEmail] = useState('');
 
 
   useEffect(() => {
@@ -79,21 +81,25 @@ const CreateAccount = ({ navigation }) => {
   };
 
 
-
   const handleSignup = async () => {
     try {
-      setIsCreatingAccount(true);  // Set to true when account creation begins
+      setIsCreatingAccount(true);
+  
       const response = await axios.post(`${ipAddress}/api/signup/`, {
         email: email.toLowerCase(),
         password: password,
         first_name: firstName,
         last_name: lastName,
         phone_number: phoneNumber,
-        referral: referralValue, // Add this if you're collecting referral data
+        referral: referralValue, // Assuming referralValue contains the referral email
       });
   
       if (response.status === 201) {
-        setIsCreatingAccount(false);  // Set back to false on successful signup
+        // Extract and set the referral email
+        const { referral_email } = response.data;
+  
+        setIsCreatingAccount(false);
+        setReferralEmail(referral_email); // Set the referral email in your state
         navigation.navigate('Confirmation', {
           email: email.toLowerCase(),
           password: password,
@@ -105,7 +111,7 @@ const CreateAccount = ({ navigation }) => {
         alert('Signup failed. Please check your details and try again.');
       }
     } catch (error) {
-      setIsCreatingAccount(false);  // Set back to false on error
+      setIsCreatingAccount(false);
       console.error('An error occurred during signup:', error);
   
       if (error.response) {
@@ -114,7 +120,6 @@ const CreateAccount = ({ navigation }) => {
   
         if (error.response.status === 400) {
           if (error.response.data.email) {
-            // Handle the case where the user already exists
             alert('A MyFund user is already using this email. Kindly use another email to create your account.');
           } else if (
             !error.response.data.first_name ||
@@ -123,19 +128,17 @@ const CreateAccount = ({ navigation }) => {
             !error.response.data.password ||
             !error.response.data.phone_number
           ) {
-            // Handle the case where required fields are missing
             alert('Please fill in all required fields to create your account.');
           } else {
-            // Handle other errors
             alert('Signup failed. Please check your details and try again.');
           }
         } else {
-          // Handle other errors
           alert('Signup failed. Please check your details and try again.');
         }
       }
     }
   };
+  
   
 
 
@@ -275,6 +278,7 @@ const CreateAccount = ({ navigation }) => {
 
 
 
+          <LoadingModal visible={isCreatingAccount} />
 
 
           <TouchableOpacity style={styles.loginTextContainer} onPress={() => navigation.navigate('Login')}>

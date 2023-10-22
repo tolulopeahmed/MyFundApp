@@ -50,7 +50,7 @@ const Home = ({ navigation, route}) => {
     "Withdrawal (Wallet > Bank)": "arrow-down-outline",
     "Property": "home-outline",
     "Referral Reward (Pending)": "ellipsis-horizontal-circle-outline",
-    "Referral Reward (confirmed)": "checkmark-circle",
+    "Referral Reward (Confirmed)": "checkmark-circle",
   };
 
 
@@ -59,55 +59,55 @@ const Home = ({ navigation, route}) => {
   const wealthStages = [
     {
       stage: 1,
-      text: "Debt",
+      text: "1: Debt",
       description: "Your income is less than your expenses",
       condition: accountBalances.savings == 0 && accountBalances.investment == 0,
     },
     {
       stage: 2,
-      text: "No Debt",
+      text: "2: No Debt",
       description: "Your income is equal to your expenses",
       condition: accountBalances.savings > 0 && accountBalances.investment == 0,
     },
     {
       stage: 3,
-      text: "Surplus",
+      text: "3: Surplus",
       description: "Your income is greater than your expenses",
       condition: accountBalances.savings > 0 && accountBalances.investment > 0 && accountBalances.properties === 0,
     },
     {
       stage: 4,
-      text: "Savings",
+      text: "4: Savings",
       description: "You have cash flow, and your savings are growing.",
       condition: (accountBalances.savings + accountBalances.investment) >= 250000,
     },
     {
       stage: 5,
-      text: "Millions",
+      text: "5: Millions",
       description: "You have a cash asset and are ready for true investment",
       condition: accountBalances.savings + accountBalances.investment >= 1000000,
     },
     {
       stage: 6,
-      text: "Assets",
+      text: "6: Assets",
       description: "You have acquired one or more properties",
       condition: accountBalances.properties > 0 && accountBalances.wallet < 300000,
     },
     {
       stage: 7,
-      text: "Passive Income",
+      text: "7: Passive Income",
       description: "You have earned your first rental income",
       condition: accountBalances.wallet >= 300000 && accountBalances.properties > 0,
     },
     {
       stage: 8,
-      text: "Financially Free",
+      text: "8: Financially Free",
       description: "Your passive income is greater than your living expenses",
       condition: accountBalances.wallet >= 500000 && accountBalances.properties > 0,
     },
     {
       stage: 9,
-      text: "You're Financially Free indeed",
+      text: "9: You're Financially Free indeed",
       description: "Your wallet is at least N1000000, and you have properties",
       condition: accountBalances.wallet >= 1000000 && accountBalances.properties > 0,
     },
@@ -484,11 +484,11 @@ const formatTime = (timeString) => {
 
 <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["QuickSave", "AutoSave", "Referral Reward (confirmed)", "Referral Reward (Pending)", "Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+    ["QuickSave", "AutoSave", "Referral Reward (Confirmed)", "Referral Reward (Pending)", "Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["QuickSave", "AutoSave", "Referral Reward (confirmed)","Referral Reward (Pending)","Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+        ["QuickSave", "AutoSave", "Referral Reward (Confirmed)","Referral Reward (Pending)","Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
@@ -501,14 +501,22 @@ const formatTime = (timeString) => {
           <View style={styles.transactionText}>
             <Text style={styles.transactionDescription}>{transaction.description}</Text>
             <Text style={styles.transactionDate}>{formatDate(transaction.date)} | {formatTime(transaction.time)}</Text>
-            <Text style={styles.transactionID}>ID: {transaction.transaction_id}</Text>
+            <Text style={styles.transactionID}>ID: {transaction.transaction_id} - <Text style={{fontFamily: 'proxima'}}>{transaction.referral_email}</Text></Text>
           </View>
-          <View style={styles.transactionAmountContainer}>
-            <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
-            <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
+            <View style={styles.transactionAmountContainer}>
+              <Text style={
+                transaction.transaction_type === "debit" ? styles.negativeAmount :
+                transaction.transaction_type === "credit" ? styles.transactionAmount :
+                styles.pendingAmount  // You can set your pendingAmount style here
+              }>
+                <Text style={{ fontSize: 12 }}>₦</Text>
+                <Text>
+                  {Math.floor(transaction.amount).toLocaleString()}
+                  <Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
+                </Text>
               </Text>
-            </Text>
-          </View>
+            </View>
+
         </View>
       ))
   ) : (
@@ -971,6 +979,15 @@ transactionAmount2: {
 
 negativeAmount: {
   color: 'brown',
+  fontSize: 23,
+  fontFamily: 'karla',
+  letterSpacing: -1,
+  marginTop: 10,
+  textAlign: 'right',
+},
+
+pendingAmount: {
+  color: 'grey',
   fontSize: 23,
   fontFamily: 'karla',
   letterSpacing: -1,

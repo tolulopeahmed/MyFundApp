@@ -340,11 +340,11 @@ console.log('accountBalances.investment:', accountBalances.investment)
 
 <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["QuickSave", "Card Transaction", "AutoSave"].includes(transaction.description)
+    ["QuickSave", "Card Successful", "AutoSave"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["QuickSave", "Card Transaction", "AutoSave"].includes(transaction.description)
+        ["QuickSave", "Card Successful", "AutoSave"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (

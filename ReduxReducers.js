@@ -61,6 +61,7 @@ const initialState = {
     email: '',
     profileImageUrl: null, // Initialize profileImageUrl as null
     token: '',
+    referralValue: '',
     preferred_asset: '',
     savings_goal_amount: '',
     time_period: '',

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, ScrollView, Pressable, TouchableOpacity, StyleSheet, Share } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Swiper from 'react-native-swiper';
 import * as Clipboard from 'expo-clipboard';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchUserTransactions } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 
 const images = [
@@ -16,8 +17,51 @@ const ReferAndEarn = ({ navigation, firstName }) => {
   const [isCopied, setIsCopied] = useState(false);
   const userInfo = useSelector((state) => state.bank.userInfo);
   const referralID = userInfo.email; // Assuming 'userInfo.email' contains the user's email
+  const userTransactions = useSelector((state) => state.bank.userTransactions);
+  const [totalConfirmedReferrals, setTotalConfirmedReferrals] = useState(0); // State for total confirmed referrals
+
+  useEffect(() => {
+    // Calculate the total confirmed referrals when the component mounts
+    const confirmedReferralTransactions = userTransactions.filter(
+      (transaction) => transaction.description === "Referral Reward (Confirmed)"
+    );
+    setTotalConfirmedReferrals(confirmedReferralTransactions.length);
+  }, [userTransactions]);
+  
+  
+  
+  const iconMapping = {
+    "Card Successful": "card-outline",
+    "QuickSave": "save-outline",
+    "AutoSave": "car-outline",
+    "QuickInvest": "trending-up-outline",
+    "AutoInvest": "car-sport-outline",
+    "Withdrawal (Savings > Investment)": "arrow-down-outline",
+    "Withdrawal (Investment > Savings)": "arrow-down-outline",
+    "Withdrawal (Wallet > Savings)": "arrow-down-outline",
+    "Withdrawal (Wallet > Investment)": "arrow-down-outline",
+    "Withdrawal (Savings > Bank)": "arrow-down-outline",
+    "Withdrawal (Investment > Bank)": "arrow-down-outline",
+    "Withdrawal (Wallet > Bank)": "arrow-down-outline",
+    "Property": "home-outline",
+    "Referral Reward (Pending)": "ellipsis-horizontal-circle-outline",
+    "Referral Reward (Confirmed)": "checkmark-circle",
+  };
 
 
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'short', day: '2-digit' };
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', options);
+  };
+  
+  // Function to format the time
+  const formatTime = (timeString) => {
+    const options = { hour: 'numeric', minute: '2-digit', hour12: true };
+    const time = new Date(`2023-01-01T${timeString}`);
+    return time.toLocaleTimeString('en-US', options);
+  };
+  
   const handleCopyReferralID = () => {
     Clipboard.setString(referralID);
     setIsCopied(true);
@@ -103,47 +147,70 @@ const ReferAndEarn = ({ navigation, firstName }) => {
       <View style={styles.transactionContainer}>
        <SectionTitle>REFERRAL LIST</SectionTitle> 
 
-        <View style={styles.containerHead}>
-          <View style={styles.column}>
-            <Text style={styles.text}>My Referrals</Text>
-          </View>
-          <View style={styles.column}>
-            <Text style={styles.text2}>Rewards     Status</Text>
-          </View>
-        </View>
+       <View style={styles.containerHead}>
+  <View style={styles.column}>
+    <Text style={styles.text}>
+      My Referrals{" "}
+      <Text style={{ fontFamily: 'ProductSans' }}>
+        ({totalConfirmedReferrals < 10 ? `0${totalConfirmedReferrals}` : totalConfirmedReferrals})
+      </Text>
+    </Text>
+  </View>
+  <View style={styles.column}>
+    <Text style={styles.text2}>Rewards Status</Text>
+  </View>
+</View>
+
 
         <View>
+
           <View style={styles.transactionsContainer}>
-            <View style={styles.transactionItem}>
-              <View style={styles.transactionText}>
-                <Text style={styles.transactionDescription}>name1@yahoo.com</Text>
-                <Text style={styles.transactionDate}>05 Mar, 2023 - 10:30 AM</Text>
-              </View>
-              <View flexDirection='row' alignContent='space-between'>
-                <Text style={styles.transactionAmount}>1000</Text>
-                <Ionicons
-                  name="checkmark-circle"
-                  size={25}
-                  style={styles.transactionIcon}
-                />
-              </View>
+  {userTransactions.some((transaction) =>
+    ["QuickSave", "AutoSave", "Referral Reward (Confirmed)", "Referral Reward (Pending)", "Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+  ) ? (
+    userTransactions
+      .filter((transaction) =>
+        ["QuickSave", "AutoSave", "Referral Reward (Confirmed)","Referral Reward (Pending)","Card Transaction", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+      )
+      .slice(0, 5)
+      .map((transaction, index) => (
+        <View key={index} style={styles.transactionItem}>
+
+          <View style={styles.transactionText}>
+            <Text style={styles.transactionDescription}>{transaction.referral_email}</Text>
+            <Text style={styles.transactionDate}>{formatDate(transaction.date)} | {formatTime(transaction.time)}</Text>
+            <Text style={styles.transactionID}>ID: {transaction.transaction_id} {transaction.description}</Text>
+          </View>
+          <View style={styles.transactionAmountContainer}>
+              <Text style={
+                transaction.transaction_type === "pending" ? styles.pendingAmount :
+                transaction.transaction_type === "credit" ? styles.transactionAmount :
+                styles.pendingAmount // Apply the pendingAmount style for pending transactions
+              }>
+                <Text style={{ fontSize: 12 }}>₦</Text>
+                <Text>
+                  {Math.floor(transaction.amount).toLocaleString()}
+                  <Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}     </Text>
+                </Text>
+              </Text>
             </View>
 
-            <View style={styles.transactionItem}>
-              <View style={styles.transactionText}>
-                <Text style={styles.transactionDescription}>name2@gmail.com</Text>
-                <Text style={styles.transactionDate}>10 Jun, 2023 - 02:45 PM</Text>
-              </View>
-              <View flexDirection='row' alignContent='space-between'>
-                <Text style={styles.transactionAmount}>1000</Text>
-                <Ionicons
-                  name="ellipsis-horizontal-circle-outline"
-                  size={25}
-                  style={styles.transactionIcon}
-                />
-              </View>
-            </View>
-          </View>
+          <Ionicons
+            name={iconMapping[transaction.description] || "arrow-down-outline"}
+            size={25}
+            style={styles.transactionIcon}
+          />
+        </View>
+      ))
+  ) : (
+    <View style={styles.noTransactionsContainer}>
+      <Text style={styles.noTransactionsMessage}>You're yet to make any referrals.</Text>
+    </View>
+  )}
+</View>
+
+
+
         </View>
       </View>
     </ScrollView>
@@ -269,7 +336,8 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: 'ProductSans',
     alignSelf: 'center',
-    marginLeft: 15
+    marginLeft: 15,
+    marginBottom: 25,
   },
 
   referralID: {
@@ -322,6 +390,13 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginRight: 15,
   },
+
+
+  transactionContainer: {
+    marginTop: 5,
+    flex: 1,
+      },
+  
   transactionsContainer: {
     borderRadius: 10,
     marginHorizontal: 20,
@@ -341,18 +416,16 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 10,
     marginRight: 10,
-    marginLeft: 5,
-
   },
   transactionText: {
     flex: 1,
     alignItems: 'flex-start',
-    marginLeft: 10,
+  
   },
   transactionDescription: {
     color: '#4C28BC',
     letterSpacing: -1,
-    fontSize: 17,
+    fontSize: 18,
     fontFamily: 'karla',
     marginTop: 3,
     textAlign: 'left',
@@ -363,15 +436,65 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 3,
   },
-  transactionAmount: {
+  transactionID: {
+    fontFamily: 'nexa',
+    fontSize: 10,
+    marginTop: 1,
     color: '#4C28BC',
-    fontSize: 20,
+  },
+  transactionAmount: {
+    color: 'green',
+    fontSize: 23,
     fontFamily: 'karla',
     letterSpacing: -1,
     marginTop: 10,
     textAlign: 'right',
-    marginRight: 20,
+  },
+  
+  transactionAmount2: {
+    color: '#4C28BC',
+    fontSize: 23,
+    fontFamily: 'karla',
+    letterSpacing: -1,
+    marginTop: 10,
+    textAlign: 'right',
+  },
+  
+  negativeAmount: {
+    color: 'brown',
+    fontSize: 23,
+    fontFamily: 'karla',
+    letterSpacing: -1,
+    marginTop: 10,
+    textAlign: 'right',
+  },
 
+  pendingAmount: {
+    color: 'grey', // Change to your desired color
+    fontSize: 23,
+    fontFamily: 'karla',
+    letterSpacing: -1,
+    marginTop: 10,
+    textAlign: 'right',
+  },
+  
+  
+  transactionAmountContainer: {
+    textAlign: 'right',
+  },
+  
+  
+  noTransactionsContainer: {
+    flex: 1,
+    justifyContent: 'center', // Center vertically
+    alignItems: 'center', // Center horizontally
+  },
+  noTransactionsMessage: {
+    fontSize: 15,
+    color: 'silver',
+    fontFamily: 'karla-italic',
+    marginTop: 60,
+    marginBottom: 60
   },
 
 });

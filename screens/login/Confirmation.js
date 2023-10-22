@@ -5,7 +5,10 @@ import MyFundLogo from './logo..png';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import LoadingModal from '../components/LoadingModal';
+import { CommonActions } from '@react-navigation/native';
+import { loadBankAccounts, setUserToken, fetchUserCards } from '../../ReduxActions';
+import { useDispatch } from 'react-redux';
 
   const Confirmation = ({ navigation, route }) => {
     const [error, setError] = useState(""); // Declare the error state
@@ -16,6 +19,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
   const [modalVisible, setModalVisible] = useState(false);
   const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
   const [isConfirmButtonEnabled, setIsConfirmButtonEnabled] = useState(false);
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+  const dispatch = useDispatch();
 
   const focusNext = (index) => {
     if (inputRefs.current[index]) {
@@ -52,74 +57,99 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
   
   
   
-  
   const handleConfirm = async (email) => {
+    setIsCreatingAccount(true);
+
     const otpCode = otpValues.reduce((accumulator, value) => accumulator + value, '');
     console.log('Sending OTP:', otpCode);
   
     try {
-      const response = await axios.post(`${ipAddress}/api/confirm-otp/`, {
-        otp: otpCode,
-      });
-  
-      console.log('API Response:', response.data);
-  
-      if (response.status === 200) {
-        if (response.data && response.data.message === 'Account confirmed successfully.') {
-          console.log('OTP Verification Successful');
-  
-          try {
-            const loginResponse = await axios.post(`${ipAddress}/api/login/`, {
-              username: email,
-              password: password, // If needed
-            });
-  
-            if (loginResponse.status === 200) {
-              const { access, refresh, user_id } = loginResponse.data;
-  
-              if (access && refresh) {
-                await AsyncStorage.setItem('authToken', access);
-                await AsyncStorage.setItem('userId', user_id.toString());
-  
+        const response = await axios.post(`${ipAddress}/api/confirm-otp/`, {
+            otp: otpCode,
+        });
+
+        console.log('API Response:', response.data);
+
+        if (response.status === 200) {
+            setIsCreatingAccount(false);
+
+            if (response.data && response.data.message === 'Account confirmed successfully.') {
                 console.log('OTP Verification Successful');
-                setModalVisible(true);
-                setTimeout(() => {
-                  setModalVisible(false);
-                  navigation.navigate('DrawerTab');
-                }, 1500);
-                
-              } else {
-                console.log('Tokens missing in response:', loginResponse.data);
-              }
+
+                try {
+                    const loginResponse = await axios.post(`${ipAddress}/api/login/`, {
+                        username: email,
+                        password: password, // If needed
+                    });
+
+                    console.log('Login Response:', loginResponse.data);
+
+                    if (loginResponse.status === 200) {
+                        setIsCreatingAccount(false);
+                        const { access, refresh, user_id } = loginResponse.data;
+
+                        if (access && refresh) {
+                          
+                            dispatch(loadBankAccounts());
+                            dispatch(setUserToken(access));
+                            dispatch(fetchUserCards());
+
+                            await AsyncStorage.setItem('authToken', access);
+                            await AsyncStorage.setItem('userId', user_id.toString());
+
+                            console.log('Login Successful');
+                            setModalVisible(true);
+                            setTimeout(() => {
+                                setModalVisible(false);
+                                navigation.dispatch(
+                                  CommonActions.reset({
+                                    index: 0,
+                                    routes: [{ name: 'DrawerTab' }],
+                                  })
+                                );
+                              }, 1500);
+                        } else {
+                            setIsCreatingAccount(false);
+                            console.log('Tokens missing in response:', loginResponse.data);
+                        }
+                    } else {
+                        setIsCreatingAccount(false);
+                        console.log('Login API Error:', loginResponse.data);
+                        setError("An error occurred while logging in. Please try again later.");
+                    }
+                } catch (loginError) {
+                    setIsCreatingAccount(false);
+                    console.error('Login API Error:', loginError);
+                    setError("An error occurred while logging in. Please try again later.");
+                }
             } else {
-              console.log('Login API Error:', loginResponse.data);
-              setError("An error occurred while logging in. Please try again later.");
+                setIsCreatingAccount(false);
+                console.log('OTP Verification Failed');
+                setError("Wrong OTP entered. Please check and try again.");
             }
-          } catch (loginError) {
-            console.error('Login API Error:', loginError);
-            setError("An error occurred while logging in. Please try again later.");
-          }
         } else {
-          console.log('OTP Verification Failed');
-          setError("Wrong OTP entered. Please check and try again.");
+            setIsCreatingAccount(false);
+            console.log('API Error:', response.data);
+            setError("An error occurred. Please try again later.");
         }
-      } else {
-        console.log('API Error:', response.data);
-        setError("An error occurred. Please try again later.");
-      }
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        console.log('OTP Verification Failed');
-        setError("Wrong OTP entered. Please check and try again.");
-      } else {
-        console.log('API Error:', error);
-        setError("An error occurred. Please try again later.");
-      }
+        setIsCreatingAccount(false);
+        if (error.response && error.response.status === 400) {
+            console.error('OTP Verification Failed');
+            setError("Wrong OTP entered. Please check and try again.");
+        } else {
+            setIsCreatingAccount(false);
+            console.error('API Error:', error);
+            setError("An error occurred. Please try again later.");
+        }
     }
-  };
+};
+
   
   
-  
+console.log('username:', email);
+console.log('password:', password);
+
     
     
     
@@ -235,7 +265,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
         </View>
       </Modal>
 
-
+<LoadingModal visible={isCreatingAccount} />
     </View>
   );
 };

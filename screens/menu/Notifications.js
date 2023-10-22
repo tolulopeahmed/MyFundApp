@@ -35,7 +35,7 @@ const Notifications = ({ navigation, firstName }) => {
     "Withdrawal (Wallet > Bank)": "arrow-down-outline",
     "Property": "home-outline",
     "Referral Reward (Pending)": "ellipsis-horizontal-circle-outline",
-    "Referral Reward (confirmed)": "checkmark-circle",
+    "Referral Reward (Confirmed)": "checkmark-circle",
   };
   
 
@@ -185,9 +185,7 @@ const formatTime = (timeString) => {
               <Text style={styles.transactionDate}>
                 {formatDate(transaction.date)} | {formatTime(transaction.time)}
               </Text>
-              <Text style={styles.transactionID}>
-                ID: {transaction.transaction_id}
-              </Text>
+              <Text style={styles.transactionID}>ID: {transaction.transaction_id} - <Text style={{fontFamily: 'proxima'}}>{transaction.referral_email}</Text></Text>
             </View>
             <View style={styles.transactionAmountContainer}>
             <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
