@@ -112,14 +112,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         msg.attach_alternative(html_message, "text/html")
         msg.send()
 
-    def confirm_referral_rewards(self):
+    def confirm_referral_rewards(self, is_referrer):
         if self.savings >= 20000 or self.investment > 0:
             # Check if there is a pending referral reward
             if self.pending_referral_reward > 0:
                 # Create a confirmed credit transaction for the referrer
-                referrer_transaction_id = str(uuid.uuid4())[:9]  # Generate a unique UUID for the referrer
+                referrer_transaction_id = str(uuid.uuid4())[:10]  # Generate a unique UUID for the referrer
                 credit_transaction_referrer = Transaction.objects.create(
                     user=self,
+                    referral_email=self.referral.email,  # Save the referral email
                     transaction_type='credit',
                     amount=1000,
                     description="Referral Reward (Confirmed)",
@@ -128,9 +129,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                 credit_transaction_referrer.save()
 
                 # Create a confirmed credit transaction for the referred user
-                referred_transaction_id = str(uuid.uuid4())[:9]  # Generate a unique UUID for the referred user
+                referred_transaction_id = str(uuid.uuid4())[:10]  # Generate a unique UUID for the referred user
                 credit_transaction_referred = Transaction.objects.create(
                     user=self.referral,
+                    referral_email=self.email,  # Save the referrer's email
                     transaction_type='credit',
                     amount=1000,
                     description="Referral Reward (Confirmed)",
@@ -155,17 +157,23 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                 print(f"Referred user's wallet balance after credit: {self.referral.wallet}")
 
                 # Send confirmation emails to both the referrer and referred user
-                self.send_referral_confirmation_email(referrer_transaction_id, self.referral)
-                self.referral.send_referral_confirmation_email(referred_transaction_id, self)
+                self.send_referral_confirmation_email(referrer_transaction_id, self, True)
+                self.referral.send_referral_confirmation_email(referred_transaction_id, self, False)
 
+    def send_referral_confirmation_email(self, transaction_id, recipient_user, is_referrer):
 
-    def send_referral_confirmation_email(self, transaction_id, recipient_user):
-        subject = "Referral Reward Confirmation"
-        message = f"Hi {recipient_user.first_name},\n\nYou have received a referral reward of ₦{self.pending_referral_reward} in your MyFund wallet.\n\nThank you for using MyFund!\n\nKeep growing your funds.🥂\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+        if is_referrer:
+            subject = "Referral Reward Confirmation"
+            message = f"Congratulations {recipient_user.first_name},\n\nYou have received a referral reward of ₦1,000.00 in your wallet for referring {self.referral.first_name}.\n\nThank you for using MyFund and referring others!\n\nKeep growing your funds.🥂\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+        else:
+            subject = "Referral Reward Confirmation"
+            message = f"Congratulations {recipient_user.first_name},\n\nYou have received a referral reward of ₦1,000.00 in your wallet as a new user thanks to {self.first_name}.\n\nThank you for using MyFund!\n\nKeep growing your funds.🥂\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+
         from_email = "MyFund <info@myfundmobile.com>"
         recipient_list = [recipient_user.email]
 
         send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
 
 
 
@@ -248,6 +256,8 @@ class Transaction(models.Model):
     TRANSACTION_TYPES = (
         ('credit', 'Credit'),
         ('debit', 'Debit'),
+        ('pending', 'Pending'), 
+
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -259,6 +269,7 @@ class Transaction(models.Model):
     transaction_id = models.CharField(max_length=255, default='', unique=True)
     service_charge = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Define a default value
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0) 
+    referral_email = models.EmailField(max_length=255, blank=True, null=True)
 
     # New fields
     property_name = models.CharField(max_length=255, default='', blank=True)

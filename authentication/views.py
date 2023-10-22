@@ -35,7 +35,6 @@ from django.db.models import F
 import uuid
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
 @csrf_exempt
 def signup(request):
     serializer = SignupSerializer(data=request.data)
@@ -44,22 +43,24 @@ def signup(request):
 
         # Check if the user has a referrer (referral relationship)
         if user.referral:
-            transaction_id = str(uuid.uuid4())[:9]  # Generate a UUID and truncate it to 10 characters
+            transaction_id = str(uuid.uuid4())[:10]  # Generate a UUID and truncate it to 10 characters
 
             # Create pending credit transactions for both the referrer and the referred user
             credit_transaction_referrer = Transaction.objects.create(
                 user=user.referral,
-                transaction_type='credit',
+                referral_email=user.email,  # Include the referral email
+                transaction_type='pending',
                 amount=1000,
                 description="Referral Reward (Pending)",
                 transaction_id=transaction_id,
             )
             credit_transaction_referrer.save()
 
-            transaction_id = str(uuid.uuid4())[:9]  # Generate a UUID and truncate it to 10 characters
+            transaction_id = str(uuid.uuid4())[:10]  # Generate a UUID and truncate it to 10 characters
             credit_transaction_referred = Transaction.objects.create(
                 user=user,
-                transaction_type='credit',
+                referral_email=user.referral.email,  # Include the referrer's email
+                transaction_type='pending',
                 amount=1000,
                 description="Referral Reward (Pending)",
                 transaction_id=transaction_id,
@@ -75,12 +76,18 @@ def signup(request):
         # Generate OTP (you can use your own logic here)
         otp = generate_otp()
         user.otp = otp
+        user.is_active = False  # Set the user as inactive until OTP confirmation
         user.save()
 
         # Send OTP to the user's email
         send_otp_email(user, otp)
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # Modify the response data to include the referral email for pending transactions
+        response_data = serializer.data
+        if user.referral:
+            response_data['referral_email'] = user.referral.email
+
+        return Response(response_data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -155,23 +162,23 @@ def send_otp_email(user, otp):
 
 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-@csrf_exempt
-def confirm_otp(request):
-    serializer = ConfirmOTPSerializer(data=request.data)
-    if serializer.is_valid():
-        otp = serializer.validated_data['otp']
+# @api_view(['POST'])
+# @permission_classes([AllowAny])
+# @csrf_exempt
+# def confirm_otp(request):
+#     serializer = ConfirmOTPSerializer(data=request.data)
+#     if serializer.is_valid():
+#         otp = serializer.validated_data['otp']
 
-        try:
-            user = CustomUser.objects.get(otp=otp, is_confirmed=False)  # Only confirm if not already confirmed
-            user.is_confirmed = True
-            user.save()
-            return Response({'message': 'Account confirmed successfully.'}, status=status.HTTP_200_OK)
-        except CustomUser.DoesNotExist:
-            return Response({'message': 'Invalid OTP or account already confirmed.'}, status=status.HTTP_400_BAD_REQUEST)
+#         try:
+#             user = CustomUser.objects.get(otp=otp, is_confirmed=False)  # Only confirm if not already confirmed
+#             user.is_confirmed = True
+#             user.save()
+#             return Response({'message': 'Account confirmed successfully.'}, status=status.HTTP_200_OK)
+#         except CustomUser.DoesNotExist:
+#             return Response({'message': 'Invalid OTP or account already confirmed.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -842,7 +849,8 @@ def quicksave(request):
         user.save()
 
         # Call the confirm_referral_rewards method here
-        user.confirm_referral_rewards()
+        is_referrer = True  # Determine whether the user is the referrer or the referred user
+        user.confirm_referral_rewards(is_referrer)  # Pass the 'is_referrer' parameter
 
         # Send a confirmation email
         subject = "QuickSave Successful!"
