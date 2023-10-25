@@ -7,7 +7,6 @@ import Divider from '../components/Divider';
 import SavingsGoalModal from './SavingsGoalModal';
 import PinModal from '../components/PinModal';
 import ProfileEditModal from './ProfileEditModal';
-import ImageContext from './ImageContext';
 import axios from 'axios';  // Import axios for making API requests
 import { ipAddress } from '../../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,7 +15,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchUserData, setProfileImageUri } from '../../ReduxActions';
 
 const Profile = ({ navigation, route }) => {
-  const { profileImageUri, setProfileImageUri } = useContext(ImageContext);
   const [selectedImage, setSelectedImage] = useState(null);
   const [enableFingerprint, setEnableFingerprint] = useState(false);
   const [showBalances, setShowBalances] = useState(true);
@@ -28,17 +26,18 @@ const Profile = ({ navigation, route }) => {
   const [profile, setProfile] = useState({});
   const userInfo = useSelector((state) => state.bank.userInfo);
   const dispatch = useDispatch(); // Get the dispatch function from Redux
+  const profileImageUri = useSelector((state) => state.bank.profileImageUri);
 
-  console.log('Profile Image URL from context:', userInfo.profileImageUrl);
 
  
   useEffect(() => {
-    // Dispatch actions to fetch user data and set profile image URI when the component mounts or when the user logs in.
     if (userInfo.token) {
       dispatch(fetchUserData(userInfo.token));
     }
   }, [dispatch, userInfo.token]);
 
+
+  
   
   useEffect(() => {
     if (route.params?.goalModalVisible) {
@@ -89,27 +88,29 @@ const Profile = ({ navigation, route }) => {
             if (response.status === 200) {
               Alert.alert('Success', 'Profile picture updated successfully');
               console.log('New profile image URI:', selectedAsset.uri);
-
+  
               setSelectedImage(selectedAsset.uri); // Update the selectedImage state
-              setProfileImageUri(selectedAsset.uri); // Update the context
-
-              await AsyncStorage.setItem('profileImageUri', selectedAsset.uri);
-              dispatch(updateUserProfileImage(selectedAsset.uri));
-
+  
+              // Dispatch the action to update the profile image URI in Redux
+              dispatch(setProfileImageUri(selectedAsset.uri));
+  
             } else {
               Alert.alert('Error', response.data.message); // Assuming the API returns an error message in the 'message' field
             }
           } catch (error) {
             Alert.alert('Error', 'An error occurred while updating the profile picture');
+            console.error('API Request Error:', error);
           }
         }
       } catch (error) {
         Alert.alert('Error', 'Failed to access the image library');
+        console.error('Image Picker Error:', error);
       }
     } else {
       Alert.alert('Permission Denied', 'You need to grant permission to access the image library');
     }
   };
+  
     
   
 
@@ -125,6 +126,9 @@ const Profile = ({ navigation, route }) => {
       backgroundColor: '#303030',
     },
   });
+
+
+
 
   const handleLogout = () => {
     Alert.alert(
@@ -162,72 +166,6 @@ const Profile = ({ navigation, route }) => {
                     routes: [{ name: 'Login' }],
                   });
 
-                  
-  const handleLogout = () => {
-    Alert.alert(
-      'Confirm Logout',
-      'Are you sure you want to log out of MyFund?',
-      [
-        {
-          text: 'No',
-          style: 'cancel',
-        },
-        {
-          text: 'Yes, Logout',
-          onPress: async () => {
-            try {
-              // Make an API call to log the user out
-              await AsyncStorage.removeItem('authToken');
-              
-              const keys = await AsyncStorage.getAllKeys();
-                for (const key of keys) {
-                  if (key.startsWith('chatMessages')) {
-                    await AsyncStorage.removeItem(key);
-                  }
-                }
-
-              try {
-                
-                // Attempt to send a logout request
-                const response = await axios.post(`${ipAddress}/api/logout/`);
-                
-                if (response.status === 200) {
-                  // Successfully logged out
-                  navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Login' }],
-                  });
-                } else {
-                  // Handle error cases
-                  console.log('Logout failed:', response.data);
-                }
-              } catch (error) {
-                // Handle logout request error
-                console.log('Logout request error:', error);
-  
-                // Check if the error is due to a network issue
-                if (error.message === 'Network Error') {
-                  Alert.alert(
-                    'Logout Failed',
-                    'There was a problem logging you out. Please check your internet connection and try again.',
-                    [
-                      {
-                        text: 'OK',
-                      },
-                    ]
-                  );
-                }
-              }
-            } catch (error) {
-              console.log('Logout error:', error);
-            }
-          },
-        },
-      ],
-      { cancelable: false }
-    );
-  };
-  
                 } else {
                   // Handle error cases
                   console.log('Logout failed:', response.data);
@@ -273,7 +211,11 @@ const Profile = ({ navigation, route }) => {
   };
   
   
-  
+  console.log('Profile Image URI from update:', profileImageUri);
+  console.log('Profile Image URL from Redux:', userInfo.profileImageUrl);
+  console.log('userInfo.token-', userInfo.token);
+
+
   
 
 
@@ -306,15 +248,15 @@ const Profile = ({ navigation, route }) => {
   <Pressable onPress={handlePickImage}>
 
   <Image
-  source={
-    selectedImage
-      ? { uri: selectedImage }
-      : userInfo.profileImageUrl
-      ? { uri: userInfo.profileImageUrl }
-      : require('./Profile1.png')
-  }
-  style={styles.image}
-/>
+        source={
+          selectedImage
+            ? { uri: selectedImage } // Use selected image if available
+            : userInfo.profileImageUrl
+            ? { uri: userInfo.profileImageUrl } // Use profile picture URL if available
+            : require('./Profile1.png') // Use a default image if both are null
+        }
+        style={styles.image}
+      />
 
 
 

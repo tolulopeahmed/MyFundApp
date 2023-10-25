@@ -37,6 +37,7 @@ const initialState = {
   authToken: null, // Add a new property to store the authentication token
   bankAccounts: [], // Initial state should come from AsyncStorage or API if available
   cards: [], // Initialize cards state
+
   profileImageUri: null, // Add a new field to store the profile picture URI
 
   autoSaveSettings: {

@@ -315,7 +315,7 @@ const handleCloseSuccessModal = () => {
       ))
   ) : (
     <View style={styles.noTransactionsContainer}>
-      <Text style={styles.noTransactionsMessage}>You're yet to make a withdrawal.</Text>
+      <Text style={styles.noTransactionsMessage}>You're yet to make any withdrawals.</Text>
     </View>
   )}
 </View>

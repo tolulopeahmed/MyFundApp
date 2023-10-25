@@ -1,18 +1,67 @@
 import React, {useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, ScrollView, Alert, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider';
 import QuickSaveModal from '../components/QuickSaveModal';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import { ipAddress } from '../../constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Sidebar = ({ navigation, }) => {
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
   const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
 
-
-  const handleLogout = () => {
-    navigation.navigate('Login');
-  }
+  const handleLogout = async () => {
+    try {
+      // Make an API call to log the user out
+      await AsyncStorage.removeItem('authToken');
+      await AsyncStorage.removeItem('profileImageUri');
+  
+      const keys = await AsyncStorage.getAllKeys();
+      for (const key of keys) {
+        if (key.startsWith('chatMessages')) {
+          await AsyncStorage.removeItem(key);
+        }
+      }
+  
+      try {
+        // Attempt to send a logout request
+        const response = await axios.post(`${ipAddress}/api/logout/`);
+  
+        if (response.status === 200) {
+          // Successfully logged out
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+          });
+        } else {
+          // Handle error cases
+          console.log('Logout failed:', response.data);
+        }
+      } catch (error) {
+        // Handle logout request error
+        console.log('Logout request error:', error);
+  
+        // Check if the error is due to a network issue
+        if (error.message === 'Network Error') {
+          // Show an alert for network error
+          Alert.alert(
+            'Logout Failed',
+            'There was a problem logging you out. Please check your internet connection and try again.',
+            [
+              {
+                text: 'OK',
+              },
+            ]
+          );
+        }
+      }
+    } catch (error) {
+      console.log('Logout error:', error);
+    }
+  };
+  
 
   const handleSave = () => {
     navigation.navigate('Save');

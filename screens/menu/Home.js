@@ -9,16 +9,13 @@ import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { AutoInvestContext } from '../components/AutoInvestContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
+import { fetchAccountBalances, setProfileImageUri, fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
-import ImageContext from './ImageContext';
 
 const Home = ({ navigation, route}) => {
   const [greeting, setGreeting] = useState('');
   const { autoSave } = useContext(AutoSaveContext)
   const { autoInvest } = useContext(AutoInvestContext)
-  const [displayedProfileImage, setDisplayedProfileImage] = useState(null);
-  const { profileImageUri, setProfileImageUri, selectedImage } = useContext(ImageContext);
   const userInfo = useSelector((state) => state.bank.userInfo);
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
@@ -26,7 +23,10 @@ const Home = ({ navigation, route}) => {
   const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
   const autoInvestSettings = useSelector((state) => state.bank.autoInvestSettings);
   const [currentStatus, setCurrentStatus] = useState('');
+  const profileImageUri = useSelector((state) => state.bank.profileImageUri);
+  const [selectedImage, setSelectedImage] = useState(null);
 
+  
 
 
   useEffect(() => {
@@ -149,13 +149,6 @@ const formatTime = (timeString) => {
 }, [userInfo]);
 
 
-  useEffect(() => {
-    if (profileImageUri) {
-      setDisplayedProfileImage(profileImageUri);
-    } else if (displayedProfileImage) {
-      setDisplayedProfileImage(userInfo.profileImageUrl);
-    }
-  }, [profileImageUri, displayedProfileImage, userInfo.profileImageUrl]);
 
   
   useEffect(() => {
@@ -218,7 +211,9 @@ const formatTime = (timeString) => {
   };
 
 
-  
+  console.log('Profile Image URL from Redux:--', userInfo.profileImageUrl);
+  console.log('Profile Image URL from selected:--', profileImageUri);
+
 
   return (
     <>
@@ -234,20 +229,26 @@ const formatTime = (timeString) => {
 
   </View>
   
-        <Pressable
-        marginRight={15}
-        marginTop={5}
-        onPress={() => navigation.navigate('More...')}
-        style={styles.profileContainer} // Add this style to the container
-      >
-      <View style={styles.profileImageContainer}>
-        {selectedImage ? (
-          <Image source={{ uri: selectedImage }} style={styles.profileImage} />
-        ) : (
-          <Ionicons name="person-circle" size={80} color="silver" />
-        )}
-      </View>
-      </Pressable>
+  <Pressable
+          marginRight={15}
+          marginTop={5}
+          onPress={() => navigation.navigate('More...')}
+          style={styles.profileContainer} // Add this style to the container
+        >
+        <View style={styles.profileImageContainer}>
+          {selectedImage ? (
+            <Image source={{ uri: profileImageUri }} style={styles.profileImage} />
+          ) : userInfo.profileImageUrl ? (
+            <Image source={{ uri: userInfo.profileImageUrl }} style={styles.profileImage} />
+          ) : (
+            <Ionicons name="person-circle" size={80} color="silver" />
+          )}
+        </View>
+
+
+        </Pressable>
+
+
 
 
 </View>

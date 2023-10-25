@@ -7,7 +7,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const SET_USER_TOKEN = 'SET_USER_TOKEN';
 export const SET_USER_INFO = 'SET_USER_INFO';
 export const UPDATE_USER_PROFILE = 'UPDATE_USER_PROFILE';
+
 export const SET_PROFILE_IMAGE_URI = 'SET_PROFILE_IMAGE_URI';
+
 export const UPDATE_SAVINGS_GOAL = 'UPDATE_SAVINGS_GOAL';
 export const ADD_MESSAGE = 'ADD_MESSAGE';
 export const CLEAR_MESSAGES = 'CLEAR_MESSAGES';
@@ -43,9 +45,9 @@ export const updateUserProfile = (updatedProfile) => ({
   payload: updatedProfile,
 });
 
-export const setProfileImageUri = (newUri) => ({
+export const setProfileImageUri = (uri) => ({
   type: SET_PROFILE_IMAGE_URI,
-  payload: newUri,
+  payload: uri,
 });
 
 export const addMessage = (message) => ({

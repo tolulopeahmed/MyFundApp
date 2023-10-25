@@ -406,14 +406,14 @@ const styles = {
   },
   modalContent: {
     backgroundColor: '#F6F3FF',
-    width: '100%',
+    width: '105%',
     alignItems: 'center',
+    alignSelf: 'center',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,      
   },
-
   modalHeader: {
     marginTop: 20,
     fontSize: 25,

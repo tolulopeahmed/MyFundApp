@@ -35,6 +35,8 @@ useEffect(() => {
   dispatch(fetchUserBankAccounts());
 }, []);
 
+console.log('userInfo.token in WithdrawModal:', userInfo.token);
+
 
 const getBackgroundColor = (selectedBankName) => {
   console.log("Selected bank name:", selectedBankName); // Debugging statement

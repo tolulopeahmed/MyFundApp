@@ -12,7 +12,7 @@ import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, fetchUserTransactions, fetchUserData, updateAccountBalances, fetchAutoSaveSettings } from '../../ReduxActions';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import moment from 'moment';
 import Success from '../components/Success';
@@ -369,7 +369,7 @@ console.log('accountBalances.investment:', accountBalances.investment)
       ))
   ) : (
     <View style={styles.noTransactionsContainer}>
-      <Text style={styles.noTransactionsMessage}>You're yet to make a Savings.</Text>
+      <Text style={styles.noTransactionsMessage}>You're yet to make any Savings.</Text>
     </View>
   )}
 </View>
