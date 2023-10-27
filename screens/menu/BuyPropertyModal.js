@@ -16,10 +16,10 @@ const getBackgroundColor = (bankName) => {
   return bank ? bank.color : "#4C28BC"; // Default to your default color
 };
 const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVisible, isSuccessVisible, setIsSuccessVisible, selectedProperty }) => {
-  const [frequency, setFrequency] = useState('');
+  const [frequency, setFrequency] = useState('Savings');
   const [amount, setAmount] = useState('');
   const [units, setUnits] = useState('1'); // Set an initial value for units
-  const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
+  const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState('');
   const [selectedCard, setSelectedCard] = useState(null);
   const userInfo = useSelector((state) => state.bank.userInfo);
   const [processing, setProcessing] = useState(false);
@@ -32,7 +32,6 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
   const [showSubmitButton, setShowSubmitButton] = useState(false);
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const [totalAmount, setTotalAmount] = useState(0);
-  const [isCardsAvailable, setIsCardsAvailable] = useState(userCards.length > 0);
 
   const dispatch = useDispatch();
 
@@ -59,6 +58,7 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
       setShowBuyPropertyButton(true);
       setShowCardSection(false);
       setShowSubmitButton(false);
+      setIsContinueButtonDisabled(false); // Enable the button for 'Savings', 'Investment', or 'Wallet'
     } else if (frequency === 'My Saved Cards') {
       setShowBuyPropertyButton(true);
       setShowCardSection(true);
@@ -66,16 +66,18 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
   
       // Check if no cards are added and disable the button accordingly
       if (userCards.length === 0) {
-        setIsContinueButtonDisabled(true);
+        setIsContinueButtonDisabled(true); // Disable the button when 'My Saved Cards' and no cards are added
       } else {
-        setIsContinueButtonDisabled(false);
+        setIsContinueButtonDisabled(false); // Enable the button when 'My Saved Cards' and cards are added
       }
     } else if (frequency === 'Bank Transfer') {
       setShowBuyPropertyButton(false);
       setShowCardSection(false);
       setShowSubmitButton(true);
+      setIsContinueButtonDisabled(false); // Enable the button for 'Bank Transfer'
     }
   }, [frequency, selectedCardId, selectedCard]);
+  
   
   
 
@@ -92,21 +94,7 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
     }
   }, [userCards]);
 
-  useEffect(() => {
-    if (amount !== '' && selectedCard !== null) {
-      setIsContinueButtonDisabled(false);
-    } else {
-      setIsContinueButtonDisabled(true);
-    }
 
-    if (userCards.length > 0 && selectedCard === null) {
-      setSelectedCard(userCards[0].id);
-    }
-
-    if (frequency === '') {
-      setFrequency('Savings');
-    }
-  }, [amount, selectedCard, userCards, frequency]);
 
   const handleAddCard = () => {
     navigation.navigate('Card', { addCardModalVisible: true });
@@ -137,7 +125,8 @@ const handleBuyProperty = async () => {
         payment_source: 'saved_cards',
         card_id: selectedCardId,
       };
-    } else if (frequency === 'Bank Transfer') {
+    } 
+    else if (frequency === 'Bank Transfer') {
       // Handle bank transfer logic here
       // ...
       return;
@@ -203,8 +192,9 @@ const handleBuyProperty = async () => {
 
 console.log('selectedProperty.id:', selectedProperty.id);
 console.log('num_units:', units);
-console.log('payment_source:', frequency.toLowerCase());
+console.log('frequency:', frequency.toLowerCase());
 console.log('selectedCardId:', selectedCardId);
+
 
 
 
@@ -216,17 +206,17 @@ console.log('selectedCardId:', selectedCardId);
         visible={propertyModalVisible}
         onRequestClose={() => setPropertyModalVisible(false)}
       >
-        <TouchableWithoutFeedback
-          onPress={(e) => {
-            if (e.target !== e.currentTarget) {
-              return;
-            }
-            Keyboard.dismiss();
-            closeModal();
-          }}
-          accessible={false}
-        >
-          <TouchableOpacity style={styles.modalContainer} activeOpacity={1} onPress={closeModal}>
+<TouchableOpacity
+  style={styles.modalContainer}
+  activeOpacity={1}
+  onPress={closeModal}
+  
+>
+  <TouchableOpacity
+    activeOpacity={1}
+    style={styles.modalContent}
+    onPress={() => {}}
+  >       
             <KeyboardAvoidingView activeOpacity={1} style={styles.modalContent} onPress={dismissKeyboard}>
               <ScrollView>
               <View style={styles.modalContent}>
@@ -345,26 +335,29 @@ console.log('selectedCardId:', selectedCardId);
                       )}
 
                             <View style={styles.buttonsContainer}>
-                              <TouchableOpacity
-                                style={[
-                                  styles.primaryButton,
-                                  { backgroundColor: processing ? 'green' : '#4C28BC' },
-                                ]}
-                                onPress={handleBuyProperty}
-                                disabled={isContinueButtonDisabled || processing} // Disable the button conditionally
+                            <TouchableOpacity
+                                  style={[
+                                    styles.primaryButton,
+                                    {
+                                      backgroundColor: isContinueButtonDisabled ? 'grey' : processing ? 'green' : '#4C28BC',
+                                    },
+                                  ]}
+                                  onPress={handleBuyProperty}
+                                  disabled={isContinueButtonDisabled || processing}
                                 >
-                                {processing ? (
-                                  <>
-                                    <ActivityIndicator color="white" style={styles.activityIndicator} />
+                                  {processing ? (
+                                    <>
+                                      <ActivityIndicator color="white" style={styles.activityIndicator} />
+                                      <Image source={require('./paystack.png')} style={styles.image} />
+                                    </>
+                                  ) : (
                                     <Image source={require('./paystack.png')} style={styles.image} />
-                                  </>
-                                ) : (
-                                  <Image source={require('./paystack.png')} style={styles.image} />
-                                )}
-                                <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
-                                  {processing ? 'Processing... Please Wait...' : 'Buy Now!'}
-                                </Text>
-                              </TouchableOpacity>
+                                  )}
+                                  <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
+                                    {processing ? 'Processing... Please Wait...' : 'Buy Now!'}
+                                  </Text>
+                                </TouchableOpacity>
+
                             </View>
 
                       <Text style={styles.modalSubText4}>By clicking Buy Now, you agree to the  <Text style={{ color: '#4C28BC', fontFamily: 'proxima' }}>Deed of Agreement.</Text></Text>
@@ -391,7 +384,7 @@ console.log('selectedCardId:', selectedCardId);
               </ScrollView>
             </KeyboardAvoidingView>
           </TouchableOpacity>
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
       </Modal>
     </>
   );
@@ -406,7 +399,7 @@ const styles = {
   },
   modalContent: {
     backgroundColor: '#F6F3FF',
-    width: '105%',
+    width: '100%',
     alignItems: 'center',
     alignSelf: 'center',
     borderTopRightRadius: 25,

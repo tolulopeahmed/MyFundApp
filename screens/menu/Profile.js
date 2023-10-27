@@ -286,7 +286,7 @@ const Profile = ({ navigation, route }) => {
   <Text style={styles.infoText}>Full Name</Text>
 <Text style={styles.infoText2}>{userInfo.firstName} {userInfo.lastName}</Text>
 <Text style={styles.infoText}>Mobile Number</Text>
-<Text style={styles.infoText2}>{userInfo.mobileNumber}</Text>
+<Text style={styles.infoText2}>+234{userInfo.mobileNumber}</Text>
 <Text style={styles.infoText}>Email/Username</Text>
 <Text style={styles.infoText3}>{userInfo.email}</Text>
 <Text style={styles.infoText}>Points</Text>

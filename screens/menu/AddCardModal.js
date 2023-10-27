@@ -343,6 +343,9 @@ An initial charge of ₦50 will be made and returned back as to your savings acc
 
   <View style={styles.fieldContainer2}>
     <Text style={styles.labelText2}>Card Number</Text>
+    <View style={styles.iconContainer}> 
+          <Ionicons  name="card" size={28} color="grey"  zIndex={-1} />
+    </View> 
     <View style={styles.inputContainer}>
       <TextInput
         style={styles.amountInput}
@@ -526,6 +529,16 @@ labelText2: {
   textAlign: 'left',
 },
 
+iconContainer: {
+  position: 'absolute', // Use absolute positioning
+  left: 10, // Adjust the left position as needed
+  top: '50%', // Center vertically
+  marginLeft: 3,
+  marginTop: 10,
+  zIndex: 1,
+  transform: [{ translateY: -12 }], // Adjust translateY to vertically center the icon
+},
+
 fieldContainer2: {
   alignSelf: 'center',
   width: '85%',
@@ -540,6 +553,7 @@ amountInput: {
   color: 'black',
   fontFamily: 'ProductSans',
   backgroundColor: '#fff',
+  paddingLeft: 50,
   height: 50,
   padding: 10,
   marginTop: 1,

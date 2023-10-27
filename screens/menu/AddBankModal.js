@@ -8,6 +8,7 @@ import { ipAddress } from '../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { addBankAccount } from '../../ReduxActions';
 import LoadingModal from '../components/LoadingModal';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const bankOptions = [
     { id: 1, name: 'Access Bank', code: '044' },
@@ -125,13 +126,13 @@ const bankOptions = [
             console.log('Resolved Account Name:', response.data.data.account_name); // Log the resolved account name
             setIsAccountNameResolved(true);
           } else {
-            setResolvedAccountName(''); // Reset resolved account name
+            setResolvedAccountName('Account not found. Try again.');
             setIsAccountNameResolved(false);
           }
         } catch (error) {
           console.error('Error fetching account name:', error);
           setIsAccountNameResolved(false);
-          setResolvedAccountName(''); // Reset resolved account name
+          setResolvedAccountName('Account not found. Try again.');
           console.log('Error response:', error.response.data);
         } finally {
           setIsLoading(false);
@@ -317,6 +318,9 @@ const bankOptions = [
 <View style={styles.fieldContainer2}>
   <Text style={styles.labelText}>Bank Account Number</Text>
   <View style={styles.inputContainer}>
+  <View style={styles.iconContainer}> 
+          <MaterialIcons  name="account-balance" size={28} color="grey"  zIndex={-1} />
+    </View> 
     <TextInput
       style={styles.amountInput}
       placeholder="1234567890"
@@ -453,11 +457,22 @@ const styles = {
     width: '85%',
   },
 
+  iconContainer: {
+    position: 'absolute', // Use absolute positioning
+    left: 10, // Adjust the left position as needed
+    top: '50%', // Center vertically
+    marginLeft: 3,
+    marginTop: -10,
+    zIndex: 1,
+    transform: [{ translateY: -12 }], // Adjust translateY to vertically center the icon
+  },
+
   amountInput: {
     color: 'black',
     fontFamily: 'ProductSans',
     backgroundColor: '#fff',
     height: 50,
+    paddingLeft: 50,
     width: '100%',
     padding: 10,
     fontSize: 17,

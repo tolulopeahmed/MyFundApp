@@ -211,6 +211,7 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
     visible={autoSaveModalVisible}
     onRequestClose={() => setAutoSaveModalVisible(false)}
     >
+      
 <TouchableOpacity
   style={styles.modalContainer}
   activeOpacity={1}
@@ -312,10 +313,6 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
                       </TouchableOpacity>
                     ) : (
                       
-
-
-
-
                       <View style={styles.inputContainer}>
                       <View style={styles.iconContainer}> 
                       <Ionicons

@@ -158,10 +158,15 @@ const CreateAccount = ({ navigation }) => {
             <Text style={styles.header}>Create Account</Text>
             <Text style={styles.subText}>Earn up to <Text style={{fontFamily: 'proxima'}}>20% p.a. </Text>every January and July. Own properties and earn a <Text style={{fontFamily: 'proxima'}}>lifetime rental income </Text>on MyFund. Signup here.</Text>
           </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputWrapper}>
-              <Ionicons name='person-outline' marginBottom={8} size={20} color="grey" padding={8} />
-              <TextInput 
+
+
+
+          <View style={styles.fieldContainer2}>
+              <View style={styles.iconContainer}> 
+          <Ionicons  name="person-outline" size={19} color="green"  zIndex={-1} />
+        </View>   
+            <View style={styles.inputContainer}>
+        <TextInput 
               style={[styles.input, !validFirstName && styles.invalidInput]} 
               placeholder="First Name"
               value={firstName}
@@ -171,11 +176,15 @@ const CreateAccount = ({ navigation }) => {
               }}  
                 />
             </View>
+            </View>
 
 
-            <View style={styles.inputWrapper}>
-              <Ionicons name='person-outline' marginBottom={8} size={20} color="grey" padding={8} />
-              <TextInput 
+            <View style={styles.fieldContainer2}>
+            <View style={styles.iconContainer}> 
+          <Ionicons  name="person-outline" size={19} color="green"  zIndex={-1} />
+        </View>        
+        <View style={styles.inputContainer}>
+        <TextInput 
               style={[styles.input, !validLastName && styles.invalidInput]} 
               placeholder="Last Name"
               value={lastName}
@@ -185,10 +194,15 @@ const CreateAccount = ({ navigation }) => {
               }}  
                 />
             </View>
+            </View>
 
-            <View style={styles.inputWrapper}>
-              <Ionicons name='at-outline' marginBottom={8} size={20} color="grey" padding={8} />
-              <TextInput 
+
+            <View style={styles.fieldContainer2}>
+            <View style={styles.iconContainer}> 
+          <Ionicons  name="at-outline" size={19} color="green"  zIndex={-1} />
+        </View>       
+        <View style={styles.inputContainer}>        
+        <TextInput 
               style={[styles.input, !validEmail && styles.invalidInput]} 
               placeholder="Email Address (e.g. name@mail.com)" 
               keyboardType="email-address"
@@ -199,13 +213,20 @@ const CreateAccount = ({ navigation }) => {
               }} 
                 />
             </View>
+            </View>
 
 
-            <View style={styles.inputWrapper}>
-            <Ionicons name='call-outline' marginBottom={8} size={20} color="grey" padding={8} />
-            <TextInput
-              style={[styles.input, !validPhoneNumber && styles.invalidInput]}
-              placeholder="Phone Number (e.g. 08034567890)"
+            <View style={styles.fieldContainer2}>
+            <View style={styles.iconContainer}> 
+          <Ionicons  name="call-outline" size={19} color="green"  zIndex={-1} />
+        </View>  
+        <View style={styles.iconContainer}> 
+        <Text style={styles.subText2}>+234</Text>
+        </View>  
+        <View style={styles.inputContainer}>        
+                    <TextInput
+              style={[styles.input2, !validPhoneNumber && styles.invalidInput]}
+              placeholder="Phone Number (e.g. 8034567890)"
               keyboardType="phone-pad"
               value={phoneNumber}
               onChangeText={(text) => {
@@ -215,13 +236,20 @@ const CreateAccount = ({ navigation }) => {
               prefix="+234"
             />
           </View>
+          </View>
 
 
 
-            <View style={styles.inputWrapper}>
+          <View style={styles.fieldContainer2}>
+          <View style={styles.iconContainer}> 
+          <Ionicons  name="lock-closed-outline" size={19} color="green"  zIndex={-1} />
+        </View>  
+        <View style={styles.inputContainer}>    
+        <View style={styles.iconContainer2}> 
               <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
-                <Ionicons name={isPasswordVisible ? 'eye' : 'eye-off'} size={20} color="grey" marginBottom={8} padding={8} />
+                <Ionicons name={isPasswordVisible ? 'eye' : 'eye-off'} size={20} color="grey" marginBottom={8} padding={8}  />
               </TouchableOpacity>
+              </View>
               <TextInput
                 style={[styles.input, !validPassword && styles.invalidInput]}
                 placeholder="Password (at least 8 characters)"
@@ -234,13 +262,17 @@ const CreateAccount = ({ navigation }) => {
             }}
               />
             </View>
+            </View>
 
 
    
 
 
-            <View style={styles.inputWrapper}>
-              <Ionicons name='person-add-outline' marginBottom={9} size={20} color="grey" padding={8} />
+            <View style={styles.fieldContainer2}>
+            <View style={styles.iconContainer}> 
+          <Ionicons  name="person-add-outline" size={19} color="green"  zIndex={-1} />
+        </View>  
+              <View style={styles.inputContainer}>    
               <TextInput
                   style={styles.input}
                   placeholder="Referral email (optional)"
@@ -249,7 +281,7 @@ const CreateAccount = ({ navigation }) => {
                   onChangeText={(text) => setReferralValue(text)}
                 />
             </View>
-          </View>
+            </View>
 
 
 
@@ -348,6 +380,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     marginTop: 15,
+    marginBottom: 15,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -364,12 +397,51 @@ const styles = StyleSheet.create({
     marginHorizontal: 40,
     marginTop: 10,
   },
+
+  subText2: {
+    fontSize: 15,
+    color: 'black',
+    textAlign: 'center',
+    marginHorizontal: 25,
+    marginTop: 0.5,
+  },
+
   inputContainer: {
-    marginTop: 30,
-    width: '90%',
+    marginTop: 25,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  
+
+  fieldContainer2: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    alignContents: 'center',
+    width: '100%',
+    marginTop: -20,
+  },
+
+  iconContainer: {
+    position: 'absolute', // Use absolute positioning
+    left: 10, // Adjust the left position as needed
+    top: '63%', 
+    marginLeft: 42,
+    marginTop: -1,
+    zIndex: 1,
+    transform: [{ translateY: -12 }], 
+  },
+
+  iconContainer2: {
+    position: 'absolute', // Use absolute positioning
+    right: 47, // Adjust the left position as needed
+    top: '63%', 
+    marginTop: -18,
+    zIndex: 1,
+    transform: [{ translateY: -12 }], 
+  },
+
   input: {
     fontSize: 15,
     height: 40,
@@ -377,9 +449,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     marginBottom: 10,
-    paddingLeft: 14,
+    paddingLeft: 38,
     borderWidth: 1,
-    borderColor: 'green'    
+    borderColor: 'green',
+  },
+
+  input2: {
+    fontSize: 15,
+    height: 40,
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    marginBottom: 10,
+    paddingLeft: 73,
+    borderWidth: 1,
+    borderColor: 'green',
   },
 
   invalidInput: {
@@ -420,6 +504,8 @@ const styles = StyleSheet.create({
     color: 'black',
     textAlign: 'center',
     marginTop: 20,
+    marginBottom: 20,
+
   },
   loginText: {
     fontSize: 14,

@@ -161,8 +161,12 @@ const handleLogin = async () => {
         </View>
 
 
+        <View style={styles.fieldContainer2}>
+        <View style={styles.iconContainer}> 
+          <Ionicons  name="person-outline" size={20} color="green"  zIndex={-1} />
+        </View> 
         <View style={styles.inputContainer}>
-          <TextInput
+           <TextInput
           style={[styles.input, !validEmail && styles.invalidInput]}
           placeholder="Email Address"
           value={email}
@@ -172,8 +176,14 @@ const handleLogin = async () => {
           }}
           onBlur={() => setIsFormTouched(true)}
         />
-     
+        </View>
+        </View>
 
+
+        <View style={styles.fieldContainer2}>
+        <View style={styles.iconContainer}> 
+          <Ionicons  name="lock-closed-outline" size={20} color="green"  zIndex={-1} marginTop={-3} />
+        </View> 
         <View style={styles.passwordInputContainer}>
           <TextInput
           style={[styles.passwordInput, !validPassword && styles.invalidInput]}
@@ -188,16 +198,17 @@ const handleLogin = async () => {
           ref={passwordInputRef} // Set the ref for the password input
 
         />
-
             <TouchableOpacity style={styles.passwordToggle} onPress={togglePasswordVisibility}>
               <Ionicons
-                name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                name={showPassword ? 'eye' : 'eye-off'}
                 size={20}
                 color="grey"
               />
             </TouchableOpacity>
-
+            </View>
           </View>
+
+          
 
           <View>
             <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
@@ -243,7 +254,6 @@ const handleLogin = async () => {
               New to MyFund? <Text style={styles.createAccount}>Create Free Account</Text>
             </Text>
           </TouchableOpacity>
-        </View>
 
         {/* add a divider line */}
         {/* <View style={styles.divider} />
@@ -332,35 +342,58 @@ const styles = StyleSheet.create({
     marginBottom: 15,
 
   },
+
+  fieldContainer2: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    alignContents: 'center',
+    width: '85%',
+  },
+  
   inputContainer: {
     marginTop: 25,
-    width: '90%',
+    width: '95%',
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   input: {
     fontSize: 17,
     height: 45,
-    width: '80%',
+    width: '100%',
     backgroundColor: 'white',
     borderRadius: 10,
     marginBottom: 15,
-    paddingLeft: 15,
+    paddingLeft: 40,
     paddingRight: 5,
     borderWidth: 1,
-    borderColor: 'green'    
+    borderColor: 'green',
+        
+  },
+  passwordInputContainer: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignSelf: 'center',
+    alignItems: 'center',
+    alignContents: 'center',
+    width: '95%',
   },
 
   invalidInput: {
     borderColor: 'red',
   },
 
-  passwordInputContainer: {
-    position: 'relative',
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '80%',
+  iconContainer: {
+    position: 'absolute', // Use absolute positioning
+    left: 10, // Adjust the left position as needed
+    top: '63%', 
+    marginLeft: 12,
+    marginTop: -5,
+    zIndex: 1,
+    transform: [{ translateY: -12 }], 
   },
+
+
   passwordInput: {
     flex: 1,
     fontSize: 17,
@@ -371,19 +404,21 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 40,
     borderWidth: 1,
-    borderColor: 'green'    
+    borderColor: 'green',
+    paddingLeft: 40,
+  
   },
   passwordToggle: {
     position: 'absolute',
-    right: 10,
-    top: 14,
+    right: 12,
+    top: 12,
   },
   forgotPasswordText: {
-    fontSize: 13,
+    fontSize: 12,
     fontFamily: 'karla',
     color: '#4C28BC',
     alignSelf: 'flex-end',
-    marginLeft: '50%',
+    marginLeft: '56%',
     marginBottom: 1,
   },
   loginButtonContainer: {
@@ -440,7 +475,7 @@ const styles = StyleSheet.create({
     color: 'black',
     textAlign: 'center',
     marginHorizontal: 5,
-    marginTop: 5,
+    marginBottom: 5,
     letterSpacing: -0.2,
   },
   createAccount: {
