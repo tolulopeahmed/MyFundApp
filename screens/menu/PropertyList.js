@@ -21,6 +21,8 @@ const PropertyList = ({ navigation, properties }) => {
   const iconMapping = {
  "FUNAAB": "home-outline",
     "Property": "home-outline",
+    "IBADAN": "home-outline",
+
   };
 
 

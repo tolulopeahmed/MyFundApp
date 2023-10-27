@@ -36,6 +36,8 @@ const Notifications = ({ navigation, firstName }) => {
     "Property": "home-outline",
     "Referral Reward (Pending)": "ellipsis-horizontal-circle-outline",
     "Referral Reward (Confirmed)": "checkmark-circle",
+    "IBADAN": "home-outline",
+    "FUNAAB": "home-outline"
   };
   
 
