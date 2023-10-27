@@ -3,12 +3,11 @@
 import { combineReducers } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
 import Reducer from './ReduxReducers';
-import { setUserToken, fetchAccountBalances, fetchUserTransactions, fetchUserBankAccounts, fetchUserCards, fetchAutoSaveSettings, fetchAutoInvestSettings } from './ReduxActions'; // Import the updated action
+import { setUserToken, fetchAccountBalances, fetchUserTransactions, fetchUserBankAccounts, fetchUserCards, fetchAutoSaveSettings, fetchAutoInvestSettings, fetchTopSaversData } from './ReduxActions'; // Import the updated action
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 const rootReducer = combineReducers({
   bank: Reducer,
-  // ... (other reducers)
 });
 
 const store = configureStore({
@@ -37,6 +36,7 @@ getInitialToken().then((initialToken) => {
     store.dispatch(fetchUserCards());
     store.dispatch(fetchAutoSaveSettings()); // Fetch auto-save status and settings
     store.dispatch(fetchAutoInvestSettings()); // Fetch auto-invest status and settings
+    store.dispatch(fetchTopSaversData()); // Dispatch the action to fetch top savers data
 
   }
 });

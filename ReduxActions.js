@@ -34,6 +34,12 @@ export const SET_AUTO_SAVE_OFF = 'SET_AUTO_SAVE_OFF';
 export const SET_AUTO_INVEST_SETTINGS = 'SET_AUTO_INVEST_SETTINGS';
 export const SET_AUTO_INVEST_OFF = 'SET_AUTO_INVEST_OFF';
 
+export const SET_TOP_SAVERS_DATA = 'SET_TOP_SAVERS_DATA';
+export const SET_USER_PERCENTAGE = 'SET_USER_PERCENTAGE';
+export const SET_SELECTED_TOP_SAVER = 'SET_SELECTED_TOP_SAVER';
+
+
+
 
 export const setUserToken = (token) => ({
   type: SET_USER_TOKEN,
@@ -119,7 +125,6 @@ export const deleteCardSuccess = (cardId) => ({
 });
 
 
-
 export const setAutoSaveSettings = (settings) => ({
   type: SET_AUTO_SAVE_SETTINGS,
   payload: settings,
@@ -138,11 +143,21 @@ export const setAutoInvestOff = () => ({
   type: SET_AUTO_INVEST_OFF,
 });
 
+export const setTopSaversData = (data) => ({
+  type: SET_TOP_SAVERS_DATA,
+  payload: data,
+});
 
+export const setSelectedTopSaver = (saver) => ({
+  type: SET_SELECTED_TOP_SAVER,
+  payload: saver,
+});
 
-
-
-
+// Action to set the user percentage in the Redux store
+export const setUserPercentage = (percentage) => ({
+  type: SET_USER_PERCENTAGE,
+  payload: percentage,
+});
 
 
 
@@ -167,7 +182,7 @@ export const fetchUserData = () => async (dispatch, getState) => {
     if (response.status === 200) {
       const profileData = response.data;
 
-      // Dispatch the action to set user information in the Redux store
+      const topSaverPercentage = profileData.top_saver_percentage * 100; // Convert to percentage
       dispatch({
         type: SET_USER_INFO,
         payload: {
@@ -176,8 +191,11 @@ export const fetchUserData = () => async (dispatch, getState) => {
           profileImageUrl: profileData.profile_picture
             ? ipAddress + profileData.profile_picture
             : null,
-        },
+            top_saver_percentage: topSaverPercentage, // Updated line
+          },
       });
+
+      console.log('Fetched Cards:', topSaverPercentage);
 
       // Dispatch other actions as needed
       dispatch(setProfileImageUri(profileData.profile_picture)); // Set profile image URI
@@ -193,6 +211,12 @@ export const fetchUserData = () => async (dispatch, getState) => {
     alert('Error fetching user profile');
   }
 };
+
+
+
+
+
+
 
 
 export const fetchAccountBalances = () => async (dispatch, getState) => {
@@ -336,6 +360,37 @@ export const fetchAutoInvestSettings = () => async (dispatch, getState) => {
     if (response.status === 200) {
       // Dispatch the action to set auto-invest status and settings in the Redux store
       dispatch(setAutoInvestSettings(response.data.autoInvestSettings));
+    }
+  } catch (error) {
+    console.error('Fetch Error:', error);
+  }
+};
+
+
+
+export const fetchTopSaversData = () => async (dispatch, getState) => {
+  const userInfo = getState().bank.userInfo;
+  if (!userInfo || !userInfo.token) {
+    console.error('Authentication Error: User is not authenticated.');
+    return;
+  }
+
+  try {
+    // Make an API request to fetch top savers data
+    const response = await axios.get(`${ipAddress}/api/top-savers/`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      // Dispatch the action to set the top savers data in the Redux store
+      dispatch(setTopSaversData(response.data));
+      // Additionally, dispatch the user_percentage if available
+      if (response.data.user_percentage) {
+        dispatch(setUserPercentage(response.data.user_percentage));
+      }
     }
   } catch (error) {
     console.error('Fetch Error:', error);

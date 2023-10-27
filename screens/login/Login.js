@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
 import { useDispatch } from 'react-redux';
 import { loadBankAccounts, setUserToken, fetchUserCards } from '../../ReduxActions';
+import LoadingModal from '../components/LoadingModal';
 
 const Login = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -270,6 +271,9 @@ const handleLogin = async () => {
             <Text style={styles.linkedinButtonText}>LinkedIn</Text>
           </TouchableOpacity>
         </View> */} 
+
+<LoadingModal visible={isLoggingIn} />
+
 
         <Modal
           animationType="slide"

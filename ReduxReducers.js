@@ -21,6 +21,9 @@ import {
   SET_AUTO_SAVE_OFF,
   SET_AUTO_INVEST_SETTINGS,
   SET_AUTO_INVEST_OFF,
+  SET_TOP_SAVERS_DATA,
+  SET_SELECTED_TOP_SAVER,
+  SET_USER_PERCENTAGE
 } from './ReduxActions';
 
 
@@ -39,6 +42,11 @@ const initialState = {
   cards: [], // Initialize cards state
 
   profileImageUri: null, // Add a new field to store the profile picture URI
+
+
+  topSaversData: [], // Initialize the top savers data as an empty array
+  selectedTopSaver: null, // Initialize the selected top saver as null
+  userPercentage: 0,
 
   autoSaveSettings: {
     active: false,
@@ -68,6 +76,7 @@ const initialState = {
     time_period: '',
     bankRecords: [],
     cards: [],
+    top_saver_percentage: 0, // Initialize as needed
   },
 };
 
@@ -140,6 +149,7 @@ const Reducer = (state = initialState, action) => {
         userInfo: {
           ...state.userInfo,
           ...action.payload,
+          top_saver_percentage: action.payload.top_saver_percentage,
         },
       };
       case UPDATE_USER_PROFILE: // Ensure this matches your action type
@@ -215,7 +225,21 @@ const Reducer = (state = initialState, action) => {
                   active: false,
                 },
               };
-
+              case SET_TOP_SAVERS_DATA:
+                return {
+                  ...state,
+                  topSaversData: action.payload, // Update the top savers data
+                };
+              case SET_SELECTED_TOP_SAVER:
+                return {
+                  ...state,
+                  selectedTopSaver: action.payload, // Update the selected top saver
+                };
+              case SET_USER_PERCENTAGE:
+                return {
+                  ...state,
+                  userPercentage: action.payload, // Update the user percentage
+                };
      default:
       return state;
 
