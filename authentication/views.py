@@ -159,31 +159,6 @@ def send_otp_email(user, otp):
 
 
 
-
-
-
-# @api_view(['POST'])
-# @permission_classes([AllowAny])
-# @csrf_exempt
-# def confirm_otp(request):
-#     serializer = ConfirmOTPSerializer(data=request.data)
-#     if serializer.is_valid():
-#         otp = serializer.validated_data['otp']
-
-#         try:
-#             user = CustomUser.objects.get(otp=otp, is_confirmed=False)  # Only confirm if not already confirmed
-#             user.is_confirmed = True
-#             user.save()
-#             return Response({'message': 'Account confirmed successfully.'}, status=status.HTTP_200_OK)
-#         except CustomUser.DoesNotExist:
-#             return Response({'message': 'Invalid OTP or account already confirmed.'}, status=status.HTTP_400_BAD_REQUEST)
-
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-
 def test_email(request):
     send_mail(
         'Test Email',
