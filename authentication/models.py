@@ -67,6 +67,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     investment = models.DecimalField(max_digits=11, decimal_places=2, default=0)
     properties = models.PositiveIntegerField(default=0)
     wallet = models.DecimalField(max_digits=11, decimal_places=2, default=0)
+    savings_and_investments = models.DecimalField(max_digits=11, decimal_places=2, default=0)
+    top_saver_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+
 
     autosave_enabled = models.BooleanField(default=False)  # Add this field
     autoinvest_enabled = models.BooleanField(default=False)  # Add this field
@@ -87,6 +90,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
     
+    def save(self, *args, **kwargs):
+        # Update the savings_and_investments field
+        self.savings_and_investments = self.savings + self.investment
+        super().save(*args, **kwargs)
 
     def generate_reset_token(self):
         token = ''.join(random.choices(string.ascii_letters + string.digits, k=64))
@@ -322,3 +329,15 @@ class Property(models.Model):
     
     def __str__(self):
         return self.name
+    
+
+
+class MonthlySavings(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='monthly_savings')
+    month = models.PositiveIntegerField()  # Store the month (e.g., 1 for January, 2 for February, etc.)
+    year = models.PositiveIntegerField()  # Store the year
+    total_savings_and_investments = models.DecimalField(max_digits=11, decimal_places=2, default=0)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = ['user', 'month', 'year']

@@ -80,5 +80,9 @@ urlpatterns = [
     # Property-related APIs
     path('buy-property/', BuyPropertyView.as_view(), name='buy-property'),
 
+    # Top savers
+    path('top-savers/', views.get_top_savers, name='top_savers'),
+
+
     ]
 

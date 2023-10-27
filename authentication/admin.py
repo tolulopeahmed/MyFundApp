@@ -6,7 +6,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     list_display = (
         'id', 'email', 'first_name', 'last_name', 'phone_number', 'profile_picture',
         'is_staff', 'is_active', 'preferred_asset', 'savings_goal_amount', 'time_period',
-        'savings', 'investment', 'properties', 'wallet'
+        'savings', 'investment', 'properties', 'wallet', 'total_savings_and_investments','user_percentage_to_top_saver'
     )
     list_filter = ('is_staff', 'is_active')
     fieldsets = (
@@ -25,6 +25,23 @@ class CustomUserAdmin(admin.ModelAdmin):
     )
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
+
+    def total_savings_and_investments(self, obj):
+        return obj.savings + obj.investment
+
+    total_savings_and_investments.short_description = 'Total Savings and Investments'
+
+    def user_percentage_to_top_saver(self, obj):
+        # Calculate the user's percentage to top saver
+        top_saver = CustomUser.objects.all().order_by('-savings_and_investments').first()
+        if top_saver and top_saver.savings_and_investments > 0:
+            user_percentage = (obj.savings_and_investments / top_saver.savings_and_investments) * 100
+        else:
+            user_percentage = 0
+        return f"{user_percentage:.2f}%"
+
+    user_percentage_to_top_saver.short_description = 'Percentage to Top Saver'
+    user_percentage_to_top_saver.admin_order_field = 'savings_and_investments' 
 
 
 
