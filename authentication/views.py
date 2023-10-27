@@ -825,7 +825,7 @@ def quicksave(request):
 
         # Call the confirm_referral_rewards method here
         is_referrer = True  # Determine whether the user is the referrer or the referred user
-        user.confirm_referral_rewards(is_referrer)  # Pass the 'is_referrer' parameter
+        user.confirm_referral_rewards(is_referrer=True)  # Pass True if the user is a referrer, or False if not
 
         # Send a confirmation email
         subject = "QuickSave Successful!"
@@ -941,7 +941,7 @@ def autosave(request):
                 )
 
                 # Call the confirm_referral_rewards method here
-                user.confirm_referral_rewards()
+                user.confirm_referral_rewards(is_referrer=True)  # Pass True if the user is a referrer, or False if not
 
                 # Send a confirmation email
                 subject = "AutoSave Successful!"
@@ -1071,7 +1071,7 @@ def quickinvest(request):
         user.save()
 
         # Call the confirm_referral_rewards method here
-        user.confirm_referral_rewards()
+        user.confirm_referral_rewards(is_referrer=True)  # Pass True if the user is a referrer, or False if not
 
         # Send a confirmation email
         subject = "QuickInvest Successful!"
@@ -1188,7 +1188,7 @@ def autoinvest(request):
                 )
 
                 # Call the confirm_referral_rewards method here
-                user.confirm_referral_rewards()
+                user.confirm_referral_rewards(is_referrer=True)  # Pass True if the user is a referrer, or False if not
 
                 # Send a confirmation email
                 subject = "AutoInvest Successful!"
