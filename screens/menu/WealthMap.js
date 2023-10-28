@@ -105,7 +105,7 @@ const WealthMap = ({ navigation, firstName }) => {
       <View style={styles.propertyContainer}>
         <Ionicons name="cellular-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}>Based on your usage, your financial status is <Text style={{fontFamily: 'proxima', color: 'green'}}>Stage {currentStage.stage}: {(currentStage.text).toUpperCase()}</Text> Keep growing your funds to move up the 9 stages to financial freedom.</Text>
+        <Text style={styles.propertyText}>Based on your usage, your financial status is <Text style={{fontFamily: 'proxima', color: 'green'}}>Stage {currentStage.stage}: {(currentStage.text).toUpperCase()}</Text>. Keep growing your funds to move up the 9 stages to financial freedom.</Text>
       </View>
       </View>
       

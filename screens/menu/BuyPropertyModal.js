@@ -359,8 +359,9 @@ console.log('selectedCardId:', selectedCardId);
                                 </TouchableOpacity>
 
                             </View>
-
+                    <TouchableOpacity  onPress={() => navigation.navigate('DOA')}>
                       <Text style={styles.modalSubText4}>By clicking Buy Now, you agree to the  <Text style={{ color: '#4C28BC', fontFamily: 'proxima' }}>Deed of Agreement.</Text></Text>
+                      </TouchableOpacity>
                     </View>
                   )}
 
@@ -399,11 +400,11 @@ const styles = {
   },
   modalContent: {
     backgroundColor: '#F6F3FF',
-    width: '100%',
+    width: '103%',
     alignItems: 'center',
     alignSelf: 'center',
-    borderTopRightRadius: 25,
-    borderTopLeftRadius: 25,
+    borderTopRightRadius: 45,
+    borderTopLeftRadius: 45,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,      
   },

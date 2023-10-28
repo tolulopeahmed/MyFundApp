@@ -231,24 +231,23 @@ const formatTime = (timeString) => {
 
   </View>
   
-  <Pressable
-          marginRight={15}
-          marginTop={5}
-          onPress={() => navigation.navigate('More...')}
-          style={styles.profileContainer} // Add this style to the container
-        >
-        <View style={styles.profileImageContainer}>
-          {selectedImage ? (
-            <Image source={{ uri: profileImageUri }} style={styles.profileImage} />
-          ) : userInfo.profileImageUrl ? (
-            <Image source={{ uri: userInfo.profileImageUrl }} style={styles.profileImage} />
-          ) : (
-            <Ionicons name="person-circle" size={80} color="silver" />
-          )}
-        </View>
+<Pressable
+  marginRight={15}
+  marginTop={5}
+  onPress={() => navigation.navigate('More...')}
+  style={styles.profileContainer}
+>
+  <View style={styles.profileImageContainer}>
+    {selectedImage ? (
+      <Image source={{ uri: selectedImage }} style={styles.profileImage} />
+    ) : userInfo.profileImageUrl ? (
+      <Image source={{ uri: userInfo.profileImageUrl }} style={styles.profileImage} />
+    ) : (
+      <Ionicons name="person-circle" size={80} color="silver" />
+    )}
+  </View>
+</Pressable>
 
-
-        </Pressable>
 
 
 
