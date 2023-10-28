@@ -40,12 +40,19 @@ class ConfirmOTPSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     is_confirmed = serializers.BooleanField(read_only=True)
+    profile_picture = serializers.SerializerMethodField()
 
 
     class Meta:
         model = CustomUser
         fields = ['id', 'first_name', 'last_name', 'email', 'password', 'phone_number', 'referral', 'profile_picture']
 
+    def get_profile_picture(self, obj):
+        if obj.profile_picture:
+            return obj.profile_picture.url
+        else:
+            return None
+        
     def create(self, validated_data):
         user = CustomUser.objects.create_user(
             email=validated_data['email'],
