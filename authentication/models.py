@@ -39,6 +39,8 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 import uuid
+from datetime import date
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
@@ -86,6 +88,27 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'phone_number']
+
+
+
+    # KYC-related fields
+    gender = models.CharField(max_length=10, choices=[('Male', 'Male'), ('Female', 'Female'), ('Non-binary', 'Non-binary')], default='Choose')
+    relationship_status = models.CharField(max_length=20, choices=[('Single', 'Single'), ('Married', 'Married'), ('Divorced', 'Divorced'), ('Separated', 'Separated'), ('Remarried', 'Remarried')], default='Choose')
+    employment_status = models.CharField(max_length=20, choices=[('Unemployed', 'Unemployed'), ('Employed', 'Employed'), ('Self-employed', 'Self-employed'), ('Business', 'Business'), ('Retired', 'Retired')], default='Choose')
+    yearly_income = models.CharField(max_length=30, choices=[('Less than N200,000', 'Less than N200,000'), ('N200001 - N500000', 'N200001 - N500000'), ('N500000 - N1million', 'N500000 - N1million'), ('N1million - N5million', 'N1million - N5million'), ('N5million - N10million', 'N5million - N10million'), ('N10million - N20 million', 'N10million - N20 million'), ('Above N20million', 'Above N20million')], default='Choose')
+    date_of_birth = models.DateField(default=date(1900, 1, 1))
+    address = models.TextField(default="Enter Address")
+    mothers_maiden_name = models.CharField(max_length=100, default="Enter Name")
+    identification_type = models.CharField(max_length=50, choices=[('International Passport', 'International Passport'), ('Driver\'s License', 'Driver\'s License'), ('National ID Card (NIN)', 'National ID Card (NIN)'), ('Permanent Voter\'s Card', 'Permanent Voter\'s Card')], default='Choose')
+    id_upload = models.ImageField(upload_to='kyc_documents/', default='kyc_documents/placeholder.png')
+    next_of_kin_name = models.CharField(max_length=100, default="Enter Name")
+    relationship_with_next_of_kin = models.CharField(max_length=20, choices=[('Brother', 'Brother'), ('Sister', 'Sister'), ('Spouse', 'Spouse'), ('Father', 'Father'), ('Mother', 'Mother'), ('Daughter', 'Daughter'), ('Son', 'Son'), ('Friend', 'Friend'), ('Relative', 'Relative')], default='Choose')
+    next_of_kin_phone_number = models.CharField(max_length=15, default="Enter Number")
+
+    # KYC status
+    kyc_updated = models.BooleanField(default=False)
+    kyc_status = models.CharField(max_length=10, default="Not yet started")
+    admin_approval_status = models.CharField(max_length=10, default="Not yet started")
 
     def __str__(self):
         return self.email

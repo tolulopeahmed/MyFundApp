@@ -1971,3 +1971,74 @@ def get_top_savers(request):
     return Response(response_data, status=status.HTTP_200_OK)
 
 
+
+
+from .serializers import KYCUpdateSerializer
+class KYCUpdateView(generics.UpdateAPIView):
+    serializer_class = KYCUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        # Use the authenticated user as the object to update
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if user.kyc_status != 'Updated!':
+            user.kyc_status = "Pending..."  # Only update to "Pending..." if not already "Updated!"
+            user.save()
+
+        # Notify admin that a KYC update is pending approval
+        admin_email = ["info@myfundmobile.com", "company@myfundmobile.com"]
+        subject = "KYC Update Pending Approval"
+        message = f"Hello Admin, \n\n{user.first_name} ({user.email}) has submitted a KYC update for approval. Please review it in the admin panel.\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+        from_email = "MyFund <info@myfundmobile.com>"
+
+        send_mail(subject, message, from_email, admin_email, fail_silently=False)
+
+        return Response(serializer.data)
+
+kyc_update_view = KYCUpdateView.as_view()
+
+
+class GetKYCStatusView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        kyc_status = user.kyc_status
+        message = ""
+
+        if kyc_status is None:
+            message = "You haven't started your KYC process."
+        elif kyc_status == 'Pending...':
+            message = "KYC status is pending approval."
+        elif kyc_status == 'Updated!':
+            message = "KYC status has been updated."
+        elif kyc_status == 'Failed':
+            message = "KYC update has been rejected."
+
+        return Response({'kycStatus': kyc_status, 'message': message}, status=status.HTTP_200_OK)
+
+
+
+
+
+class KYCApprovalViewSet(viewsets.ViewSet):
+    def approve_kyc(self, request, pk=None):
+        user = CustomUser.objects.get(pk=pk)
+        user.kyc_updated = True  # Mark KYC as updated
+        user.save()
+        # Send an email notification here
+        return Response({'message': 'KYC Approved'})
+
+    def reject_kyc(self, request, pk=None):
+        user = CustomUser.objects.get(pk=pk)
+        user.kyc_updated = False  # Mark KYC as not updated
+        user.save()
+        # Send an email notification here
+        return Response({'message': 'KYC Rejected'})

@@ -64,6 +64,24 @@ class UserSerializer(serializers.ModelSerializer):
         )
         return user
     
+
+    
+    
+from authentication.models import CustomUser
+class KYCUpdateSerializer(serializers.ModelSerializer):
+    id_upload = serializers.ImageField(max_length=None, use_url=True)  # This handles image uploads
+
+    class Meta:
+        model = CustomUser
+        fields = '__all__'
+
+class KYCStatusUpdateSerializer(serializers.Serializer):
+    kyc_status = serializers.CharField(max_length=10)
+
+
+
+
+
 from django.contrib.auth import authenticate
 
 class LoginSerializer(serializers.Serializer):

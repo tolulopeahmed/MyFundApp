@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from django.urls import re_path
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from .views import CardListCreateView, CardDetailView, BuyPropertyView, UserTransactionListView, UserCardListView, AccountBalancesAPIView
+from .views import CardListCreateView, CardDetailView, KYCUpdateView, KYCApprovalViewSet, BuyPropertyView, UserTransactionListView, UserCardListView, AccountBalancesAPIView
 from django.views.decorators.csrf import csrf_exempt
 from authentication.views import CustomGraphQLView
 from authentication.schema import schema  # Adjust the import path
@@ -83,6 +83,13 @@ urlpatterns = [
     # Top savers
     path('top-savers/', views.get_top_savers, name='top_savers'),
 
+    # KYC Update API
+    path('update-kyc/', KYCUpdateView.as_view(), name='kyc-update'),  # Endpoint for KYC update
+    path('get-kyc-status/', views.GetKYCStatusView.as_view(), name='get-kyc-status'),
+
+    # KYC Approval API
+    path('kyc-approval/approve/<int:pk>/', KYCApprovalViewSet.as_view({'post': 'approve_kyc'}), name='approve-kyc'),
+    path('kyc-approval/reject/<int:pk>/', KYCApprovalViewSet.as_view({'post': 'reject_kyc'}), name='reject-kyc'),
 
     ]
 
