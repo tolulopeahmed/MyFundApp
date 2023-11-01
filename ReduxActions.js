@@ -38,6 +38,8 @@ export const SET_TOP_SAVERS_DATA = 'SET_TOP_SAVERS_DATA';
 export const SET_USER_PERCENTAGE = 'SET_USER_PERCENTAGE';
 export const SET_SELECTED_TOP_SAVER = 'SET_SELECTED_TOP_SAVER';
 
+export const SET_KYC_STATUS = 'SET_KYC_STATUS';
+
 
 
 
@@ -158,6 +160,14 @@ export const setUserPercentage = (percentage) => ({
   type: SET_USER_PERCENTAGE,
   payload: percentage,
 });
+
+
+export const setKYCStatus = (kycStatus) => ({
+  type: SET_KYC_STATUS,
+  payload: kycStatus,
+});
+
+
 
 
 
@@ -394,5 +404,34 @@ export const fetchTopSaversData = () => async (dispatch, getState) => {
     }
   } catch (error) {
     console.error('Fetch Error:', error);
+  }
+};
+
+
+
+
+// Action to fetch KYC status and details
+export const fetchKYCStatus = () => async (dispatch, getState) => {
+  const userInfo = getState().bank.userInfo;
+  if (!userInfo || !userInfo.token) {
+    console.error('Authentication Error: User is not authenticated.');
+    return;
+  }
+
+  try {
+    // Make an API request to fetch KYC status and details
+    const response = await axios.get(`${ipAddress}/api/get-kyc-status/`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      // Dispatch the action to set KYC status in the Redux store
+      dispatch(setKYCStatus(response.data.kycStatus));
+    }
+  } catch (error) {
+    console.error('Fetch KYC Status Error:', error);
   }
 };

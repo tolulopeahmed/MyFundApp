@@ -23,7 +23,8 @@ import {
   SET_AUTO_INVEST_OFF,
   SET_TOP_SAVERS_DATA,
   SET_SELECTED_TOP_SAVER,
-  SET_USER_PERCENTAGE
+  SET_USER_PERCENTAGE,
+  SET_KYC_STATUS
 } from './ReduxActions';
 
 
@@ -43,6 +44,7 @@ const initialState = {
 
   profileImageUri: null, // Add a new field to store the profile picture URI
 
+  kycStatus: null,
 
   topSaversData: [], // Initialize the top savers data as an empty array
   selectedTopSaver: null, // Initialize the selected top saver as null
@@ -240,6 +242,12 @@ const Reducer = (state = initialState, action) => {
                   ...state,
                   userPercentage: action.payload, // Update the user percentage
                 };
+                case SET_KYC_STATUS:
+                  return {
+                    ...state,
+                    kycStatus: action.payload,
+                  };
+            
      default:
       return state;
 

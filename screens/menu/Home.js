@@ -9,7 +9,7 @@ import Subtitle from '../components/Subtitle';
 import { AutoSaveContext } from '../components/AutoSaveContext';
 import { AutoInvestContext } from '../components/AutoInvestContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, setProfileImageUri, fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
+import { fetchAccountBalances, fetchKYCStatus, setKYCStatus , fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 
 const Home = ({ navigation, route}) => {
@@ -25,9 +25,14 @@ const Home = ({ navigation, route}) => {
   const [currentStatus, setCurrentStatus] = useState('');
   const profileImageUri = useSelector((state) => state.bank.profileImageUri);
   const [selectedImage, setSelectedImage] = useState(null);
+  const kycStatus = useSelector((state) => state.bank.kycStatus);
 
   
 
+  useEffect(() => {
+    // Fetch KYC status when the component mounts
+    dispatch(fetchKYCStatus());
+  }, []);
 
   useEffect(() => {
     if (currentStage) {
@@ -215,6 +220,7 @@ const formatTime = (timeString) => {
 
   console.log('Profile Image URL from Redux:--', userInfo.profileImageUrl);
   console.log('Profile Image URL from selected:--', profileImageUri);
+  console.log('KYCstatus:', kycStatus);
 
 
   return (
@@ -456,12 +462,65 @@ const formatTime = (timeString) => {
         </TouchableOpacity>
         </View>
 
-        <View style={styles.todoList1}>
-        <TouchableOpacity style={styles.todoButton} onPress={() => navigation.navigate('KYC')}>
-          <Ionicons name="shield-checkmark-outline" size={23} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
-          <Text style={styles.todoText}>Update KYC</Text>
-        </TouchableOpacity>
-        </View>
+
+
+
+
+
+     <View style={styles.todoList1}>
+      <TouchableOpacity
+        style={[
+          styles.todoButton,
+          kycStatus === "Pending..."  && styles.disabledButton || kycStatus === "Updated!" && styles.disabledButton || kycStatus === "updated" && styles.disabledButton,
+        ]}
+        onPress={() => navigation.navigate('KYC')}
+        disabled={kycStatus === "Pending..." || kycStatus === "Updated!" }
+      >
+        {kycStatus === "Updated!" || kycStatus === "updated" ? (
+          <>
+            <Ionicons
+              name="shield-checkmark-outline"
+              size={24}
+              color="green"
+              style={{ marginRight: 10, marginLeft: 10 }}
+            />
+            <Text style={styles.todoText}>KYC: <Text style={styles.disabledText}>Updated!</Text></Text>
+            <Ionicons
+              name="checkmark-circle"
+              size={24}
+              color="green"
+              style={{ marginRight: 10, marginLeft: 10 }}
+            />
+          </>
+        ) : kycStatus === "Pending..." ? (
+          <>
+            <Ionicons
+              name="shield-checkmark-outline"
+              size={24}
+              color="black"
+              style={{ marginRight: 10, marginLeft: 10 }}
+            />
+            <Text style={styles.todoText}>Update KYC: <Text style={styles.disabledText}>Pending...</Text></Text>
+          </>
+        ) : (
+          <>
+            <Ionicons
+              name="shield-checkmark-outline"
+              size={24}
+              color="black"
+              style={{ marginRight: 10, marginLeft: 10 }}
+            />
+            <Text style={styles.todoText}>Update KYC: <Text>(Not yet started)</Text></Text>
+          </>
+        )}
+      </TouchableOpacity>
+    </View>
+
+
+
+
+
+
 
 
         <View style={styles.todoList1}>

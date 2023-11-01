@@ -9,6 +9,9 @@ import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
 import bankOptions from '../components/BankOptions';
+import DOAModal from './DOAModal'
+import { useHandler } from 'react-native-reanimated';
+
 
 
 const getBackgroundColor = (bankName) => {
@@ -33,6 +36,14 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const [totalAmount, setTotalAmount] = useState(0);
 
+  const [DOAModalVisible, setDOAModalVisible] = useState(false);
+
+
+  
+  const handleDOA = () => {
+    setDOAModalVisible(true);
+  };
+  
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -359,7 +370,7 @@ console.log('selectedCardId:', selectedCardId);
                                 </TouchableOpacity>
 
                             </View>
-                    <TouchableOpacity  onPress={() => navigation.navigate('DOA')}>
+                    <TouchableOpacity  onPress={handleDOA}>
                       <Text style={styles.modalSubText4}>By clicking Buy Now, you agree to the  <Text style={{ color: '#4C28BC', fontFamily: 'proxima' }}>Deed of Agreement.</Text></Text>
                       </TouchableOpacity>
                     </View>
@@ -381,6 +392,10 @@ console.log('selectedCardId:', selectedCardId);
                   )}
                 </View>
 
+                <DOAModal
+        DOAModalVisible={DOAModalVisible}
+        setDOAModalVisible={setDOAModalVisible}
+      />
                 <LoadingModal visible={processing} />
               </ScrollView>
             </KeyboardAvoidingView>

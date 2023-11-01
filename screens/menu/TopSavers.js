@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity, ImageBackground, StyleSheet, Image } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 import { ProgressBar } from 'react-native-paper';
@@ -16,7 +16,10 @@ const TopSavers = ({ navigation }) => {
   const userPercentage = useSelector((state) => state.bank.userPercentage);
   const topSaversData = useSelector((state) => state.bank.topSaversData);
   const userInfo = useSelector((state) => state.bank.userInfo);
-  const [currentMonth, setCurrentMonth] = useState('');
+  const [currentMonth, setCurrentMonth] = useState(''); 
+  const profileImageUri = useSelector((state) => state.bank.profileImageUri);
+  const [selectedImage, setSelectedImage] = useState(null);
+
 
   useEffect(() => {
     dispatch(fetchTopSaversData());
@@ -54,7 +57,7 @@ const TopSavers = ({ navigation }) => {
 
         <View style={styles.userInfoContainer}>
           <Text style={styles.transactionDescription}>{saver.first_name}</Text>
-          {/* <ProgressBar
+               {/* <ProgressBar
             progress={saver.individual_percentage / 100}
             color={'green'}
             style={styles.progressBar}
@@ -80,7 +83,18 @@ const TopSavers = ({ navigation }) => {
   };
 
 
-
+  function getOrdinal(number) {
+    if (number === 0) {
+      return ''; // Return an empty string when the number is zero
+    }
+  
+    const suffixes = ['st', 'nd', 'rd'];
+    const remainder = number % 10;
+    const isTeen = (number - remainder) % 100 === 10;
+  
+    return isTeen ? 'th' : suffixes[remainder - 1] || 'th';
+  }
+  
 
 
   return (
@@ -117,7 +131,6 @@ const TopSavers = ({ navigation }) => {
         <View style={styles.progressBarContainer}>
           <ScrollView showsVerticalScrollIndicator={false}>
               <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>
-                Top Savers of the Month: 
                 <Text style={styles.propertyText}>
                 {userPercentage == 100 ? (
                   <Text>
@@ -125,8 +138,8 @@ const TopSavers = ({ navigation }) => {
               
                   </Text>
                 ) : (
-                  <Text> Hey {userInfo?.firstName ? `${userInfo.firstName},` : ''}
-                    <Text style={{ fontFamily: 'proxima', color: 'green',  }}> you're {userPercentage.toFixed(0)}%</Text>
+                  <Text>Hey {userInfo?.firstName ? `${userInfo.firstName}, you're` : ''}
+                    <Text style={{ fontFamily: 'proxima', color: 'green',  }}> {topSaversData.user_percentage.toFixed(0)}%</Text>
                     {' '}from being one of the top savers in {currentMonth}
                     . Keep growing your funds to earn more as a top saver. 
                   </Text>
@@ -138,6 +151,48 @@ const TopSavers = ({ navigation }) => {
         </View>
       </View>
 
+              <ImageBackground
+                source={require('./icb2.png')}
+                style={styles.propertyContainer2}
+                imageStyle={styles.backgroundImage}
+              >
+           
+                <View style={styles.profileImageContainer}>
+                {selectedImage ? (
+                  <Image source={{ uri: selectedImage }} style={styles.profileImage} />
+                ) : userInfo.profileImageUrl ? (
+                  <Image source={{ uri: userInfo.profileImageUrl }} style={styles.profileImage} />
+                ) : (
+                    <Image source={require('./Profile1.png')} style={styles.profileImage2}/>
+                )}
+                  <View style={styles.percentageBackground}>
+                    <Text style={styles.percentageText}>
+                      {topSaversData.user_percentage.toFixed(0)}<Text style={{fontSize: 7, fontFamily: 'karla'}}>%</Text>
+                    </Text>
+                  </View>
+              </View>
+
+                <View style={styles.verticalLine} />
+
+                <View style={styles.progressBarContainer}>
+                  <ScrollView showsVerticalScrollIndicator={false}>
+                    <Text style={{ fontFamily: 'proxima', color: 'silver' }}>
+                      Position:
+                    </Text>
+                    <Text style={{ fontFamily: 'ProductSans', color: 'white', fontSize: 70 }}>
+                      {topSaversData.top_savers.findIndex(saver => saver.email === userInfo.email) + 1 === 0
+                        ? "-"
+                        : topSaversData.top_savers.findIndex(saver => saver.email === userInfo.email) + 1
+                      }
+                      {getOrdinal(topSaversData.top_savers.findIndex(saver => saver.email === userInfo.email) + 1)}
+                    </Text>
+
+                  </ScrollView>
+                </View>
+              </ImageBackground>
+
+
+
       <ScrollView
         style={styles.transactionsContainer}
         showsVerticalScrollIndicator={false}
@@ -147,7 +202,7 @@ const TopSavers = ({ navigation }) => {
         ) : (
           <View style={styles.noTransactionsContainer}>
             <Text style={styles.noTransactionsMessage}>
-              No top savers data available yet.
+              No top savers available yet.
             </Text>
           </View>
         )}
@@ -170,6 +225,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     height: 43,
   },
+
+  verticalLine: {
+    width: 0.5, // Adjust the width as needed
+    opacity: 0.3,
+    height: '90%', // Make it as tall as the profile picture
+    backgroundColor: 'silver', // Adjust the color as needed
+    marginLeft: 10, // Adjust the margin as needed
+    marginRight: 10, // Adjust the margin as needed
+  },
+  
   headerContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -184,6 +249,17 @@ const styles = StyleSheet.create({
     letterSpacing: 3,
   },
   propertyContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: '#DCD1FF',
+    padding: 15,
+    marginHorizontal: 20,
+    borderRadius: 10,
+    marginBottom: 10,
+    marginTop: -10,
+  },
+
+  propertyContainer2: {
     alignItems: 'center',
     paddingHorizontal: 16,
     flexDirection: 'row',
@@ -200,6 +276,36 @@ const styles = StyleSheet.create({
     color: 'black',
     marginBottom: 8,
   },
+  containerText: {
+    fontSize: 14,
+    fontWeight: 'normal',
+    fontFamily: 'karla',
+    letterSpacing: -0.2,
+    color: 'white',
+    marginBottom: 8,
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 67,
+    marginRight: 5,
+    marginLeft: -10,
+    borderWidth: 0.5,
+    resizeMode: 'center'
+    },
+  
+    profileImage2: {
+      width: 80,
+      height: 80,
+      borderRadius: 67,
+      marginRight: 5,
+      marginLeft: -10,
+      borderWidth: 0.5,
+      resizeMode: 'center'
+      },
+    profileImageContainer: {
+      padding: 10,
+      },
   progressBarContainer: {
     flex: 1,
     flexDirection: 'column',
@@ -209,7 +315,8 @@ const styles = StyleSheet.create({
     height: 4.5,
     backgroundColor: '#fff',
     borderRadius: 10,
-  },
+    flex: 1,
+    width: '95%',    },
   welcomeText: {
     color: '#4C28BC',
     fontFamily: 'ProductSansBold',
@@ -310,6 +417,24 @@ const styles = StyleSheet.create({
     borderRadius: 30, 
 },
   
+percentageBackground: {
+  position: 'absolute',
+  bottom: 8, // Adjust this value to position it as desired
+  right: 10,  // Adjust this value to position it as desired
+  backgroundColor: '#DCD1FF',
+  opacity: 0.9,
+  borderRadius: 50, // Make it circular
+  padding: 5, // Adjust the padding as needed
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderColor: 'white',
+},
+percentageText: {
+  color: '#4C28BC',
+  fontFamily: 'proxima', // Adjust the font family as needed
+  fontSize: 10, // Adjust the font size as needed
+},
+
   userInfoContainer: {
     flex: 1,
   },

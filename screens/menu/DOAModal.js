@@ -1,35 +1,74 @@
-import React from 'react';
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, ScrollView, Alert, SafeAreaView, Modal, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
 import SectionTitle from '../components/SectionTitle';
-import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
+import Divider from '../components/Divider';
 
-const DOA = ({ navigation }) => {
+
+
+const DOAModal = ({ navigation, DOAModalVisible, setDOAModalVisible }) => {
   const userInfo = useSelector((state) => state.bank.userInfo);
   const currentDate = new Date();
   const day = currentDate.getDate();
   const month = currentDate.toLocaleString('default', { month: 'long' });
   const year = currentDate.getFullYear();
+  const [isSaved, setIsSaved] = useState(false);
+  const scrollViewRef = useRef(null);
+
+
+  const saveAsImage = async () => {
+    // Capture the content of the ScrollView as an image
+    const uri = await captureRef(scrollViewRef, {
+      format: 'jpg', // You can choose other formats like 'png' or 'webm'
+      quality: 1, // Image quality (0 to 1)
+    });
+  
+    // Save the captured image to the device's gallery
+    CameraRoll.save(uri, { type: 'photo' })
+      .then(() => {
+        setIsSaved(true);
+      })
+      .catch((error) => {
+        console.error('Error saving image: ', error);
+      });
+  };
+  
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back-outline" size={30} color="#4C28BC" />
-        </TouchableOpacity>
-        <View style={styles.headerContainer}>
-          <Text style={styles.headerText}>DEED OF AGREEMENT</Text>
-        </View>
-      </View>
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={DOAModalVisible}
+      onRequestClose={() => setDOAModalVisible(false)}
+    >
+      <View style={styles.modalContainer}>
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.modalContent}
+          contentContainerStyle={styles.contentContainer}
+        >
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeaderContainer}>
+              <Text style={styles.modalHeader}>Deed of Agreement</Text>
+              <Ionicons
+                name="close-outline"
+                size={24}
+                color="grey"
+                marginTop={22}
+                paddingRight={25}
+                onPress={() => setDOAModalVisible(false)}
+              />
+            </View>
+            <Divider />
+            <Subtitle>
+              Agreement between {userInfo.firstName} {userInfo.lastName} and MyFund
+            </Subtitle>
 
-      <Title>Deed of Agreement</Title>
-      <Subtitle>
-        Agreement between {userInfo.firstName} {userInfo.lastName} and MyFund
-      </Subtitle>
+<SafeAreaView>
+      <ScrollView style={styles.scrollView} >
 
-      <ScrollView style={styles.contentContainer}>
         <SectionTitle>INTRODUCTION</SectionTitle>
         <Text style={styles.bodyText}>
           This Deed of Agreement ("Agreement") is entered into on this {day} day of {month}, {year} (the "Effective Date") by and
@@ -102,16 +141,72 @@ const DOA = ({ navigation }) => {
           agreements, representations, and warranties.
         </Text>
 
-        <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back-outline" size={30} color="#fff" />
-          <Text style={styles.primaryButtonText}>  Confirmed, Go Back</Text>
+        </ScrollView>
+
+        <TouchableOpacity style={styles.primaryButton} onPress={() => setDOAModalVisible(false)}>
+          <Text style={styles.primaryButtonText}>Confirm and Proceed</Text>
+          <Ionicons name="arrow-forward-outline" size={30} color="#fff" />
+
         </TouchableOpacity>
-      </ScrollView>
+</SafeAreaView>
     </View>
+    </ScrollView>
+  </View>
+
+
+</Modal>
   );
 };
 
 const styles = StyleSheet.create({
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+
+  modalContent: {
+    backgroundColor: '#F6F3FF',
+    borderTopRightRadius: 25,
+    borderTopLeftRadius: 25,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    flex: 1, // Allow the content to take up the available space
+  },
+  contentContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 60,
+  },
+
+  scrollView: {
+    paddingHorizontal: -5,
+  },
+  
+  modalHeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingLeft: 30,
+  },
+  modalHeader: {
+    marginTop: 20,
+    fontSize: 25,
+    fontFamily: 'proxima',
+    color: '#4C28BC',
+    flex: 1,
+  },
+  modalSubText: {
+    fontSize: 14,
+    fontFamily: 'karla',
+    color: 'black',
+    textAlign: 'left',
+    marginHorizontal: 30,
+    marginTop: 5,
+  },
+   
   container: {
     flex: 1,
     backgroundColor: '#F5F1FF',
@@ -151,18 +246,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
 
   },
+
+  scrollToBottomButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: 'white',
+    borderRadius: 50,
+    padding: 10,
+    elevation: 5, // Add elevation for a shadow effect
+  },
+  scrollToBottomButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'ProductSans',
+  },
+
   primaryButton: {
     flexDirection: 'row',
     backgroundColor: '#4C28BC',
-    width: '85%',
+    width: '90%',
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
     alignSelf: 'center',
-    marginTop: 20,
-    marginBottom: 50,
-
+    marginVertical: 10,
   },
   primaryButtonText: {
     color: '#fff',
@@ -170,6 +279,24 @@ const styles = StyleSheet.create({
     fontFamily: 'ProductSans',
     marginRight: 5,
   },
+  saveButton: {
+    backgroundColor: '#4C28BC',
+    width: '85%',
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    alignSelf: 'center',
+    marginVertical: 10,
+  },
+  
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'ProductSans',
+  },
+  
 });
 
-export default DOA;
+
+export default DOAModal;

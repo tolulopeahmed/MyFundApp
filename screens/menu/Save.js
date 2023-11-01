@@ -37,9 +37,7 @@ const Save = ({ navigation, route }) => {
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(fetchTopSaversData());
-  }, [dispatch]);
+
 
   const handleCloseSuccessModal = () => {
     setIsSuccessVisible(false);
@@ -50,6 +48,7 @@ const Save = ({ navigation, route }) => {
     dispatch(fetchUserTransactions()); // Fetch user transactions using Redux action
     dispatch(fetchUserData(userInfo.token));
     dispatch(fetchAutoSaveSettings()); // Fetch auto-save status and settings when the component mounts
+    dispatch(fetchTopSaversData());
   }, []);
 
 
@@ -180,6 +179,7 @@ console.log('accountBalances.savings:', accountBalances.savings)
 console.log('accountBalances.investment:', accountBalances.investment)
 console.log('userPercentage:', topSaversData.user_percentage)
 console.log('userPercentage2:', userPercentage)
+console.log('TopSaversData.firstname:', topSaversData)
 
 
   return (
@@ -194,82 +194,85 @@ console.log('userPercentage2:', userPercentage)
 
       <View style={styles.swiper}>
       <Swiper
-          autoplay
-          autoplayTimeout={10}
-          showsPagination={true}
-          dotStyle={styles.dot}
-          activeDotStyle={styles.activeDot}
-          paginationStyle={styles.paginationContainer}
-        >
-         <Swiper>
-  
-  {percentage(0) >= 100 ? (
-    <View style={styles.propertyContainer}>
-      <Ionicons name="trophy-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
-      <View style={styles.progressBarContainer}>
-        <Text style={styles.propertyText}>
-          {`Congratulations on reaching your goal of ₦${formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount))} for your `}
-          <Text style={styles.goalText}>{userInfo.preferred_asset}</Text>
-          {' investment! 🥳🍾🎉🎊 At this stage, you should consider buying properties.'}
-        </Text>
-      </View>
-    </View>
-  ) : (
-    <View style={styles.propertyContainer}>
-      <Ionicons name="wallet-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
-      <View style={styles.progressBarContainer}>
-        <ScrollView showsVerticalScrollIndicator={false}>
+  autoplay
+  autoplayTimeout={10}
+  showsPagination={true}
+  dotStyle={styles.dot}
+  activeDotStyle={styles.activeDot}
+  paginationStyle={styles.paginationContainer}
+>
+  <Swiper>
+    {percentage(0) >= 100 ? (
+      <View style={styles.propertyContainer}>
+        <Ionicons name="trophy-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
+        <View style={styles.progressBarContainer}>
           <Text style={styles.propertyText}>
-            <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Your Savings Goal: </Text>
-            {`You should be saving ₦${formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount / (userInfo.time_period * 12)))}/month to reach `}
-            <Text style={styles.goalText}>{`₦${formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount))}`}</Text>
-            {` for your ${userInfo.preferred_asset} investment in ${userInfo.time_period} years. And you're now `}
-            <Text style={styles.percentageText}>{`${percentage(0).toFixed(1)}%`}</Text>
-            {' to success. Well done!'}
+            {`Congratulations on reaching your goal of ₦${formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount))} for your `}
+            <Text style={styles.goalText}>{userInfo.preferred_asset}</Text>
+            {' investment! 🥳🍾🎉🎊 At this stage, you should consider buying properties.'}
           </Text>
-        </ScrollView>
-        <ProgressBar progress={percentage(0) / 100} color="green" height={6} style={styles.progressBar} />
+        </View>
       </View>
-    </View>
-  )}
-</Swiper>
+    ) : (
+      <View style={styles.propertyContainer}>
+        <Ionicons name="wallet-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
+        <View style={styles.progressBarContainer}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <Text style={styles.propertyText}>
+              <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Your Savings Goal: </Text>
+              {`You should be saving ₦${formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount / (userInfo.time_period * 12)))}/month to reach `}
+              <Text style={styles.goalText}>{`₦${formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount))}`}</Text>
+              {` for your ${userInfo.preferred_asset} investment in ${userInfo.time_period} years. And you're now `}
+              <Text style={styles.percentageText}>{`${percentage(0).toFixed(1)}%`}</Text>
+              {' to success. Well done!'}
+            </Text>
+          </ScrollView>
+          <ProgressBar progress={percentage(0) / 100} color="green" height={6} style={styles.progressBar} />
+        </View>
+      </View>
+    )}
+  </Swiper>
 
-<Swiper>
+  <Swiper>
   <View style={styles.propertyContainer}>
     <Ionicons name="arrow-up-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
     <View style={styles.progressBarContainer}>
-      
       <Text style={styles.propertyText}>
         <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Top Saver: </Text>
-        
-        {topSaversData.user_percentage == 100 ? (
+        {topSaversData.user_percentage === 100 ? (
           <Text>
             {`Congratulations ${userInfo?.firstName ? `${userInfo.firstName},` : ''} You're currently one of the top savers in ${currentMonth}. 🥳🍾🎉🎊 Keep saving to earn more rewards.`}
-            <TouchableOpacity
-              onPress={() => navigation.navigate('TopSavers')}
-            >
+            <TouchableOpacity onPress={() => navigation.navigate('TopSavers')}>
               <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}> See TopSavers...</Text>
             </TouchableOpacity>
           </Text>
         ) : (
-        <Text>Hey {userInfo?.firstName ? <Text >{userInfo.firstName}, </Text> : ' '}
-          you're <Text style={{ fontFamily: 'proxima', color: 'green' }}>{`${topSaversData.user_percentage.toFixed(0)}%`} </Text>
-          from being one of the top savers in {currentMonth}. (Current Top Saver:
-          <Text style={{ fontFamily: 'proxima' }}> {`${topSaversData?.top_savers[0].first_name}`}</Text>). Keep growing your funds to earn more as a top saver.          
-          
-          <Pressable onPress={() => navigation.navigate('TopSavers')}>
-          <Text style={{ fontFamily: 'proxima', color: '#4C28BC', marginTop: 3,  }}> See Top Savers...</Text>
-          </Pressable>
-
-        </Text>
+          <Text>
+            Hey {userInfo?.firstName ? <Text>{userInfo.firstName}, </Text> : ' '}
+            you're <Text style={{ fontFamily: 'proxima', color: 'green' }}>
+              {`${(topSaversData.user_percentage || 0).toFixed(0)}%`} 
+            </Text>
+            from being one of the top savers in {currentMonth}. (Current Top Saver:
+            <Text style={{ fontFamily: 'proxima' }}>
+              {topSaversData.top_savers && topSaversData.top_savers.length > 0
+                ? ` ${topSaversData.top_savers[0].first_name}`
+                : ' -'
+              }
+            </Text>
+            ). Keep growing your funds to earn more as a top saver.
+            <Pressable onPress={() => navigation.navigate('TopSavers')}>
+              <Text style={{ fontFamily: 'proxima', color: '#4C28BC', marginTop: 3 }}> See Top Savers...</Text>
+            </Pressable>
+          </Text>
         )}
       </Text>
-      <ProgressBar progress={topSaversData.user_percentage / 100} color="green" height={6} style={styles.progressBar} />
+      <ProgressBar progress={(topSaversData.user_percentage || 0) / 100} color="green" height={6} style={styles.progressBar} />
     </View>
   </View>
 </Swiper>
 
-        </Swiper>
+</Swiper>
+
         </View>
       
         <SectionTitle>MY SAVINGS</SectionTitle>

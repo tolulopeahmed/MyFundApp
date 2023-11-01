@@ -33,7 +33,6 @@ import { UserProvider } from './UserContext';
 import store from './ReduxStore';
 import { Provider } from 'react-redux';
 import TopSavers from './screens/menu/TopSavers';
-import DOA from './screens/menu/DOA';
 
 
 const Stack = createStackNavigator();
@@ -106,7 +105,6 @@ const App = ({ styles, darkModeStyles, }) => {
         <Stack.Screen name="ReferAndEarn" component={ReferAndEarn} />
         <Stack.Screen name="PaystackWebViewScreen" component={PaystackWebViewScreen} />
         <Stack.Screen name="TopSavers" component={TopSavers} />
-        <Stack.Screen name="DOA" component={DOA} />
 
 
 

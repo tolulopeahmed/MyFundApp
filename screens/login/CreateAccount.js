@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     position: 'absolute', // Use absolute positioning
     left: 10, // Adjust the left position as needed
     top: '63%', 
-    marginLeft: 42,
+    marginLeft: 47,
     marginTop: -1,
     zIndex: 1,
     transform: [{ translateY: -12 }], 
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     marginBottom: 10,
-    paddingLeft: 38,
+    paddingLeft: 40,
     borderWidth: 1,
     borderColor: 'green',
   },
@@ -461,7 +461,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     marginBottom: 10,
-    paddingLeft: 73,
+    paddingLeft: 77,
     borderWidth: 1,
     borderColor: 'green',
   },

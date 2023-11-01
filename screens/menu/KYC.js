@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, Dimensions, TextInput, ScrollView, TouchableOpacity, StyleSheet, Button } from 'react-native';
+import { View, Text, Alert, Image, Dimensions, TextInput, ScrollView, TouchableOpacity, StyleSheet, Button } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider';
 import { MaterialIcons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
 import * as ImagePicker from 'expo-image-picker';
-
+import LoadingModal from '../components/LoadingModal';
+import axios from 'axios';
+import { ipAddress } from '../../constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchKYCStatus, setKYCStatus } from '../../ReduxActions';
+import Title from '../components/Title';
+import Subtitle from '../components/Subtitle';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -19,6 +25,49 @@ const KYC = ({ navigation, firstName }) => {
     const [relationshipWithNextOfKin, setRelationshipWithNextOfKin] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [showImage, setShowImage] = useState(false);
+    const [processing, setProcessing] = useState(false);
+    const [nameOfNextOfKin, setNameOfNextOfKin] = useState('');
+    const [nextOfKinPhoneNumber, setNextOfKinPhoneNumber] = useState('');
+    const [dateOfBirth, setDateOfBirth] = useState('');
+    const [address, setAddress] = useState('');
+    const [mothersMaidenName, setMothersMaidenName] = useState('');
+    const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
+    const kycStatus = useSelector((state) => state.bank.kycStatus);
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+      // Fetch the KYC status when the component mounts
+      dispatch(fetchKYCStatus());
+    }, [dispatch]);
+
+
+      // Function to format and update the date of birth as the user types
+      const handleDateOfBirthChange = (text) => {
+        // Check if the input matches the YYYY-MM-DD format
+        if (/^\d{0,4}(\-)?\d{0,2}(\-)?\d{0,2}$/.test(text)) {
+          // Remove all non-numeric characters
+          const numericText = text.replace(/[^\d]/g, '');
+    
+          // Auto-insert hyphens
+          if (numericText.length >= 5) {
+            setDateOfBirth(
+              numericText.slice(0, 4) +
+                '-' +
+                numericText.slice(4, 6) +
+                '-' +
+                numericText.slice(6, 8)
+            );
+          } else if (numericText.length >= 3) {
+            setDateOfBirth(
+              numericText.slice(0, 4) + '-' + numericText.slice(4, 6)
+            );
+          } else {
+            setDateOfBirth(numericText);
+          }
+        }
+      };
+
 
     useEffect(() => {
       requestMediaLibraryPermissions();
@@ -30,12 +79,14 @@ const KYC = ({ navigation, firstName }) => {
         alert('Permission to access the media library is required!');
       }
     };
+
+
   
     const openImagePicker = async () => {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [4, 3],
+        aspect: [16, 9],
         quality: 1,
       });
     
@@ -51,17 +102,20 @@ const KYC = ({ navigation, firstName }) => {
     };
     
     const onGenderSelect = (index, value) => {
-        setSelectedGender(value);
-      };
+      setSelectedGender(index);
+    };
+    
 
 
-    const genderOptions = ['Male', 'Female'];
+    const genderOptions = ['Male', 'Female', 'Non-binary', 'Others'];
     const relationshipStatusOptions = [
         'Single',
         'Married',
         'Divorced',
         'Separated',
         'Remarried',
+        'Widowed',
+        'Others',
       ];
     
       const employmentStatusOptions = [
@@ -70,12 +124,14 @@ const KYC = ({ navigation, firstName }) => {
         'Self-employed',
         'Business',
         'Retired',
+        'Student',
+        'Others',
       ];
 
       const yearlyIncomeOptions = [
-        'Less than N200,000',
-        'N200,001 - N500,000',
-        'N500,001 - N1 million',
+        'Less than N200000',
+        'N200001 - N500000',
+        'N500001 - N1 million',
         'N1 million - N5 million',
         'N5 million - N10 million',
         'N10 million - N20 million',
@@ -87,6 +143,8 @@ const KYC = ({ navigation, firstName }) => {
         "Driver's License",
         'National ID Card (NIN)',
         "Permanent Voter's Card",
+        'Bank Verification Number (BVN)',
+        'Others',
       ];
 
       const relationshipWithNextOfKinOptions = [
@@ -99,8 +157,101 @@ const KYC = ({ navigation, firstName }) => {
         'Son',
         'Friend',
         'Relative',
+        'Others',
       ];
-     
+
+      const imageUri = selectedImage; // The local file path to the selected image
+
+      const handleUpdateKYC = async () => {
+        try {
+          setProcessing(true);
+      
+          // Ensure the selectedImage is not null before processing
+          if (selectedImage) {
+            const formData = new FormData();
+      
+            // Append text data fields with snake_case
+            formData.append('gender', selectedGender);
+            formData.append('relationship_status', relationshipStatus);
+            formData.append('employment_status', employmentStatus);
+            formData.append('yearly_income', yearlyIncome);
+            formData.append('date_of_birth', dateOfBirth);
+            formData.append('address', address);
+            formData.append('mothers_maiden_name', mothersMaidenName);
+            formData.append('identification_type', cardType);
+            formData.append('next_of_kin_name', nameOfNextOfKin);
+            formData.append('relationship_with_next_of_kin', relationshipWithNextOfKin);
+            formData.append('next_of_kin_phone_number', nextOfKinPhoneNumber);
+      
+            // Append the image as a file with the correct content type and file name
+            formData.append('id_upload', {
+              uri: selectedImage,
+              type: 'image/jpeg', // Adjust content type if needed
+              name: 'kyc_image.jpg', // Adjust file name if needed
+            });
+      
+            // Make the API request
+            const response = await axios.patch(
+              `${ipAddress}/api/update-kyc/`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                  Authorization: `Bearer ${userInfo.token}`,
+                },
+              }
+            );
+      
+            if (response.status === 200) {
+              const responseData = response.data;
+              dispatch(setKYCStatus(responseData.kycStatus)); // Update KYC status in Redux
+              setProcessing(false);
+      
+              Alert.alert(
+                'KYC Submitted!',
+                'Your KYC has been submitted for approval. You will receive a notification once it is approved or rejected.',
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => {
+                      navigation.navigate('MyFund');
+                    },
+                  },
+                ]
+              );
+            } else {
+              setProcessing(false);
+              Alert.alert('KYC Update Failed', 'KYC update failed. Please try again later.');
+            }
+          } else {
+            setProcessing(false);
+            Alert.alert('Image Missing', 'Please upload an image for your KYC.');
+          }
+        } catch (error) {
+          console.error('Error Updating KYC:', error);
+          setProcessing(false);
+          Alert.alert('Error', 'Failed to update KYC. Please check your connection and try again later.');
+        }
+      };
+      
+      
+  
+      console.log('selectedGender:', selectedGender);
+      console.log('relationshipStatus:', relationshipStatus);
+      console.log('employmentStatus:', employmentStatus);
+      console.log('yearlyIncome:', yearlyIncome);
+      console.log('dateOfBirth:', dateOfBirth);
+      console.log('address:', address);
+      console.log('selectedImage:', selectedImage);
+      console.log('mothersMaidenName:', mothersMaidenName);
+      console.log('cardType:', cardType);
+      console.log('nameOfNextOfKin:', nameOfNextOfKin);
+      console.log('relationshipWithNextOfKin:', relationshipWithNextOfKin);
+      console.log('nextOfKinPhoneNumber:', nextOfKinPhoneNumber);
+
+      console.log('showImage..:', imageUri);
+     console.log('KYCstatus:', kycStatus);
+
 
   return (
     <View style={styles.container}>
@@ -115,6 +266,9 @@ const KYC = ({ navigation, firstName }) => {
     </View>
 
     <ScrollView showsVerticalScrollIndicator={false}>
+<Title>Update KYC</Title>
+<Subtitle>Update your details for added account security</Subtitle>
+
 
       <View style={styles.propertyContainer}>
         <Ionicons name="shield-checkmark-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
@@ -123,7 +277,14 @@ const KYC = ({ navigation, firstName }) => {
 </Text>
       </View>
       </View>
-      
+
+      <View style={styles.statusContainer}>
+      <Text style={styles.propertyText}>
+        Status:
+        <Text style={styles.statusText}> {kycStatus === "pending" ? "Not yet started" : kycStatus}
+        </Text>
+      </Text>
+    </View>
     
       <View style={styles.inputContainer}>
 
@@ -154,7 +315,7 @@ const KYC = ({ navigation, firstName }) => {
         {/* Relationship Status */}
         <SelectDropdown
           data={relationshipStatusOptions}
-          onSelect={(index, value) => setRelationshipStatus(value)}
+          onSelect={(index, value) => setRelationshipStatus(index)}
           defaultIndex={null}
           defaultButtonText={
             <>
@@ -177,7 +338,7 @@ const KYC = ({ navigation, firstName }) => {
         {/* Employment Status */}
         <SelectDropdown
           data={employmentStatusOptions}
-          onSelect={(index, value) => setEmploymentStatus(value)}
+          onSelect={(index, value) => setEmploymentStatus(index)}
           defaultIndex={null}
           defaultButtonText={
             <>
@@ -199,7 +360,7 @@ const KYC = ({ navigation, firstName }) => {
         {/* Yearly Income */}
         <SelectDropdown
           data={yearlyIncomeOptions}
-          onSelect={(index, value) => setYearlyIncome(value)}
+          onSelect={(index, value) => setYearlyIncome(index)}
           defaultIndex={null}
           defaultButtonText={
             <>
@@ -217,18 +378,36 @@ const KYC = ({ navigation, firstName }) => {
         </View>
 
         <View style={styles.inputWrapper}>
-        <MaterialIcons name='child-care' marginBottom={9} size={20} color="grey" padding={8}/>
-<TextInput style={styles.input} placeholder="DATE OF BIRTH (DD-MM-YYYY)" keyboardType="phone-pad" />
-        </View>
+        <MaterialIcons name="child-care" marginBottom={9} size={20} color="grey" padding={8} />
+        <TextInput
+          style={styles.input}
+          placeholder="DATE OF BIRTH (YYYY-MM-DD)"
+          keyboardType="phone-pad"
+          value={dateOfBirth}
+          onChangeText={handleDateOfBirthChange}
+        />
+      </View>
       
-        <View style={styles.inputWrapper}>
-        <Ionicons name='home-outline' marginBottom={9} size={20} color="grey" padding={8}/>
-<TextInput style={styles.input} placeholder="ADDRESS" keyboardType="email-address" />
+      <View style={styles.inputWrapper}>
+          <Ionicons name='home-outline' marginBottom={9} size={20} color="grey" padding={8} />
+          <TextInput
+            style={styles.input}
+            placeholder="ADDRESS"
+            keyboardType="email-address"
+            value={address} // Set the value to the address variable
+            onChangeText={(text) => setAddress(text)} // Handle text input changes
+          />
         </View>
 
         <View style={styles.inputWrapper}>
-        <Ionicons name='person-outline' class="material-symbols-outlined" marginBottom={9} size={20} color="grey" padding={8}/>
-<TextInput style={styles.input} placeholder="MOTHER'S MAIDEN NAME" keyboardType="email-address" />
+          <Ionicons name='person-outline' marginBottom={9} size={20} color="grey" padding={8} />
+          <TextInput
+            style={styles.input}
+            placeholder="MOTHER'S MAIDEN NAME"
+            keyboardType="email-address"
+            value={mothersMaidenName} // Set the value to the mothersMaidenName variable
+            onChangeText={(text) => setMothersMaidenName(text)} // Handle text input changes
+          />
         </View>
 
         
@@ -238,7 +417,7 @@ const KYC = ({ navigation, firstName }) => {
     {/* Identification Card Type */}
     <SelectDropdown
       data={cardTypeOptions}
-      onSelect={(index, value) => setCardType(value)}
+      onSelect={(index, value) => setCardType(index)}
       defaultIndex={null}
       defaultButtonText={
         <>
@@ -278,16 +457,22 @@ const KYC = ({ navigation, firstName }) => {
 
         <View style={styles.inputWrapper}>
         <Ionicons name='people-outline' marginBottom={9} size={20} color="grey" padding={8}/>
-<TextInput style={styles.input} placeholder="NAME OF NEXT OF KIN" keyboardType="email-address" />
+        <TextInput style={styles.input} 
+        placeholder="NAME OF NEXT OF KIN" 
+        keyboardType="email-address" 
+        value={nameOfNextOfKin}
+        onChangeText={(text) => setNameOfNextOfKin(text)}
+        />
         </View>
 
         <View style={styles.inputWrapper}>
         <Ionicons name='people' marginBottom={9} size={20} color="grey" padding={8}/>
         <View style={styles.dropdown}>
+       
         {/* Relationship With Next of Kin */}
         <SelectDropdown
           data={relationshipWithNextOfKinOptions}
-          onSelect={(index, value) => setRelationshipWithNextOfKin(value)}
+          onSelect={(index, value) => setRelationshipWithNextOfKin(index)}
           defaultIndex={null}
           defaultButtonText={
             <>
@@ -304,11 +489,15 @@ const KYC = ({ navigation, firstName }) => {
       </View>
 
       <View style={styles.inputWrapper}>
-        <MaterialIcons name='call' marginBottom={9} size={20} color="grey" padding={8}/>
-<TextInput style={styles.input} placeholder="NEXT OF KIN'S PHONE NUMBER" keyboardType="phone-pad" />
-        </View>
-      
-
+  <MaterialIcons name='call' marginBottom={9} size={20} color="grey" padding={8} />
+  <TextInput
+    style={styles.input}
+    placeholder="NEXT OF KIN'S PHONE NUMBER"
+    keyboardType="phone-pad"
+    value={nextOfKinPhoneNumber} // Set the value to the nextOfKinPhoneNumber variable
+    onChangeText={(text) => setNextOfKinPhoneNumber(text)} // Handle text input changes
+  />
+</View>
 
 
       
@@ -322,9 +511,10 @@ const KYC = ({ navigation, firstName }) => {
 
 
 
+<LoadingModal visible={processing} />
 
       <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton}>
+                <TouchableOpacity style={styles.primaryButton} onPress={handleUpdateKYC}>
                 <Ionicons name="shield-checkmark-outline" size={24} color="#fff" marginRight={10}/>
                 <Text style={styles.primaryButtonText}>Update KYC</Text>
                 </TouchableOpacity>
@@ -402,9 +592,16 @@ const styles = StyleSheet.create({
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
-    marginTop: 10,
-    height: 98,  
+    height: 98, 
+    marginBottom: 5,
+ 
 },
+
+statusContainer: {
+alignContent: 'center',
+alignSelf: 'center',
+flex: 1,
+  },
  
   propertyText: {
     flex: 1,
@@ -417,12 +614,23 @@ const styles = StyleSheet.create({
     },
 
 
+    statusText: {
+      flex: 1,
+      fontSize: 14,
+      fontWeight: 'regular',
+      fontFamily: 'karla-italic',
+      letterSpacing: -0.4,
+      color: 'green',
+      textAlign: 'center',
+      marginRight: 25,
+      },
 
     inputContainer: {
         marginTop: 20,
         width: '95%',
         alignItems: 'center',
         justifyContent: 'center',
+        
       },
       input: {
         fontSize: 15,
@@ -432,6 +640,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 10,
         paddingLeft: 14,    
+        borderColor: 'silver',
+        borderWidth: 0.5,
       },
     
       inputWrapper: {
@@ -440,6 +650,7 @@ const styles = StyleSheet.create({
         marginVertical: 0,
         marginRight: -18,
         justifyContent: 'flex-end', // align items to the end of container
+    
      },
 
 
@@ -450,6 +661,8 @@ const styles = StyleSheet.create({
         width: screenWidth * 0.80,
         marginBottom: 10,
         backgroundColor: '#fff',
+        borderColor: 'silver',
+        borderWidth: 0.5,
       },
       dropdown: {
         fontFamily: 'ProductSans',
