@@ -36,7 +36,7 @@ const TopSavers = ({ navigation }) => {
   const renderTopSavers = () => {
     return topSaversData.top_savers.map((saver, index) => (
         <View
-        key={saver.user_id}
+        key={saver.id}
         style={[
           styles.transactionItem,
           saver.email === userInfo.email && { backgroundColor: '#EAE2FC', flex: 1, },
@@ -122,34 +122,41 @@ const TopSavers = ({ navigation }) => {
       </View>
 
       <View style={styles.propertyContainer}>
-        <Ionicons
-          name="wallet-outline"
-          size={34}
-          color="#4C28BC"
-          style={{ marginRight: 15 }}
-        />
-        <View style={styles.progressBarContainer}>
-          <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>
-                <Text style={styles.propertyText}>
-                {userPercentage == 100 ? (
-                  <Text>
-                    {' '}Congratulations {userInfo?.firstName ? `${userInfo.firstName},` : ''} You're currently one of the top savers in {currentMonth}. 🥳🍾🎉🎊 Keep saving to earn more rewards.
-              
-                  </Text>
-                ) : (
-                  <Text>Hey {userInfo?.firstName ? `${userInfo.firstName}, you're` : ''}
-                    <Text style={{ fontFamily: 'proxima', color: 'green',  }}> {topSaversData.user_percentage.toFixed(0)}%</Text>
-                    {' '}from being one of the top savers in {currentMonth}
-                    . Keep growing your funds to earn more as a top saver. 
-                  </Text>
-                )}
-     </Text>
+    <Ionicons
+      name={
+        topSaversData.current_user.individual_percentage === 100 ||
+        topSaversData.top_savers.findIndex(saver => saver.email === userInfo.email) < 3
+          ? 'trophy-outline'
+          : 'wallet-outline'
+      }
+      size={34}
+      color="#4C28BC"
+      style={{ marginRight: 15 }}
+    />
+    <View style={styles.progressBarContainer}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>
+          <Text style={styles.propertyText}>
+            {topSaversData.current_user.individual_percentage === 100 ||
+            topSaversData.top_savers.findIndex(saver => saver.email === userInfo.email) < 3 ? (
+              <Text>
+                {''}Congratulations {userInfo?.firstName ? `${userInfo.firstName},` : ''} You're currently one of the top savers in {currentMonth}. 🥳🍾🎉🎊 Keep saving to earn more as a top saver.
+              </Text>
+            ) : (
+              <Text>
+                Hey {userInfo?.firstName ? `${userInfo.firstName}, you're` : ''}
+                <Text style={{ fontFamily: 'proxima', color: 'green' }}>
+                  {topSaversData.current_user.individual_percentage.toFixed(0)}%
+                </Text>
+                {' '}from being one of the top savers in {currentMonth}. Keep growing your funds to earn more as a top saver.
+              </Text>
+            )}
+          </Text>
+        </Text>
+      </ScrollView>
+    </View>
+  </View>
 
-            </Text>
-          </ScrollView>
-        </View>
-      </View>
 
               <ImageBackground
                 source={require('./icb2.png')}
@@ -167,7 +174,7 @@ const TopSavers = ({ navigation }) => {
                 )}
                   <View style={styles.percentageBackground}>
                     <Text style={styles.percentageText}>
-                      {topSaversData.user_percentage.toFixed(0)}<Text style={{fontSize: 7, fontFamily: 'karla'}}>%</Text>
+                      {topSaversData.current_user.individual_percentage.toFixed(0)}<Text style={{fontSize: 7, fontFamily: 'karla'}}>%</Text>
                     </Text>
                   </View>
               </View>

@@ -237,22 +237,30 @@ const formatTime = (timeString) => {
 
   </View>
   
-<Pressable
-  marginRight={15}
-  marginTop={5}
-  onPress={() => navigation.navigate('More...')}
-  style={styles.profileContainer}
->
-  <View style={styles.profileImageContainer}>
-    {selectedImage ? (
-      <Image source={{ uri: selectedImage }} style={styles.profileImage} />
-    ) : userInfo.profileImageUrl ? (
-      <Image source={{ uri: userInfo.profileImageUrl }} style={styles.profileImage} />
-    ) : (
-      <Ionicons name="person-circle" size={80} color="silver" />
-    )}
-  </View>
-</Pressable>
+  <Pressable
+        marginRight={15}
+        marginTop={5}
+        onPress={() => navigation.navigate('More...')}
+        style={styles.profileContainer}
+      >
+        <View style={styles.profileImageContainer}>
+          {selectedImage ? (
+            <Image source={{ uri: selectedImage }} style={styles.profileImage} />
+          ) : userInfo.profileImageUrl ? (
+            <Image source={{ uri: userInfo.profileImageUrl }} style={styles.profileImage} />
+          ) : (
+            <Image source={require('./Profile1.png')} style={styles.profileImage} />
+          )}
+          
+
+          {currentStage && (
+             <View style={styles.wealthStageCircle}>
+              <Text style={styles.wealthStageText}>{currentStage.stage}</Text>
+            </View>
+          )}
+
+        </View>
+      </Pressable>
 
 
 
@@ -639,8 +647,30 @@ profileImage: {
   borderRadius: 67,
   marginRight: 5,
   marginLeft: -10,
-  borderWidth: 0.5,
+  borderWidth: 3,
+  borderColor: '#9D8CD7',
   resizeMode: 'center'
+  },
+
+
+  
+  wealthStageCircle: {
+    position: 'absolute',
+    top: 7,
+    right: 7,
+    backgroundColor: '#9D8CD7',
+    width: 15, // Adjust the size as needed
+    height: 15, // Adjust the size as needed
+    borderRadius: 20, // Make it half of the width and height for a perfect circle
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: "center"
+  },
+
+  wealthStageText: {
+    color: 'white',
+    fontSize: 11, // Adjust the font size as needed
+    fontFamily: 'proxima',
   },
 propertyContainer: {
 flexDirection: 'row',

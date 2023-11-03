@@ -214,7 +214,7 @@ const KYC = ({ navigation, firstName }) => {
                   {
                     text: 'OK',
                     onPress: () => {
-                      navigation.navigate('MyFund');
+                      navigation.navigate('KYC');
                     },
                   },
                 ]

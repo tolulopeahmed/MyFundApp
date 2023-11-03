@@ -32,7 +32,6 @@ const Save = ({ navigation, route }) => {
   const [frequency, setFrequency] = useState('');
   const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
   const topSaversData = useSelector((state) => state.bank.topSaversData);
-  const userPercentage = useSelector((state) => state.bank.userPercentage);
 
 
   const dispatch = useDispatch();
@@ -177,9 +176,7 @@ console.log('autoSaveSettings.amount:', autoSaveSettings.amount)
 console.log('autoSaveSettings.frequency:', autoSaveSettings.frequency)
 console.log('accountBalances.savings:', accountBalances.savings)
 console.log('accountBalances.investment:', accountBalances.investment)
-console.log('userPercentage:', topSaversData.user_percentage)
-console.log('userPercentage2:', userPercentage)
-console.log('TopSaversData.firstname:', topSaversData)
+console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.individual_percentage)
 
 
   return (
@@ -239,7 +236,9 @@ console.log('TopSaversData.firstname:', topSaversData)
     <View style={styles.progressBarContainer}>
       <Text style={styles.propertyText}>
         <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Top Saver: </Text>
-        {topSaversData.user_percentage === 100 ? (
+
+
+        {topSaversData.current_user.individual_percentage == 100 ? (
           <Text>
             {`Congratulations ${userInfo?.firstName ? `${userInfo.firstName},` : ''} You're currently one of the top savers in ${currentMonth}. 🥳🍾🎉🎊 Keep saving to earn more rewards.`}
             <TouchableOpacity onPress={() => navigation.navigate('TopSavers')}>
@@ -250,7 +249,7 @@ console.log('TopSaversData.firstname:', topSaversData)
           <Text>
             Hey {userInfo?.firstName ? <Text>{userInfo.firstName}, </Text> : ' '}
             you're <Text style={{ fontFamily: 'proxima', color: 'green' }}>
-              {`${(topSaversData.user_percentage || 0).toFixed(0)}%`} 
+              {`${(topSaversData.current_user.individual_percentage || 0).toFixed(0)}% `} 
             </Text>
             from being one of the top savers in {currentMonth}. (Current Top Saver:
             <Text style={{ fontFamily: 'proxima' }}>
@@ -266,7 +265,7 @@ console.log('TopSaversData.firstname:', topSaversData)
           </Text>
         )}
       </Text>
-      <ProgressBar progress={(topSaversData.user_percentage || 0) / 100} color="green" height={6} style={styles.progressBar} />
+      <ProgressBar progress={(topSaversData.current_user.individual_percentage || 0) / 100} color="green" height={6} style={styles.progressBar} />
     </View>
   </View>
 </Swiper>
