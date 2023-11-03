@@ -5,12 +5,16 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from rest_framework.response import Response
 from django.http import HttpResponseRedirect
+from django.contrib import admin
+from django.db.models import Sum
+from django.utils import timezone
+from .models import CustomUser, MonthlySavings
 
 class CustomUserAdmin(UserAdmin):
     list_display = (
         'id', 'email', 'first_name', 'last_name', 'phone_number', 'profile_picture', 'kyc_updated',
         'is_staff', 'is_active', 'preferred_asset', 'savings_goal_amount', 'time_period',
-        'savings', 'investment', 'properties', 'wallet', 'total_savings_and_investments', 'user_percentage_to_top_saver'
+        'savings', 'investment', 'properties', 'wallet', 'total_savings_and_investments', 'total_savings_and_investments_this_month', 'user_percentage_to_top_saver'
     )
     list_filter = ('is_staff', 'is_active', 'kyc_updated')
     actions = ['view_kyc_details', 'approve_kyc', 'reject_kyc']
@@ -126,18 +130,32 @@ class CustomUserAdmin(UserAdmin):
 
     total_savings_and_investments.short_description = 'Total Savings and Investments'
 
+    # Define a custom method to display 'Total Savings/Investment for the month'
+    def savings_and_investment_for_month(self, obj):
+        return obj.savings_and_investments
+    savings_and_investment_for_month.short_description = 'Total Savings/Investment for the month'
+
+
     def user_percentage_to_top_saver(self, obj):
-        top_saver = CustomUser.objects.all().order_by('-savings_and_investments').first()
-        if top_saver and top_saver.savings_and_investments > 0:
-            user_percentage = (obj.savings_and_investments / top_saver.savings_and_investments) * 100
+        top_saver = CustomUser.objects.all().order_by('-total_savings_and_investments_this_month').first()
+        if top_saver and top_saver.total_savings_and_investments_this_month > 0:
+            user_percentage = (obj.total_savings_and_investments_this_month / top_saver.total_savings_and_investments_this_month) * 100
         else:
             user_percentage = 0
         return f"{user_percentage:.2f}%"
 
     user_percentage_to_top_saver.short_description = 'Percentage to Top Saver'
-    user_percentage_to_top_saver.admin_order_field = 'savings_and_investments'
+    user_percentage_to_top_saver.admin_order_field = 'total_savings_and_investments_this_month'
 
 admin.site.register(CustomUser, CustomUserAdmin)
+
+
+
+
+
+
+
+
 
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):

@@ -214,6 +214,7 @@ class OTPVerificationView(APIView):
 
 
 
+from django.db.models import Sum
 
 @api_view(['POST'])
 @csrf_exempt
@@ -1897,78 +1898,43 @@ class BuyPropertyView(generics.CreateAPIView):
     
 
 
-from django.db.models import Sum
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from .serializers import CustomUserSerializer
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_top_savers(request):
-    user = request.user  # Get the authenticated user
+    users = CustomUser.objects.filter(total_savings_and_investments_this_month__gt=0)
+    top_savers = []
 
-    # Calculate the current month and year
-    now = timezone.now()
-    current_month = now.month
-    current_year = now.year
+    for user in users:
+        user.update_total_savings_and_investment_this_month()
+        serializer = CustomUserSerializer(user)
+        top_savers.append(serializer.data)
 
-    # Update MonthlySavings records for all users for the current month and year
-    user_ids = CustomUser.objects.filter(
-        monthly_savings__month=current_month,
-        monthly_savings__year=current_year
-    ).values_list('id', flat=True)
+    top_savers.sort(key=lambda user: user['individual_percentage'], reverse=True)
 
-    CustomUser.objects.filter(id__in=user_ids).update(
-        savings_and_investments=F('savings') + F('investment')
-    )
-
-    # Retrieve the top 10 savers for the current month
-    top_savers = CustomUser.objects.filter(
-        monthly_savings__month=current_month,
-        monthly_savings__year=current_year
-    ).annotate(
-        total_savings_and_investments=Sum(F('savings') + F('investment'))
-    ).order_by('-total_savings_and_investments')[:10]
-
-    # Calculate the user's percentage compared to the top saver
-    user_savings_and_investments = CustomUser.objects.filter(
-        id=user.id,
-        monthly_savings__month=current_month,
-        monthly_savings__year=current_year
-    ).annotate(
-        user_total_savings_and_investments=Sum(F('savings') + F('investment'))
-    ).first()
-
-    if user_savings_and_investments:
-        user_percentage = (
-            user_savings_and_investments.user_total_savings_and_investments / top_savers[0].total_savings_and_investments
-        ) * 100
-    else:
-        user_percentage = 0  # Convert it to a float
-
-    # Prepare the data to return as JSON
-    top_savers_data = []
-    for user in top_savers:
-        profile_picture_url = user.profile_picture.url if user.profile_picture else None
-        top_savers_data.append({
-            'user_id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
-            'profile_picture': profile_picture_url,
-            'total_savings_and_investments': user.total_savings_and_investments,
-            'individual_percentage': (user.total_savings_and_investments / top_savers[0].total_savings_and_investments) * 100
-        })
+    current_user = request.user
+    current_user_serializer = CustomUserSerializer(current_user)
+    current_user_data = current_user_serializer.data
 
     response_data = {
-        'top_savers': top_savers_data,
-        'user_percentage': user_percentage  # Convert it to a float
+        "top_savers": top_savers,
+        "current_user": current_user_data
     }
 
-    user.top_saver_percentage = user_percentage
-    user.save()
+    return Response(response_data)
 
-    return Response(response_data, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
