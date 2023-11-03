@@ -96,6 +96,10 @@ const TopSavers = ({ navigation }) => {
   }
   
 
+  console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.individual_percentage)
+
+
+
 
   return (
     <View style={styles.container}>
@@ -144,7 +148,7 @@ const TopSavers = ({ navigation }) => {
               </Text>
             ) : (
               <Text>
-                Hey {userInfo?.firstName ? `${userInfo.firstName}, you're` : ''}
+                Hey {userInfo?.firstName ? `${userInfo.firstName}, you're ` : ''}
                 <Text style={{ fontFamily: 'proxima', color: 'green' }}>
                   {topSaversData.current_user.individual_percentage.toFixed(0)}%
                 </Text>

@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchUserTransactions } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import Title from '../components/Title';
+import Subtitle from '../components/Subtitle';
 
 const images = [
   require('./refer.png'),
@@ -72,7 +73,7 @@ const ReferAndEarn = ({ navigation, firstName }) => {
   };
 
   const handleShare = () => {
-    const message = `You'll be rewarded with N1000 bonus when you sign up on MyFund using my referral email: ${referralID}`;
+    const message = `Earn ₦1000 when you sign up on MyFund using my referral email: ${referralID}. Signup at www.myfundmobile.com/register`;
     Share.share({
       message,
     });
@@ -93,7 +94,7 @@ const ReferAndEarn = ({ navigation, firstName }) => {
     </View>
 
     <Title>Refer and Earn</Title>
-
+<Subtitle>Get your friends to signup with your email and earn</Subtitle>
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <Swiper
         autoplay

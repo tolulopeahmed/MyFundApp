@@ -14,7 +14,7 @@ const FAQ = ({ navigation }) => {
     {
       id: 2,
       question: 'How do I earn income from MyFund?',
-      answer: '1. You earn 10% p.a. on Savings and 20% p.a. on Sponsorship Investments every January and July. 2. You earn lifetime rental income on properties acquired. 3. You earn 5% commission on properies sold. 4. You earn bonuses on referrals. and 5. You earn as one of the top savers',
+      answer: 'You earn into your wallet... \n- 10% p.a. on Savings and 20% p.a. on Sponsorship Investments every January and July, \n- lifetime rental income on properties acquired, \n- 5% commission on sold properies you refer, \n- bonuses on referrals, and \n- as one of the top savers of the month.',
     },
     {
         id: 3,
@@ -34,7 +34,7 @@ const FAQ = ({ navigation }) => {
       {
         id: 6,
         question: 'How much do I get on Referrals?',
-        answer: "You earn up to 5% on all property sales that are completed by your referral.",
+        answer: "You earn up to... \n- N1000 on referring friends to MyFund, and \n- 5% on all property sales that are completed by your referral.",
       },
     
     // Add more questions and answers as needed

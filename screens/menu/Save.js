@@ -253,7 +253,7 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
         <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Top Saver: </Text>
 
 
-        {topSaversData.current_user.individual_percentage == 100 ? (
+        {topSaversData?.current_user.individual_percentage === 100 ? (
           <Text>
             {`Congratulations ${userInfo?.firstName ? `${userInfo.firstName},` : ''} You're currently one of the top savers in ${currentMonth}. 🥳🍾🎉🎊 Keep saving to earn more rewards.`}
             <TouchableOpacity onPress={() => navigation.navigate('TopSavers')}>
@@ -262,15 +262,15 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
           </Text>
         ) : (
           <Text>
-            Hey {userInfo?.firstName ? <Text>{userInfo.firstName}, </Text> : ' '}
+            Hey {userInfo?.firstName ? <Text>{userInfo?.firstName}, </Text> : ' '}
             you're <Text style={{ fontFamily: 'proxima', color: 'green' }}>
-              {`${(topSaversData.current_user.individual_percentage || 0).toFixed(0)}% `} 
+              {`${(topSaversData?.current_user.individual_percentage || 0).toFixed(0)}% `} 
             </Text>
             from being one of the top savers in {currentMonth}. (Current Top Saver:
             <Text style={{ fontFamily: 'proxima' }}>
-              {topSaversData.top_savers && topSaversData.top_savers.length > 0
-                ? ` ${topSaversData.top_savers[0].first_name}`
-                : ' -'
+              {topSaversData?.top_savers && topSaversData?.top_savers.length > 0
+                ? ` ${topSaversData?.top_savers[0].first_name}`
+                : ' - '
               }
             </Text>
             ). Keep growing your funds to earn more as a top saver.
@@ -280,7 +280,7 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
           </Text>
         )}
       </Text>
-      <ProgressBar progress={(topSaversData.current_user.individual_percentage || 0) / 100} color="green" height={6} style={styles.progressBar} />
+      <ProgressBar progress={(topSaversData?.current_user.individual_percentage || 0) / 100} color="green" height={6} style={styles.progressBar} />
     </View>
   </View>
 </Swiper>

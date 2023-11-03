@@ -414,7 +414,13 @@ const Profile = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
  
-
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('TopSavers')}>
+          <MaterialIcons name="leaderboard" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Text style={styles.buttonText}>Top Savers</Text>
+        </TouchableOpacity>
+      </View>
+ 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FAQ')}>
           <MaterialIcons name="forum" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
