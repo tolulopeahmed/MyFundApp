@@ -25,6 +25,16 @@ const TopSavers = ({ navigation }) => {
     dispatch(fetchTopSaversData());
   }, []);
 
+
+  useEffect(() => {
+    console.log('topSaversData:', topSaversData);
+  }, [topSaversData]);
+  
+
+
+
+
+
   useEffect(() => {
     const monthName = moment().format('MMMM');
     setCurrentMonth(monthName);

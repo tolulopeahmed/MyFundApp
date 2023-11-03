@@ -46,9 +46,17 @@ const initialState = {
 
   kycStatus: null,
 
-  topSaversData: [], // Initialize the top savers data as an empty array
-  selectedTopSaver: null, // Initialize the selected top saver as null
-  userPercentage: 0,
+  topSaversData: {
+    current_user: {
+      id: null,
+      first_name: '',
+      last_name: '',
+      email: '',
+      profile_picture: '',
+      individual_percentage: 0,
+    },
+    top_savers: [],
+  },
 
   autoSaveSettings: {
     active: false,

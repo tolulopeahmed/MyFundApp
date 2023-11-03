@@ -378,6 +378,7 @@ export const fetchAutoInvestSettings = () => async (dispatch, getState) => {
 
 
 
+// Action to fetch top savers data
 export const fetchTopSaversData = () => async (dispatch, getState) => {
   const userInfo = getState().bank.userInfo;
   if (!userInfo || !userInfo.token) {
@@ -395,17 +396,14 @@ export const fetchTopSaversData = () => async (dispatch, getState) => {
     });
 
     if (response.status === 200) {
-      // Dispatch the action to set the top savers data in the Redux store
+      // Dispatch the action to set top savers data in the Redux store
       dispatch(setTopSaversData(response.data));
-      // Additionally, dispatch the user_percentage if available
-      if (response.data.user_percentage) {
-        dispatch(setUserPercentage(response.data.user_percentage));
-      }
     }
   } catch (error) {
-    console.error('Fetch Error:', error);
+    console.error('Fetch Top Savers Data Error:', error);
   }
 };
+
 
 
 

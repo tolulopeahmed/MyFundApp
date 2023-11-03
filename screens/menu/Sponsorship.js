@@ -205,7 +205,7 @@ console.log('autoInvestSettings.frequency:', autoInvestSettings.frequency)
 
 
       <Title>Sponsor</Title>
-      <Subtitle>Earn 20% p.a. every 6 months with multiples of N100,000</Subtitle>
+      <Subtitle>Earn 20% p.a. every 6 months investing multiples of N100,000</Subtitle>
 
 
 
