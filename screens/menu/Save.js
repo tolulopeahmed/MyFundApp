@@ -17,6 +17,9 @@ import SectionTitle from '../components/SectionTitle';
 import moment from 'moment';
 import Success from '../components/Success';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
+
+
 
 const Save = ({ navigation, route }) => {
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
@@ -32,7 +35,8 @@ const Save = ({ navigation, route }) => {
   const [frequency, setFrequency] = useState('');
   const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
   const topSaversData = useSelector((state) => state.bank.topSaversData);
-
+  const [showBalances, setShowBalances] = useState(true);
+  const isFocused = useIsFocused();
 
   const dispatch = useDispatch();
 
@@ -170,6 +174,17 @@ const handleConfirmDeactivateAutoSave = () => {
 useEffect(() => {
   dispatch(fetchAutoSaveSettings()); // Fetch auto-save status and settings when the component mounts
 }, [autoSaveSettings.active]);
+
+useEffect(() => {
+  if (isFocused) {
+    // Fetch the value from AsyncStorage and update the state
+    const fetchShowBalances = async () => {
+      const showBalancesValue = await AsyncStorage.getItem('showBalances');
+      setShowBalances(showBalancesValue === 'true'); // Convert to boolean
+    };
+    fetchShowBalances();
+  }
+}, [isFocused]);
  
 console.log('autoSaveSettings.active:', autoSaveSettings.active)
 console.log('autoSaveSettings.amount:', autoSaveSettings.amount)
@@ -290,10 +305,16 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
         
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>
-        {Math.floor(accountBalances.savings).toLocaleString()}
-        </Text>
+        {showBalances ? (
+            <>
+        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.savings).toLocaleString()}</Text>
         <Text style={styles.decimal}>.{String(accountBalances.savings).split('.')[1]}</Text>
+           </>
+          ) : (
+            <Text style={styles.savingsAmount}>****</Text>
+          )}
+
+  
         </View>
 
        

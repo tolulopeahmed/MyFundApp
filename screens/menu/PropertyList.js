@@ -9,13 +9,27 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAccountBalances, fetchUserTransactions, updateAccountBalances } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import SellPropertyModal from './SellPropertyModal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 
 const PropertyList = ({ navigation, properties }) => {
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
   const [sellPropertyModalVisible, setSellPropertyModalVisible] = useState(false); // define modalVisible state
   const [selectedProperty, setSelectedProperty] = useState(null); // Add this state variable
+  const [showBalances, setShowBalances] = useState(true);
+  const isFocused = useIsFocused();
 
+  useEffect(() => {
+    if (isFocused) {
+      // Fetch the value from AsyncStorage and update the state
+      const fetchShowBalances = async () => {
+        const showBalancesValue = await AsyncStorage.getItem('showBalances');
+        setShowBalances(showBalancesValue === 'true'); // Convert to boolean
+      };
+      fetchShowBalances();
+    }
+  }, [isFocused]);
 
 
   const iconMapping = {
@@ -78,7 +92,13 @@ const PropertyList = ({ navigation, properties }) => {
           <Text style={styles.greyText}>Number of Properties    <Text style={styles.rateText}>@30%+ p.a.</Text> </Text>
         </View>
         <View style={styles.amountContainer}>
+        {showBalances ? (
+            <>
         <Text style={styles.savingsAmount}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
+         </>
+          ) : (
+            <Text style={styles.savingsAmount}>**</Text>
+          )}
         </View>
       </View>
           <TouchableOpacity style={styles.quickSaveButton} onPress={() => navigation.navigate('Ownership')}>

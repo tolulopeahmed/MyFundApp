@@ -11,6 +11,8 @@ import { AutoInvestContext } from '../components/AutoInvestContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAccountBalances, fetchKYCStatus, setKYCStatus , fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
 
 const Home = ({ navigation, route}) => {
   const [greeting, setGreeting] = useState('');
@@ -26,6 +28,8 @@ const Home = ({ navigation, route}) => {
   const profileImageUri = useSelector((state) => state.bank.profileImageUri);
   const [selectedImage, setSelectedImage] = useState(null);
   const kycStatus = useSelector((state) => state.bank.kycStatus);
+  const [showBalances, setShowBalances] = useState(true);
+  const isFocused = useIsFocused();
 
   
 
@@ -218,9 +222,23 @@ const formatTime = (timeString) => {
   };
 
 
+  useEffect(() => {
+    if (isFocused) {
+      // Fetch the value from AsyncStorage and update the state
+      const fetchShowBalances = async () => {
+        const showBalancesValue = await AsyncStorage.getItem('showBalances');
+        setShowBalances(showBalancesValue === 'true'); // Convert to boolean
+      };
+      fetchShowBalances();
+    }
+  }, [isFocused]);
+
+
   console.log('Profile Image URL from Redux:--', userInfo.profileImageUrl);
   console.log('Profile Image URL from selected:--', profileImageUri);
   console.log('KYCstatus:', kycStatus);
+  console.log('showBalances in Home.js:', showBalances);
+
 
 
   return (
@@ -297,8 +315,14 @@ const formatTime = (timeString) => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.savings).toLocaleString()}</Text>
-        <Text style={styles.decimal}>.{String(accountBalances.savings).split('.')[1]}</Text>
+        {showBalances ? (
+            <>
+              <Text style={styles.savingsAmount}>{Math.floor(accountBalances.savings).toLocaleString()}</Text>
+              <Text style={styles.decimal}>.{String(accountBalances.savings).split('.')[1]}</Text>
+            </>
+          ) : (
+            <Text style={styles.savingsAmount}>****</Text>
+          )}
         </View>
 
         <View style={styles.quickSaveButtonContainer}>
@@ -322,8 +346,15 @@ const formatTime = (timeString) => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount2}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
-        <Text style={styles.decimal}>.{String(accountBalances.investment).split('.')[1]}</Text>
+
+        {showBalances ? (
+            <>
+              <Text style={styles.savingsAmount}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
+              <Text style={styles.decimal}>.{String(accountBalances.investment).split('.')[1]}</Text>
+            </>
+          ) : (
+            <Text style={styles.savingsAmount2}>****</Text>
+          )}
         </View>
 
         <View style={styles.quickSaveButtonContainer}>
@@ -346,7 +377,13 @@ const formatTime = (timeString) => {
           <Text style={styles.rateText}>    @yearly rent</Text> </Text>
         </View>
         <View style={styles.amountContainer}>
+        {showBalances ? (
+            <>
         <Text style={styles.savingsAmount3}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
+            </>
+          ) : (
+            <Text style={styles.savingsAmount3}>**</Text>
+          )}
         </View>
 
         <View style={styles.quickSaveButtonContainer}>
@@ -370,9 +407,16 @@ const formatTime = (timeString) => {
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount4}>{Math.floor(accountBalances.wallet).toLocaleString()}</Text>
+        {showBalances ? (
+            <>
+       <Text style={styles.savingsAmount4}>{Math.floor(accountBalances.wallet).toLocaleString()}</Text>
         <Text style={styles.decimal}>.{String(accountBalances.wallet).split('.')[1]}</Text>
-        </View>
+           </>
+          ) : (
+            <Text style={styles.savingsAmount4}>****</Text>
+          )}
+      
+  </View>
 
         <View style={styles.quickSaveButtonContainer}>
   <TouchableOpacity style={styles.quickSaveButton} onPress={handleWithdraw}>

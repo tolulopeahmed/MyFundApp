@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import SectionTitle from '../components/SectionTitle';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchUserData, setProfileImageUri } from '../../ReduxActions';
+import { useIsFocused } from '@react-navigation/native';
 
 const Profile = ({ navigation, route }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -27,15 +28,15 @@ const Profile = ({ navigation, route }) => {
   const userInfo = useSelector((state) => state.bank.userInfo);
   const dispatch = useDispatch(); // Get the dispatch function from Redux
   const profileImageUri = useSelector((state) => state.bank.profileImageUri);
+  const isFocused = useIsFocused();
 
 
- 
+
   useEffect(() => {
     if (userInfo.token) {
       dispatch(fetchUserData(userInfo.token));
     }
   }, [dispatch, userInfo.token]);
-
 
   
   
@@ -204,11 +205,26 @@ const Profile = ({ navigation, route }) => {
   };
 
 
-  
-
   const handleProfileEditModalClose = () => {
     setProfileEditModalVisible(false); // Close the ProfileEditModal
   };
+  
+
+
+  // Update the showBalances state when the switch is toggled
+  const handleToggleShowBalances = async () => {
+    try {
+      // Toggle the showBalances state
+      setShowBalances(!showBalances);
+  
+      // Save the showBalances setting to AsyncStorage
+      await AsyncStorage.setItem('showBalances', showBalances ? 'true' : 'false');
+    } catch (error) {
+      console.error('Error saving showBalances setting:', error);
+    }
+  };
+
+
   
   
   console.log('Profile Image URI from update:', profileImageUri);
@@ -326,16 +342,20 @@ const Profile = ({ navigation, route }) => {
           value={enableFingerprint}
         />
       </View>
+
+
       <View style={styles.settingContainer}>
         <Text style={styles.settingText}>Show/Hide Balances</Text>
         <Switch
           trackColor={{ false: 'grey', true: '#4C28BC' }}
           thumbColor={showBalances ? '#8976FF' : 'silver'}
           ios_backgroundColor="#3e3e3e"
-          onValueChange={() => setShowBalances(!showBalances)}
+          onValueChange={handleToggleShowBalances}
           value={showBalances}
         />
       </View>
+
+
       <View style={styles.settingContainer}>
         <Text style={styles.settingText}>Turn on Dark Mode</Text>
         <Switch

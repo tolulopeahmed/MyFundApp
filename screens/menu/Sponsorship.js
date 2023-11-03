@@ -15,6 +15,8 @@ import { fetchAccountBalances, fetchUserTransactions, fetchUserData, fetchAutoIn
 import moment from 'moment';
 import Success from '../components/Success';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
+
 
 const Sponsorship = ({ navigation, route }) => {
 // const [autoInvest, setAutoInvest] = React.useState(false);
@@ -31,7 +33,19 @@ const Sponsorship = ({ navigation, route }) => {
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState('');
   const autoInvestSettings = useSelector((state) => state.bank.autoInvestSettings);
+  const [showBalances, setShowBalances] = useState(true);
+  const isFocused = useIsFocused();
 
+  useEffect(() => {
+    if (isFocused) {
+      // Fetch the value from AsyncStorage and update the state
+      const fetchShowBalances = async () => {
+        const showBalancesValue = await AsyncStorage.getItem('showBalances');
+        setShowBalances(showBalancesValue === 'true'); // Convert to boolean
+      };
+      fetchShowBalances();
+    }
+  }, [isFocused]);
   
   useEffect(() => {
     dispatch(fetchAccountBalances()); // Fetch account balances using Redux action
@@ -215,9 +229,15 @@ console.log('autoInvestSettings.frequency:', autoInvestSettings.frequency)
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
-        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
+        {showBalances ? (
+            <>
+         <Text style={styles.savingsAmount}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
         <Text style={styles.decimal}>.{String(accountBalances.investment).split('.')[1]}</Text>
-        </View>
+            </>
+          ) : (
+            <Text style={styles.savingsAmount}>****</Text>
+          )}
+       </View>
        
        <View style={styles.autoSaveContainer}>
        <Ionicons name="car-sport-outline" size={20} marginRight={5} marginTop={-3} style={[styles.autoSaveText, autoInvestSettings.active ? styles.greenText : styles.grayText]} />

@@ -10,6 +10,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateAccountBalances, updateUserTransactions, fetchAccountBalances, fetchUserTransactions } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import Success from '../components/Success';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
+
 
 const Withdraw = ({ navigation, route }) => {
   const [withdrawModalVisible, setWithdrawModalVisible] = useState(false); // define modalVisible state
@@ -20,6 +23,19 @@ const Withdraw = ({ navigation, route }) => {
   const [isSuccessVisible, setIsSuccessVisible] = useState(false);
   const [defaultFromAccount, setDefaultFromAccount] = useState('Savings'); // Set the initial default account
   const [fromAccount, setFromAccount ] = useState(defaultFromAccount); // Set the default account from prop
+  const [showBalances, setShowBalances] = useState(true);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      // Fetch the value from AsyncStorage and update the state
+      const fetchShowBalances = async () => {
+        const showBalancesValue = await AsyncStorage.getItem('showBalances');
+        setShowBalances(showBalancesValue === 'true'); // Convert to boolean
+      };
+      fetchShowBalances();
+    }
+  }, [isFocused]);
 
 
   // Function to set the default 'fromAccount' based on the selected type
@@ -123,8 +139,14 @@ const handleCloseSuccessModal = () => {
 
          <View style={styles.amountContainer2}> 
          <Text style={styles.nairaSign}>₦</Text>
+         {showBalances ? (
+            <>
          <Text style={styles.savingsBalance}>{Math.floor(accountBalances.savings).toLocaleString()}</Text>
          <Text style={styles.nairaSign}>.{String(accountBalances.savings).split('.')[1]}</Text>
+           </>
+          ) : (
+            <Text style={styles.savingsBalance}>****</Text>
+          )}
          </View>
          <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>2.5%</Text> fee.
 </Text>
@@ -159,9 +181,16 @@ const handleCloseSuccessModal = () => {
 
          <View style={styles.amountContainer2}> 
          <Text style={styles.nairaSign}>₦</Text>
-         <Text style={styles.investmentBalance}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
+         {showBalances ? (
+            <>
+          <Text style={styles.investmentBalance}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
          <Text style={styles.nairaSign}>.{String(accountBalances.investment).split('.')[1]}</Text>
+           </>
+          ) : (
+            <Text style={styles.investmentBalance}>****</Text>
+          )}
          </View>
+
          <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>5%</Text> fee.
 </Text>
 
@@ -196,7 +225,13 @@ const handleCloseSuccessModal = () => {
           </View> 
 
          <View style={styles.amountContainer2}> 
+         {showBalances ? (
+            <>
          <Text style={styles.propertiesBalance}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
+           </>
+          ) : (
+            <Text style={styles.propertiesBalance}>**</Text>
+          )}
          </View>
          <Text style={styles.walletMessage}>Completed sales attract <Text style={{color: 'orange'}}>5%</Text> fee.
 </Text>
@@ -234,8 +269,14 @@ const handleCloseSuccessModal = () => {
 
          <View style={styles.amountContainer2}> 
          <Text style={styles.nairaSign}>₦</Text>
+         {showBalances ? (
+            <>
          <Text style={styles.walletBalance}>{Math.floor(accountBalances.wallet).toLocaleString()}</Text>
          <Text style={styles.nairaSign}>.{String(accountBalances.wallet).split('.')[1]}</Text>
+           </>
+          ) : (
+            <Text style={styles.walletBalance}>****</Text>
+          )}
          </View>
          <Text style={styles.walletMessage}>Withdraw for <Text style={{color: '#43FF8E'}}>free</Text> anytime</Text>
  
