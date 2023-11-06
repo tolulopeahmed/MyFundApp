@@ -192,24 +192,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                     print(f"Referrer's wallet balance after credit: {self.wallet}")
                     print(f"Referred user's wallet balance after credit: {self.referral.wallet}")
 
-                    # Send confirmation emails to both the referrer and referred user
-                    self.send_referral_confirmation_email(referrer_transaction_id, self, True)
-                    self.referral.send_referral_confirmation_email(referred_transaction_id, self, False)
+                    # Send confirmation email to the referrer
+                    subject_referrer = f"Congrats!🎊🥂 Referral Reward Confirmed!"
+                    message_referrer = f"Congratulations {self.first_name},\n\nYou have received a referral reward of ₦1,000.00 in your wallet as a new and active user thanks to {self.referral.first_name}.\n\nThank you for using MyFund!\n\nKeep growing your funds.🥂\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
 
+                    from_email_referrer = "MyFund <info@myfundmobile.com>"
+                    recipient_list_referrer = [self.email]
 
-    def send_referral_confirmation_email(self, transaction_id, recipient_user, is_referrer):
+                    send_mail(subject_referrer, message_referrer, from_email_referrer, recipient_list_referrer, fail_silently=False)
 
-        if is_referrer:
-            subject = "Referral Reward Confirmation"
-            message = f"Congratulations {recipient_user.first_name},\n\nYou have received a referral reward of ₦1,000.00 in your wallet for referring {self.referral.first_name}.\n\nThank you for using MyFund and referring others!\n\nKeep growing your funds.🥂\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
-        else:
-            subject = "Referral Reward Confirmation"
-            message = f"Congratulations {recipient_user.first_name},\n\nYou have received a referral reward of ₦1,000.00 in your wallet as a new user thanks to {self.first_name}.\n\nThank you for using MyFund!\n\nKeep growing your funds.🥂\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+                    # Send confirmation email to the referred user
+                    subject_referred = f"Congrats!🎊🥂 Referral Reward for {self.first_name} Confirmed!"
+                    message_referred = f"Congratulations {self.referral.first_name},\n\nYou have received a referral reward of ₦1,000.00 in your wallet for referring {self.first_name}.\n\nThank you for using MyFund and referring others!\n\nKeep growing your funds.🥂\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
 
-        from_email = "MyFund <info@myfundmobile.com>"
-        recipient_list = [recipient_user.email]
+                    from_email_referred = "MyFund <info@myfundmobile.com>"
+                    recipient_list_referred = [self.referral.email]
 
-        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+                    send_mail(subject_referred, message_referred, from_email_referred, recipient_list_referred, fail_silently=False)
+
 
 
     def calculate_user_percentage_to_top_saver(self):
@@ -260,11 +260,28 @@ class MonthlySavings(models.Model):
 
 
 
+class PasswordReset(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(default=timezone.now)
+
+
+
+
+class CustomUserMetrics(models.Model):
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    total_savings_and_investments = models.DecimalField(max_digits=10, decimal_places=2)
+    total_wallet = models.DecimalField(max_digits=10, decimal_places=2)
+    total_active_users = models.IntegerField()
+    total_dormant_users = models.IntegerField()
+    pending_kyc_approvals = models.IntegerField()
+    total_savings_and_investments_this_month = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+
 
 from django.db import models
 from django.contrib.auth import get_user_model
-
-
 class GPTMessage(models.Model):
     sender = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     content = models.TextField()

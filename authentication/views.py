@@ -72,7 +72,13 @@ def signup(request):
             user.pending_referral_reward = F('pending_referral_reward') + 1000
 
             user.referral.save()
-            
+
+            # Send an email to the referrer (old user)
+            send_referrer_pending_reward_email(user.referral, user.email)
+
+            # Send an email to the referred user (new user)
+            send_referred_pending_reward_email(user)
+
         # Generate OTP (you can use your own logic here)
         otp = generate_otp()
         user.otp = otp
@@ -89,6 +95,25 @@ def signup(request):
 
         return Response(response_data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def send_referrer_pending_reward_email(referrer, referred_email):
+    subject = f"{referrer.first_name}, Your Referral Reward is Pending..."
+    message = f"Hi {referrer.first_name},\n\nYour referral reward is pending. When your friend ({referred_email}) becomes active by making their first savings/investment, your reward will be confirmed in your wallet.\n\nThank you for using MyFund!\n\nKeep growing your funds.🥂\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+
+    from_email = "MyFund <info@myfundmobile.com>"
+    recipient_list = [referrer.email]
+
+    send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+def send_referred_pending_reward_email(user):
+    subject = f"{user.first_name}, Your Referral Reward is Pending"
+    message = f"Hi {user.first_name},\n\nYou have received a referral reward for signing up with a referral. It will be confirmed in your wallet when you make your first savings of up to ₦20,000.\n\nThank you for using MyFund!\n\nKeep growing your funds.🥂\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+
+    from_email = "MyFund <info@myfundmobile.com>"
+    recipient_list = [user.email]
+
+    send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
 
 
 @api_view(['POST'])
@@ -152,9 +177,39 @@ def send_otp_email(user, otp):
     from_email = "MyFund <info@myfundmobile.com>"
     recipient_list = [user.email]
 
-    send_mail(subject, mark_safe(message), from_email, recipient_list, html_message=mark_safe(message))
+    send_mail(subject, message, from_email, recipient_list, html_message=message)
 
 
+
+def send_otp_reset_email(user, otp):
+    subject = "[OTP] Password Reset"
+    current_year = datetime.now().year
+    logo_url = "https://drive.google.com/uc?export=view&id=1MorbW_xLg4k2txNQdhUnBVxad8xeni-N"
+    message = f"""
+    <p><img src="{logo_url}" alt="MyFund Logo" style="display: block; margin: 0 auto; max-width: 100px; height: auto;"></p>
+
+    <p>Hi {user.first_name}, </p>
+
+    <p>You have requested to reset your password. Use the One-Time-Password (OTP) below to complete the password reset. This code is valid only for a short time, so act quickly!</p>
+
+    <h1 style="text-align: center; font-size: 24px;">{otp}</h1>
+
+    <p>If you did not request a password reset, please ignore this email.</p>
+
+    <p>Thank you,</p>
+    
+    <p>MyFund <br>
+    Save, Buy Properties, Earn Rent<br>
+    www.myfundmobile.com<br>
+    13, Gbajabiamila Street, Ayobo, Lagos.</p>
+
+    <p>MyFund ©{current_year}</p>
+    """
+
+    from_email = "MyFund <info@myfundmobile.com>"
+    recipient_list = [user.email]
+
+    send_mail(subject, message, from_email, recipient_list, html_message=message)
 
 
 
@@ -213,9 +268,7 @@ class OTPVerificationView(APIView):
 
 
 
-
-from django.db.models import Sum
-
+from .models import CustomUser, PasswordReset  
 @api_view(['POST'])
 @csrf_exempt
 def request_password_reset(request):
@@ -224,43 +277,48 @@ def request_password_reset(request):
 
         try:
             user = CustomUser.objects.get(email=email)
-            user.generate_reset_token()
-            user.send_password_reset_email()
-            
-            return Response({'detail': 'Password reset email sent successfully.'})
-        except ObjectDoesNotExist:
+            # Generate and store OTP
+            otp = generate_otp()
+            password_reset = PasswordReset.objects.create(user=user, otp=otp)
+
+            # Send OTP reset email
+            send_otp_reset_email(user, otp)
+
+            return Response({'detail': 'Password reset OTP sent successfully.'})
+        except CustomUser.DoesNotExist:
             return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
 
     return Response({'detail': 'Invalid request.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 @api_view(['POST'])
 @csrf_exempt
 def reset_password(request):
     if request.method == 'POST':
-        token = request.GET.get('token')  # Get the token from URL parameters
-        password = request.data.get('password')  # Retrieve from request data
-        confirm_password = request.data.get('confirm_password')  # Retrieve from request data
+        email = request.data.get('email')
+        otp = request.data.get('otp')
+        password = request.data.get('password')
+        confirm_password = request.data.get('confirm_password')
         
-        if token:  # Check if token is provided
-            try:
-                user = CustomUser.objects.get(reset_token=token, reset_token_expires__gte=timezone.now())
-                if password == confirm_password:
-                    print("Updating password...")
-                    user.set_password(password)
-                    user.reset_token = None
-                    user.reset_token_expires = None
-                    user.save()
-                    print("Password update completed")
-                    return JsonResponse({'message': 'Password reset successful'})
-                else:
-                    return JsonResponse({'error': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
-            except CustomUser.DoesNotExist:
-                return JsonResponse({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return JsonResponse({'error': 'Token not provided'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = CustomUser.objects.get(email=email)
+            # Check if the OTP is valid
+            password_reset = PasswordReset.objects.get(user=user, otp=otp)
+            
+            if password == confirm_password:
+                # Reset the password
+                user.set_password(password)
+                user.save()
+                password_reset.delete()  # Delete the used OTP entry
+                return Response({'message': 'Password reset successful'})
+            else:
+                return Response({'error': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
+        except (CustomUser.DoesNotExist, PasswordReset.DoesNotExist):
+            return Response({'error': 'Invalid email or OTP'}, status=status.HTTP_400_BAD_REQUEST)
     
-    return JsonResponse({'error': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'error': 'Invalid request'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -847,6 +905,9 @@ def quicksave(request):
             transaction_id=paystack_response.get("data", {}).get("reference"), 
         )
 
+        # After processing a savings or investment transaction
+        user.update_total_savings_and_investment_this_month()
+
         # Return a success response
         return Response({'message': 'QuickSave successful', 'transaction_id': transaction.transaction_id}, status=status.HTTP_200_OK)
     else:
@@ -951,6 +1012,9 @@ def autosave(request):
                 recipient_list = [user.email]
 
                 send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+                # After processing a savings or investment transaction
+                user.update_total_savings_and_investment_this_month()
 
     # Start a new thread for the auto charge process
     threading.Thread(target=auto_charge).start()
@@ -1093,6 +1157,9 @@ def quickinvest(request):
             transaction_id=paystack_response.get("data", {}).get("reference"),
         )
 
+        # After processing a savings or investment transaction
+        user.update_total_savings_and_investment_this_month()
+        
         # Return a success response
         return Response({'message': 'QuickInvest successful', 'transaction_id': transaction.transaction_id}, status=status.HTTP_200_OK)
     else:
@@ -1198,6 +1265,9 @@ def autoinvest(request):
                 recipient_list = [user.email]
 
                 send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+                # After processing a savings or investment transaction
+                user.update_total_savings_and_investment_this_month()
 
     # Start a new thread for the auto invest process
     threading.Thread(target=auto_invest).start()
@@ -1960,7 +2030,7 @@ class KYCUpdateView(generics.UpdateAPIView):
 
         # Notify admin that a KYC update is pending approval
         admin_email = ["info@myfundmobile.com", "company@myfundmobile.com"]
-        subject = "KYC Update Pending Approval"
+        subject = f"KYC Update for {user.first_name} Pending Approval"
         message = f"Hello Admin, \n\n{user.first_name} ({user.email}) has submitted a KYC update for approval. Please review it in the admin panel.\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
         from_email = "MyFund <info@myfundmobile.com>"
 
