@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserCards, updateAccountBalances, fetchUserTransactions, fetchAccountBalances } from '../../ReduxActions'; // Import fetchUserCards
+import { fetchUserCards, updateAccountBalances, fetchUserTransactions, fetchAccountBalances, fetchTopSaversData } from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from './LoadingModal';
@@ -159,6 +159,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
         dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
         dispatch(fetchAccountBalances()); // Add this line   
         dispatch(fetchUserTransactions()); // Add this line
+        dispatch(fetchTopSaversData());
 
         setIsSuccessVisible(true);
         setQuickInvestModalVisible(false);

@@ -674,20 +674,25 @@ const bankAccountField = (
 
 
   const formattedAmount = parseFloat(amount.replace(/,/g, '')).toFixed(2);
-
-    const handleTransferToBankAccount = async () => {
-      setProcessing(true);    
-      try {
+  const handleTransferToBankAccount = async () => {
+    setProcessing(true);    
+    try {
+      // Check if the source account balance is sufficient for the withdrawal
+      if (accountBalances.wallet < formattedAmount) {
+        setProcessing(false);
+        // Show an alert for insufficient balance
+        Alert.alert('Insufficient Balance', 'You do not have sufficient funds in your wallet for this withdrawal. Please check and try again.');
+      } else {
         // Prepare the request data based on user selections
         const requestData = {
           source_account: fromAccount,
           target_bank_account_id: selectedBankAccountId, // Use the selected bank account ID
           amount: formattedAmount, // Use the formatted amount
         };
-    
+  
         console.log('formatted Amount in api call:', formattedAmount); // Log the API response
         console.log('Request Data:', requestData);
-
+  
         const response = await axios.post(
           `${ipAddress}/api/withdraw-to-bank/`,
           requestData,
@@ -698,12 +703,12 @@ const bankAccountField = (
             },
           }
         );
-    
+  
         // Handle the API response
         if (response.status === 200) {
           const responseData = response.data;
           console.log('API Response:', response.data);
-
+  
           dispatch(updateAccountBalances(responseData.newAccountBalances));
           dispatch(fetchAccountBalances());
           dispatch(fetchUserTransactions());
@@ -720,21 +725,19 @@ const bankAccountField = (
           } else if (response.status === 401) {
             setProcessing(false);
             Alert.alert('Error', 'You are not authorized. Please login again.');
-          } else if (response.status === 402) {
-            setProcessing(false);
-            Alert.alert('Error', 'Insufficient balance. You do not have enough funds for this withdrawal.');
           } else {
             setProcessing(false);
             Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
           }
         }
-      } catch (error) {
-        // Handle network or other errors and show an appropriate error message
-        setProcessing(false);
-        Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
       }
-    };
-
+    } catch (error) {
+      // Handle network or other errors and show an appropriate error message
+      setProcessing(false);
+      Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+    }
+  };
+  
 
     
     const transferToWallet = async () => {

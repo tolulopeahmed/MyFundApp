@@ -77,7 +77,7 @@ const Invest = ({ navigation, firstName }) => {
       <View>
         <Text style={styles.title2}>Choose Type of Investment</Text>
         <Text style={styles.subText}>SPONSOR: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>20% p.a. </Text>every January & July. {'\n'}
-        OWN: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>Lifetime rent </Text> every year</Text>
+        OWN: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>Lifetime rent</Text> every year</Text>
         <Divider />
 
         <SectionTitle>AVAILABLE INVESTMENTS</SectionTitle>

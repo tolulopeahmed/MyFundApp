@@ -26,7 +26,7 @@ const Home = ({ navigation, route}) => {
   const autoInvestSettings = useSelector((state) => state.bank.autoInvestSettings);
   const [currentStatus, setCurrentStatus] = useState('');
   const profileImageUri = useSelector((state) => state.bank.profileImageUri);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const selectedImage = userInfo.profileImageUrl;
   const kycStatus = useSelector((state) => state.bank.kycStatus);
   const [showBalances, setShowBalances] = useState(true);
   const isFocused = useIsFocused();
@@ -237,7 +237,8 @@ const formatTime = (timeString) => {
   console.log('Profile Image URL from Redux:--', userInfo.profileImageUrl);
   console.log('Profile Image URL from selected:--', profileImageUri);
   console.log('KYCstatus:', kycStatus);
-  console.log('showBalances in Home.js:', showBalances);
+  console.log('selectedImage:', selectedImage);
+
 
 
 
@@ -349,7 +350,7 @@ const formatTime = (timeString) => {
 
         {showBalances ? (
             <>
-              <Text style={styles.savingsAmount}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
+              <Text style={styles.savingsAmount2}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
               <Text style={styles.decimal}>.{String(accountBalances.investment).split('.')[1]}</Text>
             </>
           ) : (

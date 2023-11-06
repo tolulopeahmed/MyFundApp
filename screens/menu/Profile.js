@@ -12,13 +12,12 @@ import { ipAddress } from '../../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SectionTitle from '../components/SectionTitle';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchUserData, setProfileImageUri } from '../../ReduxActions';
-import { useIsFocused } from '@react-navigation/native';
+import { fetchUserData } from '../../ReduxActions';
 
 const Profile = ({ navigation, route }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [enableFingerprint, setEnableFingerprint] = useState(false);
-  const [showBalances, setShowBalances] = useState(true);
+  const [showBalances, setShowBalances] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
   const [pinModalVisible, setPinModalVisible] = useState(false); // define modalVisible state
@@ -28,8 +27,69 @@ const Profile = ({ navigation, route }) => {
   const userInfo = useSelector((state) => state.bank.userInfo);
   const dispatch = useDispatch(); // Get the dispatch function from Redux
   const profileImageUri = useSelector((state) => state.bank.profileImageUri);
-  const isFocused = useIsFocused();
+  const topSaversData = useSelector((state) => state.bank.topSaversData);
+  const accountBalances = useSelector((state) => state.bank.accountBalances);
 
+  
+  const wealthStages = [
+    {
+      stage: 1,
+      text: "1: Debt",
+      description: "Your income is less than your expenses",
+      condition: accountBalances.savings == 0 && accountBalances.investment == 0,
+    },
+    {
+      stage: 2,
+      text: "2: No Debt",
+      description: "Your income is equal to your expenses",
+      condition: accountBalances.savings > 0 && accountBalances.investment == 0,
+    },
+    {
+      stage: 3,
+      text: "3: Surplus",
+      description: "Your income is greater than your expenses",
+      condition: accountBalances.savings > 0 && accountBalances.investment > 0 && accountBalances.properties === 0,
+    },
+    {
+      stage: 4,
+      text: "4: Savings",
+      description: "You have cash flow, and your savings are growing.",
+      condition: (accountBalances.savings + accountBalances.investment) >= 250000,
+    },
+    {
+      stage: 5,
+      text: "5: Millions",
+      description: "You have a cash asset and are ready for true investment",
+      condition: accountBalances.savings + accountBalances.investment >= 1000000,
+    },
+    {
+      stage: 6,
+      text: "6: Assets",
+      description: "You have acquired one or more properties",
+      condition: accountBalances.properties > 0 && accountBalances.wallet < 300000,
+    },
+    {
+      stage: 7,
+      text: "7: Passive Income",
+      description: "You have earned your first rental income",
+      condition: accountBalances.wallet >= 300000 && accountBalances.properties > 0,
+    },
+    {
+      stage: 8,
+      text: "8: Financially Free",
+      description: "Your passive income is greater than your living expenses",
+      condition: accountBalances.wallet >= 500000 && accountBalances.properties > 0,
+    },
+    {
+      stage: 9,
+      text: "9: You're Financially Free indeed",
+      description: "Your wallet is at least N1000000, and you have properties",
+      condition: accountBalances.wallet >= 1000000 && accountBalances.properties > 0,
+    },
+  ];
+  
+  
+  const currentStage = wealthStages.find((stage) => stage.condition);
 
 
   useEffect(() => {
@@ -91,10 +151,10 @@ const Profile = ({ navigation, route }) => {
               console.log('New profile image URI:', selectedAsset.uri);
   
               setSelectedImage(selectedAsset.uri); // Update the selectedImage state
-  
+
               // Dispatch the action to update the profile image URI in Redux
-              dispatch(setProfileImageUri(selectedAsset.uri));
-  
+              dispatch(fetchUserData());
+
             } else {
               Alert.alert('Error', response.data.message); // Assuming the API returns an error message in the 'message' field
             }
@@ -225,6 +285,46 @@ const Profile = ({ navigation, route }) => {
   };
 
 
+
+  const handleSeeTopSavers = () => {
+    if (topSaversData.current_user.individual_percentage === null) {
+      // Show an alert message with three options
+      Alert.alert(
+        "Top Savers List",
+        "You need to have savings/investment for the month to view the list of Top Savers for the month.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              // Do nothing or handle the 'OK' action here
+            },
+          },
+          {
+            text: "QuickSave",
+            onPress: () => {
+              // Navigate to 'Save' screen with quickSaveModalVisible
+              navigation.navigate('Save', { quickSaveModalVisible: true });
+            },
+          },
+          {
+            text: "QuickInvest",
+            onPress: () => {
+              // Navigate to 'Sponsorship' screen with quickInvestModalVisible
+              navigation.navigate('Sponsorship', { quickInvestModalVisible: true });
+            },
+          },
+        ]
+      );
+    } else {
+      // User can navigate to 'TopSavers' screen
+      navigation.navigate('TopSavers');
+    }
+  };
+  
+  
+  
+
+
   
   
   console.log('Profile Image URI from update:', profileImageUri);
@@ -305,8 +405,8 @@ const Profile = ({ navigation, route }) => {
 <Text style={styles.infoText2}>+234{userInfo.mobileNumber}</Text>
 <Text style={styles.infoText}>Email/Username</Text>
 <Text style={styles.infoText3}>{userInfo.email}</Text>
-<Text style={styles.infoText}>Points</Text>
-<Text style={styles.infoText3}>Coming Soon</Text>
+<Text style={styles.infoText}>Financial Level</Text>
+<Text style={styles.infoText3}>Level {(currentStage.text).toUpperCase()}</Text>
 
   </View>
   </View>
@@ -345,7 +445,7 @@ const Profile = ({ navigation, route }) => {
 
 
       <View style={styles.settingContainer}>
-        <Text style={styles.settingText}>Show/Hide Balances</Text>
+        <Text style={styles.settingText}>Hide Balances</Text>
         <Switch
           trackColor={{ false: 'grey', true: '#4C28BC' }}
           thumbColor={showBalances ? '#8976FF' : 'silver'}
@@ -415,7 +515,7 @@ const Profile = ({ navigation, route }) => {
       </View>
  
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('TopSavers')}>
+        <TouchableOpacity style={styles.button} onPress={handleSeeTopSavers}>
           <MaterialIcons name="leaderboard" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Top Savers</Text>
         </TouchableOpacity>

@@ -94,7 +94,7 @@ const ReferAndEarn = ({ navigation, firstName }) => {
     </View>
 
     <Title>Refer and Earn</Title>
-<Subtitle>Get your friends to signup with your email and earn</Subtitle>
+<Subtitle>Get your friends to signup with your email so you both earn</Subtitle>
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <Swiper
         autoplay

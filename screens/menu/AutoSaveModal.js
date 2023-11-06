@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAutoSaveSettings} from '../../ReduxActions'; // Import fetchUserCards
+import { fetchAutoSaveSettings, fetchTopSaversData} from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
@@ -61,6 +61,8 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
       if (response.status === 200) {
         const responseData = response.data;
         dispatch(fetchAutoSaveSettings()); // Fetch and update auto-save status
+        dispatch(fetchTopSaversData());
+
         setProcessing(false);
         setAutoSaveModalVisible(false);
         setAutoSave(true); // Set autoSave state after success

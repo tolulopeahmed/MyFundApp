@@ -1,20 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet,Image,animation,TouchableOpacity,TextInput,Modal,Animated,} from 'react-native';
+import { View, Text, ScrollView, Alert, StyleSheet, Image, TouchableOpacity, TextInput, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import logo from '../login/logo..png';
 import Divider from '../components/Divider';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
+import LoadingModal from '../components/LoadingModal';
 
-
-const ForgotPassword = ({ navigation }) => {
-  const [modalVisible, setModalVisible] = useState(false);
+const PasswordForgot = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [isResetButtonDisabled, setIsResetButtonDisabled] = useState(true);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const [animation] = useState(new Animated.Value(0)); // Initialize the animation variable
   const [isResetting, setIsResetting] = useState(false);
-
 
   const handleEmailChange = (text) => {
     setEmail(text);
@@ -24,28 +21,66 @@ const ForgotPassword = ({ navigation }) => {
 
   const handleResetPassword = async () => {
     try {
-      setIsResetting(true); // Start resetting
-      
+      setIsResetting(true);
+  
       const response = await axios.post(`${ipAddress}/api/request-password-reset/`, {
-        email: email,
+        email: email.toLowerCase(),
       });
   
       if (response.status === 200) {
-        // Password reset request successful, show the modal
-        setModalVisible(true);
+        // Password reset request successful, navigate to the PasswordConfirm screen
+        navigation.navigate('PasswordConfirm', { email: email, token: response.data.token });
       } else {
-        // Handle error here if needed
+        // Check if the response contains an error message
+        const errorMessage = response.data.error; // Replace 'error' with the actual field name containing the error message in your response.
+  
+        if (errorMessage === 'User not found') {
+          // Display an alert with a message and a sign-up option
+          Alert.alert(
+            'User Not Found',
+            'No user with this email exists. Would you like to sign up instead?',
+            [
+              {
+                text: 'Cancel',
+                style: 'cancel',
+              },
+              {
+                text: 'Sign Up',
+                onPress: () => {
+                  navigation.navigate('CreateAccount', { prefillEmail: email }); // Pass the email to CreateAccount
+                },              },
+            ]
+          );
+        } else {
+          // Handle other errors if needed
+          Alert.alert('Error', 'Password reset request failed. Please try again later.');
+        }
       }
     } catch (error) {
       // Handle error here if needed
-    } finally {
-      setIsResetting(false); // Finish resetting
+      Alert.alert(
+        'User Not Found!',
+        'It looks like there\'s no user with this email yet in our system. Would you like to sign up instead?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Sign Up',
+            onPress: () => {
+              navigation.navigate('CreateAccount', { prefillEmail: email }); // Pass the email to CreateAccount
+            },
+          },
+        ]
+      );
+      } finally {
+      setIsResetting(false);
     }
   };
   
-  
 
-  
+
   return (
     <>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -59,58 +94,35 @@ const ForgotPassword = ({ navigation }) => {
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Reset Password</Text>
           <Text style={styles.subText}>
-          Enter the email address you use for MyFund, and we’ll help you create a new password.
-
+            Enter the email address you use for MyFund, and we’ll help you create a new password.
           </Text>
         </View>
-   
-            <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Your Email Address"
-              value={email}
-              onChangeText={handleEmailChange}
-            />
-          
-            <View style={styles.passwordInputContainer}></View>
 
-            <TouchableOpacity
-                style={[styles.loginButton, isResetButtonDisabled && styles.disabledButton, isResetting && styles.resettingButton]}
-                onPress={handleResetPassword}
-                disabled={isResetButtonDisabled || isResetting}
-              >
-                <Text style={styles.loginButtonText}>
-                  {isResetting ? "Resetting your password..." : "RESET"}
-                </Text>
-              </TouchableOpacity>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter Your Email Address"
+            value={email}
+            onChangeText={handleEmailChange}
+          />
 
-          </View>
+          <TouchableOpacity
+            style={[
+              styles.loginButton,
+              isResetButtonDisabled && styles.disabledButton,
+              isResetting && styles.resettingButton,
+            ]}
+            onPress={handleResetPassword}
+            disabled={isResetButtonDisabled || isResetting}
+          >
+            <Text style={styles.loginButtonText}>
+              {isResetting ? "Resetting your password..." : "RESET"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <LoadingModal visible={isResetting} />
 
-
-   <Divider/>
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalHeader}>Password Reset Link Sent!</Text>
-              <Text style={styles.modalSubText}>Click the reset link we just sent to your email address to create a new password. <Text style={{fontFamily: 'proxima'}}>Afterwards,</Text> return to this screen and tap OK to login with your new password</Text>
-              <Ionicons name="sync-outline" size={170} color="#4C28BC" marginBottom={20} marginTop={20}/>
-
-              <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.navigate('Login')}>
-                  <Text style={styles.primaryButtonText}>OK</Text>
-                </TouchableOpacity>      
-              </View>
-            </View>
-
-         
-          </View>
-        </Modal>
+        <Divider />
       </ScrollView>
     </>
   );
@@ -177,6 +189,8 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     paddingLeft: 15,
     paddingRight: 5,
+    borderWidth: 1,
+    borderColor: 'silver',
   },
   
   
@@ -282,4 +296,4 @@ modalContent: {
 
 });
 
-export default ForgotPassword;
+export default PasswordForgot;

@@ -212,7 +212,7 @@ const handleLogin = async () => {
           
 
           <View>
-            <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+            <TouchableOpacity onPress={() => navigation.navigate('PasswordForgot')}>
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
           </View>

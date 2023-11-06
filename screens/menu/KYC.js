@@ -33,6 +33,7 @@ const KYC = ({ navigation, firstName }) => {
     const [mothersMaidenName, setMothersMaidenName] = useState('');
     const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
     const kycStatus = useSelector((state) => state.bank.kycStatus);
+    const [isInputsFilled, setInputsFilled] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -80,7 +81,31 @@ const KYC = ({ navigation, firstName }) => {
       }
     };
 
-
+    const checkInputs = () => {
+      // Check if all required inputs have values
+      if (
+        selectedGender !== null &&
+        relationshipStatus !== null &&
+        employmentStatus !== null &&
+        yearlyIncome !== null &&
+        dateOfBirth.length > 0 &&
+        address.length > 0 &&
+        mothersMaidenName.length > 0 &&
+        cardType !== null &&
+        nameOfNextOfKin.length > 0 &&
+        relationshipWithNextOfKin !== null &&
+        nextOfKinPhoneNumber.length > 0
+      ) {
+        setInputsFilled(true);
+      } else {
+        setInputsFilled(false);
+      }
+    };
+    
+    useEffect(() => {
+      checkInputs();
+    }, [selectedGender, relationshipStatus, employmentStatus, yearlyIncome, dateOfBirth, address, mothersMaidenName, cardType, nameOfNextOfKin, relationshipWithNextOfKin, nextOfKinPhoneNumber]);
+    
   
     const openImagePicker = async () => {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -514,10 +539,18 @@ const KYC = ({ navigation, firstName }) => {
 <LoadingModal visible={processing} />
 
       <View style={styles.buttonsContainer}>
-                <TouchableOpacity style={styles.primaryButton} onPress={handleUpdateKYC}>
-                <Ionicons name="shield-checkmark-outline" size={24} color="#fff" marginRight={10}/>
-                <Text style={styles.primaryButtonText}>Update KYC</Text>
-                </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              ...styles.primaryButton,
+              backgroundColor: isInputsFilled ? '#4C28BC' : 'grey',
+            }}
+            onPress={handleUpdateKYC}
+            disabled={!isInputsFilled}
+          >
+            <Ionicons name="shield-checkmark-outline" size={24} color="#fff" marginRight={10} />
+            <Text style={styles.primaryButtonText}>Update KYC</Text>
+          </TouchableOpacity>
+
                </View>
      
     </View>

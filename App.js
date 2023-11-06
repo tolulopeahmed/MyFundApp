@@ -22,7 +22,6 @@ import Bank from './screens/menu/Bank'
 import KYC from './screens/menu/KYC'
 import Notifications from './screens/menu/Notifications';
 import FAQ from './screens/menu/FAQ';
-import ForgotPassword from './screens/menu/ForgotPassword';
 import Chat from './screens/menu/Chat'
 import Success from './screens/components/Success';
 import ReferAndEarn from './screens/menu/ReferAndEarn';
@@ -33,6 +32,8 @@ import { UserProvider } from './UserContext';
 import store from './ReduxStore';
 import { Provider } from 'react-redux';
 import TopSavers from './screens/menu/TopSavers';
+import PasswordForgot from './screens/menu/PasswordForgot';
+import PasswordConfirm from './screens/menu/PasswordConfirm';
 
 
 const Stack = createStackNavigator();
@@ -86,7 +87,8 @@ const App = ({ styles, darkModeStyles, }) => {
         <Stack.Screen name="CreateAccount" component={CreateAccount} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Confirmation" component={Confirmation} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="PasswordForgot" component={PasswordForgot} />
+        <Stack.Screen name="PasswordConfirm" component={PasswordConfirm} />      
         <Stack.Screen name="DrawerTab" component={DrawerTab} />
         <Stack.Screen name="Sponsorship" component={Sponsorship} />
         <Stack.Screen name="Ownership" component={Ownership} />

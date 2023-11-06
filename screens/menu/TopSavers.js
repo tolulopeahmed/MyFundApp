@@ -44,7 +44,7 @@ const TopSavers = ({ navigation }) => {
 
 
   const renderTopSavers = () => {
-    return topSaversData.top_savers.map((saver, index) => (
+    return topSaversData?.top_savers.map((saver, index) => (
         <View
         key={saver.id}
         style={[
@@ -106,7 +106,7 @@ const TopSavers = ({ navigation }) => {
   }
   
 
-  console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.individual_percentage)
+  console.log('TopSaversData.Individual Percentage:', topSaversData?.current_user.individual_percentage)
 
 
 
@@ -138,8 +138,8 @@ const TopSavers = ({ navigation }) => {
       <View style={styles.propertyContainer}>
     <Ionicons
       name={
-        topSaversData.current_user.individual_percentage === 100 ||
-        topSaversData.top_savers.findIndex(saver => saver.email === userInfo.email) < 3
+        topSaversData?.current_user.individual_percentage === 100 ||
+        topSaversData?.top_savers.findIndex(saver => saver.email === userInfo.email) < 3
           ? 'trophy-outline'
           : 'wallet-outline'
       }
@@ -151,8 +151,8 @@ const TopSavers = ({ navigation }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>
           <Text style={styles.propertyText}>
-            {topSaversData.current_user.individual_percentage === 100 ||
-            topSaversData.top_savers.findIndex(saver => saver.email === userInfo.email) < 3 ? (
+            {topSaversData?.current_user.individual_percentage === 100 ||
+            topSaversData?.top_savers.findIndex(saver => saver.email === userInfo.email) < 3 ? (
               <Text>
                 {''}Congratulations {userInfo?.firstName ? `${userInfo.firstName},` : ''} You're currently one of the top savers in {currentMonth}. 🥳🍾🎉🎊 Keep saving to earn more as a top saver.
               </Text>
@@ -160,7 +160,7 @@ const TopSavers = ({ navigation }) => {
               <Text>
                 Hey {userInfo?.firstName ? `${userInfo.firstName}, you're ` : ''}
                 <Text style={{ fontFamily: 'proxima', color: 'green' }}>
-                  {topSaversData.current_user.individual_percentage.toFixed(0)}%
+                  {topSaversData?.current_user.individual_percentage.toFixed(0)}%
                 </Text>
                 {' '}from being one of the top savers in {currentMonth}. Keep growing your funds to earn more as a top saver.
               </Text>
@@ -188,7 +188,7 @@ const TopSavers = ({ navigation }) => {
                 )}
                   <View style={styles.percentageBackground}>
                     <Text style={styles.percentageText}>
-                      {topSaversData.current_user.individual_percentage.toFixed(0)}<Text style={{fontSize: 7, fontFamily: 'karla'}}>%</Text>
+                      {topSaversData?.current_user.individual_percentage.toFixed(0)}<Text style={{fontSize: 7, fontFamily: 'karla'}}>%</Text>
                     </Text>
                   </View>
               </View>
@@ -201,11 +201,11 @@ const TopSavers = ({ navigation }) => {
                       Position:
                     </Text>
                     <Text style={{ fontFamily: 'ProductSans', color: 'white', fontSize: 70 }}>
-                      {topSaversData.top_savers.findIndex(saver => saver.email === userInfo.email) + 1 === 0
+                      {topSaversData?.top_savers.findIndex(saver => saver.email === userInfo.email) + 1 === 0
                         ? "-"
-                        : topSaversData.top_savers.findIndex(saver => saver.email === userInfo.email) + 1
+                        : topSaversData?.top_savers.findIndex(saver => saver.email === userInfo.email) + 1
                       }
-                      {getOrdinal(topSaversData.top_savers.findIndex(saver => saver.email === userInfo.email) + 1)}
+                      {getOrdinal(topSaversData?.top_savers.findIndex(saver => saver.email === userInfo.email) + 1)}
                     </Text>
 
                   </ScrollView>
@@ -218,7 +218,7 @@ const TopSavers = ({ navigation }) => {
         style={styles.transactionsContainer}
         showsVerticalScrollIndicator={false}
       >
-        {topSaversData.top_savers.length > 0 ? (
+        {topSaversData?.top_savers.length > 0 ? (
           renderTopSavers()
         ) : (
           <View style={styles.noTransactionsContainer}>

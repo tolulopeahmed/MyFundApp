@@ -7,11 +7,11 @@ import LoadingModal from '../components/LoadingModal';
 
 const { width, height } = Dimensions.get('window');
 
-const CreateAccount = ({ navigation }) => {
+const CreateAccount = ({ route, navigation }) => {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
   const [isFormTouched, setIsFormTouched] = useState(false); // New state variable
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(prefillEmail || ''); // Set the email from prefillEmail, or an empty string if not provided
   const [validEmail, setValidEmail] = useState(true);
   const [firstName, setFirstName] = useState('');
   const [validFirstName, setValidFirstName] = useState(true);
@@ -25,6 +25,7 @@ const CreateAccount = ({ navigation }) => {
   const [referralValue, setReferralValue] = useState('');
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
   const [referralEmail, setReferralEmail] = useState('');
+  const { prefillEmail } = route.params || {}; // Ensure that route.params is defined
 
 
   useEffect(() => {
@@ -91,7 +92,7 @@ const CreateAccount = ({ navigation }) => {
         first_name: firstName,
         last_name: lastName,
         phone_number: phoneNumber,
-        referral: referralValue, // Assuming referralValue contains the referral email
+        referral: referralValue.toLowerCase(), // Assuming referralValue contains the referral email
       });
   
       if (response.status === 201) {
@@ -120,7 +121,7 @@ const CreateAccount = ({ navigation }) => {
   
         if (error.response.status === 400) {
           if (error.response.data.email) {
-            alert('A MyFund user is already using this email. Kindly use another email to create your account.');
+            alert('A MyFund user is already using this email. Kindly use another email to create your account. If in doubt, kindly return to the login screen and select "Forgot Password?"');
           } else if (
             !error.response.data.first_name ||
             !error.response.data.last_name ||

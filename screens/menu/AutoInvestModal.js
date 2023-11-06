@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAutoInvestSettings} from '../../ReduxActions'; // Import fetchUserCards
+import { fetchAutoInvestSettings, fetchTopSaversData} from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
@@ -64,6 +64,8 @@ const AutoInvestModal = ({ navigation, autoInvestModalVisible, setAutoInvestModa
         dispatch(fetchAutoInvestSettings()); // Fetch and update auto-invest status
         setProcessing(false);
         setAutoInvestModalVisible(false);
+        dispatch(fetchTopSaversData());
+
         setAutoInvest(true); 
 
         Alert.alert(

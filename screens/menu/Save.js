@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
-import { View, Text, SafeAreaView, ImageBackground, ScrollView, TouchableOpacity, Pressable, StyleSheet, Switch } from 'react-native';
+import { View, Text, SafeAreaView, Alert, ImageBackground, ScrollView, TouchableOpacity, Pressable, StyleSheet, Switch } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AutoSaveModal from './AutoSaveModal';
 import { ProgressBar } from 'react-native-paper';
@@ -37,6 +37,7 @@ const Save = ({ navigation, route }) => {
   const topSaversData = useSelector((state) => state.bank.topSaversData);
   const [showBalances, setShowBalances] = useState(true);
   const isFocused = useIsFocused();
+ 
 
   const dispatch = useDispatch();
 
@@ -55,6 +56,46 @@ const Save = ({ navigation, route }) => {
   }, []);
 
 
+
+
+  const handleSeeTopSavers = () => {
+    if (topSaversData.current_user.individual_percentage === null) {
+      // Show an alert message with three options
+      Alert.alert(
+        "Top Savers List",
+        "You need to have savings/investment for the month to view the list of Top Savers for the month.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              // Do nothing or handle the 'OK' action here
+            },
+          },
+          {
+            text: "QuickSave",
+            onPress: () => {
+              // Navigate to 'Save' screen with quickSaveModalVisible
+              navigation.navigate('Save', { quickSaveModalVisible: true });
+            },
+          },
+          {
+            text: "QuickInvest",
+            onPress: () => {
+              // Navigate to 'Sponsorship' screen with quickInvestModalVisible
+              navigation.navigate('Sponsorship', { quickInvestModalVisible: true });
+            },
+          },
+        ]
+      );
+    } else {
+      // User can navigate to 'TopSavers' screen
+      navigation.navigate('TopSavers');
+    }
+  };
+  
+  
+  
+  
   
 
   const iconMapping = {
@@ -194,6 +235,7 @@ console.log('accountBalances.investment:', accountBalances.investment)
 console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.individual_percentage)
 
 
+
   return (
     <View style={styles.container}>
      <Header navigation={navigation} headerText='SAVE'/>
@@ -256,9 +298,7 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
         {topSaversData?.current_user.individual_percentage === 100 ? (
           <Text>
             {`Congratulations ${userInfo?.firstName ? `${userInfo.firstName},` : ''} You're currently one of the top savers in ${currentMonth}. 🥳🍾🎉🎊 Keep saving to earn more rewards.`}
-            <TouchableOpacity onPress={() => navigation.navigate('TopSavers')}>
-              <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}> See TopSavers...</Text>
-            </TouchableOpacity>
+              <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }} onPress={() => handleSeeTopSavers()}> See TopSavers...</Text>
           </Text>
         ) : (
           <Text>
@@ -274,9 +314,7 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
               }
             </Text>
             ). Keep growing your funds to earn more as a top saver.
-            <Pressable onPress={() => navigation.navigate('TopSavers')}>
-              <Text style={{ fontFamily: 'proxima', color: '#4C28BC', marginTop: 3 }}> See Top Savers...</Text>
-            </Pressable>
+              <Text style={{ fontFamily: 'proxima', color: '#4C28BC', marginTop: 3 }} onPress={() => handleSeeTopSavers()}> See Top Savers...</Text>
           </Text>
         )}
       </Text>
