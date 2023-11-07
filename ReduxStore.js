@@ -3,7 +3,7 @@
 import { combineReducers } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
 import Reducer from './ReduxReducers';
-import { setUserToken, fetchAccountBalances, fetchUserTransactions, fetchUserBankAccounts, fetchUserCards, fetchAutoSaveSettings, fetchAutoInvestSettings, fetchTopSaversData, fetchKYCStatus } from './ReduxActions'; // Import the updated action
+import { setUserToken, fetchAccountBalances, fetchUserTransactions, fetchUserBankAccounts, fetchUserCards, fetchAutoSaveSettings, fetchAutoInvestSettings, fetchTopSaversData, fetchKYCStatus, addAlertMessage } from './ReduxActions'; // Import the updated action
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 const rootReducer = combineReducers({
@@ -38,7 +38,14 @@ getInitialToken().then((initialToken) => {
     store.dispatch(fetchAutoInvestSettings()); // Fetch auto-invest status and settings
     store.dispatch(fetchTopSaversData()); // Dispatch the action to fetch top savers data
     store.dispatch(fetchKYCStatus());
-
+    // Dispatch an action to add an initial alert message if needed
+    const initialAlertMessage = {
+      id: Date.now(), // Generate a unique ID
+      type: 'message',
+      description: 'Welcome to MyFund!',
+      date: new Date().toLocaleString(),
+    };
+    store.dispatch(addAlertMessage(initialAlertMessage));
   }
 });
 

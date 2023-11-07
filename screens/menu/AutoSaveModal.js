@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAutoSaveSettings, fetchTopSaversData} from '../../ReduxActions'; // Import fetchUserCards
+import { addAlertMessage, fetchAutoSaveSettings, fetchTopSaversData} from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
@@ -67,19 +67,22 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
         setAutoSaveModalVisible(false);
         setAutoSave(true); // Set autoSave state after success
 
-        Alert.alert(
-          'AutoSave Activated!',
-          `Your AutoSave has been activated. You're now saving ₦${amount} ${frequency}. Well done! Keep growing your funds. 🥂`,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                // Navigate to the Home screen
-                navigation.navigate('MyFund');
-              },
+      // Dispatch the success message here
+      const successMessage = `Your AutoSave has been activated. You're now saving ₦${amount} ${frequency}. Well done! Keep growing your funds. 🥂`;
+      dispatch(addAlertMessage(successMessage));
+
+      Alert.alert(
+        'AutoSave Activated!',
+        successMessage,
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              navigation.navigate('MyFund');
             },
-          ]
-        );
+          },
+        ]
+      );
         
   
       } else {

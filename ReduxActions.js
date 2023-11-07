@@ -39,6 +39,7 @@ export const SET_USER_PERCENTAGE = 'SET_USER_PERCENTAGE';
 export const SET_SELECTED_TOP_SAVER = 'SET_SELECTED_TOP_SAVER';
 
 export const SET_KYC_STATUS = 'SET_KYC_STATUS';
+export const ADD_ALERT_MESSAGE = 'ADD_ALERT_MESSAGE';
 
 
 
@@ -167,7 +168,10 @@ export const setKYCStatus = (kycStatus) => ({
   payload: kycStatus,
 });
 
-
+export const addAlertMessage = (message) => ({
+  type: ADD_ALERT_MESSAGE,
+  message,
+});
 
 
 

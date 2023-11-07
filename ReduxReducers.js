@@ -24,7 +24,8 @@ import {
   SET_TOP_SAVERS_DATA,
   SET_SELECTED_TOP_SAVER,
   SET_USER_PERCENTAGE,
-  SET_KYC_STATUS
+  SET_KYC_STATUS,
+  ADD_ALERT_MESSAGE
 } from './ReduxActions';
 
 
@@ -45,6 +46,8 @@ const initialState = {
   profileImageUri: null, // Add a new field to store the profile picture URI
 
   kycStatus: null,
+  alertMessages: [],
+
 
   topSaversData: {
     current_user: {
@@ -255,6 +258,11 @@ const Reducer = (state = initialState, action) => {
                     ...state,
                     kycStatus: action.payload,
                   };
+              case ADD_ALERT_MESSAGE:
+                return {
+                  ...state,
+                  alertMessages: [...state.alertMessages, action.message],
+                };
             
      default:
       return state;
