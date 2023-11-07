@@ -8,11 +8,10 @@ const Header = ({ navigation, headerText,  }) => {
   const { toggleDrawer } = useNavigation();
   const [newNotificationCount, setNewNotificationCount] = useState(0);
 
-  // useEffect(() => {
-  //   // Replace this with logic to fetch new notifications and update the count.
-  //   const newNotifications = fetchNewNotifications();
-  //   setNewNotificationCount(newNotifications.length);
-  // }, []);
+  const handleBellIconPress = () => {
+    navigation.navigate('Notifications');
+    setNewNotificationCount(0); // Reset the notification count when the bell icon is pressed.
+  };
 
   return (
     <View style={styles.header}>
@@ -22,7 +21,7 @@ const Header = ({ navigation, headerText,  }) => {
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>{headerText}</Text>
 
-        <TouchableOpacity style={styles.bell} onPress={() => navigation.navigate('Notifications')}>
+        <TouchableOpacity style={styles.bell} onPress={handleBellIconPress}>
           <Ionicons name="notifications-outline" size={22} color="#4C28BC" />
           {newNotificationCount > 0 && (
             <View style={styles.notificationBadge}>

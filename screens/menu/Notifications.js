@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserTransactions, fetchUserData } from '../../ReduxActions';
+import { fetchUserTransactions, fetchUserData, fetchAlertMessages } from '../../ReduxActions';
 
-const Notifications = ({ navigation, firstName }) => {
+const Notifications = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState('Transactions');
   const userInfo = useSelector((state) => state.bank.userInfo);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
@@ -14,11 +14,16 @@ const Notifications = ({ navigation, firstName }) => {
 
   useEffect(() => {
     console.log("alertMessages:", alertMessages);
-
     dispatch(fetchUserTransactions());
     dispatch(fetchUserData(userInfo.token));
+    dispatch(fetchAlertMessages());
   }, []);
 
+  const handleTabChange = (tab) => {
+    setSelectedTab(tab);
+  };
+  
+  
   console.log("alertMessages:", alertMessages);
 
 
@@ -50,39 +55,43 @@ const Notifications = ({ navigation, firstName }) => {
     return date.toLocaleDateString('en-US', options);
   };
 
+  const formatTime2 = (timeString) => {
+    const options = { hour: 'numeric', minute: '2-digit', hour12: true };
+    const time = new Date(`2023-01-01T${timeString}`);
+    return time.toLocaleTimeString('en-US', options);
+  };
+  
   const formatTime = (timeString) => {
-    return timeString; // Use the original time string as it is
+    const time = new Date(timeString);
+    return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
   
   
   
-  
-
   let sortedAllItems = [];
 
   if (userTransactions && alertMessages) {
     const allItems = [
-      ...userTransactions.map((transaction, index) => ({
+      ...(userTransactions || []).map((transaction, index) => ({
         type: 'transaction',
         data: transaction,
-        timestamp: new Date(transaction.timestamp).getTime(),
+        timestamp: transaction && transaction.timestamp ? new Date(transaction.timestamp).getTime() : 0,
       })),
-      ...alertMessages.map((message, index) => ({
+      ...(alertMessages || []).map((message, index) => ({
         type: 'message',
         data: message,
-        timestamp: new Date(message.timestamp).getTime(),
+        timestamp: message && message.timestamp ? new Date(message.timestamp).getTime() : 0,
       })),
     ];
-  
-// Sort and filter items based on the selected tab
-if (selectedTab === 'Transactions') {
-  // Filter and display only transactions, no need to sort them
-  sortedAllItems = allItems.filter((item) => item.type === 'transaction');
-} else if (selectedTab === 'Messages') {
-  // Filter and display only messages, no need to sort them
-  sortedAllItems = allItems.filter((item) => item.type === 'message');
-}
-
+    
+    // Sort and filter items based on the selected tab
+    if (selectedTab === 'Transactions') {
+      // Filter and display only transactions, no need to sort them
+      sortedAllItems = allItems.filter((item) => item.type === 'transaction');
+    } else if (selectedTab === 'Messages') {
+      // Filter and display only messages, no need to sort them
+      sortedAllItems = allItems.filter((item) => item.type === 'message');
+    }    
   }
   
 
@@ -102,25 +111,15 @@ if (selectedTab === 'Transactions') {
       </View>
 
       <View flexDirection='row' alignSelf='center' padding={5} alignContents='space-between'>
-        {/* <Pressable
-          style={[
-            styles.cardContainer,
-            selectedTab === 'All' && { backgroundColor: '#4C28BC' },
-          ]}
-          onPress={() => setSelectedTab('All')}
-        >
-          <Text style={[styles.title2, selectedTab === 'All' && { color: '#fff' }]}>
-            All
-          </Text>
-        </Pressable> */}
+ 
 
         <Pressable
           style={[
             styles.cardContainer,
             selectedTab === 'Transactions' && { backgroundColor: '#4C28BC' },
           ]}
-          onPress={() => setSelectedTab('Transactions')}
-        >
+          onPress={() => handleTabChange('Transactions')}
+          >
           <Text
             style={[
               styles.title2,
@@ -136,8 +135,8 @@ if (selectedTab === 'Transactions') {
             styles.cardContainer,
             selectedTab === 'Messages' && { backgroundColor: '#4C28BC' },
           ]}
-          onPress={() => setSelectedTab('Messages')}
-        >
+          onPress={() => handleTabChange('Messages')}
+          >
           <Text
             style={[styles.title2, selectedTab === 'Messages' && { color: '#fff' }]}
           >
@@ -149,10 +148,7 @@ if (selectedTab === 'Transactions') {
       <ScrollView style={styles.transactionsContainer} showsVerticalScrollIndicator={false}>
         {sortedAllItems.map((item, index) => {
           if (item.type === 'message') {
-            console.log('item.data.date:', item.data.date);
-            console.log('item.data.time:', item.data.time);            
-            console.log('Message Text:', item.data);
-            return (
+                return (
               <View key={index} style={styles.transactionItem}>
                 <Ionicons name="mail-outline" size={25} style={styles.transactionIcon} />
                 <View style={styles.transactionText}>
@@ -160,7 +156,7 @@ if (selectedTab === 'Transactions') {
                     {item.data.text}
                   </Text>
                   <Text style={styles.transactionDate}>
-                  {formatDate(item.data.date)} | {formatTime(item.data.time)}
+                  {formatDate(item.data.date)} | {formatTime(item.data.date)}
                   </Text>
                 </View>
               </View>
@@ -180,7 +176,7 @@ if (selectedTab === 'Transactions') {
                     {item.data.description}
                   </Text>
                   <Text style={styles.transactionDate}>
-                    {formatDate(item.data.date)} | {formatTime(item.data.time)}
+                    {formatDate(item.data.date)} | {formatTime2(item.data.time)}
                   </Text>
                   <Text style={styles.transactionID}>ID: {item.data.transaction_id} - <Text style={{ fontFamily: 'proxima' }}>{item.data.referral_email}</Text></Text>
                 </View>
@@ -200,7 +196,7 @@ if (selectedTab === 'Transactions') {
                   {item.data.description}
                   </Text>
                   <Text style={styles.transactionDate}>
-                  {formatDate(item.data.date)} | {formatTime(item.data.time)}
+                  {formatDate(item.data.date)} | {formatTime2(item.data.time)}
                   </Text>
                 </View>
               </>

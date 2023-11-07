@@ -168,10 +168,12 @@ export const setKYCStatus = (kycStatus) => ({
   payload: kycStatus,
 });
 
-export const addAlertMessage = (message) => ({
-  type: ADD_ALERT_MESSAGE,
-  message,
-});
+export const addAlertMessage = (alertMessages) => {
+  return {
+    type: ADD_ALERT_MESSAGE,
+    payload: alertMessages,
+  };
+};
 
 
 
@@ -458,10 +460,16 @@ export const fetchAlertMessages = () => async (dispatch, getState) => {
     });
 
     if (response.status === 200) {
-      // Dispatch the action to store alert messages in the Redux state
-      dispatch(addAlertMessage(response.data.alertMessages));
+      // Ensure that the API response contains an array of alert messages
+      if (Array.isArray(response.data)) {
+        // Dispatch the action to store alert messages in the Redux state
+        dispatch({ type: ADD_ALERT_MESSAGE, alertMessages: response.data });
+      } else {
+        console.error('API Response Error: Invalid alertMessages property or not an array.');
+      }
     }
   } catch (error) {
     console.error('Fetch Alert Messages Error:', error);
   }
 };
+

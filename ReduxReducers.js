@@ -46,6 +46,7 @@ const initialState = {
   profileImageUri: null, // Add a new field to store the profile picture URI
 
   kycStatus: null,
+
   alertMessages: [],
 
 
@@ -261,7 +262,7 @@ const Reducer = (state = initialState, action) => {
               case ADD_ALERT_MESSAGE:
                 return {
                   ...state,
-                  alertMessages: [...state.alertMessages, action.message],
+                  alertMessages: action.alertMessages,
                 };
             
      default:

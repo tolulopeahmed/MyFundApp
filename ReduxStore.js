@@ -38,14 +38,7 @@ getInitialToken().then((initialToken) => {
     store.dispatch(fetchAutoInvestSettings()); // Fetch auto-invest status and settings
     store.dispatch(fetchTopSaversData()); // Dispatch the action to fetch top savers data
     store.dispatch(fetchKYCStatus());
-    // Dispatch an action to add an initial alert message if needed
-    const initialAlertMessage = {
-      id: Date.now(), // Generate a unique ID
-      type: 'message',
-      description: 'Welcome to MyFund!',
-      date: new Date().toLocaleString(),
-    };
-    store.dispatch(addAlertMessage(initialAlertMessage));
+    store.dispatch(fetchAlertMessages()); // Dispatch the action to fetch alert messages
   }
 });
 
