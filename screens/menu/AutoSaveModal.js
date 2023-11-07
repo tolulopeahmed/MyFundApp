@@ -37,67 +37,93 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
 
   const handleConfirmAutoSave = async () => {
     try {
-      setProcessing(true);
-      console.log('Selected card ID:', selectedCard);
-      console.log('Amount Entered:', amount);
-      // Make an API request to activate AutoSave
-      const response = await axios.post(
-        `${ipAddress}/api/activate-autosave/`,
-        {
-          card_id: selectedCardId,
-          amount: parseFloat(amount.replace(/,/g, '')), // Parse the amount as a float
-          frequency: frequency,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${userInfo.token}`, // Include the user's token in the headers
-          },
-        }
-      );
-      
-      console.log('API Response:', response);
+        setProcessing(true);
 
-      if (response.status === 200) {
-        const responseData = response.data;
-        dispatch(fetchAutoSaveSettings()); // Fetch and update auto-save status
-        dispatch(fetchTopSaversData());
+        const currentDate = new Date();
+        const messageDate = currentDate.toISOString();
+        const messageTime = currentDate.toLocaleTimeString();
 
-        setProcessing(false);
-        setAutoSaveModalVisible(false);
-        setAutoSave(true); // Set autoSave state after success
+        // Dispatch the success message with date and time properties
+        const successMessage = `Your AutoSave has been activated. You're now saving ₦${amount} ${frequency}. Well done! Keep growing your funds. 🥂`;
+        const messageData = {
+            text: successMessage,
+            date: messageDate,
+            time: messageTime,
+        };
 
-      // Dispatch the success message here
-      const successMessage = `Your AutoSave has been activated. You're now saving ₦${amount} ${frequency}. Well done! Keep growing your funds. 🥂`;
-      dispatch(addAlertMessage(successMessage));
+        // Dispatch the success message with date and time properties
+        dispatch(addAlertMessage(messageData));
 
-      Alert.alert(
-        'AutoSave Activated!',
-        successMessage,
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              navigation.navigate('MyFund');
+        // Send a POST request to create an alert message associated with the user
+        const alertMessageResponse = await axios.post(
+            `${ipAddress}/api/create-alert-message/`,
+            {
+                text: successMessage,  // The alert message text
+                date: messageDate,  // The date of the alert message
             },
-          },
-        ]
-      );
-        
-  
-      } else {
-        setProcessing(false);
-        Alert.alert('AutoSave Activation Failed', 'Please try again later.');
-      }
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${userInfo.token}`,
+                },
+            }
+        );
+
+        // Check the response for alert message creation success
+
+        const response = await axios.post(
+            `${ipAddress}/api/activate-autosave/`,
+            {
+                card_id: selectedCardId,
+                amount: parseFloat(amount.replace(/,/g, '')),
+                frequency: frequency,
+            },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${userInfo.token}`,
+                },
+            }
+        );
+
+        console.log('API Response:', response);
+
+        if (response.status === 200) {
+            const responseData = response.data;
+            dispatch(fetchAutoSaveSettings());
+            dispatch(fetchTopSaversData());
+
+            setProcessing(false);
+            setAutoSaveModalVisible(false);
+            setAutoSave(true);
+
+            Alert.alert(
+                'AutoSave Activated!',
+                successMessage, // Include the success message with date and time
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => {
+                            navigation.navigate('MyFund');
+                        },
+                    },
+                ]
+            );
+        } else {
+            setProcessing(false);
+            Alert.alert('AutoSave Activation Failed', 'Please try again later.');
+        }
     } catch (error) {
-      console.error('Error activating AutoSave:', error);
-      setProcessing(false);
-      Alert.alert(
-        'Error',
-        'Failed to activate AutoSave. Please check your connection and try again later.'
-      );
+        console.error('Error activating AutoSave:', error);
+        setProcessing(false);
+        Alert.alert(
+            'Error',
+            'Failed to activate AutoSave. Please check your connection and try again later.'
+        );
     }
-  };
+};
+
+  
   
   
   useEffect(() => {
@@ -250,6 +276,7 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
                   keyboardType="numeric"
                   onChangeText={(value) => handleAmountChange(value)}
                   value={amount}
+                  
                 />
                 
                 {amount !== '' && (

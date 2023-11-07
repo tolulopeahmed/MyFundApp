@@ -437,3 +437,31 @@ export const fetchKYCStatus = () => async (dispatch, getState) => {
     console.error('Fetch KYC Status Error:', error);
   }
 };
+
+
+
+// Action to fetch alert messages
+export const fetchAlertMessages = () => async (dispatch, getState) => {
+  const userInfo = getState().bank.userInfo;
+  if (!userInfo || !userInfo.token) {
+    console.error('Authentication Error: User is not authenticated.');
+    return;
+  }
+
+  try {
+    // Make an API request to fetch alert messages
+    const response = await axios.get(`${ipAddress}/api/get-alert-messages/`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    });
+
+    if (response.status === 200) {
+      // Dispatch the action to store alert messages in the Redux state
+      dispatch(addAlertMessage(response.data.alertMessages));
+    }
+  } catch (error) {
+    console.error('Fetch Alert Messages Error:', error);
+  }
+};

@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserTransactions, fetchUserData } from '../../ReduxActions';
 
 const Notifications = ({ navigation, firstName }) => {
-  const [selectedTab, setSelectedTab] = useState('All');
+  const [selectedTab, setSelectedTab] = useState('Transactions');
   const userInfo = useSelector((state) => state.bank.userInfo);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
   const alertMessages = useSelector((state) => state.bank.alertMessages);
@@ -51,10 +51,12 @@ const Notifications = ({ navigation, firstName }) => {
   };
 
   const formatTime = (timeString) => {
-    const options = { hour: 'numeric', minute: '2-digit', hour12: true };
-    const time = new Date(`2023-01-01T${timeString}`);
-    return time.toLocaleTimeString('en-US', options);
+    return timeString; // Use the original time string as it is
   };
+  
+  
+  
+  
 
   let sortedAllItems = [];
 
@@ -72,24 +74,17 @@ const Notifications = ({ navigation, firstName }) => {
       })),
     ];
   
-    // Sort and filter items based on the selected tab
-    if (selectedTab === 'All') {
-      // Sort items by timestamp in descending order for the "All" tab
-      sortedAllItems = allItems.sort((a, b) => b.timestamp - a.timestamp);
-    } else if (selectedTab === 'Transactions') {
-      // Filter and display only transactions
-      sortedAllItems = allItems
-        .filter((item) => item.type === 'transaction')
-        .sort((a, b) => b.timestamp - a.timestamp);
-    } else if (selectedTab === 'Messages') {
-      // Filter and display only messages
-      sortedAllItems = allItems
-        .filter((item) => item.type === 'message')
-        .sort((a, b) => b.timestamp - a.timestamp);
-    }
+// Sort and filter items based on the selected tab
+if (selectedTab === 'Transactions') {
+  // Filter and display only transactions, no need to sort them
+  sortedAllItems = allItems.filter((item) => item.type === 'transaction');
+} else if (selectedTab === 'Messages') {
+  // Filter and display only messages, no need to sort them
+  sortedAllItems = allItems.filter((item) => item.type === 'message');
+}
+
   }
   
-  const currentDate = new Date();
 
 
 
@@ -107,7 +102,7 @@ const Notifications = ({ navigation, firstName }) => {
       </View>
 
       <View flexDirection='row' alignSelf='center' padding={5} alignContents='space-between'>
-        <Pressable
+        {/* <Pressable
           style={[
             styles.cardContainer,
             selectedTab === 'All' && { backgroundColor: '#4C28BC' },
@@ -117,7 +112,7 @@ const Notifications = ({ navigation, firstName }) => {
           <Text style={[styles.title2, selectedTab === 'All' && { color: '#fff' }]}>
             All
           </Text>
-        </Pressable>
+        </Pressable> */}
 
         <Pressable
           style={[
@@ -154,17 +149,18 @@ const Notifications = ({ navigation, firstName }) => {
       <ScrollView style={styles.transactionsContainer} showsVerticalScrollIndicator={false}>
         {sortedAllItems.map((item, index) => {
           if (item.type === 'message') {
-            console.log('Message Date...:', item.data.date);
+            console.log('item.data.date:', item.data.date);
+            console.log('item.data.time:', item.data.time);            
             console.log('Message Text:', item.data);
             return (
               <View key={index} style={styles.transactionItem}>
                 <Ionicons name="mail-outline" size={25} style={styles.transactionIcon} />
                 <View style={styles.transactionText}>
                   <Text style={styles.transactionDescription2}>
-                    {item.data}
+                    {item.data.text}
                   </Text>
                   <Text style={styles.transactionDate}>
-                  {currentDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: '2-digit' })} | {currentDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                  {formatDate(item.data.date)} | {formatTime(item.data.time)}
                   </Text>
                 </View>
               </View>
@@ -204,7 +200,7 @@ const Notifications = ({ navigation, firstName }) => {
                   {item.data.description}
                   </Text>
                   <Text style={styles.transactionDate}>
-                    {item.data.date}
+                  {formatDate(item.data.date)} | {formatTime(item.data.time)}
                   </Text>
                 </View>
               </>

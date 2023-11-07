@@ -441,7 +441,7 @@ const formatTime = (timeString) => {
         onPress={handleActivateAutoSave}
         disabled={autoSave}
       >
-        {autoSaveSettings.active ? (
+        {autoSaveSettings.active  && styles.disabledButton ? (
           <>
             <Ionicons
               name="car-outline"
@@ -449,12 +449,13 @@ const formatTime = (timeString) => {
               color="green"
               style={{ marginRight: 10, marginLeft: 10 }}
             />
-            <Text style={styles.disabledText}>AutoSave is ON</Text>
+            <Text style={styles.disabledText} onPress={() => navigation.navigate('Save')}>AutoSave is ON</Text>
             <Ionicons
               name="checkmark-circle"
               size={24}
               color="green"
               style={{ marginRight: 10, marginLeft: 10 }}
+              onPress={() => navigation.navigate('Save')}
             />
           </>
         ) : (
