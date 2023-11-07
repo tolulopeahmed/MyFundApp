@@ -2078,3 +2078,29 @@ class KYCApprovalViewSet(viewsets.ViewSet):
         user.save()
         # Send an email notification here
         return Response({'message': 'KYC Rejected'})
+
+
+
+from .serializers import AlertMessageSerializer  # Create a serializer for AlertMessage if needed
+from .models import AlertMessage
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_alert_message(request):
+    user = request.user
+    text = request.data.get('text')
+    date = request.data.get('date')  # You can set this in your frontend or use server time
+
+    alert_message = AlertMessage(user=user, text=text, date=date)
+    alert_message.save()
+
+    return Response(status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_alert_messages(request):
+    user = request.user
+    alert_messages = AlertMessage.objects.filter(user=user)
+    serializer = AlertMessageSerializer(alert_messages, many=True)  # Use your serializer to format the data
+
+    return Response(serializer.data, status=status.HTTP_200_OK)

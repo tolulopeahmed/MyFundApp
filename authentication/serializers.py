@@ -355,3 +355,12 @@ class CustomUserSerializer(serializers.ModelSerializer):
                 return round(user_percentage, 1)
 
         return None
+    
+
+
+
+from .models import AlertMessage
+class AlertMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AlertMessage
+        fields = '__all__'

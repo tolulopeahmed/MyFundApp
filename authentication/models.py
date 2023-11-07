@@ -426,3 +426,11 @@ class Property(models.Model):
 
 
 
+class AlertMessage(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    text = models.TextField()
+    date = models.DateTimeField()
+    # Add any other fields you need for your alert message
+
+    def __str__(self):
+        return self.text

@@ -91,5 +91,9 @@ urlpatterns = [
     path('kyc-approval/approve/<int:pk>/', KYCApprovalViewSet.as_view({'post': 'approve_kyc'}), name='approve-kyc'),
     path('kyc-approval/reject/<int:pk>/', KYCApprovalViewSet.as_view({'post': 'reject_kyc'}), name='reject-kyc'),
 
+    # Alert Messages API
+    path('create-alert-message/', views.create_alert_message, name='create_alert_message'),
+    path('get-alert-messages/', views.get_alert_messages, name='get_alert_messages'),
+
     ]
 
