@@ -71,6 +71,8 @@ const Sponsorship = ({ navigation, route }) => {
     "Referral Reward": "checkmark-circle",
     "Withdrawal from Investment": "arrow-down-outline",
     "Property": "home-outline",
+    "QuickInvest (Pending)": "ellipsis-horizontal-circle-outline",
+    "QuickInvest (Confirmed)": "checkmark-circle",
   };
 
 
@@ -324,11 +326,11 @@ console.log('autoInvestSettings.frequency:', autoInvestSettings.frequency)
        
       <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["QuickInvest", "AutoInvest"].includes(transaction.description)
+    ["QuickInvest", "AutoInvest", "QuickInvest (Pending)", "QuickInvest (Confirmed)"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["QuickInvest", "AutoInvest"].includes(transaction.description)
+        ["QuickInvest", "AutoInvest", "QuickInvest (Pending)", "QuickInvest (Confirmed)"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
@@ -344,7 +346,11 @@ console.log('autoInvestSettings.frequency:', autoInvestSettings.frequency)
             <Text style={styles.transactionID}>ID: {transaction.transaction_id}</Text>
           </View>
           <View style={styles.transactionAmountContainer}>
-            <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
+            <Text style={
+            transaction.transaction_type === "pending" ? styles.pendingAmount :
+            transaction.transaction_type === "credit" ? styles.transactionAmount :
+            styles.pendingAmount // Apply the pendingAmount style for pending transactions
+          }>
             <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
               </Text>
             </Text>
@@ -762,6 +768,14 @@ backgroundImage: {
     },
     transactionAmount: {
       color: 'green',
+      fontSize: 23,
+      fontFamily: 'karla',
+      letterSpacing: -1,
+      marginTop: 10,
+      textAlign: 'right',
+    },
+    pendingAmount: {
+      color: 'grey', // Change to your desired color
       fontSize: 23,
       fontFamily: 'karla',
       letterSpacing: -1,

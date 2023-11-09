@@ -62,6 +62,10 @@ const Home = ({ navigation, route}) => {
     "Referral Reward (Confirmed)": "checkmark-circle",
     "FUNAAB": "home-outline",
     "IBADAN": "home-outline",
+    "QuickInvest (Pending)": "ellipsis-horizontal-circle-outline",
+    "QuickInvest (Confirmed)": "checkmark-circle",
+    "QuickSave (Pending)": "ellipsis-horizontal-circle-outline",
+    "QuickSave (Confirmed)": "checkmark-circle",
   };
 
 
@@ -512,7 +516,7 @@ const formatTime = (timeString) => {
         <View style={styles.todoList1}>
         <TouchableOpacity style={styles.todoButton} onPress={() => navigation.navigate('ReferAndEarn')}>
           <Ionicons name="person-add-outline" size={23} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
-          <Text style={styles.todoText}>Refer and Earn ₦1000</Text>
+          <Text style={styles.todoText}>Refer and Earn ₦1000 EACH</Text>
         </TouchableOpacity>
         </View>
 
@@ -599,11 +603,11 @@ const formatTime = (timeString) => {
 
 <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["QuickSave", "AutoSave", "FUNAAB","IBADAN", "Referral Reward (Confirmed)", "Referral Reward (Pending)", "Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+    ["QuickSave", "AutoSave", "QuickInvest (Pending)", "QuickInvest (Confirmed)","QuickSave (Pending)", "QuickSave (Confirmed)", "FUNAAB","IBADAN", "Referral Reward (Confirmed)", "Referral Reward (Pending)", "Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["QuickSave", "AutoSave",  "FUNAAB","IBADAN","Referral Reward (Confirmed)","Referral Reward (Pending)","Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+        ["QuickSave", "AutoSave", "QuickInvest (Pending)", "QuickInvest (Confirmed)","QuickSave (Pending)", "QuickSave (Confirmed)", "FUNAAB","IBADAN","Referral Reward (Confirmed)","Referral Reward (Pending)","Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
@@ -710,7 +714,7 @@ profileImage: {
     borderRadius: 20, // Make it half of the width and height for a perfect circle
     justifyContent: 'center',
     alignItems: 'center',
-    alignContent: "center"
+    alignContent: "center", 
   },
 
   wealthStageText: {

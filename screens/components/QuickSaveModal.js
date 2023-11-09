@@ -9,6 +9,7 @@ import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from './LoadingModal';
 import bankOptions from './BankOptions';
+import { MaterialIcons } from '@expo/vector-icons';
 
 
 
@@ -255,7 +256,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
         const currentDate = new Date();
         const messageDate = currentDate.toISOString();
         const messageTime = currentDate.toLocaleTimeString();
-        const successMessage = "Pending Bank Transfer Request\nYour bank transfer request is pending approval and will be processed shortly. You'll be notified shortly.";
+        const successMessage = "Your QuickSave request is pending approval and will be processed shortly. Check transactions for confirmation.";
         const messageData = {
           text: successMessage,
           date: messageDate,
@@ -276,7 +277,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
         // Dispatch the success message
         dispatch(addAlertMessage(messageData));
   
-        Alert.alert('QuickSave Request Successful', 'Your bank transfer has been initiated and will be processed shortly once your payment is confirmed.');
+        Alert.alert('QuickSave Request Successful', 'Your bank transfer has been initiated and will be processed shortly once your payment (transfer) is confirmed.');
       } else {
         // Handle the bank transfer error and show an appropriate error message
         if (response.status === 400) {
@@ -478,8 +479,8 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                     ) : (
 
                       <View style={styles.paymentOptionsContainer}>
-                      <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. Click 'Submit' after payment and your account will be updated within 12 hours.</Text>
-                      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} Vcorp Systems Limited</Text>
+                      <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. Click <Text style={{fontFamily: 'proxima'}}>'Submit Payment'</Text> after making the transfer and your account will be updated within minutes.</Text>
+                      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} VCORP SYSTEMS LIMITED</Text>
                       <View style={styles.buttonsContainer}>
                         <TouchableOpacity
                           style={[
@@ -493,13 +494,13 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                           {processing ? (
                             <>
                               <ActivityIndicator color="white" style={styles.activityIndicator} />
-                              <Image source={require('./paystack.png')} style={styles.image} />
+                              <MaterialIcons name="account-balance" size={24} color="#fff" marginRight={10} />
                             </>
                           ) : (
-                            <Image source={require('./paystack.png')} style={styles.image} />
+                            <MaterialIcons name="account-balance" size={24} color="#fff" marginRight={10} />
                           )}
                           <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
-                            {processing ? 'Processing Your Payment...' : 'Submit'}
+                            {processing ? 'Processing Your Payment...' : 'Submit Payment'}
                           </Text>
                         </TouchableOpacity>
                       </View>

@@ -464,9 +464,8 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
             transaction.transaction_type === "pending" ? styles.pendingAmount :
             transaction.transaction_type === "credit" ? styles.transactionAmount :
             styles.pendingAmount // Apply the pendingAmount style for pending transactions
-          }            
-            ><Text stye={{ fontSize: 12,}}>₦</Text>
-            <Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text></Text>
+          }>
+              <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text></Text>
             </Text>
           </View>
         </View>

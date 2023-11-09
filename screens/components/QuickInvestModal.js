@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Text, Alert, KeyboardAvoidingView, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { Modal, Text, Alert, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserCards, updateAccountBalances, fetchUserTransactions, fetchAccountBalances, fetchTopSaversData } from '../../ReduxActions'; // Import fetchUserCards
+import { fetchUserCards, updateAccountBalances, fetchUserTransactions, fetchAccountBalances, fetchTopSaversData, addAlertMessage } from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from './LoadingModal';
 import bankOptions from './BankOptions';
+import { MaterialIcons } from '@expo/vector-icons';
 
 
 
@@ -29,6 +30,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
   const userCards = useSelector((state) => state.bank.cards) || [];
   const [selectedCardId, setSelectedCardId] = useState(userCards.length > 0 ? userCards[0].id : null);
   const [showQuickInvestButton, setShowQuickInvestButton] = useState(true);
+  const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true); // New state variable
 
   const dispatch = useDispatch();
 
@@ -36,13 +38,21 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
     dispatch(fetchUserCards());
   }, []);
 
+
   useEffect(() => {
     if (frequency === "Bank Transfer") {
       setShowQuickInvestButton(false);
+  
+      if (amount === '') {
+        setIsSubmitButtonDisabled(true);
+      } else {
+        setIsSubmitButtonDisabled(false);
+      }
     } else {
       setShowQuickInvestButton(true);
     }
-  }, [frequency]);
+  }, [amount, frequency]);
+
 
   const handleAmountButtonPress = (presetAmount) => {
     handleAmountPreset(presetAmount);
@@ -191,6 +201,83 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
 
 
 
+
+  const handleInvestTransfer = async () => {
+    try {
+      setProcessing(true);
+  
+      // Construct the data to send in the POST request
+      const requestData = {
+        amount: parseFloat(amount.replace(/,/g, '')),
+      };
+  
+      // Send a POST request to your server's API endpoint
+      const response = await axios.post(`${ipAddress}/api/initiate-invest-transfer/`, requestData, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      });
+  
+      if (response.status === 200 || response.status === 201) {
+        // Dispatch the necessary actions
+        const responseData = response.data;
+        dispatch(updateAccountBalances(responseData.newAccountBalances));
+        dispatch(fetchAccountBalances());
+        dispatch(fetchUserTransactions());
+        dispatch(fetchTopSaversData());
+        setQuickInvestModalVisible(false);
+  
+        // Send a POST request to create an alert message associated with the user
+        const currentDate = new Date();
+        const messageDate = currentDate.toISOString();
+        const messageTime = currentDate.toLocaleTimeString();
+        const successMessage = "Your QuickInvest request is pending approval and will be processed shortly. Check transactions for confirmation.";
+        const messageData = {
+          text: successMessage,
+          date: messageDate,
+          time: messageTime,
+        };
+  
+        await axios.post(
+          `${ipAddress}/api/create-alert-message/`,
+          messageData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${userInfo.token}`,
+            },
+          }
+        );
+  
+        // Dispatch the success message
+        dispatch(addAlertMessage(messageData));
+  
+        Alert.alert('QuickInvest Request Successful', 'Your investment transfer has been initiated and will be processed shortly once your payment (transfer) is confirmed.');
+      } else {
+        // Handle the investment transfer error and show an appropriate error message
+        if (response.status === 400) {
+          // Bad request, possibly due to invalid input
+          Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+        } else if (response.status === 401) {
+          // Unauthorized, user not authenticated
+          Alert.alert('Error', 'You are not authorized. Please log in again.');
+        } else {
+          // Other server errors
+          Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+        }
+      }
+    } catch (error) {
+      console.error('Investment Transfer Error:', error);
+  
+      // Handle network or other errors and show an appropriate alert
+      Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+    } finally {
+      // Set processing to false to re-enable the "Submit" button
+      setProcessing(false);
+    }
+  };
+  
   console.log('Selected card in invest:', selectedCardId);
   console.log('Amount entered in invest:', amount);
 
@@ -386,11 +473,29 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                     ) : (
 
                       <View style={styles.paymentOptionsContainer}>
-                      <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. Click 'Submit' after payment and your account will be updated within 12 hours.</Text>
-                      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} Vcorp Systems Limited</Text>
+                      <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. Click <Text style={{fontFamily: 'proxima'}}>'Submit Payment'</Text> after making the transfer and your account will be updated within minutes.</Text>
+                      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} VCORP SYSTEMS LIMITED</Text>
                       <View style={styles.buttonsContainer}>
-                        <TouchableOpacity style={styles.primaryButton}>
-                          <Text style={styles.primaryButtonText}>Submit</Text>
+                      <TouchableOpacity
+                          style={[
+                            styles.primaryButton,
+                            (isSubmitButtonDisabled || processing) && styles.primaryButtonDisabled,
+                            { backgroundColor: processing ? 'green' : isSubmitButtonDisabled ? 'grey' : '#4C28BC' },
+                          ]}
+                          onPress={handleInvestTransfer} // Modify the function for bank transfer
+                          disabled={isSubmitButtonDisabled || processing}
+                        >
+                          {processing ? (
+                            <>
+                              <ActivityIndicator color="white" style={styles.activityIndicator} />
+                              <MaterialIcons name="account-balance" size={24} color="#fff" marginRight={10} />
+                            </>
+                          ) : (
+                            <MaterialIcons name="account-balance" size={24} color="#fff" marginRight={10} />
+                            )}
+                          <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
+                            {processing ? 'Processing Your Payment...' : 'Submit Payment'}
+                          </Text>
                         </TouchableOpacity>
                       </View>
                     </View>

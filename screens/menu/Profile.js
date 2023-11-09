@@ -406,7 +406,7 @@ const Profile = ({ navigation, route }) => {
 <Text style={styles.infoText}>Email/Username</Text>
 <Text style={styles.infoText3}>{userInfo.email}</Text>
 <Text style={styles.infoText}>Financial Level</Text>
-<Text style={styles.infoText3}>Level {(currentStage.text).toUpperCase()}</Text>
+<Text style={styles.infoText3}>Level {currentStage ? currentStage.text.toUpperCase() : 'Unknown'}</Text>
 
   </View>
   </View>
