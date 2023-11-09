@@ -46,7 +46,9 @@ const Notifications = ({ navigation }) => {
     "Referral Reward (Pending)": "ellipsis-horizontal-circle-outline",
     "Referral Reward (Confirmed)": "checkmark-circle",
     "IBADAN": "home-outline",
-    "FUNAAB": "home-outline"
+    "FUNAAB": "home-outline",
+    "QuickSave (Pending)": "ellipsis-horizontal-circle-outline",
+    "QuickSave (Confirmed)": "checkmark-circle"
   };
 
   const formatDate = (dateString) => {
@@ -83,15 +85,15 @@ const Notifications = ({ navigation }) => {
         timestamp: message && message.timestamp ? new Date(message.timestamp).getTime() : 0,
       })),
     ];
-    
+  
     // Sort and filter items based on the selected tab
     if (selectedTab === 'Transactions') {
       // Filter and display only transactions, no need to sort them
       sortedAllItems = allItems.filter((item) => item.type === 'transaction');
     } else if (selectedTab === 'Messages') {
-      // Filter and display only messages, no need to sort them
+      // Filter and display only messages and sort them by the timestamp in descending order
       sortedAllItems = allItems.filter((item) => item.type === 'message');
-    }    
+    }
   }
   
 

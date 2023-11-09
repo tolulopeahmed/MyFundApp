@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Text, Alert, KeyboardAvoidingView, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { Modal, Text, Alert, ActivityIndicator, ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserCards, updateAccountBalances, fetchAccountBalances, fetchUserTransactions, fetchTopSaversData } from '../../ReduxActions'; // Import fetchUserCards
+import { fetchUserCards, addAlertMessage, updateAccountBalances, fetchAccountBalances, fetchUserTransactions, fetchTopSaversData } from '../../ReduxActions'; // Import fetchUserCards
 import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from './LoadingModal';
@@ -29,6 +29,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
   const userCards = useSelector((state) => state.bank.cards) || [];
   const [selectedCardId, setSelectedCardId] = useState(userCards.length > 0 ? userCards[0].id : null);
   const [showQuickSaveButton, setShowQuickSaveButton] = useState(true);
+  const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true); // New state variable
 
   const dispatch = useDispatch();
 
@@ -40,11 +41,16 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
   useEffect(() => {
     if (frequency === "Bank Transfer") {
       setShowQuickSaveButton(false);
+  
+      if (amount === '') {
+        setIsSubmitButtonDisabled(true);
+      } else {
+        setIsSubmitButtonDisabled(false);
+      }
     } else {
       setShowQuickSaveButton(true);
     }
-  }, [frequency]);
-
+  }, [amount, frequency]);
   
 
 
@@ -52,9 +58,6 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
     handleAmountPreset(presetAmount);
   };
 
-  const dismissKeyboard = () => {
-    Keyboard.dismiss();
-  };
 
 
   
@@ -135,13 +138,12 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
 
   
 
-
   const handleQuickSave = async () => {
     setProcessing(true);
     try {
       console.log('Selected card ID:', selectedCardId);
       console.log('Amount Entered:', amount);
-
+  
       // Send the QuickSave request to your API using axios
       const response = await axios.post(`${ipAddress}/api/quicksave/`,
         {
@@ -157,19 +159,45 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
       );
   
       if (response.status === 200) {
-       
         // QuickSave was successful, update account balances and transactions
         const responseData = response.data;
         dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
         dispatch(fetchAccountBalances()); // Add this line   
         dispatch(fetchUserTransactions()); // Add this line
         dispatch(fetchTopSaversData());
-
+  
         setIsSuccessVisible(true);
         setQuickSaveModalVisible(false);
         setProcessing(false);
-
-     
+  
+        // Dispatch the success message
+        const currentDate = new Date();
+        const messageDate = currentDate.toISOString();
+        const messageTime = currentDate.toLocaleTimeString();
+        const successMessage = `Your QuickSave of ₦${amount} was successful. Keep growing your funds.🥂`;
+        const messageData = {
+          text: successMessage,
+          date: messageDate,
+          time: messageTime,
+        };
+  
+        // Send a POST request to create an alert message associated with the user
+        await axios.post(
+          `${ipAddress}/api/create-alert-message/`,
+          {
+            text: successMessage,
+            date: messageDate,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${userInfo.token}`,
+            },
+          }
+        );
+  
+        // Dispatch the success message with date and time properties
+        dispatch(addAlertMessage(messageData));
       } else {
         // Handle QuickSave error here and show appropriate alerts
         if (response.status === 400) {
@@ -193,7 +221,87 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
       Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
     }
   };
+  
 
+
+
+  const handleBankTransfer = async () => {
+    try {
+      setProcessing(true);
+  
+      // Construct the data to send in the POST request
+      const requestData = {
+        amount: parseFloat(amount.replace(/,/g, '')),
+      };
+  
+      // Send a POST request to your server's API endpoint
+      const response = await axios.post(`${ipAddress}/api/initiate-save-transfer/`, requestData, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      });
+  
+      if (response.status === 200 || response.status === 201) {
+        // Dispatch the necessary actions
+        const responseData = response.data;
+        dispatch(updateAccountBalances(responseData.newAccountBalances));
+        dispatch(fetchAccountBalances());
+        dispatch(fetchUserTransactions());
+        dispatch(fetchTopSaversData());
+        setQuickSaveModalVisible(false);
+  
+        // Send a POST request to create an alert message associated with the user
+        const currentDate = new Date();
+        const messageDate = currentDate.toISOString();
+        const messageTime = currentDate.toLocaleTimeString();
+        const successMessage = "Pending Bank Transfer Request\nYour bank transfer request is pending approval and will be processed shortly. You'll be notified shortly.";
+        const messageData = {
+          text: successMessage,
+          date: messageDate,
+          time: messageTime,
+        };
+  
+        await axios.post(
+          `${ipAddress}/api/create-alert-message/`,
+          messageData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${userInfo.token}`,
+            },
+          }
+        );
+  
+        // Dispatch the success message
+        dispatch(addAlertMessage(messageData));
+  
+        Alert.alert('QuickSave Request Successful', 'Your bank transfer has been initiated and will be processed shortly once your payment is confirmed.');
+      } else {
+        // Handle the bank transfer error and show an appropriate error message
+        if (response.status === 400) {
+          // Bad request, possibly due to invalid input
+          Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+        } else if (response.status === 401) {
+          // Unauthorized, user not authenticated
+          Alert.alert('Error', 'You are not authorized. Please log in again.');
+        } else {
+          // Other server errors
+          Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+        }
+      }
+    } catch (error) {
+      console.error('Bank Transfer Error:', error);
+  
+      // Handle network or other errors and show an appropriate alert
+      Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+    } finally {
+      // Set processing to false to re-enable the "Submit" button
+      setProcessing(false);
+    }
+  };
+  
+  
 
 
 
@@ -203,35 +311,24 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
   
   return (
     <>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={quickSaveModalVisible}
-        onRequestClose={() => setQuickSaveModalVisible(false)}
-      >
-        <TouchableWithoutFeedback
-          onPress={(e) => {
-            if (e.target !== e.currentTarget) {
-              // If the tap event target is not the outer wrapper, don't dismiss
-              return;
-            }
-            Keyboard.dismiss();
-            closeModal();
-          }}
-          accessible={false}
-        >
+ <Modal
+      animationType="slide"
+      transparent={true}
+      visible={quickSaveModalVisible}
+      onRequestClose={() => setQuickSaveModalVisible(false)}
+    >
 
-        <TouchableOpacity
-          style={styles.modalContainer}
-          activeOpacity={1}
-          onPress={closeModal}
-        >
-          
-          <KeyboardAvoidingView
-            activeOpacity={1}
-            style={styles.modalContent}
-            onPress={() => dismissKeyboard()} // Dismiss the keyboard when tapping within the modal
-            >
+<TouchableOpacity
+  style={styles.modalContainer}
+  activeOpacity={1}
+  onPress={closeModal}
+  
+>
+  <TouchableOpacity
+    activeOpacity={1}
+    style={styles.modalContent}
+    onPress={() => {}}
+  >
 
 
             <ScrollView>  
@@ -384,8 +481,26 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                       <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. Click 'Submit' after payment and your account will be updated within 12 hours.</Text>
                       <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} Vcorp Systems Limited</Text>
                       <View style={styles.buttonsContainer}>
-                        <TouchableOpacity style={styles.primaryButton}>
-                          <Text style={styles.primaryButtonText}>Submit</Text>
+                        <TouchableOpacity
+                          style={[
+                            styles.primaryButton,
+                            (isSubmitButtonDisabled || processing) && styles.primaryButtonDisabled,
+                            { backgroundColor: processing ? 'green' : isSubmitButtonDisabled ? 'grey' : '#4C28BC' },
+                          ]}
+                          onPress={handleBankTransfer} // Modify the function for bank transfer
+                          disabled={isSubmitButtonDisabled || processing}
+                        >
+                          {processing ? (
+                            <>
+                              <ActivityIndicator color="white" style={styles.activityIndicator} />
+                              <Image source={require('./paystack.png')} style={styles.image} />
+                            </>
+                          ) : (
+                            <Image source={require('./paystack.png')} style={styles.image} />
+                          )}
+                          <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
+                            {processing ? 'Processing Your Payment...' : 'Submit'}
+                          </Text>
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -400,9 +515,8 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
             </ScrollView>
 
 
-          </KeyboardAvoidingView>
         </TouchableOpacity>
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
 
       </Modal>
 

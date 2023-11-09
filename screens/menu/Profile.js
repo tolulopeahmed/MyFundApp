@@ -438,7 +438,7 @@ const Profile = ({ navigation, route }) => {
           trackColor={{ false: 'grey', true: '#4C28BC' }}
           thumbColor={enableFingerprint ? '#8976FF' : 'silver'}
           ios_backgroundColor="#3e3e3e"
-          onValueChange={() => setEnableFingerprint(!enableFingerprint)}
+          onValueChange={() => setPinModalVisible(!enableFingerprint)}
           value={enableFingerprint}
         />
       </View>
@@ -456,7 +456,7 @@ const Profile = ({ navigation, route }) => {
       </View>
 
 
-      <View style={styles.settingContainer}>
+      {/* <View style={styles.settingContainer}>
         <Text style={styles.settingText}>Turn on Dark Mode</Text>
         <Switch
           trackColor={{ false: 'grey', true: '#4C28BC' }}
@@ -465,7 +465,7 @@ const Profile = ({ navigation, route }) => {
           onValueChange={() => setDarkMode(!darkMode)}
           value={darkMode}
         />
-      </View>
+      </View> */}
       </View>
     
       <SavingsGoalModal 
@@ -490,14 +490,14 @@ const Profile = ({ navigation, route }) => {
 <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => setGoalModalVisible(true)}>
           <MaterialIcons name="flag" size={25} color="#4C28BC" style={{ marginRight: 15 }} />
-          <Text style={styles.buttonText}>Savings Goal Settings</Text>
+          <Text style={styles.buttonText}>Update Savings Goal</Text>
         </TouchableOpacity>
         </View>
         
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Card')}>
           <Ionicons name="card" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
-          <Text style={styles.buttonText}>Bank and Card Settings</Text>
+          <Text style={styles.buttonText}>Card and Bank Settings</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.buttonContainer}>
@@ -507,12 +507,12 @@ const Profile = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.buttonContainer}>
+      {/* <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => setPinModalVisible(true)}>
           <MaterialIcons name="lock" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
           <Text style={styles.buttonText}>Set PIN</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
  
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleSeeTopSavers}>
@@ -749,6 +749,7 @@ icon: {
     fontSize: 16,
     marginLeft: 10,
   },
+  
 
   buttonsContainer: {
     alignItems: 'center',

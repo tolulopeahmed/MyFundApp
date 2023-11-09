@@ -27,6 +27,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "owner": "tolulopeahmed",
     "extra": {
       "eas": {
         "projectId": "67417ffa-4553-493d-a158-0a90b0772787"

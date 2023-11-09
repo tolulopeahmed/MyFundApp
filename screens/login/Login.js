@@ -212,9 +212,7 @@ const handleLogin = async () => {
           
 
           <View>
-            <TouchableOpacity onPress={() => navigation.navigate('PasswordForgot')}>
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-          </TouchableOpacity>
+            <Text style={styles.forgotPasswordText} onPress={() => navigation.navigate('PasswordForgot')}>Forgot Password?</Text>
           </View>
          
           <View style={styles.loginButtonContainer}>
@@ -237,13 +235,13 @@ const handleLogin = async () => {
     </View>
   </TouchableOpacity>
 
-  {/* Fingerprint button */}
+  {/* Fingerprint button
   <TouchableOpacity
     style={styles.fingerprintButton}
     onPress={handleFingerprintLogin}
   >
     <Image source={require('./fingerprint.png')} style={styles.fingerprintImage} />
-  </TouchableOpacity>
+  </TouchableOpacity> */}
 </View>
 
 
@@ -327,7 +325,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   headerContainer: {
-    marginTop: 40,
+    marginTop: 90,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -428,11 +426,10 @@ const styles = StyleSheet.create({
   loginButtonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '77%',
+    justifyContent: 'center',
+    width: '90%',
     marginTop: 5,
-    marginRight: 10,
-    marginBottom: 55,
+    marginBottom: 35,
 
   },
 
@@ -459,7 +456,6 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 24,
     marginTop: 10,
-    marginRight: 10,
   },
   loginButtonText: {
     color: '#fff',

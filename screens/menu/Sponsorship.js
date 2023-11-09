@@ -621,7 +621,7 @@ backgroundImage: {
     marginLeft: 5,
     marginTop: -10,
     marginBottom: -10,
-      color: '#fff',
+      color: 'yellow',
     },
 
      

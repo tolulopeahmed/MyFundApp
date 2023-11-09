@@ -109,6 +109,9 @@ const Save = ({ navigation, route }) => {
     "Referral Reward": "checkmark-circle",
     "Withdrawal from Investment": "arrow-down-outline",
     "Property": "home-outline",
+    "QuickSave (Pending)": "ellipsis-horizontal-circle-outline",
+    "QuickSave (Confirmed)": "checkmark-circle"
+
   };
 
   useEffect(() => {
@@ -437,11 +440,11 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
 
 <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["QuickSave", "Card Successful", "AutoSave"].includes(transaction.description)
+    ["QuickSave", "Card Successful", "AutoSave", "QuickSave (Confirmed)", "QuickSave (Pending)"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["QuickSave", "Card Successful", "AutoSave"].includes(transaction.description)
+        ["QuickSave", "Card Successful", "AutoSave", "QuickSave (Confirmed)", "QuickSave (Pending)"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
@@ -457,9 +460,13 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
             <Text style={styles.transactionID}>ID: {transaction.transaction_id}</Text>
           </View>
           <View style={styles.transactionAmountContainer}>
-            <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
-            <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
-              </Text>
+            <Text style={
+            transaction.transaction_type === "pending" ? styles.pendingAmount :
+            transaction.transaction_type === "credit" ? styles.transactionAmount :
+            styles.pendingAmount // Apply the pendingAmount style for pending transactions
+          }            
+            ><Text stye={{ fontSize: 12,}}>₦</Text>
+            <Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text></Text>
             </Text>
           </View>
         </View>
@@ -881,9 +888,17 @@ backgroundImage: {
       marginTop: 10,
       textAlign: 'right',
     },
-
+    pendingAmount: {
+      color: 'grey', // Change to your desired color
+      fontSize: 23,
+      fontFamily: 'karla',
+      letterSpacing: -1,
+      marginTop: 10,
+      textAlign: 'right',
+    },
+    
     negativeAmount: {
-      color: 'red',
+      color: 'brown',
       fontSize: 23,
       fontFamily: 'karla',
       letterSpacing: -1,
