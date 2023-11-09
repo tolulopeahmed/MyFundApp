@@ -95,6 +95,7 @@ urlpatterns = [
 
     # Bank Transfer API
     path('initiate-save-transfer/', views.initiate_bank_transfer, name='initiate_bank_transfer'),
+    path('initiate-invest-transfer/', views.initiate_invest_transfer, name='initiate_invest_transfer'),
 
 
     ]

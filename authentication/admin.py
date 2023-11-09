@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Message, Property, BankAccount, BankTransferRequest, Card, AutoInvest, Transaction, AutoSave
+from .models import CustomUser, Message, Property, BankAccount, InvestTransferRequest, BankTransferRequest, Card, AutoInvest, Transaction, AutoSave
 from django.core.mail import send_mail
 from django.urls import reverse
 from rest_framework.response import Response
@@ -220,6 +220,71 @@ class BankTransferRequestAdmin(admin.ModelAdmin):
             request.delete()
 
     reject_bank_transfer.short_description = "Reject selected bank transfers"
+
+
+@admin.register(InvestTransferRequest)
+class InvestTransferRequestAdmin(admin.ModelAdmin):
+    list_display = ('user', 'amount', 'is_approved', 'created_at')
+    list_filter = ('is_approved',)
+    actions = ['approve_invest_transfer', 'reject_invest_transfer']
+
+    def approve_invest_transfer(self, request, queryset):
+        approved_users = []
+
+        for request in queryset:
+            request.is_approved = True
+            request.save()
+
+            # Update user's investment
+            user = request.user
+            user.investment += int(request.amount)
+            user.save()
+
+            # Call the confirm_referral_rewards method here
+            is_referrer = True
+            user.confirm_referral_rewards(is_referrer=is_referrer)
+
+            # Create a transaction record
+            transaction = Transaction.objects.create(
+                user=user,
+                transaction_type="credit",
+                amount=request.amount,
+                date=timezone.now().date(),
+                time=timezone.now().time(),
+                description=f"QuickInvest (Confirmed)",
+                transaction_id=str(uuid.uuid4())[:10]
+            )
+            transaction.save()
+
+            # Send an approval email to the user
+            subject = "QuickInvest Updated! ✔"
+            message = f"Hi {user.first_name}, \n\nYour investment transfer request for ₦{request.amount} has been approved and credited to your INVESTMENT account!\n\nThank you for using MyFund. \n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+            from_email = "MyFund <info@myfundmobile.com>"
+            recipient_list = [user.email]
+
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+            approved_users.append(user)
+            
+            # After processing an investment transfer transaction
+            user.update_total_savings_and_investment_this_month()
+
+    approve_invest_transfer.short_description = "Approve selected investment transfers"
+
+    def reject_invest_transfer(self, request, queryset):
+        for request in queryset:
+            # Send a rejection email to the user
+            subject = "Investment Transfer Rejected"
+            message = f"Hi {request.user.first_name}, \n\nYour investment transfer request for ₦{request.amount} could not be confirmed. Kindly check and try again.\n\nThank you for using MyFund. \n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+            from_email = "MyFund <info@myfundmobile.com>"
+            recipient_list = [request.user.email]
+
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+            # Delete the rejected request
+            request.delete()
+
+    reject_invest_transfer.short_description = "Reject selected investment transfers"
 
 
 

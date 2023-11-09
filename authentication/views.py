@@ -2096,7 +2096,7 @@ def get_alert_messages(request):
 
 
 
-from .models import BankTransferRequest
+from .models import BankTransferRequest, InvestTransferRequest
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -2145,4 +2145,51 @@ def initiate_bank_transfer(request):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def initiate_invest_transfer(request):
+    try:
+        user = request.user
+        amount = request.data.get('amount')
+
+        # Create an InvestTransferRequest record
+        request = InvestTransferRequest(user=user, amount=amount)
+        request.save()
+
+        # Send an email to admin
+        subject = f"[CHECK] {user.first_name} Made A QuickInvest Request"
+        message = f"Hi Admin, \n\nAn investment transfer request of ₦{amount} has just been initiated by {user.first_name} ({user.email}).\n\nPlease log in to the admin panel for review.\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+        from_email = "MyFund <info@myfundmobile.com>"
+        recipient_list = ["company@myfundmobile.com", "info@myfundmobile.com"]  # Replace with the admin's email address
+
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+        # Send a pending invest email to the user
+        user_subject = "QuickInvest Pending..."
+        user_message = f"Hi {user.first_name},\n\nYour investment transfer request of ₦{amount} is pending approval. We will notify you once it's processed. \n\nThank you for using MyFund. \n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+        user_email = user.email
+
+        send_mail(user_subject, user_message, from_email, [user_email], fail_silently=False)
+
+        # Create a pending transaction for the user with date and time
+        current_datetime = timezone.now()
+        referral_email = user.referral.email if user.referral else None
+
+        transaction = Transaction.objects.create(
+            user=user,
+            referral_email=referral_email,
+            transaction_type='pending',
+            amount=amount,
+            date=current_datetime.date(),
+            time=current_datetime.time(),
+            description="QuickInvest (Pending)",
+            transaction_id=str(uuid.uuid4())[:10]
+        )
+        transaction.save()
+
+        return Response({"message": "Investment transfer request created and pending admin approval"}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

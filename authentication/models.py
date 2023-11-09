@@ -442,3 +442,10 @@ class BankTransferRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     transaction_id = models.CharField(max_length=10, unique=False, default='')
 
+class InvestTransferRequest(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    is_approved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    transaction_id = models.CharField(max_length=10, unique=False, default='')
+
