@@ -1847,7 +1847,7 @@ class BuyPropertyView(generics.CreateAPIView):
             # Generate a unique ID with 15 characters
             def generate_short_id():
                 unique_id = str(uuid.uuid4().int)
-                return unique_id[:15]
+                return unique_id[:10]
 
 
             transaction = Transaction(
@@ -1998,17 +1998,6 @@ def get_top_savers(request):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 from .serializers import KYCUpdateSerializer
 class KYCUpdateView(generics.UpdateAPIView):
     serializer_class = KYCUpdateSerializer
@@ -2104,3 +2093,56 @@ def get_alert_messages(request):
     serializer = AlertMessageSerializer(alert_messages, many=True)  # Use your serializer to format the data
 
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+from .models import BankTransferRequest
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def initiate_bank_transfer(request):
+    try:
+        user = request.user
+        print(f"User: {user}")  # Add this line for debugging
+        amount = request.data.get('amount')
+
+        # Create a BankTransferRequest record
+        request = BankTransferRequest(user=user, amount=amount)
+        request.save()
+
+        # Send an email to admin
+        subject = f"[CHECK] {user.first_name} Made A QuickSave Request"
+        message = f"Hi Admin, \n\nA bank transfer request of ₦{amount} has just been initiated by {user.first_name} ({user.email}).\n\nPlease log in to the admin panel for review.\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+        from_email = "MyFund <info@myfundmobile.com>"
+        recipient_list = ["company@myfundmobile.com", "info@myfundmobile.com"]  # Replace with the admin's email address
+
+        send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+        # Send a pending quicksave email to the user
+        user_subject = "QuickSave Pending..."
+        user_message = f"Hi {user.first_name},\n\nYour bank transfer request of ₦{amount} is pending approval. We will notify you once it's processed. \n\nThank you for using MyFund. \n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+        user_email = user.email
+
+        send_mail(user_subject, user_message, from_email, [user_email], fail_silently=False)
+
+        # Create a pending transaction for the user with date and time
+        current_datetime = timezone.now()  # Get the current date and time
+        referral_email = user.referral.email if user.referral else None  # Check if referral is set
+
+        transaction = Transaction.objects.create(
+            user=user,
+            referral_email=referral_email,  # Include the referrer's email if it exists
+            transaction_type='pending',
+            amount=amount,
+            date=current_datetime.date(),  # Set the date to the current date
+            time=current_datetime.time(),  # Set the time to the current time
+            description="QuickSave (Pending)",  # Adjust the description as needed
+            transaction_id=str(uuid.uuid4())[:10]
+        )
+        transaction.save()
+
+        return Response({"message": "Bank transfer request created and pending admin approval"}, status=status.HTTP_201_CREATED)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+

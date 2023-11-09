@@ -86,14 +86,16 @@ urlpatterns = [
     # KYC Update API
     path('update-kyc/', KYCUpdateView.as_view(), name='kyc-update'),  # Endpoint for KYC update
     path('get-kyc-status/', views.GetKYCStatusView.as_view(), name='get-kyc-status'),
-
-    # KYC Approval API
     path('kyc-approval/approve/<int:pk>/', KYCApprovalViewSet.as_view({'post': 'approve_kyc'}), name='approve-kyc'),
     path('kyc-approval/reject/<int:pk>/', KYCApprovalViewSet.as_view({'post': 'reject_kyc'}), name='reject-kyc'),
 
     # Alert Messages API
     path('create-alert-message/', views.create_alert_message, name='create_alert_message'),
     path('get-alert-messages/', views.get_alert_messages, name='get_alert_messages'),
+
+    # Bank Transfer API
+    path('initiate-save-transfer/', views.initiate_bank_transfer, name='initiate_bank_transfer'),
+
 
     ]
 

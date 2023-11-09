@@ -41,8 +41,6 @@ class CustomUserManager(BaseUserManager):
 
 import uuid
 from datetime import date
-from django.db.models import Subquery, DecimalField, OuterRef
-
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=30)
@@ -234,7 +232,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             transaction_type='credit',
             date__month=current_month,
             date__year=current_year,
-            description__in=['QuickSave', 'AutoSave', 'QuickInvest', 'AutoInvest']
+            description__in=['QuickSave', 'AutoSave', 'QuickInvest', 'AutoInvest', 'QuickSave (Confirmed)', 'QuickInvest (Confirmed)']
         )
 
         # Sum the credit amounts
@@ -357,7 +355,7 @@ class Transaction(models.Model):
         ('credit', 'Credit'),
         ('debit', 'Debit'),
         ('pending', 'Pending'), 
-
+        ('confirmed', 'Confirmed'),
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -366,7 +364,7 @@ class Transaction(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     time = models.TimeField(auto_now_add=True)
     description = models.CharField(max_length=255, default="No description available")
-    transaction_id = models.CharField(max_length=255, default='', unique=True)
+    transaction_id = models.CharField(max_length=25, default='', unique=True)
     service_charge = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Define a default value
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0) 
     referral_email = models.EmailField(max_length=255, blank=True, null=True)
@@ -434,3 +432,13 @@ class AlertMessage(models.Model):
 
     def __str__(self):
         return self.text
+    
+
+
+class BankTransferRequest(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    is_approved = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    transaction_id = models.CharField(max_length=10, unique=False, default='')
+

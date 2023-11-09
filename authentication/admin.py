@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser, Message, Property, BankAccount, Card, AutoInvest, Transaction, AutoSave
+from .models import CustomUser, Message, Property, BankAccount, BankTransferRequest, Card, AutoInvest, Transaction, AutoSave
 from django.core.mail import send_mail
 from django.urls import reverse
 from rest_framework.response import Response
@@ -151,10 +151,79 @@ class CustomUserAdmin(UserAdmin):
     user_percentage_to_top_saver.admin_order_field = 'total_savings_and_investments_this_month'
 
 
-
-    
-
 admin.site.register(CustomUser, CustomUserAdmin)
+
+
+
+from django.contrib import messages
+import uuid
+@admin.register(BankTransferRequest)
+class BankTransferRequestAdmin(admin.ModelAdmin):
+    list_display = ('user', 'amount', 'is_approved', 'created_at')
+    list_filter = ('is_approved',)
+    actions = ['approve_bank_transfer', 'reject_bank_transfer']
+
+    def approve_bank_transfer(self, request, queryset):
+        approved_users = []
+
+        for request in queryset:
+            request.is_approved = True
+            request.save()
+
+            # Update user's savings
+            user = request.user
+            user.savings += int(request.amount)
+            user.save()
+
+            # Call the confirm_referral_rewards method here
+            is_referrer = True  # Determine whether the user is the referrer or the referred user
+            user.confirm_referral_rewards(is_referrer=True)  # Pass True if the user is a referrer, or False if not
+
+            # Create a transaction record
+            transaction = Transaction.objects.create(
+                user=user,
+                transaction_type="credit",
+                amount=request.amount,
+                date=timezone.now().date(),
+                time=timezone.now().time(),
+                description=f"QuickSave (Confirmed)",
+                transaction_id=str(uuid.uuid4())[:10]
+            )
+            transaction.save()
+
+            # Send an approval email to the user
+            subject = "QuickSave Updated! ✔"
+            message = f"Hi {user.first_name}, \n\nYour bank transfer request for ₦{request.amount} has been approved and credited to your SAVINGS account!\n\nThank you for using MyFund. \n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+            from_email = "MyFund <info@myfundmobile.com>"
+            recipient_list = [user.email]
+
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+            approved_users.append(user)
+            
+            # After processing a bank transfer transaction
+            user.update_total_savings_and_investment_this_month()
+
+    approve_bank_transfer.short_description = "Approve selected bank transfers"
+
+    def reject_bank_transfer(self, request, queryset):
+        for request in queryset:
+            # Send a rejection email to the user
+            subject = "Bank Transfer Rejected"
+            message = f"Hi {request.user.first_name}, \n\nYour bank transfer request for ₦{request.amount} could not be confirmed. Kindly check and try again.\n\nThank you for using MyFund. \n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+            from_email = "MyFund <info@myfundmobile.com>"
+            recipient_list = [request.user.email]
+
+            send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+
+            # Delete the rejected request
+            request.delete()
+
+    reject_bank_transfer.short_description = "Reject selected bank transfers"
+
+
+
+
 
 
 
@@ -163,7 +232,7 @@ admin.site.register(CustomUser, CustomUserAdmin)
 class MessageAdmin(admin.ModelAdmin):
     list_display = ('sender', 'recipient', 'content', 'timestamp')
     list_filter = ('timestamp',)
-    search_fields = ('sender__username', 'recipient__username', 'content')
+    search_fields = ('sender__email', 'recipient__email', 'content')
 
     actions = ['reply_to_selected_messages']  # Add a custom action
 
