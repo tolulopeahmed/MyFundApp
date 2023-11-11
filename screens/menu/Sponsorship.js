@@ -16,6 +16,7 @@ import moment from 'moment';
 import Success from '../components/Success';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { useTheme } from '../../ThemeContext';
 
 
 const Sponsorship = ({ navigation, route }) => {
@@ -35,6 +36,8 @@ const Sponsorship = ({ navigation, route }) => {
   const autoInvestSettings = useSelector((state) => state.bank.autoInvestSettings);
   const [showBalances, setShowBalances] = useState(true);
   const isFocused = useIsFocused();
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
   useEffect(() => {
     if (isFocused) {
@@ -387,12 +390,13 @@ console.log('autoInvestSettings.frequency:', autoInvestSettings.frequency)
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F1FF',
-  },
 
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({  
+    container: {
+    flex: 1,
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
+  },
 
    header: {
         marginTop: 50,
@@ -828,5 +832,5 @@ backgroundImage: {
 
 });
 
-
+}
 export default Sponsorship;

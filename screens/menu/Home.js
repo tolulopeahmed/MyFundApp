@@ -13,6 +13,8 @@ import { fetchAccountBalances, fetchKYCStatus, setKYCStatus , fetchUserTransacti
 import SectionTitle from '../components/SectionTitle';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { useTheme } from '../../ThemeContext';
+
 
 const Home = ({ navigation, route}) => {
   const [greeting, setGreeting] = useState('');
@@ -31,7 +33,8 @@ const Home = ({ navigation, route}) => {
   const [showBalances, setShowBalances] = useState(true);
   const isFocused = useIsFocused();
 
-  
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
   useEffect(() => {
     // Fetch KYC status when the component mounts
@@ -294,7 +297,7 @@ const formatTime = (timeString) => {
 
 
       <View style={styles.propertyContainer}>
-        <Ionicons name="home-outline" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+        <Ionicons name="home-outline" size={24} color="#4C28BC" style={styles.icon}/>
         <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: "#4C28BC" }}></Text><Text style={{fontFamily: 'proxima'}}>Every January and July</Text>, you'll earn 10% p.a. on Savings and 20% p.a. on your Investments until you've saved enough to buy properties and earn lifetime rent. Keep growing your funds.</Text>
       </View>
 
@@ -468,8 +471,7 @@ const formatTime = (timeString) => {
             <Ionicons
               name="car-outline"
               size={24}
-              color="black"
-              style={{ marginRight: 10, marginLeft: 10 }}
+              style={{ marginRight: 10, marginLeft: 10, color: isDarkMode ? 'grey' : 'black',}}
             />
             <Text style={styles.todoText}>Turn ON AutoSave</Text>
           </>
@@ -505,8 +507,7 @@ const formatTime = (timeString) => {
             <Ionicons
               name="car-sport-outline"
               size={24}
-              color="black"
-              style={{ marginRight: 10, marginLeft: 10 }}
+              style={{ marginRight: 10, marginLeft: 10, color: isDarkMode ? 'grey' : 'black',}}
             />
             <Text style={styles.todoText}>Turn ON AutoInvest</Text>
           </>
@@ -516,7 +517,11 @@ const formatTime = (timeString) => {
 
         <View style={styles.todoList1}>
         <TouchableOpacity style={styles.todoButton} onPress={() => navigation.navigate('ReferAndEarn')}>
-          <Ionicons name="person-add-outline" size={23} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
+          <Ionicons 
+          name="person-add-outline" 
+          size={23} 
+          style={{ marginRight: 10, marginLeft: 10, color: isDarkMode ? 'grey' : 'black',}}
+          />
           <Text style={styles.todoText}>Refer and Earn ₦1000 EACH</Text>
         </TouchableOpacity>
         </View>
@@ -541,7 +546,7 @@ const formatTime = (timeString) => {
               name="shield-checkmark-outline"
               size={24}
               color="green"
-              style={{ marginRight: 10, marginLeft: 10 }}
+              style={{ marginRight: 10, marginLeft: 10, }}
             />
             <Text style={styles.todoText}>KYC: <Text style={styles.disabledText}>Updated!</Text></Text>
             <Ionicons
@@ -556,8 +561,7 @@ const formatTime = (timeString) => {
             <Ionicons
               name="shield-checkmark-outline"
               size={24}
-              color="black"
-              style={{ marginRight: 10, marginLeft: 10 }}
+              style={{ marginRight: 10, marginLeft: 10, color: isDarkMode ? 'grey' : 'black',}}
             />
             <Text style={styles.todoText}>Update KYC: <Text style={styles.disabledText}>Pending...</Text></Text>
           </>
@@ -566,8 +570,7 @@ const formatTime = (timeString) => {
             <Ionicons
               name="shield-checkmark-outline"
               size={24}
-              color="black"
-              style={{ marginRight: 10, marginLeft: 10 }}
+              style={{ marginRight: 10, marginLeft: 10, color: isDarkMode ? 'grey' : 'black',}}
             />
             <Text style={styles.todoText}>Update KYC: <Text>(Not yet started)</Text></Text>
           </>
@@ -584,7 +587,11 @@ const formatTime = (timeString) => {
 
         <View style={styles.todoList1}>
         <View style={styles.disabledButton} onPress={() => navigation.push('WealthMap')}>
-          <Ionicons name="cellular-outline" size={23} color="#000" style={{ marginRight: 10, marginLeft: 10 }} />
+          <Ionicons 
+          name="cellular-outline" 
+          size={23} 
+          style={{ marginRight: 10, marginLeft: 10, color: isDarkMode ? 'grey' : 'black',}}
+          />
           <Text style={styles.todoText}>Financial Level: </Text>
          <Pressable onPress={() => navigation.push('WealthMap')}> 
           <Text style={styles.todoText2}>{currentStage ? currentStage.text.toUpperCase() : 'Unknown'}</Text>
@@ -653,32 +660,17 @@ const formatTime = (timeString) => {
 );
 }
 
-const styles = StyleSheet.create({
+
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
 container: {
 flex: 1,
-backgroundColor: '#F5F1FF',
+backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
 },
+
 headerContainer: {
 backgroundColor: 'white',
-},
-header: {
-flexDirection: 'row',
-justifyContent: 'space-between',
-alignItems: 'center',
-marginHorizontal: 20,
-marginVertical: 10,
-},
-
-
-title: {
-  fontSize: 35,
-  marginLeft: 25,
-  fontFamily: 'proxima',
-  color: '#4C28BC',
-  marginTop: 5,
-  marginBottom: 5,
-  marginLeft: 20,
-  letterSpacing: -1,    
 },
 
 
@@ -725,7 +717,7 @@ profileImage: {
   },
 propertyContainer: {
 flexDirection: 'row',
-backgroundColor: '#DCD1FF',
+backgroundColor: isDarkMode ? '#2B1667' : '#DCD1FF',
 padding: 15,
 marginHorizontal: 20,
 alignItems: 'center',
@@ -737,12 +729,20 @@ flexWrap: 'wrap', // Adjust container size based on the text inside
 propertyIcon: {
 marginRight: 10,
 },
+
 propertyText: {
 flex: 1,
 fontSize: 14,
 fontWeight: 'regular',
 fontFamily: 'karla',
+color: isDarkMode ? 'silver' : 'black',
 },
+
+
+icon: {
+  marginRight: 15,
+  color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+ },
 
 swiperContainer: {
   height: 160,
@@ -946,13 +946,13 @@ todoContainer: {
 borderRadius: 10,
 marginHorizontal: 20,
 marginTop: 1,
-
+marginBottom: 5,
 },
 
 todoButton: {
   flexDirection: 'row',
   borderColor: 'silver',
-  backgroundColor: 'white',
+  backgroundColor: isDarkMode ? '#38207D' : 'white',
   height: 40,
   width: '100%',
   padding: 6,
@@ -963,7 +963,7 @@ todoButton: {
 disabledButton: {
   flexDirection: 'row',
   borderColor: 'silver',
-  backgroundColor: '#D6D6D6',
+  backgroundColor: isDarkMode ? '#140A32' : '#D6D6D6',
   height: 40,
   width: '100%',
   padding: 6,
@@ -992,9 +992,9 @@ alignItems: 'center',
 marginBottom: 5,
 marginTop:5,
 },
-toDoListIcon: {
-marginRight: 10,
-},
+
+
+
 todoText: {
   marginTop: 3,
 fontSize: 16,
@@ -1009,27 +1009,6 @@ fontFamily: 'karla',
 color: 'green',
 },
 
-tabNavigator: {
-flexDirection: 'row',
-},
-toDoListItem: {
-flexDirection: 'row',
-alignItems: 'center',
-paddingVertical: 10,
-borderBottomWidth: 1,
-borderBottomColor: '#ccc',
-},
-
-
-recentContainer: {
-flexDirection: 'row',
-marginTop: 5,
-borderWidth: 0.3,
-borderColor: 'silver',
-borderRadius: 8,
-width: '100%',
-height: 50,
-},
 
 
 
@@ -1042,17 +1021,9 @@ todoList: {
 },
 
 
-recentTransaction: {
-  marginLeft:20,
-  marginTop: 2,
-  color: 'grey',
-  fontFamily: 'karla',
-  letterSpacing: 2,
-  marginBottom: 2,   
-},
-
 transactionContainer: {
   marginTop: 5,
+  marginBottom: 5,
   flex: 1,
     },
 
@@ -1060,31 +1031,35 @@ transactionsContainer: {
   borderRadius: 10,
   marginHorizontal: 20,
   marginTop: 5,
+  marginBottom: 5,
 },
+
 transactionItem: {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-between',
   paddingVertical: 10,
-  borderBottomWidth: 1,
+  borderBottomWidth: 0.5,
   borderBottomColor: '#ccc',
 },
+
 transactionIcon: {
-  backgroundColor: '#DEE4FC',
-  color: '#4C28BC',
+  backgroundColor: isDarkMode ? '#1D0E4A' : '#DEE4FC',
+  color: isDarkMode ? '#6E3DFF' : '#4C28BC',
   padding: 8,
   borderRadius: 10,
   marginRight: 10,
 },
+
 transactionText: {
   flex: 1,
   alignItems: 'flex-start',
 
 },
 transactionDescription: {
-  color: '#4C28BC',
+  color: isDarkMode ? '#6E3DFF' : '#4C28BC',
   letterSpacing: -1,
-  fontSize: 18,
+  fontSize: 19,
   fontFamily: 'karla',
   marginTop: 3,
   textAlign: 'left',
@@ -1092,8 +1067,9 @@ transactionDescription: {
 },
 transactionDate: {
   fontFamily: 'karla',
-  fontSize: 12,
-  marginTop: 3,
+  fontSize: 10,
+  marginTop: 1,
+  color: isDarkMode ? 'grey' : 'black',
 },
 transactionID: {
   fontFamily: 'nexa',
@@ -1156,5 +1132,5 @@ noTransactionsMessage: {
 },
 
 });
-
+}
 export default Home;

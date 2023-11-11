@@ -34,6 +34,7 @@ import { Provider } from 'react-redux';
 import TopSavers from './screens/menu/TopSavers';
 import PasswordForgot from './screens/menu/PasswordForgot';
 import PasswordConfirm from './screens/menu/PasswordConfirm';
+import { ThemeProvider } from './ThemeContext';
 
 
 const Stack = createStackNavigator();
@@ -72,6 +73,7 @@ const App = ({ styles, darkModeStyles, }) => {
     <SafeAreaView style={{ flex: 1 }}>
      <Provider store={store}> 
       <UserProvider>
+      <ThemeProvider>
         <ImageProvider>
         <AutoInvestProvider>
     <NavigationContainer>
@@ -115,6 +117,7 @@ const App = ({ styles, darkModeStyles, }) => {
     </NavigationContainer>
     </AutoInvestProvider>
     </ImageProvider>
+    </ThemeProvider>
     </UserProvider>
     </Provider>
     </SafeAreaView>

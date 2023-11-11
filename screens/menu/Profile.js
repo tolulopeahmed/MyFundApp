@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Divider from '../components/Divider';
 import SavingsGoalModal from './SavingsGoalModal';
 import PinModal from '../components/PinModal';
+import Header from '../components/Header';
 import ProfileEditModal from './ProfileEditModal';
 import axios from 'axios';  // Import axios for making API requests
 import { ipAddress } from '../../constants';
@@ -13,12 +14,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import SectionTitle from '../components/SectionTitle';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchUserData } from '../../ReduxActions';
+import { useTheme } from '../../ThemeContext';
 
 const Profile = ({ navigation, route }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [enableFingerprint, setEnableFingerprint] = useState(false);
   const [showBalances, setShowBalances] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
   const [pinModalVisible, setPinModalVisible] = useState(false); // define modalVisible state
 
@@ -30,6 +32,7 @@ const Profile = ({ navigation, route }) => {
   const topSaversData = useSelector((state) => state.bank.topSaversData);
   const accountBalances = useSelector((state) => state.bank.accountBalances);
 
+  const styles = createStyles(isDarkMode);
   
   const wealthStages = [
     {
@@ -90,6 +93,10 @@ const Profile = ({ navigation, route }) => {
   
   
   const currentStage = wealthStages.find((stage) => stage.condition);
+
+  const logoSource = isDarkMode
+    ? require('../images/logo.png')
+    : require('../images/MyFundlogo.png');
 
 
   useEffect(() => {
@@ -336,17 +343,10 @@ const Profile = ({ navigation, route }) => {
 
 
   return (
-   <View style={[styles.container, darkMode && darkModeStyles.container]}>
+   <View style={[styles.container]}>
 
-<View style={styles.header}>
-      <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-        <Ionicons name="menu-outline" size={30} color="#4C28BC" />
-      </TouchableOpacity>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>MORE...</Text>
-      
-        </View>
-    </View>
+      <Header navigation={navigation} headerText='PROFILE'/>
+
 
           <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 
@@ -432,7 +432,7 @@ const Profile = ({ navigation, route }) => {
       <Divider/>
       
      <View style={styles.settingsContainer}>
-      <View style={styles.settingContainer}>
+      {/* <View style={styles.settingContainer}>
         <Text style={styles.settingText}>Dark Mode</Text>
         <Switch
           trackColor={{ false: 'grey', true: '#4C28BC' }}
@@ -441,7 +441,7 @@ const Profile = ({ navigation, route }) => {
           onValueChange={() => setPinModalVisible(!enableFingerprint)}
           value={enableFingerprint}
         />
-      </View>
+      </View> */}
 
 
       <View style={styles.settingContainer}>
@@ -456,16 +456,15 @@ const Profile = ({ navigation, route }) => {
       </View>
 
 
-      {/* <View style={styles.settingContainer}>
+      <View style={styles.settingContainer}>
         <Text style={styles.settingText}>Turn on Dark Mode</Text>
         <Switch
           trackColor={{ false: 'grey', true: '#4C28BC' }}
-          thumbColor={darkMode ? '#8976FF' : 'silver'}
+          thumbColor={isDarkMode ? '#8976FF' : 'silver'}
           ios_backgroundColor="#3e3e3e"
-          onValueChange={() => setDarkMode(!darkMode)}
-          value={darkMode}
-        />
-      </View> */}
+          onValueChange={toggleDarkMode}
+          value={isDarkMode}        />
+      </View>
       </View>
     
       <SavingsGoalModal 
@@ -489,20 +488,20 @@ const Profile = ({ navigation, route }) => {
 <View>
 <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => setGoalModalVisible(true)}>
-          <MaterialIcons name="flag" size={25} color="#4C28BC" style={{ marginRight: 15 }} />
+          <MaterialIcons name="flag" size={25} style={styles.icon}/>
           <Text style={styles.buttonText}>Update Savings Goal</Text>
         </TouchableOpacity>
         </View>
         
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Card')}>
-          <Ionicons name="card" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Ionicons name="card" size={24} style={styles.icon}/>
           <Text style={styles.buttonText}>Card and Bank Settings</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('KYC')}>
-          <Ionicons name="shield-checkmark" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Ionicons name="shield-checkmark" size={24} style={styles.icon} />
           <Text style={styles.buttonText}>Update KYC</Text>
         </TouchableOpacity>
       </View>
@@ -516,21 +515,21 @@ const Profile = ({ navigation, route }) => {
  
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleSeeTopSavers}>
-          <MaterialIcons name="leaderboard" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <MaterialIcons name="leaderboard" size={24} style={styles.icon}/>
           <Text style={styles.buttonText}>Top Savers</Text>
         </TouchableOpacity>
       </View>
  
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('FAQ')}>
-          <MaterialIcons name="forum" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <MaterialIcons name="forum" size={24} style={styles.icon} />
           <Text style={styles.buttonText}>FAQs</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Chat')}>
-          <Ionicons name="chatbubbles" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Ionicons name="chatbubbles" size={24} style={styles.icon} />
           <Text style={styles.buttonText}>Message Admin</Text>
         </TouchableOpacity>
       </View>
@@ -541,13 +540,13 @@ const Profile = ({ navigation, route }) => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={handleRateMyFund}>
-          <Ionicons name="star" size={24} color="#4C28BC" style={{ marginRight: 15 }} />
+          <Ionicons name="star" size={24} style={styles.icon} />
           <Text style={styles.buttonText}>Rate MyFund</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.button} onPress={handleLogout}>
-  <MaterialIcons name="logout" size={24} color="brown" style={{ marginRight: 15 }}/>
+  <MaterialIcons name="logout" size={24} style={styles.icon}/>
   <Text color='brown' style={styles.buttonText}>Log Out</Text>
 </TouchableOpacity>
       </View>
@@ -559,7 +558,7 @@ const Profile = ({ navigation, route }) => {
 
 
         <View style={styles.logoContainer}>
-  <Image source={require('../images/MyFundlogo.png')} style={styles.logo} />
+      <Image source={logoSource} style={styles.logo} />
   <View style={styles.creditsContainer}>
     <Text style={styles.version}>version 1.0.0</Text>
   </View>
@@ -570,10 +569,11 @@ const Profile = ({ navigation, route }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({  
+    container: {
     flex: 1,
-    backgroundColor: '#F5F1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
   },
 
   header: {
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
   justifyContent: 'space-between',
   alignItems: 'center',
   paddingHorizontal: 15,
-  backgroundColor: 'white',
+  backgroundColor: isDarkMode ? 'black' : 'white',
   height: 43,
 },
 icon: {
@@ -605,30 +605,7 @@ icon: {
     letterSpacing: 3,
     },
 
-    person: {
-        borderWidth: 1.5,
-        padding: 4.5,
-        borderRadius: 80,
-        borderColor: '#4C28BC',
-        height: 35,
-        width: 35,
-        alignSelf: 'center',
-        alignItems: 'center',
-        alignContent: 'center'
-    },
 
-    bell: {
-        marginLeft: 6,
-        borderWidth: 1.5,
-        borderColor: '#4C28BC',
-        padding: 4.5,
-        height: 35,
-        width: 35,
-        borderRadius: 80,
-        alignSelf: 'center',
-        alignItems: 'center',
-        alignContent: 'center'
-    },
 
   
   leftContainer: {
@@ -639,13 +616,13 @@ icon: {
   },
 
   profileContainer: {
-    backgroundColor: '#F5F1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
   },
 
   imageContainer: {
     marginBottom: 10,
     alignItems: 'flex-start',
-    backgroundColor: '#F5F1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
     resizeMode: 'cover',
     borderRadius: 150,
     width: 160,
@@ -658,7 +635,8 @@ icon: {
     height: 160,
     borderRadius: 80,
     borderWidth: 3,
-    borderColor: 'white',
+    borderColor: isDarkMode ? '#4C28BC' : 'white',
+
   },
 
   editIconContainer: {
@@ -675,18 +653,15 @@ icon: {
     fontFamily: 'proxima',
     fontSize: 28,
     textAlign: 'center',
-    color: '#4C28BC',
-    backgroundColor: '#F5F1FF',
+    color: isDarkMode ? '#fff' : '#4C28BC',
     letterSpacing: -1,
   },
   usernameText: {
     fontFamily: 'karla-italic',
     fontSize: 12,
     letterSpacing: -0.5,
-    color: 'gray',
     textAlign: 'center',
-    color: '#4C28BC',
-    backgroundColor: '#F5F1FF',
+    color: isDarkMode ? 'grey' : '#4C28BC',
   },
   rightContainer: {
     flex: 1,
@@ -698,7 +673,7 @@ icon: {
   infoText: {
     fontFamily: 'proxima',
     fontSize: 11,
-    color: 'silver',
+    color: isDarkMode ? '#4C28BC' : 'silver',
     textAlign: 'left',
     letterSpacing: -0.5,
   },
@@ -707,7 +682,7 @@ icon: {
     fontFamily: 'karla-italic',
     fontSize: 16,
     marginBottom: 10,
-    color: '#4C28BC',
+    color: isDarkMode ? 'grey' : '#4C28BC',
     letterSpacing: -0.5,
   },
 
@@ -715,19 +690,8 @@ icon: {
     fontFamily: 'karla-italic',
     fontSize: 14.5,
     marginBottom: 10,
-    color: '#4C28BC',
+    color: isDarkMode ? 'grey' : '#4C28BC',
     letterSpacing: -0.5,
-  },
-
-  credits: {
-    fontFamily: 'karla',
-    fontSize: 12,
-    letterSpacing: -0.5,
-    color: 'gray',
-    textAlign: 'center',
-    color: 'grey',
-    backgroundColor: '#F5F1FF',
-    marginBottom: 2,
   },
 
   settingsContainer:{
@@ -748,8 +712,13 @@ icon: {
     letterSpacing: -0.1,
     fontSize: 16,
     marginLeft: 10,
+    color: isDarkMode ? 'silver' : 'black',
   },
   
+  icon: {
+    marginRight: 15,
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+   },
 
   buttonsContainer: {
     alignItems: 'center',
@@ -760,9 +729,9 @@ icon: {
     marginTop: 13,
   },
   button: {
-    flexDirection: 'row',
+  flexDirection: 'row',
   borderColor: 'silver',
-  backgroundColor: 'white',
+  backgroundColor: isDarkMode ? '#38207D' : 'white',
   height: 45,
   width: '90%',
   padding: 8,
@@ -773,7 +742,7 @@ icon: {
     marginTop: 5,
    fontSize: 16,
     fontFamily: 'ProductSans',
-    color: '#4C28BC',
+    color: isDarkMode ? 'white' : '#4C28BC',
     flex: 1,
   },
 
@@ -846,9 +815,10 @@ icon: {
     fontFamily: 'karla',
     textAlign: 'center',
     marginBottom: 15,
+    color: isDarkMode ? 'white' : '#4C28BC',
 
   },
 });
-
+}
 export default Profile;
 

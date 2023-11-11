@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { ImageProvider } from './ImageContext';
 import { AutoSaveProvider } from '../components/AutoSaveContext';
 import { UserProvider } from '../../UserContext';
+import { useTheme } from '../../ThemeContext';
 
 import Home from './Home';
 import Save from './Save';
@@ -13,6 +14,7 @@ import Withdraw from './Withdraw';
 import Profile from './Profile';
 
 const Tab = createBottomTabNavigator();
+
 
 const Dot = ({ color }) => (
   <View
@@ -36,7 +38,9 @@ const TabBarIcon = ({ focused, iconName, color, label }) => (
 
 const MainTab = ({ navigation, route }) => {
   const [autoSave, setAutoSave] = useState(false);
- 
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
+
   useEffect(() => {
     // Check if the user is a first-time signup and came from the Confirmation Screen
     if (route.name === 'Confirmation') {
@@ -83,7 +87,7 @@ const MainTab = ({ navigation, route }) => {
             />
           );
         },
-        tabBarActiveTintColor: '#4C28BC',
+        tabBarActiveTintColor: isDarkMode ? '#6E3DFF' : '#4C28BC',
         tabBarInactiveTintColor: 'grey',
         tabBarShowLabel: false,
         tabBarStyle: styles.tabStyle,
@@ -101,12 +105,14 @@ const MainTab = ({ navigation, route }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
   tabStyle: {
-    backgroundColor: '#fff',
+    backgroundColor: isDarkMode ? 'black' : 'white', // Adjust background color based on dark mode
     height: 70,
     paddingBottom: 1,
   },
 });
+}
 
 export default MainTab;

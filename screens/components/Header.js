@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '../../ThemeContext';
+
+
 
 
 const Header = ({ navigation, headerText,  }) => {
@@ -13,16 +16,19 @@ const Header = ({ navigation, headerText,  }) => {
     setNewNotificationCount(0); // Reset the notification count when the bell icon is pressed.
   };
 
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
+
   return (
     <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-        <Ionicons name="menu-outline" size={30} color="#4C28BC" />
+        <Ionicons name="menu-outline" size={30} style={{color: isDarkMode ? '#6E3DFF' : '#4C28BC'}}/>
       </TouchableOpacity>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>{headerText}</Text>
 
         <TouchableOpacity style={styles.bell} onPress={handleBellIconPress}>
-          <Ionicons name="notifications-outline" size={22} color="#4C28BC" />
+          <Ionicons name="notifications-outline" size={22} style={{color: isDarkMode ? '#6E3DFF' : '#4C28BC'}}/>
           {newNotificationCount > 0 && (
             <View style={styles.notificationBadge}>
               <Text style={styles.notificationText}>{newNotificationCount}</Text>
@@ -36,14 +42,15 @@ const Header = ({ navigation, headerText,  }) => {
 
 
 
-const styles = StyleSheet.create({
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
     header: {
         marginTop: 50,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 15,
-      backgroundColor: 'white',
+      backgroundColor: isDarkMode ? 'black' : 'white',
       height: 43,
     },
     icon: {
@@ -82,7 +89,7 @@ const styles = StyleSheet.create({
     bell: {
         marginLeft: 6,
         borderWidth: 1.5,
-        borderColor: '#4C28BC',
+        borderColor: isDarkMode ? '#6E3DFF' : '#4C28BC',
         padding: 4.5,
         height: 35,
         width: 35,
@@ -108,5 +115,6 @@ const styles = StyleSheet.create({
     },
 
   });
+}
 
 export default Header;

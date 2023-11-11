@@ -18,7 +18,7 @@ import moment from 'moment';
 import Success from '../components/Success';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
-
+import { useTheme } from '../../ThemeContext';
 
 
 const Save = ({ navigation, route }) => {
@@ -37,7 +37,9 @@ const Save = ({ navigation, route }) => {
   const topSaversData = useSelector((state) => state.bank.topSaversData);
   const [showBalances, setShowBalances] = useState(true);
   const isFocused = useIsFocused();
- 
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
+
 
   const dispatch = useDispatch();
 
@@ -261,7 +263,7 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
   <Swiper>
     {percentage(0) >= 100 ? (
       <View style={styles.propertyContainer}>
-        <Ionicons name="trophy-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
+        <Ionicons name="trophy-outline" size={34} style={styles.icon} />
         <View style={styles.progressBarContainer}>
           <Text style={styles.propertyText}>
             {`Congratulations on reaching your goal of ₦${formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount))} for your `}
@@ -501,12 +503,13 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F1FF',
-  },
 
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({  
+    container: {
+    flex: 1,
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
+  },
 
    header: {
         marginTop: 50,
@@ -599,7 +602,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     flexDirection: 'row',
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#2B1667' : '#DCD1FF',
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
@@ -610,10 +613,16 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
     fontFamily: 'karla',
     letterSpacing: -0.2,
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
     marginBottom: 8,  // Add some bottom margin to separate from the progress bar
   },
   
+  
+icon: {
+  marginRight: 15,
+  color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+ },
+
   progressBarContainer: {
     flex: 1,
     flexDirection: 'column',
@@ -646,7 +655,7 @@ const styles = StyleSheet.create({
       fontSize: 14,
       fontFamily: 'nexa',
       letterSpacing: -0.2,
-      color: 'black',
+      color: isDarkMode ? 'silver' : 'black',
     },
 
     percentageText:{
@@ -656,14 +665,7 @@ const styles = StyleSheet.create({
       letterSpacing: -0.2,
       color: 'green',
     },
-    restText:{
-      flex: 1,
-      fontSize: 14,
-      fontFamily: 'karla',
-      letterSpacing: -0.2,
-      color: 'black',
-    },
-
+  
     
 
     savingsContainer: {
@@ -825,37 +827,42 @@ backgroundImage: {
     
 
     transactionContainer: {
-      marginTop: 25,
+      marginTop: 5,
+      marginBottom: 5,
       flex: 1,
         },
-
+    
     transactionsContainer: {
       borderRadius: 10,
       marginHorizontal: 20,
       marginTop: 5,
+      marginBottom: 5,
     },
+    
     transactionItem: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingVertical: 10,
-      borderBottomWidth: 1,
+      borderBottomWidth: 0.5,
       borderBottomColor: '#ccc',
     },
+    
     transactionIcon: {
-      backgroundColor: '#DEE4FC',
-      color: '#4C28BC',
+      backgroundColor: isDarkMode ? '#1D0E4A' : '#DEE4FC',
+      color: isDarkMode ? '#6E3DFF' : '#4C28BC',
       padding: 8,
       borderRadius: 10,
       marginRight: 10,
     },
+    
     transactionText: {
       flex: 1,
       alignItems: 'flex-start',
-
+    
     },
     transactionDescription: {
-      color: '#4C28BC',
+      color: isDarkMode ? '#6E3DFF' : '#4C28BC',
       letterSpacing: -1,
       fontSize: 19,
       fontFamily: 'karla',
@@ -867,11 +874,7 @@ backgroundImage: {
       fontFamily: 'karla',
       fontSize: 10,
       marginTop: 1,
-    },
-    transactionTime: {
-      fontFamily: 'karla',
-      fontSize: 10,
-      marginTop: 1,
+      color: isDarkMode ? 'grey' : 'black',
     },
     transactionID: {
       fontFamily: 'nexa',
@@ -887,6 +890,16 @@ backgroundImage: {
       marginTop: 10,
       textAlign: 'right',
     },
+    
+    transactionAmount2: {
+      color: '#4C28BC',
+      fontSize: 23,
+      fontFamily: 'karla',
+      letterSpacing: -1,
+      marginTop: 10,
+      textAlign: 'right',
+    },
+    
     pendingAmount: {
       color: 'grey', // Change to your desired color
       fontSize: 23,
@@ -940,5 +953,5 @@ backgroundImage: {
   
 
 });
-
+}
 export default Save;

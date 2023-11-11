@@ -3,12 +3,16 @@ import { View, ScrollView, Text, TouchableOpacity, StyleSheet, Pressable } from 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserTransactions, fetchUserData, fetchAlertMessages } from '../../ReduxActions';
+import { useTheme } from '../../ThemeContext';
 
 const Notifications = ({ navigation }) => {
   const [selectedTab, setSelectedTab] = useState('Transactions');
   const userInfo = useSelector((state) => state.bank.userInfo);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
   const alertMessages = useSelector((state) => state.bank.alertMessages);
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
+
 
   const dispatch = useDispatch();
 
@@ -224,10 +228,12 @@ const Notifications = ({ navigation }) => {
 };
 
 
-const styles = StyleSheet.create({
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+
   container: {
     flex: 1,
-    backgroundColor: '#F5F1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
   },
 
 
@@ -237,7 +243,7 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 15,
-      backgroundColor: 'white',
+      backgroundColor: isDarkMode ? '#140A32' : 'white',
       height: 43,
     },
     icon: {
@@ -290,7 +296,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.8,
     alignItems: 'center',
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? 'black' : 'white',
     borderTopRightRadius: 15,
     borderTopLeftRadius: 15,
     borderBottomWidth: 0.8,
@@ -303,7 +309,7 @@ const styles = StyleSheet.create({
   title2: {
     fontSize: 16,
     fontFamily: 'proxima',
-    color: 'silver',
+    color: isDarkMode ? '#fff' : 'silver',
     marginTop: 5,
     marginBottom: 5,
   },
@@ -359,8 +365,8 @@ const styles = StyleSheet.create({
       borderBottomColor: '#ccc',
     },
     transactionIcon: {
-      backgroundColor: '#DEE4FC',
-      color: '#4C28BC',
+      backgroundColor: isDarkMode ? '#1D0E4A' : '#DEE4FC',
+      color: isDarkMode ? '#6E3DFF' : '#4C28BC',
       padding: 8,
       borderRadius: 10,
       marginRight: 10,
@@ -371,7 +377,7 @@ const styles = StyleSheet.create({
 
     },
     transactionDescription: {
-      color: '#4C28BC',
+      color: isDarkMode ? '#6E3DFF' : '#4C28BC',
       letterSpacing: -1,
       fontSize: 19,
       fontFamily: 'karla',
@@ -380,7 +386,7 @@ const styles = StyleSheet.create({
       alignItems: 'flex-start',
     },
     transactionDescription2: {
-      color: '#4C28BC',
+      color: isDarkMode ? '#6E3DFF' : '#4C28BC',
       letterSpacing: -0.9,
       fontSize: 17.5,
       fontFamily: 'karla',
@@ -392,6 +398,7 @@ const styles = StyleSheet.create({
       fontFamily: 'karla',
       fontSize: 10,
       marginTop: 1,
+      color: isDarkMode ? 'grey' : 'black',
     },
     transactionTime: {
       fontFamily: 'karla',
@@ -451,5 +458,6 @@ const styles = StyleSheet.create({
 
 
 });
+};
 
 export default Notifications;
