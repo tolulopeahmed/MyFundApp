@@ -345,7 +345,7 @@ const Profile = ({ navigation, route }) => {
   return (
    <View style={[styles.container]}>
 
-      <Header navigation={navigation} headerText='PROFILE'/>
+      <Header navigation={navigation} headerText='MORE...'/>
 
 
           <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -730,12 +730,12 @@ icon: {
   },
   button: {
   flexDirection: 'row',
-  borderColor: 'silver',
-  backgroundColor: isDarkMode ? '#38207D' : 'white',
+  borderColor: isDarkMode ? 'grey' : 'grey',
+  backgroundColor: isDarkMode ? '#2B1667' : 'white',
   height: 45,
   width: '90%',
   padding: 8,
-  borderWidth: 1,
+  borderWidth: 0.4,
   borderRadius: 9,
   },
   buttonText: {

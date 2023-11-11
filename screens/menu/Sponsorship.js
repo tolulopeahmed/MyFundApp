@@ -20,7 +20,6 @@ import { useTheme } from '../../ThemeContext';
 
 
 const Sponsorship = ({ navigation, route }) => {
-// const [autoInvest, setAutoInvest] = React.useState(false);
   const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
   const [autoInvestModalVisible, setAutoInvestModalVisible] = useState(false);
   const [deactivateAutoInvestModalVisible, setDeactivateAutoInvestModalVisible] = useState(false);
@@ -36,8 +35,10 @@ const Sponsorship = ({ navigation, route }) => {
   const autoInvestSettings = useSelector((state) => state.bank.autoInvestSettings);
   const [showBalances, setShowBalances] = useState(true);
   const isFocused = useIsFocused();
+ 
   const { isDarkMode, colors } = useTheme();
   const styles = createStyles(isDarkMode);
+
 
   useEffect(() => {
     if (isFocused) {
@@ -202,7 +203,9 @@ console.log('autoInvestSettings.frequency:', autoInvestSettings.frequency)
       </TouchableOpacity>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>SPONSORSHIP INVESTMENT</Text>
-      
+        <TouchableOpacity style={styles.bell} onPress={() => navigation.naviage('Notifications')}>
+          <Ionicons name="notifications-outline" size={22} style={{color: isDarkMode ? '#6E3DFF' : '#4C28BC'}}/>
+        </TouchableOpacity>
         </View>
     </View>
 
@@ -215,9 +218,9 @@ console.log('autoInvestSettings.frequency:', autoInvestSettings.frequency)
 
 
       <View style={styles.propertyContainer}>
-        <MaterialIcons name="trending-up" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
+        <MaterialIcons name="trending-up" size={34} style={styles.icon} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Better Than Savings: </Text>Earn up to <Text style={{color: 'green', fontFamily: 'proxima'}}>20% p.a. every January and July </Text>sponsoring any of our National Hostel Projects. Multiples of ₦100,000.</Text>
+        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: isDarkMode ? '#6E3DFF' : '#4C28BC', }}>Better Than Savings: </Text>Earn up to <Text style={{color: 'green', fontFamily: 'proxima'}}>20% p.a. every January and July </Text>sponsoring any of our National Hostel Projects. Multiples of ₦100,000.</Text>
       </View>
       </View>
       
@@ -404,7 +407,7 @@ const createStyles = (isDarkMode) => {
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 15,
-      backgroundColor: 'white',
+      backgroundColor: isDarkMode ? 'black' : 'white',
       height: 43,
     },
     icon: {
@@ -489,7 +492,7 @@ const createStyles = (isDarkMode) => {
     alignItems: 'center',
     paddingHorizontal: 16,
     flexDirection: 'row',
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#2B1667' : '#DCD1FF',
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
@@ -501,10 +504,16 @@ const createStyles = (isDarkMode) => {
     fontWeight: 'normal',
     fontFamily: 'karla',
     letterSpacing: -0.2,
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
     marginBottom: 8,  // Add some bottom margin to separate from the progress bar
   },
   
+  
+icon: {
+  marginRight: 15,
+  color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+ },
+
   progressBarContainer: {
     flex: 1,
     flexDirection: 'column',
@@ -716,37 +725,42 @@ backgroundImage: {
     
 
     transactionContainer: {
-      marginTop: 25,
+      marginTop: 5,
+      marginBottom: 5,
       flex: 1,
         },
-
+    
     transactionsContainer: {
       borderRadius: 10,
       marginHorizontal: 20,
       marginTop: 5,
+      marginBottom: 5,
     },
+    
     transactionItem: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingVertical: 10,
-      borderBottomWidth: 1,
+      borderBottomWidth: 0.5,
       borderBottomColor: '#ccc',
     },
+    
     transactionIcon: {
-      backgroundColor: '#DEE4FC',
-      color: '#4C28BC',
+      backgroundColor: isDarkMode ? '#1D0E4A' : '#DEE4FC',
+      color: isDarkMode ? '#6E3DFF' : '#4C28BC',
       padding: 8,
       borderRadius: 10,
       marginRight: 10,
     },
+    
     transactionText: {
       flex: 1,
       alignItems: 'flex-start',
-
+    
     },
     transactionDescription: {
-      color: '#4C28BC',
+      color: isDarkMode ? '#6E3DFF' : '#4C28BC',
       letterSpacing: -1,
       fontSize: 19,
       fontFamily: 'karla',
@@ -758,11 +772,7 @@ backgroundImage: {
       fontFamily: 'karla',
       fontSize: 10,
       marginTop: 1,
-    },
-    transactionTime: {
-      fontFamily: 'karla',
-      fontSize: 10,
-      marginTop: 1,
+      color: isDarkMode ? 'grey' : 'black',
     },
     transactionID: {
       fontFamily: 'nexa',
@@ -778,6 +788,16 @@ backgroundImage: {
       marginTop: 10,
       textAlign: 'right',
     },
+    
+    transactionAmount2: {
+      color: '#4C28BC',
+      fontSize: 23,
+      fontFamily: 'karla',
+      letterSpacing: -1,
+      marginTop: 10,
+      textAlign: 'right',
+    },
+    
     pendingAmount: {
       color: 'grey', // Change to your desired color
       fontSize: 23,

@@ -7,11 +7,11 @@ import WithdrawModal from './WithdrawModal';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import { useSelector, useDispatch } from 'react-redux'; 
-import { updateAccountBalances, updateUserTransactions, fetchAccountBalances, fetchUserTransactions } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import Success from '../components/Success';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { useTheme } from '../../ThemeContext';
 
 
 const Withdraw = ({ navigation, route }) => {
@@ -25,6 +25,9 @@ const Withdraw = ({ navigation, route }) => {
   const [fromAccount, setFromAccount ] = useState(defaultFromAccount); // Set the default account from prop
   const [showBalances, setShowBalances] = useState(true);
   const isFocused = useIsFocused();
+
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
   useEffect(() => {
     if (isFocused) {
@@ -88,7 +91,8 @@ const Withdraw = ({ navigation, route }) => {
     "Received from User": "arrow-down-outline",
     "Withdrawal (Investment > Bank)": "arrow-down-outline",
     "Withdrawal (Wallet > Bank)": "arrow-down-outline",
-    "Referral Reward (Confirmed)": "arrow-up-outline"
+    "Referral Reward (Pending)": "ellipsis-horizontal-circle-outline",
+    "Referral Reward (Confirmed)": "checkmark-circle"
 };
 
 
@@ -327,11 +331,11 @@ const handleCloseSuccessModal = () => {
 
       <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["Withdrawal (Savings > Investment)", `Sent to User`, "Referral Reward (Confirmed)", "Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+    ["Withdrawal (Savings > Investment)", `Sent to User`, "Referral Reward (Confirmed)", "Referral Reward (Pending)", "Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["Withdrawal (Savings > Investment)", `Sent to User`,"Referral Reward (Confirmed)","Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+        ["Withdrawal (Savings > Investment)", `Sent to User`,"Referral Reward (Confirmed)","Referral Reward (Pending)","Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
@@ -347,8 +351,12 @@ const handleCloseSuccessModal = () => {
             <Text style={styles.transactionID}>ID: {transaction.transaction_id} - <Text style={{fontFamily: 'proxima'}}>{transaction.referral_email}</Text></Text>
           </View>
           <View style={styles.transactionAmountContainer}>
-            <Text style={transaction.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
-            <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
+          <Text style={
+                transaction.transaction_type === "debit" ? styles.negativeAmount :
+                transaction.transaction_type === "credit" ? styles.transactionAmount :
+                styles.pendingAmount  // You can set your pendingAmount style here
+              }>
+                <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
               </Text>
             </Text>
           </View>
@@ -385,11 +393,13 @@ const handleCloseSuccessModal = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F1FF',
-  },
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+container: {
+flex: 1,
+backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
+},
 
   walletContainer: {
     flexDirection: 'row',
@@ -650,6 +660,14 @@ marginTop: -15,
   },
 
 
+  pendingAmount: {
+    color: 'grey', // Change to your desired color
+    fontSize: 23,
+    fontFamily: 'karla',
+    letterSpacing: -1,
+    marginTop: 10,
+    textAlign: 'right',
+  },
 
 
   
@@ -733,39 +751,44 @@ quickWithdrawText: {
   
 
   transactionContainer: {
-    marginTop: 1,
+    marginTop: 5,
+    marginBottom: 5,
     flex: 1,
       },
-
+  
   transactionsContainer: {
     borderRadius: 10,
     marginHorizontal: 20,
     marginTop: 5,
+    marginBottom: 5,
   },
+  
   transactionItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 10,
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#ccc',
   },
+  
   transactionIcon: {
-    backgroundColor: '#DEE4FC',
-    color: '#4C28BC',
+    backgroundColor: isDarkMode ? '#1D0E4A' : '#DEE4FC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
     padding: 8,
     borderRadius: 10,
     marginRight: 10,
   },
+  
   transactionText: {
     flex: 1,
     alignItems: 'flex-start',
-
+  
   },
   transactionDescription: {
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
     letterSpacing: -1,
-    fontSize: 18,
+    fontSize: 19,
     fontFamily: 'karla',
     marginTop: 3,
     textAlign: 'left',
@@ -775,11 +798,7 @@ quickWithdrawText: {
     fontFamily: 'karla',
     fontSize: 10,
     marginTop: 1,
-  },
-  transactionTime: {
-    fontFamily: 'karla',
-    fontSize: 10,
-    marginTop: 1,
+    color: isDarkMode ? 'grey' : 'black',
   },
   transactionID: {
     fontFamily: 'nexa',
@@ -795,7 +814,16 @@ quickWithdrawText: {
     marginTop: 10,
     textAlign: 'right',
   },
-
+  
+  transactionAmount2: {
+    color: '#4C28BC',
+    fontSize: 23,
+    fontFamily: 'karla',
+    letterSpacing: -1,
+    marginTop: 10,
+    textAlign: 'right',
+  },
+  
   negativeAmount: {
     color: 'brown',
     fontSize: 23,
@@ -827,7 +855,7 @@ quickWithdrawText: {
   },
 
 });
-
+}
 export default Withdraw;
 
 

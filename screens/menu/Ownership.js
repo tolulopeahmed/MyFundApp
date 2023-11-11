@@ -7,14 +7,15 @@ import BuyPropertyModal from './BuyPropertyModal'
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import Success from '../components/Success';
-
+import { useTheme } from '../../ThemeContext';
 
 
 const Ownership = ({navigation}) => {
     const [propertyModalVisible, setPropertyModalVisible] = useState(false);
     const [selectedProperty, setSelectedProperty] = useState(null);
     const [isSuccessVisible, setIsSuccessVisible] = useState(false);
-
+    const { isDarkMode, colors } = useTheme();
+    const styles = createStyles(isDarkMode);
 
     const propertyData = [
       {
@@ -120,6 +121,9 @@ const Ownership = ({navigation}) => {
     </TouchableOpacity>
     <View style={styles.headerContainer}>
       <Text style={styles.headerText}>BUY PROPERTIES</Text>
+      <TouchableOpacity style={styles.bell} onPress={() => navigation.naviage('Notifications')}>
+          <Ionicons name="notifications-outline" size={22} style={{color: isDarkMode ? '#6E3DFF' : '#4C28BC'}}/>
+        </TouchableOpacity>
       </View>
   </View>              
   
@@ -140,7 +144,7 @@ const Ownership = ({navigation}) => {
                   {unitType}: {unitCount} units
                 </Text>
               ))}
-              <Text style={{ color: '#4C28BC', marginLeft: 4, marginTop: 6, marginBottom: -2, letterSpacing: -0.4, alignSelf: 'flex-start', fontFamily: 'proxima', fontSize: 18 }}>
+              <Text style={{  color: isDarkMode ? '#6E3DFF' : '#4C28BC', marginLeft: 4, marginTop: 6, marginBottom: -2, letterSpacing: -0.4, alignSelf: 'flex-start', fontFamily: 'proxima', fontSize: 18 }}>
               ₦{Math.floor(property.price).toLocaleString()}<Text style={{fontSize: 11}}>/unit</Text>
               </Text>
               <Text style={styles.rate}>₦{Math.floor(property.rent).toLocaleString()} p.a. </Text>
@@ -188,10 +192,12 @@ const Ownership = ({navigation}) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({  
+    container: {
     flex: 1,
-    backgroundColor: '#F5F1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
   },
 
 
@@ -201,7 +207,7 @@ const styles = StyleSheet.create({
   justifyContent: 'space-between',
   alignItems: 'center',
   paddingHorizontal: 15,
-  backgroundColor: 'white',
+  backgroundColor: isDarkMode ? 'black' : 'white',
   height: 43,
 },
 icon: {
@@ -252,7 +258,7 @@ bell: {
 
   itemContainer: {
     flex: 1,
-    backgroundColor: '#E5DDFF',
+    backgroundColor: isDarkMode ? '#2B1667' : '#DCD1FF',
     borderRadius: 10,
     borderWidth: 0.3,
     alignItems: 'center',
@@ -287,7 +293,7 @@ bell: {
 },
 
   headerText2: {
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
     fontSize: 16,
     fontFamily: 'proxima',
     letterSpacing: -0.5,
@@ -301,12 +307,14 @@ bell: {
     width: '95%',
     fontFamily: 'karla',
     letterSpacing: -0.3,
+    color: isDarkMode ? 'white' : '#808080',
   },
 
   subText2: {
     fontSize: 11,
     width: '95%',
-    color: '#808080',
+    color: isDarkMode ? 'grey' : '#808080',
+
   },
 
   rate: {
@@ -323,7 +331,7 @@ bell: {
     position: 'absolute', // Position the button absolutely inside the item container
     bottom: 10, // Adjust the value as per your requirement
     right: 10, // Adjust the value as per your requirement
-    backgroundColor: '#4C28BC',
+    backgroundColor: isDarkMode ? '#6E3DFF' : '#4C28BC',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -371,5 +379,5 @@ bell: {
   },
 
 });
-
+}
 export default Ownership;

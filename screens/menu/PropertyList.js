@@ -11,6 +11,7 @@ import SectionTitle from '../components/SectionTitle';
 import SellPropertyModal from './SellPropertyModal';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
+import { useTheme } from '../../ThemeContext';
 
 const PropertyList = ({ navigation, properties }) => {
   const accountBalances = useSelector((state) => state.bank.accountBalances);
@@ -19,6 +20,8 @@ const PropertyList = ({ navigation, properties }) => {
   const [selectedProperty, setSelectedProperty] = useState(null); // Add this state variable
   const [showBalances, setShowBalances] = useState(true);
   const isFocused = useIsFocused();
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
   useEffect(() => {
     if (isFocused) {
@@ -80,9 +83,9 @@ const PropertyList = ({ navigation, properties }) => {
       <ScrollView showsVerticalScrollIndicator={false}>
 
       <View style={styles.propertyContainer}>
-        <Ionicons name="home-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
+        <Ionicons name="home-outline" size={34} style={styles.propertyIcon} />
         <View style={styles.progressBarContainer}> 
-        <Text style={styles.propertyText}>The properties you've bought will appear here and <Text style={{color: '#4C28BC'}}>the yearly rental income</Text>. Buy more to earn more. For special package deals, kindly contact admin</Text>
+        <Text style={styles.propertyText}>The properties you've bought will appear here and <Text style={{color: isDarkMode ? '#6E3DFF' : '#4C28BC',}}>the yearly rental income</Text>. Buy more to earn more. For special package deals, kindly contact admin</Text>
       </View>
       </View>
       
@@ -187,20 +190,20 @@ const PropertyList = ({ navigation, properties }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({  
+    container: {
     flex: 1,
-    backgroundColor: '#F5F1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
   },
-
-
    header: {
         marginTop: 50,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 15,
-      backgroundColor: 'white',
+      backgroundColor: isDarkMode ? 'black' : 'white',
       height: 43,
     },
     icon: {
@@ -259,7 +262,8 @@ const styles = StyleSheet.create({
     },
    
     propertyIcon: {
-    marginRight: 10,
+    marginRight: 15,
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
     },
     
     goalText:{
@@ -282,7 +286,7 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       paddingHorizontal: 16,
       flexDirection: 'row',
-      backgroundColor: '#DCD1FF',
+      backgroundColor: isDarkMode ? '#2B1667' : '#DCD1FF',
       padding: 15,
       marginHorizontal: 20,
       borderRadius: 10,
@@ -294,7 +298,7 @@ const styles = StyleSheet.create({
       fontWeight: 'normal',
       fontFamily: 'karla',
       letterSpacing: -0.2,
-      color: 'black',
+      color: isDarkMode ? 'silver' : 'black',
       marginBottom: 8,  // Add some bottom margin to separate from the progress bar
     },
     
@@ -448,7 +452,7 @@ const styles = StyleSheet.create({
     
 
     containerHead: {
-        backgroundColor: '#fff',
+      backgroundColor: isDarkMode ? '#2B1667' : '#fff',
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '90%',
@@ -463,7 +467,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
       },
       text: {
-        color: '#4C28BC',
+        color: isDarkMode ? 'grey' : '#4C28BC',
         fontFamily: 'ProductSans',
         fontSize: 16,
       },
@@ -475,39 +479,44 @@ const styles = StyleSheet.create({
 
 
       transactionContainer: {
-        marginTop: 15,
+        marginTop: 5,
+        marginBottom: 5,
         flex: 1,
           },
-    
+      
       transactionsContainer: {
         borderRadius: 10,
         marginHorizontal: 20,
         marginTop: 5,
+        marginBottom: 5,
       },
+      
       transactionItem: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingVertical: 10,
-        borderBottomWidth: 1,
+        borderBottomWidth: 0.5,
         borderBottomColor: '#ccc',
       },
+      
       transactionIcon: {
-        backgroundColor: '#DEE4FC',
-        color: '#4C28BC',
+        backgroundColor: isDarkMode ? '#1D0E4A' : '#DEE4FC',
+        color: isDarkMode ? '#6E3DFF' : '#4C28BC',
         padding: 8,
         borderRadius: 10,
         marginRight: 10,
       },
+      
       transactionText: {
         flex: 1,
         alignItems: 'flex-start',
-    
+      
       },
       transactionDescription: {
-        color: '#4C28BC',
+        color: isDarkMode ? '#6E3DFF' : '#4C28BC',
         letterSpacing: -1,
-        fontSize: 18,
+        fontSize: 19,
         fontFamily: 'karla',
         marginTop: 3,
         textAlign: 'left',
@@ -517,11 +526,7 @@ const styles = StyleSheet.create({
         fontFamily: 'karla',
         fontSize: 10,
         marginTop: 1,
-      },
-      transactionTime: {
-        fontFamily: 'karla',
-        fontSize: 10,
-        marginTop: 1,
+        color: isDarkMode ? 'grey' : 'black',
       },
       transactionID: {
         fontFamily: 'nexa',
@@ -537,7 +542,16 @@ const styles = StyleSheet.create({
         marginTop: 10,
         textAlign: 'right',
       },
-    
+      
+      transactionAmount2: {
+        color: '#4C28BC',
+        fontSize: 23,
+        fontFamily: 'karla',
+        letterSpacing: -1,
+        marginTop: 10,
+        textAlign: 'right',
+      },
+      
       negativeAmount: {
         color: 'brown',
         fontSize: 23,
@@ -570,7 +584,8 @@ const styles = StyleSheet.create({
 
   sellPropertyButton: {
     flexDirection: 'row',
-    backgroundColor: 'silver',
+    backgroundColor: isDarkMode ? '#38207D' : 'silver',
+    opacity: 0.8,
     height: 15,
     alignItems: 'center',
     justifyContent: 'center',
@@ -587,5 +602,5 @@ const styles = StyleSheet.create({
 
 
 });
-
+}
 export default PropertyList;

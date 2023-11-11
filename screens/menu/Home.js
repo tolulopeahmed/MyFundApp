@@ -297,7 +297,7 @@ const formatTime = (timeString) => {
 
 
       <View style={styles.propertyContainer}>
-        <Ionicons name="home-outline" size={24} color="#4C28BC" style={styles.icon}/>
+        <Ionicons name="home-outline" size={24} style={styles.icon}/>
         <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: "#4C28BC" }}></Text><Text style={{fontFamily: 'proxima'}}>Every January and July</Text>, you'll earn 10% p.a. on Savings and 20% p.a. on your Investments until you've saved enough to buy properties and earn lifetime rent. Keep growing your funds.</Text>
       </View>
 
@@ -670,7 +670,7 @@ backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
 },
 
 headerContainer: {
-backgroundColor: 'white',
+  backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
 },
 
 
@@ -748,7 +748,7 @@ swiperContainer: {
   height: 160,
 },
 dot: {
-  backgroundColor: 'rgba(0, 0, 0, 0.2)', // Customize the color of the inactive dots
+  backgroundColor: 'silver', // Customize the color of the inactive dots
   width: 5,
   height: 5,
   borderRadius: 5,
@@ -758,7 +758,7 @@ dot: {
   marginBottom: 3,
 },
 activeDot: {
-  backgroundColor: '#4C28BC', // Customize the color of the active dot
+  backgroundColor: isDarkMode ? '#6E3DFF' : '#4C28BC',
   width: 10,
   height: 4,
   borderRadius: 5,
@@ -951,23 +951,23 @@ marginBottom: 5,
 
 todoButton: {
   flexDirection: 'row',
-  borderColor: 'silver',
-  backgroundColor: isDarkMode ? '#38207D' : 'white',
+  borderColor: isDarkMode ? 'grey' : 'silver',
+  backgroundColor: isDarkMode ? '#2B1667' : 'white',
   height: 40,
   width: '100%',
   padding: 6,
-  borderWidth: 1,
+  borderWidth: 0.4,
   borderRadius: 9,
 },
 
 disabledButton: {
   flexDirection: 'row',
-  borderColor: 'silver',
+  borderColor: isDarkMode ? 'grey' : 'silver',
   backgroundColor: isDarkMode ? '#140A32' : '#D6D6D6',
   height: 40,
   width: '100%',
   padding: 6,
-  borderWidth: 1,
+  borderWidth: 0.4,
   borderRadius: 9,
 },
 

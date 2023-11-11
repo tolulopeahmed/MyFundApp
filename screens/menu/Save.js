@@ -274,7 +274,7 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
       </View>
     ) : (
       <View style={styles.propertyContainer}>
-        <Ionicons name="wallet-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
+        <Ionicons name="wallet-outline" size={34} style={styles.icon}  />
         <View style={styles.progressBarContainer}>
           <ScrollView showsVerticalScrollIndicator={false}>
             <Text style={styles.propertyText}>
@@ -294,16 +294,16 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
 
   <Swiper>
   <View style={styles.propertyContainer}>
-    <Ionicons name="arrow-up-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
+    <Ionicons name="arrow-up-outline" size={34} style={styles.icon} />
     <View style={styles.progressBarContainer}>
       <Text style={styles.propertyText}>
-        <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Top Saver: </Text>
+        <Text style={{ fontFamily: 'proxima',   color: isDarkMode ? '#6E3DFF' : '#4C28BC', }}>Top Saver: </Text>
 
 
         {topSaversData?.current_user.individual_percentage === 100 ? (
           <Text>
             {`Congratulations ${userInfo?.firstName ? `${userInfo.firstName},` : ''} You're currently one of the top savers in ${currentMonth}. 🥳🍾🎉🎊 Keep saving to earn more rewards.`}
-              <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }} onPress={() => handleSeeTopSavers()}> See TopSavers...</Text>
+              <Text style={{ fontFamily: 'proxima',   color: isDarkMode ? '#6E3DFF' : '#4C28BC', }} onPress={() => handleSeeTopSavers()}> See TopSavers...</Text>
           </Text>
         ) : (
           <Text>
@@ -319,7 +319,7 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
               }
             </Text>
             ). Keep growing your funds to earn more as a top saver.
-              <Text style={{ fontFamily: 'proxima', color: '#4C28BC', marginTop: 3 }} onPress={() => handleSeeTopSavers()}> See Top Savers...</Text>
+              <Text style={{ fontFamily: 'proxima',   color: isDarkMode ? '#6E3DFF' : '#4C28BC', marginTop: 3 }} onPress={() => handleSeeTopSavers()}> See Top Savers...</Text>
           </Text>
         )}
       </Text>
@@ -573,7 +573,7 @@ const createStyles = (isDarkMode) => {
   },
 
   dot: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)', 
+    backgroundColor: 'silver', 
     width: 5,
     height: 5,
     borderRadius: 5,
@@ -583,7 +583,7 @@ const createStyles = (isDarkMode) => {
     marginBottom: 3,
   },
   activeDot: {
-    backgroundColor: '#4C28BC',
+    backgroundColor: isDarkMode ? '#6E3DFF' : '#4C28BC',
     width: 10,
     height: 4,
     borderRadius: 5,

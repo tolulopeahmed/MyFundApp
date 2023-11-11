@@ -8,7 +8,7 @@ import QuickInvestModal from '../components/QuickInvestModal';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import SectionTitle from '../components/SectionTitle';
-
+import { useTheme } from '../../ThemeContext';
 
 const images = [
   require('./sponsorship.png'),
@@ -20,6 +20,8 @@ const images = [
 
 const Invest = ({ navigation, firstName }) => {
   const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
   const handleQuickInvest = () => {
     navigation.navigate('Sponsorship', { quickInvestModalVisible: true });
@@ -83,20 +85,20 @@ const Invest = ({ navigation, firstName }) => {
         <SectionTitle>AVAILABLE INVESTMENTS</SectionTitle>
 
         <View style={{ flexDirection: 'row', marginTop: 10, }}>
-          <TouchableOpacity onPress={() => navigation.navigate('Sponsorship')} style={{ backgroundColor: '#E0D7FF', flex: 1, padding: 7, alignItems: 'center', marginLeft: 20, marginRight: 5, borderRadius: 10, height: 230}}>
-            <Ionicons name="person-outline" size={40} color="#4C28BC" alignItems='center' marginTop={5} />
-            <Text style={{ padding: 3, marginTop: 2, fontSize: 17, fontFamily: 'proxima', textAlign: 'center', color: '#4C28BC' }}>Sponsorship Investment</Text>
-            <Text style={{ marginTop: 4, fontSize: 12, fontFamily: 'karla', textAlign: 'center', }}>Earn up to <Text color='red'>20% per anum</Text> sponsoring our National Hostel Project. Paid every January and July</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Sponsorship')} style={{ backgroundColor: isDarkMode ? '#311161' : '#E0D7FF', flex: 1, padding: 7, alignItems: 'center', marginLeft: 20, marginRight: 5, borderRadius: 10, height: 230}}>
+            <Ionicons name="person-outline" size={40} alignItems='center' marginTop={5} style={styles.icon}/>
+            <Text style={{ padding: 3, marginTop: 2, fontSize: 17, fontFamily: 'proxima', textAlign: 'center', color: isDarkMode ? '#6E3DFF' : '#4C28BC', }}>Sponsorship Investment</Text>
+            <Text style={{ marginTop: 4, fontSize: 12, fontFamily: 'karla', textAlign: 'center', color: isDarkMode ? 'white' : 'black'}}>Earn up to <Text color='red'>20% per anum</Text> sponsoring our National Hostel Project. Paid every January and July</Text>
             <TouchableOpacity style={styles.quickInvestButton} onPress={handleQuickInvest}>
               <Ionicons name="trending-up-outline" size={24} color="#fff" />
               <Text style={styles.quickInvestText}>QuickInvest</Text>
             </TouchableOpacity>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.navigate('Ownership')} style={{ backgroundColor: '#E2E4FF', flex: 1, padding: 7, alignItems: 'center', marginLeft: 5, marginRight: 20, borderRadius: 10, height: 230}}>
-            <Ionicons name="home-outline" size={40} color="#4C28BC" alignItems='center' marginTop={5} />
-            <Text style={{ padding: 3, marginTop: 2, fontSize: 17, fontFamily: 'proxima', textAlign: 'center', color: '#4C28BC', letterSpacing: -0.3, }}>Ownership Investment</Text>
-            <Text style={{ marginTop: 4, fontSize: 12, fontFamily: 'karla', textAlign: 'center',}}>Earn rental income for life by buying a fraction of our hostels.</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Ownership')} style={{ backgroundColor: isDarkMode ? '#2B1667' : '#E2E4FF', flex: 1, padding: 7, alignItems: 'center', marginLeft: 5, marginRight: 20, borderRadius: 10, height: 230}}>
+            <Ionicons name="home-outline" size={40} alignItems='center' marginTop={5} style={styles.icon} />
+            <Text style={{ padding: 3, marginTop: 2, fontSize: 17, fontFamily: 'proxima', textAlign: 'center', letterSpacing: -0.3, color: isDarkMode ? '#6E3DFF' : '#4C28BC', }}>Ownership Investment</Text>
+            <Text style={{ marginTop: 4, fontSize: 12, fontFamily: 'karla', textAlign: 'center', color: isDarkMode ? 'white' : 'black',}}>Earn rental income for life by buying a fraction of our hostels.</Text>
             <TouchableOpacity style={styles.buyPropertyButton} onPress={() => navigation.navigate('Ownership')}>
               <Ionicons name="home-outline" size={24} color="#fff" />
               <Text style={styles.quickInvestText}>Buy Property</Text>
@@ -125,10 +127,11 @@ const Invest = ({ navigation, firstName }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
   },
 
 
@@ -172,13 +175,13 @@ const styles = StyleSheet.create({
   },
   
   dot: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Customize the color of the inactive dots
+    backgroundColor: 'silver', // Customize the color of the inactive dots
     width: 5,
     height: 5,
     borderRadius: 5,
   },
   activeDot: {
-    backgroundColor: '#4C28BC', // Customize the color of the active dot
+    backgroundColor: isDarkMode ? '#6E3DFF' : '#4C28BC',
     width: 10,
     height: 4,
     borderRadius: 5,
@@ -194,14 +197,14 @@ const styles = StyleSheet.create({
     fontFamily: 'karla',
     textAlign: 'center',
     letterSpacing: -0.4,
+    color: isDarkMode ? 'silver' : 'black',
   },
-  investmentTypesContainer: {
-    marginTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 10,
-    backgroundColor: '#E2E4FF'
-  },
+
+  icon: {
+    marginRight: 15,
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+   },
+
   investmentType: {
     alignItems: 'center',
   },
@@ -260,5 +263,5 @@ const styles = StyleSheet.create({
   },
 
 });
-
+}
 export default Invest;

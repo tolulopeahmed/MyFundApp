@@ -5,9 +5,6 @@ import MainTab from './MainTab';
 import Sidebar from './Sidebar';
 import { UserProvider } from '../../UserContext';
 import ImageContext, { ImageProvider } from './ImageContext';
-import { ThemeProvider } from '../../ThemeContext';
-
-
 
 const Drawer = createDrawerNavigator();
 
@@ -41,7 +38,6 @@ const DrawerTab = ({ navigation, firstName, route }) => {
   return (
     <View style={styles.container}>
       <ImageProvider>
-        <ThemeProvider>
       <UserProvider>
       <Drawer.Navigator
   drawerContent={(props) => <Sidebar {...props} firstName={firstName} profileImageUri={profileImageUri} />}
@@ -63,7 +59,6 @@ const DrawerTab = ({ navigation, firstName, route }) => {
         />
       )}
       </UserProvider>
-      </ThemeProvider>
       </ImageProvider>
     </View>
   );
