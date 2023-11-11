@@ -148,7 +148,7 @@ const handleCloseSuccessModal = () => {
             <Text style={styles.savingsBalance}>****</Text>
           )}
          </View>
-         <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>2.5%</Text> fee.
+         <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>5%</Text> fee.
 </Text>
               
       <View style={styles.quickWithdrawButtonContainer}>
@@ -191,7 +191,7 @@ const handleCloseSuccessModal = () => {
           )}
          </View>
 
-         <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>5%</Text> fee.
+         <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>10%</Text> fee.
 </Text>
 
 <View style={styles.quickWithdrawButtonContainer}>

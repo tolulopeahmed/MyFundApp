@@ -48,7 +48,8 @@ const Notifications = ({ navigation }) => {
     "IBADAN": "home-outline",
     "FUNAAB": "home-outline",
     "QuickSave (Pending)": "ellipsis-horizontal-circle-outline",
-    "QuickSave (Confirmed)": "checkmark-circle"
+    "QuickSave (Confirmed)": "checkmark-circle",
+    "Sent to User": "arrow-up-outline"
   };
 
   const formatDate = (dateString) => {
@@ -183,8 +184,12 @@ const Notifications = ({ navigation }) => {
                   <Text style={styles.transactionID}>ID: {item.data.transaction_id} - <Text style={{ fontFamily: 'proxima' }}>{item.data.referral_email}</Text></Text>
                 </View>
                 <View style={styles.transactionAmountContainer}>
-                  <Text style={item.data.transaction_type === "debit" ? styles.negativeAmount : styles.transactionAmount}>
-                    <Text style={{ fontSize: 12 }}>₦</Text>
+                <Text style={
+            item.data.transaction_type === "pending" ? styles.pendingAmount :
+            item.data.transaction_type === "credit" ? styles.transactionAmount :
+            styles.negativeAmount // Apply the pendingAmount style for pending transactions
+          }>
+               <Text style={{ fontSize: 12 }}>₦</Text>
                     <Text>{Math.floor(item.data.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(item.data.amount).split('.')[1]}</Text>
                   </Text>
                   </Text>
@@ -227,7 +232,7 @@ const styles = StyleSheet.create({
 
 
    header: {
-        marginTop: 50,
+      marginTop: 50,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -407,7 +412,14 @@ const styles = StyleSheet.create({
       marginTop: 10,
       textAlign: 'right',
     },
-
+    pendingAmount: {
+      color: 'grey', // Change to your desired color
+      fontSize: 23,
+      fontFamily: 'karla',
+      letterSpacing: -1,
+      marginTop: 10,
+      textAlign: 'right',
+    },
     negativeAmount: {
       color: 'brown',
       fontSize: 23,

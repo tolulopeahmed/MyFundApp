@@ -106,8 +106,8 @@ const handleUserEmailChange = (value) => {
         setToAccount('Investment'); // Set the default value to 'Investment'
         updatedToAccountOptions = ['Investment', 'Bank Account'];
       } else if (value === 'investment') {
-        setToAccount('Savings'); // Set the default value to 'Savings'
-        updatedToAccountOptions = ['Savings', 'Bank Account'];
+        setToAccount('Bank Account'); // Set the default value to 'Savings'
+        updatedToAccountOptions = ['Bank Account'];
       } else if (value === 'wallet') {
         setToAccount('Savings'); // Set the default value to 'Savings'
         updatedToAccountOptions = ['Savings', 'Investment', 'Bank Account', 'Another User']; // Add "Another User" option
@@ -181,7 +181,7 @@ const handleUserEmailChange = (value) => {
                 if (parseInt(amount.replace(/,/g, '')) < 100000) {
                   Alert.alert(
                     'Invalid Amount',
-                    'The minimum amount is ₦100,000. Please enter a valid amount.'
+                    'The minimum amount for investment is ₦100,000. Please enter a valid amount.'
                   );
                 }
               }}
@@ -863,7 +863,7 @@ const bankAccountField = (
             >
 
 
-            <ScrollView>  
+            <ScrollView showsVerticalScrollIndicator={false}>  
         <View style={styles.modalContent}>
          <View style={{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center',  paddingLeft: 30,}}>
              <Text style={styles.modalHeader} >Withdraw</Text>
@@ -871,9 +871,21 @@ const bankAccountField = (
          </View>
           <Divider />
 
-          <Text style={styles.modalSubText}>
-          Move money between your accounts or to your bank. <Text style={{fontFamily: 'proxima'}}> </Text> 
+<View>
+<Text style={styles.modalSubText}>
+          Move money from Savings to Investment or to your bank. {"\n"} {"\n"}
+          <Text style={{fontFamily: 'proxima', color: 'black'}}>Withdrawal attracts...{"\n"}</Text> 
+          <View style={styles.arrow} /><Text style={{fontFamily: 'proxima', color: 'brown'}}>5%</Text> charge if from Savings {"\n"}
+          <View style={styles.arrow} /><Text style={{fontFamily: 'proxima', color: 'brown'}}>10%</Text> charge if from Investments {"\n"}
+          <View style={styles.arrow} /><Text style={{fontFamily: 'proxima', color: 'green'}}>0%</Text> charge if from Wallet
+{/*           
+          <Text style={{fontFamily: 'proxima', color: 'black'}}>Schedule Withdrawal <Text style={{fontFamily: 'proxima', color: 'green'}}>(no charge)</Text>{"\n"}</Text> 
+          <View style={styles.arrow} /><Text style={{fontFamily: 'proxima', color: 'black'}}>30 days</Text> if from Savings {"\n"}
+          <View style={styles.arrow} /><Text style={{fontFamily: 'proxima', color: 'black'}}>90 days</Text> if from Investments {"\n"} */}
           </Text>
+</View>
+
+        
 
 
           <Text style={styles.modalSubText2} alignSelf='flex-start' marginTop={20}>Withdraw from...</Text>
@@ -985,7 +997,7 @@ const bankAccountField = (
                           <Ionicons name="arrow-down" size={24} color="white" style={{ marginRight: 10 }} />
                         )}
                         <Text style={styles.primaryButtonText}>
-                          {toAccount === "Another User" ?   " Send to User" : "Withdraw"}
+                          {toAccount === "Another User" ?   " Send to User" : "Withdraw Now"}
                         </Text>
                       </>
                     )}
@@ -1039,6 +1051,18 @@ const styles = {
     color: '#4C28BC',
     flex: 1,
   },
+
+  arrow: {
+    borderTopWidth: 7,
+    borderRightWidth: 6,
+    borderBottomWidth: 7,
+    borderLeftWidth: 8,
+    borderTopColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderBottomColor: 'transparent',
+    borderLeftColor: '#DCD1FF',
+    // rotation: 180,
+  },
   
   modalSubText: {
     fontSize: 14,
@@ -1046,7 +1070,6 @@ const styles = {
     color: 'black',
     textAlign: 'left',
     marginHorizontal: 30,
-    marginTop: 5,
   },
    
   modalSubText2: {
@@ -1056,26 +1079,14 @@ const styles = {
     color: 'black',
     textAlign: 'center',
     marginHorizontal: 45,
-    marginTop: 5,
     letterSpacing: -0.5,
   },
 
-  modalSubText3: {
-    fontSize: 13,
-    fontFamily: 'karla-italic',
-    textAlign: 'center',
-    color: 'black',
-    textAlign: 'center',
-    marginHorizontal: 45,
-    marginTop: 25,
-    letterSpacing: -0.2,
-  },
 
   inputContainer: {
-    marginTop: 5,
+    marginTop: 3,
     width: '100%',
     alignItems: 'center',
-
   },
 
   presetAmountsContainer: {
@@ -1140,7 +1151,7 @@ const styles = {
     color: 'black',
     textAlign: 'left',
     marginLeft: -16,
-    marginBottom: 30,
+    marginBottom: 20,
     fontFamily: 'karla',
     borderRadius: 10,
   },
@@ -1156,7 +1167,7 @@ const styles = {
     color: 'grey',
     textAlign: 'left',
     marginLeft: -5,
-    marginBottom: 30,
+    marginBottom: 20,
     fontFamily: 'karla',
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -1172,7 +1183,6 @@ const styles = {
     borderRadius: 10,
     height: 50,
     width: '80%',
-    marginTop: 5,
     borderWidth: 0.5,
     borderColor: 'silver',
   },

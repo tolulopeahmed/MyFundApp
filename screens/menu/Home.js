@@ -66,6 +66,7 @@ const Home = ({ navigation, route}) => {
     "QuickInvest (Confirmed)": "checkmark-circle",
     "QuickSave (Pending)": "ellipsis-horizontal-circle-outline",
     "QuickSave (Confirmed)": "checkmark-circle",
+    "Sent to User": "arrow-up-outline"
   };
 
 
@@ -603,11 +604,11 @@ const formatTime = (timeString) => {
 
 <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["QuickSave", "AutoSave", "QuickInvest (Pending)", "QuickInvest (Confirmed)","QuickSave (Pending)", "QuickSave (Confirmed)", "FUNAAB","IBADAN", "Referral Reward (Confirmed)", "Referral Reward (Pending)", "Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+    ["QuickSave", "AutoSave", "QuickInvest (Pending)", "QuickInvest (Confirmed)","QuickSave (Pending)", "QuickSave (Confirmed)", "FUNAAB","IBADAN", "Referral Reward (Confirmed)", "Referral Reward (Pending)", "Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)","Sent to User", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["QuickSave", "AutoSave", "QuickInvest (Pending)", "QuickInvest (Confirmed)","QuickSave (Pending)", "QuickSave (Confirmed)", "FUNAAB","IBADAN","Referral Reward (Confirmed)","Referral Reward (Pending)","Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+        ["QuickSave", "AutoSave", "QuickInvest (Pending)", "QuickInvest (Confirmed)","QuickSave (Pending)", "QuickSave (Confirmed)", "FUNAAB","IBADAN","Referral Reward (Confirmed)","Referral Reward (Pending)","Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Sent to User", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (

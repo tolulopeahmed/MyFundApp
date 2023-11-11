@@ -433,7 +433,7 @@ const Profile = ({ navigation, route }) => {
       
      <View style={styles.settingsContainer}>
       <View style={styles.settingContainer}>
-        <Text style={styles.settingText}>Enable PIN</Text>
+        <Text style={styles.settingText}>Dark Mode</Text>
         <Switch
           trackColor={{ false: 'grey', true: '#4C28BC' }}
           thumbColor={enableFingerprint ? '#8976FF' : 'silver'}

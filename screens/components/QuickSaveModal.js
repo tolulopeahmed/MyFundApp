@@ -479,8 +479,9 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                     ) : (
 
                       <View style={styles.paymentOptionsContainer}>
-                      <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. Click <Text style={{fontFamily: 'proxima'}}>'Submit Payment'</Text> after making the transfer and your account will be updated within minutes.</Text>
-                      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} VCORP SYSTEMS LIMITED</Text>
+                      <Text style={styles.modalSubText2} alignSelf='flex-start'>1. Transfer the exact amount you entered above to... {'\n'} 
+                      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} VCORP SYSTEMS LIMITED</Text> {'\n'}
+                     2. Click <Text style={{fontFamily: 'proxima'}}>'Submit Payment'</Text> after making the transfer and your account will be updated within minutes.</Text>
                       <View style={styles.buttonsContainer}>
                         <TouchableOpacity
                           style={[
