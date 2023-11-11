@@ -1528,9 +1528,9 @@ def withdraw_to_local_bank(request):
     # Calculate the service charge based on the source account
     service_charge_percentage = 0.0
     if source_account == 'savings':
-        service_charge_percentage = 2.5
+        service_charge_percentage = 5
     elif source_account == 'investment':
-        service_charge_percentage = 5.0
+        service_charge_percentage = 10
 
     # Calculate the service charge and total withdrawal amount
     service_charge = (service_charge_percentage / 100) * float(amount)
