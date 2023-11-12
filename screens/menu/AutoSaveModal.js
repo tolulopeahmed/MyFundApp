@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Text, Alert, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity, Touchable } from 'react-native';
+import { Modal, Text, Alert, StyleSheet, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity, Touchable } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Divider from '../components/Divider'
@@ -9,7 +9,7 @@ import { ipAddress } from '../../constants';
 import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
 import bankOptions from '../components/BankOptions';
-
+import { useTheme } from '../../ThemeContext';
 
 
 const getBackgroundColor = (bankName) => {
@@ -27,6 +27,9 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
   const [processing, setProcessing] = useState(false);
   const userCards = useSelector((state) => state.bank.cards) || [];
   const [selectedCardId, setSelectedCardId] = useState(userCards.length > 0 ? userCards[0].id : null);
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);  
+  
   const dispatch = useDispatch();
 
 
@@ -262,11 +265,11 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          AutoSave allows you to set an amount to automatically debit your local bank account to credit your MyFund Savings account.
+          AutoSave allows you to set an amount to automatically debit your local bank account to credit your MyFund Savings account.{"\n"}
           </Text>
         
           <View style={styles.inputContainer}>
-          <Text style={styles.autoSaveSetting}>AutoSave Settings</Text>
+          <Text style={styles.label3}>Enter or Select an Amount</Text>
 
           <View style={styles.inputContainer2}>
                 <Text style={styles.nairaSign}>₦</Text>
@@ -340,7 +343,7 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
                     {userCards.length === 0 ? (
                       <TouchableOpacity onPress={handleAddCard}>
                       <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>No cards added yet... 
-                      <Text style={{ color: '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>    Add Card Now!</Text>
+                      <Text style={{ color: isDarkMode ? '#8A63F7' : '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>    Add Card Now!</Text>
                       </Text>
                       </TouchableOpacity>
                     ) : (
@@ -411,15 +414,17 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
   );
 };
 
-const styles = {
-  modalContainer: {
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+    modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   modalContent: {
-    backgroundColor: '#F6F3FF',
+    backgroundColor: isDarkMode ? '#271561' : '#F5F1FF',
     width: '100%',
     alignItems: 'center',
     borderTopRightRadius: 25,
@@ -427,100 +432,57 @@ const styles = {
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,      
   },
-  
 
   modalHeader: {
-    marginTop: 30,
-    alignItems: 'flex-start',
+    marginTop: 20,
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
     flex: 1,
   },
   modalSubText: {
     fontSize: 14,
     fontFamily: 'karla',
-    color: 'black',
+    color: isDarkMode ? '#fff' : 'black',
     textAlign: 'left',
-    marginHorizontal: 40,
-    marginTop: 1,
+    marginHorizontal: 30,
+    marginTop: 5,
   },
-
-  inputContainer: {
-    marginTop: 30,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  input: {
-    fontSize: 17,
-    height: 45,
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    paddingLeft: 15,
-    paddingRight: 5,
+   
+  modalSubText2: {
+    fontSize: 14,
     fontFamily: 'karla',
+    textAlign: 'center',
+    color: isDarkMode ? '#fff' : 'black',
+    textAlign: 'center',
+    marginHorizontal: 45,
+    marginTop: 5,
     letterSpacing: -0.5,
   },
 
-  inputContainer: {
-    marginTop: 20,
-    width: '100%',
-    alignItems: 'center',
+  modalSubText3: {
+    fontSize: 13,
+    fontFamily: 'karla-italic',
+    textAlign: 'center',
+    color: isDarkMode ? '#fff' : 'black',
+    textAlign: 'center',
+    marginHorizontal: 45,
+    marginTop: 25,
+    letterSpacing: -0.2,
   },
-
-  autoSaveSetting: {
-    fontSize: 17,
-    fontFamily: 'proxima',
-    marginLeft: 50,
-    marginBottom: 5,
-    alignSelf: 'flex-start',
-    marginTop: 10,
-  },
-
-
 
   inputContainer: {
     marginTop: 5,
     marginBottom: 15,
     width: '100%',
     alignItems: 'center',
+    
   },
-  
-  inputContainer2: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    height: 50,
-    width: '80%',
-    marginTop: 5,
-    borderWidth: 0.5,
-    borderColor: 'silver',
-  },
-
-  nairaSign: {
-    fontSize: 16,
-    marginLeft: 15,
-    marginRight: 0,
-  },
-
-  amountInput: {
-    flex: 1,
-    color: 'black',
-    fontFamily: 'karla',
-    fontSize: 16,
-    letterSpacing: -0.3,
-    padding: 10,
-  },
-  
 
   presetAmountsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: 45,
+    marginHorizontal: 40,
     marginTop: 5,
   },
   presetAmountColumn: {
@@ -541,60 +503,136 @@ const styles = {
   },
 
 
-
+  paymentOptionsContainer:{
+    marginTop: -20,
+    marginLeft: 5,
+    marginRight: 5,
+    borderRadius: 10, // Add border radius here
+    overflow: 'hidden', // This ensures that the border radius is applied to the Picker
+  },
 
   label: {
     fontSize: 17,
     fontFamily: 'proxima',
-    marginRight: 190,
     marginTop: 20,
+    marginBottom: 5,
+    textAlign: 'center',
+    letterSpacing: -0.5,
+    color: isDarkMode ? '#fff' : 'black',
   },
 
   label3: {
-    fontSize: 17,
-    fontFamily: 'proxima',
+      fontSize: 17,
+      fontFamily: 'proxima',
+      marginBottom: 5,
+      marginLeft: 45,
+      alignSelf: 'flex-start',
+      color: isDarkMode ? '#fff' : 'black',
+  },
+
+  labelItem: {
+    color: 'black',
+    textAlign: 'left',
+    marginLeft: -16,
+    marginBottom: 30,
+    fontFamily: 'karla',
+    //backgroundColor: '#fff',
+    borderRadius: 10,
+  },
+
+  pickerContainer: {
+    borderRadius: 10, // Add border radius here
+   overflow: 'hidden', // This ensures that the border radius is applied to the Picker
+  },
+
+  // labelItem2: {
+  //   color: 'black',
+  //   textAlign: 'left',
+  //   marginLeft: 5,
+  //   marginRight: 5,
+  //   marginBottom: 10,
+  //   fontFamily: 'karla',
+  //   backgroundColor: '#fff',
+  //   borderRadius: 10,
+  // },
+
+  emailInput: {
+    color: 'grey',
+    textAlign: 'left',
+    marginLeft: -5,
+    marginBottom: 30,
+    fontFamily: 'karla',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    height: 45,
+    padding: 10,
+    borderRadius: 10,
+  },
+
+  inputContainer2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    height: 50,
+    width: '80%',
+    borderWidth: 0.5,
+    borderColor: 'silver',
+  },
+
+  iconContainer: {
+    position: 'absolute', // Use absolute positioning
+    left: 10, // Adjust the left position as needed
+    top: '50%', // Center vertically
+    marginLeft: 45,
+    zIndex: 1,
+    transform: [{ translateY: -12 }], // Adjust translateY to vertically center the icon
+  },
+
+  nairaSign: {
+    fontSize: 16,
+    marginLeft: 15,
+    marginRight: 0,
+  },
+  amountInput: {
+    flex: 1,
+    color: 'black',
+    fontFamily: 'karla',
+    fontSize: 16,
+    letterSpacing: -0.3,
+    padding: 10,
+    
+  },
+  
+  
+
+  dropdown: {
+    height: 50,
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    paddingLeft: 15,
+    paddingRight: 5,
+    borderWidth: 0.5,
+    borderColor: 'silver',
+  },
+
+
+  image: {
+    marginTop: 5,
+    marginRight: 5,
+    borderWidth: 1,
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
     marginBottom: 5,
-    marginLeft: 50,
-    alignSelf: 'flex-start'
-},
-
-
-labelItem: {
-  color: 'black',
-  textAlign: 'left',
-  marginLeft: -16,
-  marginBottom: 30,
-  fontFamily: 'karla',
-  borderRadius: 10,
-},
-
-
-dropdown: {
-  height: 50,
-  width: '80%',
-  backgroundColor: 'white',
-  borderRadius: 10,
-  paddingLeft: 15,
-  paddingRight: 5,
-  borderWidth: 0.5,
-  borderColor: 'silver',
-},
-
-iconContainer: {
-  position: 'absolute', // Use absolute positioning
-  left: 10, // Adjust the left position as needed
-  top: '50%', // Center vertically
-  marginLeft: 45,
-  zIndex: 1,
-  transform: [{ translateY: -12 }], // Adjust translateY to vertically center the icon
-},
-
+  },
 
   buttonsContainer: {
     flexDirection: 'row',
-    marginTop: 10,
+    marginTop: 15,
     position: 'relative',
-    marginBottom: 40,
+    marginBottom: 35,
     alignSelf: 'center'
   },
 
@@ -605,14 +643,9 @@ iconContainer: {
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 10,  
+    borderRadius: 10,
   },
-
-  disabledButton: {
-    backgroundColor: 'gray', // Change the background color to grey
-    opacity: 0.9, // You can adjust the opacity as desired
-  },
-
+  
   primaryButtonDisabled: {
     flexDirection: 'row',
     backgroundColor: 'grey', // Background color for disabled state
@@ -621,16 +654,27 @@ iconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    opacity: 0.9, // Reduce opacity for disabled state
+    opacity: 0.7, // Reduce opacity for disabled state
   },
-
+  
   primaryButtonText: {
     color: '#fff',
     fontSize: 18,
     fontFamily: 'ProductSans',
+    marginRight: 5,
+  },
+
+  processingText: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'ProductSans',
+    marginRight: 5,
   },
 
 
-};
+
+});
+}
+
 
 export default AutoSaveModal;

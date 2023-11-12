@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Text, Alert, ActivityIndicator, View, TextInput, TouchableOpacity, Stylesheet } from 'react-native';
+import { Modal, Text, Alert, ActivityIndicator, View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';  // Import axios for making API requests
@@ -7,6 +7,7 @@ import { ipAddress } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserProfile, fetchUserData } from '../../ReduxActions';
 import LoadingModal from '../components/LoadingModal';
+import { useTheme } from '../../ThemeContext';
 
 const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVisible, setProfileEditModalVisible, onClose }) => {
   const [firstName, setFirstName] = useState('');
@@ -14,6 +15,8 @@ const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVis
   const [mobileNumber, setMobileNumber] = useState('');
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [isButtonEnabled, setIsButtonEnabled] = useState(false); // Add state to track button enablement
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
   const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
   const dispatch = useDispatch();
@@ -159,7 +162,7 @@ const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVis
 
 
             <View style={styles.buttonsContainer}>
-            <TouchableOpacity style={[styles.primaryButton, { opacity: isButtonEnabled ? 1 : 0.5 }]} onPress={handleUpdateProfile} disabled={!isButtonEnabled}>
+            <TouchableOpacity style={[styles.primaryButton, { backgroundColor: isButtonEnabled ? "#4C28BC" : "grey" }]} onPress={handleUpdateProfile} disabled={!isButtonEnabled}>
                   {updatingProfile ? (
                     <ActivityIndicator color="#fff" size="small" style={{ marginRight: 10 }} />
                   ) : (
@@ -183,7 +186,8 @@ const ProfileEditModal = ({ navigation, profile, setProfile, profileEditModalVis
   );
 };
 
-const styles = {
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({  
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -191,7 +195,7 @@ const styles = {
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   modalContent: {
-    backgroundColor: '#F6F3FF',
+    backgroundColor: isDarkMode ? '#271561' : '#F5F1FF',
     width: '100%',
     alignItems: 'center',
     borderTopRightRadius: 25,
@@ -204,7 +208,7 @@ const styles = {
     marginTop: 20,
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
     flex: 1,
   },
 
@@ -216,7 +220,7 @@ const styles = {
     marginHorizontal: 30,
     marginTop: 5,
     marginLeft: 15,
-
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
    
 
@@ -225,6 +229,7 @@ const styles = {
     marginLeft: 3,
     marginBottom: 5,
     textAlign: 'left',
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
 
   fieldContainer3: {
@@ -288,8 +293,6 @@ const styles = {
     fontFamily: 'ProductSans',
   },
 
-  
-
-};
-
+});
+}
 export default ProfileEditModal;

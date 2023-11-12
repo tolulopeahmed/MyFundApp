@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Keyboard, Alert, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { Modal, Keyboard, Alert, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
@@ -7,7 +7,7 @@ import axios from 'axios'; // Import axios library
 import { useDispatch, useSelector } from 'react-redux';
 import { ipAddress } from '../../constants';
 import { updateSavingsGoal } from '../../ReduxActions';
-
+import { useTheme } from '../../ThemeContext';
 
 const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible }) => {
   const [frequency, setFrequency] = useState('Real Estate');
@@ -17,6 +17,9 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
   const dispatch = useDispatch(); // Get the dispatch function from Redux
   const userInfo = useSelector(state => state.bank.userInfo); // Get user info from Redux store
   const savingsGoal = useSelector(state => state.bank.savingsGoal); // Get savings goal from Redux store
+
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
 
   useEffect(() => {
@@ -190,10 +193,11 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          Hey {userInfo?.firstName ? `${userInfo.firstName},` : ''} {'\n'} {'\n'}As part of helping you grow your funds to own properties and developing your savings habit, you'll need to set a savings goal. {'\n'}
-            {'\n'}<Text style={{fontFamily: 'proxima'}}>Preferred Asset</Text>
+          Hey {userInfo?.firstName ? `${userInfo.firstName},` : ''} {'\n'} {'\n'}As part of helping you grow your funds to own properties and developing your savings habit, you'll need to set a savings goal.
           </Text>
-          
+
+          <Text style={{fontFamily: 'proxima',     color: isDarkMode ? '#fff' : '#4C28BC', marginTop: 15,marginBottom: 5, marginLeft: 40, alignSelf: 'flex-start'}}>Preferred Asset</Text>
+
           <View style={styles.dropdown}>
               <Picker
                 style={styles.labelItem}
@@ -205,7 +209,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
               </Picker>
             </View>
         
-            <Text style={{fontFamily: 'proxima', marginTop: 7, marginLeft: 40, alignSelf: 'flex-start'}}>How much are you planning to save for it?</Text>
+            <Text style={{fontFamily: 'proxima',     color: isDarkMode ? '#fff' : '#4C28BC', marginTop: 15, marginLeft: 40, alignSelf: 'flex-start'}}>How much are you planning to save for it?</Text>
             
             <View style={styles.inputContainer2}>
                 <Text style={styles.nairaSign}>₦</Text>
@@ -261,7 +265,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
 
 
 
-            <Text style={{fontFamily: 'proxima', marginTop: 15, marginLeft: 40, alignSelf: 'flex-start'}}>How long will it take you?</Text>
+            <Text style={{fontFamily: 'proxima',    color: isDarkMode ? '#fff' : '#4C28BC', marginTop: 15, marginLeft: 40, alignSelf: 'flex-start'}}>How long will it take you?</Text>
           <View style={styles.inputContainer}>
             <View style={styles.dropdown}>
               <Picker
@@ -313,15 +317,16 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
   );
 };
 
-const styles = {
-  modalContainer: {
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({  
+    modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   modalContent: {
-    backgroundColor: '#F6F3FF',
+    backgroundColor: isDarkMode ? '#271561' : '#F5F1FF',
     width: '100%',
     alignItems: 'center',
     borderTopRightRadius: 25,
@@ -334,7 +339,7 @@ const styles = {
     marginTop: 20,
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
     flex: 1,
   },
   modalSubText: {
@@ -344,6 +349,7 @@ const styles = {
     textAlign: 'left',
     marginHorizontal: 30,
     marginTop: 5,
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
    
   modalSubText2: {
@@ -354,6 +360,7 @@ const styles = {
     textAlign: 'left',
     marginHorizontal: 30,
     marginTop: 5,
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
 
   inputContainer: {
@@ -369,6 +376,7 @@ const styles = {
     marginLeft: 40,
     alignSelf: 'flex-start',
     marginBottom: 10,
+    color: isDarkMode ? '#fff' : '#4C28BC',
 
   },
 
@@ -382,6 +390,8 @@ const styles = {
     marginRight: 190,
     marginTop: 20,
     marginBottom: 10,
+    color: isDarkMode ? '#fff' : '#4C28BC',
+
   },
 
   labelItem: {
@@ -391,6 +401,7 @@ const styles = {
     marginBottom: 30,
     fontFamily: 'karla',
     borderRadius: 10,
+  
   },
 
 
@@ -499,6 +510,6 @@ const styles = {
   },
 
 
-};
-
+});
+}
 export default SavingsGoalModal;

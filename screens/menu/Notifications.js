@@ -53,7 +53,8 @@ const Notifications = ({ navigation }) => {
     "FUNAAB": "home-outline",
     "QuickSave (Pending)": "ellipsis-horizontal-circle-outline",
     "QuickSave (Confirmed)": "checkmark-circle",
-    "Sent to User": "arrow-up-outline"
+    "Sent to User": "arrow-up-outline",
+    "QuickSave (Failed)": "close-circle-outline",
   };
 
   const formatDate = (dateString) => {

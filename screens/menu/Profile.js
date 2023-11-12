@@ -33,7 +33,37 @@ const Profile = ({ navigation, route }) => {
   const accountBalances = useSelector((state) => state.bank.accountBalances);
 
   const styles = createStyles(isDarkMode);
-  
+
+  const storeDarkModePreference = async (value) => {
+    try {
+      await AsyncStorage.setItem('darkMode', JSON.stringify(value));
+    } catch (error) {
+      console.error('Error storing dark mode preference:', error);
+    }
+  };
+
+  const retrieveDarkModePreference = async () => {
+    try {
+      const value = await AsyncStorage.getItem('darkMode');
+      if (value !== null) {
+        toggleDarkMode(JSON.parse(value));
+      }
+    } catch (error) {
+      console.error('Error retrieving dark mode preference:', error);
+    }
+  };
+
+  // useEffect(() => {
+  //   retrieveDarkModePreference();
+  // }, []);
+
+  const handleDarkModeToggle = (value) => {
+    toggleDarkMode(value);
+    storeDarkModePreference(value);
+  };
+
+
+
   const wealthStages = [
     {
       stage: 1,
@@ -462,7 +492,7 @@ const Profile = ({ navigation, route }) => {
           trackColor={{ false: 'grey', true: '#4C28BC' }}
           thumbColor={isDarkMode ? '#8976FF' : 'silver'}
           ios_backgroundColor="#3e3e3e"
-          onValueChange={toggleDarkMode}
+          onValueChange={handleDarkModeToggle}
           value={isDarkMode}        />
       </View>
       </View>
@@ -673,7 +703,7 @@ icon: {
   infoText: {
     fontFamily: 'proxima',
     fontSize: 11,
-    color: isDarkMode ? '#4C28BC' : 'silver',
+    color: isDarkMode ? '#6E3DFF' : 'silver',
     textAlign: 'left',
     letterSpacing: -0.5,
   },

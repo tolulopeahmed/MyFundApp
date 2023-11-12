@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Subtitle from '../components/Subtitle';
 import { useSelector, useDispatch } from 'react-redux'; // Import Redux functions
 import { addMessage, clearMessages } from '../../ReduxActions';
+import { useTheme } from '../../ThemeContext';
 
 
 // EmojiPicker component
@@ -40,6 +41,8 @@ const Chat = ({ navigation }) => {
   const messages = useSelector((state) => state.bank.messages);
   const dispatch = useDispatch();
 
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
   useEffect(() => {
     // Request permission for accessing the device's image library
@@ -276,11 +279,12 @@ const Chat = ({ navigation }) => {
 
       <View style={styles.inputContainer}>
       <TouchableOpacity style={styles.iconButton} onPress={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}>
-    <Ionicons name="happy-outline" size={24} color="#4C28BC" />
+    <Ionicons name="happy-outline" size={24} style={{color: isDarkMode ? '#6E3DFF' : '#4C28BC'}} />
   </TouchableOpacity>
   <TextInput
     style={styles.input}
     placeholder="Type your message..."
+    placeholderTextColor="grey" 
     onChangeText={(text) => setMessageText(text)}
     value={messageText}
   />
@@ -294,7 +298,7 @@ const Chat = ({ navigation }) => {
     </View>
   )}
   <TouchableOpacity style={styles.iconButton} onPress={pickImage} disabled={isImagePickerOpen}>
-    <Ionicons name="attach-outline" size={24} color="#4C28BC" />
+    <Ionicons name="attach-outline" size={24} style={{color: isDarkMode ? '#6E3DFF' : '#4C28BC'}} />
   </TouchableOpacity>
   <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
     <Ionicons name="ios-send" size={24} color="white" />
@@ -320,18 +324,20 @@ const Chat = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F1FF',
-  },
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+container: {
+flex: 1,
+backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
+},
   header: {
     marginTop: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? 'black' : 'white',
     height: 43,
   },
   headerContainer: {
@@ -425,17 +431,19 @@ backgroundImage: {
     paddingHorizontal: 10,
     borderTopWidth: 1,
     borderColor: '#D6D6D6',
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? '#08021C' : 'white',
+
   },
   input: {
     flex: 1,
-    height: 50,
-    backgroundColor: '#F5F5F5',
+    height: 45,
+    backgroundColor: isDarkMode ? '#27223B' : '#F5F5F5',
     borderRadius: 20,
     paddingHorizontal: 8,
     marginRight: 5,
     marginTop: 5,
     marginBottom: 5,
+    color: isDarkMode ? 'white' : 'black',
   },
   iconButton: {
     paddingHorizontal: 10,
@@ -492,5 +500,5 @@ backgroundImage: {
     marginVertical: 5,
   },
 });
-
+}
 export default Chat;

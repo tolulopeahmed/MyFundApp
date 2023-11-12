@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Text, Alert, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { Modal, Text, Alert, StyleSheet, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
@@ -10,7 +10,7 @@ import axios from 'axios';
 import LoadingModal from './LoadingModal';
 import bankOptions from './BankOptions';
 import { MaterialIcons } from '@expo/vector-icons';
-
+import { useTheme } from '../../ThemeContext';
 
 
 const getBackgroundColor = (bankName) => {
@@ -31,6 +31,8 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
   const [selectedCardId, setSelectedCardId] = useState(userCards.length > 0 ? userCards[0].id : null);
   const [showQuickInvestButton, setShowQuickInvestButton] = useState(true);
   const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true); // New state variable
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
   const dispatch = useDispatch();
 
@@ -408,7 +410,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                     {userCards.length === 0 ? (
                       <TouchableOpacity onPress={handleAddCard}>
                       <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>No cards added yet... 
-                      <Text style={{ color: '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>    Add Card Now!</Text>
+                      <Text style={{ color: isDarkMode ? '#8A63F7' : '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>    Add Card Now!</Text>
                       </Text>
                       </TouchableOpacity>
                     ) : (
@@ -523,16 +525,16 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
 };
 
 
-
-const styles = {
-  modalContainer: {
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+    modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   modalContent: {
-    backgroundColor: '#F6F3FF',
+    backgroundColor: isDarkMode ? '#271561' : '#F5F1FF',
     width: '100%',
     alignItems: 'center',
     borderTopRightRadius: 25,
@@ -545,14 +547,13 @@ const styles = {
     marginTop: 20,
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
     flex: 1,
   },
-  
   modalSubText: {
     fontSize: 14,
     fontFamily: 'karla',
-    color: 'black',
+    color: isDarkMode ? '#fff' : 'black',
     textAlign: 'left',
     marginHorizontal: 30,
     marginTop: 5,
@@ -562,7 +563,7 @@ const styles = {
     fontSize: 14,
     fontFamily: 'karla',
     textAlign: 'center',
-    color: 'black',
+    color: isDarkMode ? '#fff' : 'black',
     textAlign: 'center',
     marginHorizontal: 45,
     marginTop: 5,
@@ -573,7 +574,7 @@ const styles = {
     fontSize: 13,
     fontFamily: 'karla-italic',
     textAlign: 'center',
-    color: 'black',
+    color: isDarkMode ? '#fff' : 'black',
     textAlign: 'center',
     marginHorizontal: 45,
     marginTop: 25,
@@ -611,14 +612,6 @@ const styles = {
     fontFamily: 'karla',
   },
 
-  autoSaveSetting: {
-    fontSize: 17,
-    fontFamily: 'proxima',
-    marginLeft: 40,
-    alignSelf: 'flex-start',
-    marginBottom: 10,
-
-  },
 
   paymentOptionsContainer:{
     marginTop: -20,
@@ -635,6 +628,7 @@ const styles = {
     marginBottom: 5,
     textAlign: 'center',
     letterSpacing: -0.5,
+    color: isDarkMode ? '#fff' : 'black',
   },
 
   label3: {
@@ -642,7 +636,8 @@ const styles = {
       fontFamily: 'proxima',
       marginBottom: 5,
       marginLeft: 45,
-      alignSelf: 'flex-start'
+      alignSelf: 'flex-start',
+      color: isDarkMode ? '#fff' : 'black',
   },
 
   labelItem: {
@@ -660,7 +655,16 @@ const styles = {
    overflow: 'hidden', // This ensures that the border radius is applied to the Picker
   },
 
-
+  // labelItem2: {
+  //   color: 'black',
+  //   textAlign: 'left',
+  //   marginLeft: 5,
+  //   marginRight: 5,
+  //   marginBottom: 10,
+  //   fontFamily: 'karla',
+  //   backgroundColor: '#fff',
+  //   borderRadius: 10,
+  // },
 
   emailInput: {
     color: 'grey',
@@ -712,6 +716,7 @@ const styles = {
   },
   
   
+
   dropdown: {
     height: 50,
     width: '80%',
@@ -722,7 +727,6 @@ const styles = {
     borderWidth: 0.5,
     borderColor: 'silver',
   },
-
 
 
   image: {
@@ -780,6 +784,7 @@ const styles = {
 
 
 
-};
+});
+}
 
 export default QuickInvestModal;

@@ -112,8 +112,8 @@ const Save = ({ navigation, route }) => {
     "Withdrawal from Investment": "arrow-down-outline",
     "Property": "home-outline",
     "QuickSave (Pending)": "ellipsis-horizontal-circle-outline",
-    "QuickSave (Confirmed)": "checkmark-circle"
-
+    "QuickSave (Confirmed)": "checkmark-circle",
+    "QuickSave (Failed)": "close-circle-outline",
   };
 
   useEffect(() => {
@@ -442,11 +442,11 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
 
 <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["QuickSave", "Card Successful", "AutoSave", "QuickSave (Confirmed)", "QuickSave (Pending)"].includes(transaction.description)
+    ["QuickSave", "Card Successful", "AutoSave", "QuickSave (Confirmed)","QuickSave (Failed)", "QuickSave (Pending)"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["QuickSave", "Card Successful", "AutoSave", "QuickSave (Confirmed)", "QuickSave (Pending)"].includes(transaction.description)
+        ["QuickSave", "Card Successful", "AutoSave", "QuickSave (Confirmed)", "QuickSave (Failed)", "QuickSave (Pending)"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
@@ -465,7 +465,7 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
             <Text style={
             transaction.transaction_type === "pending" ? styles.pendingAmount :
             transaction.transaction_type === "credit" ? styles.transactionAmount :
-            styles.pendingAmount // Apply the pendingAmount style for pending transactions
+            styles.negativeAmount // Apply the pendingAmount style for pending transactions
           }>
               <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text></Text>
             </Text>
@@ -510,19 +510,6 @@ const createStyles = (isDarkMode) => {
     flex: 1,
     backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
   },
-
-   header: {
-        marginTop: 50,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: 15,
-      backgroundColor: 'white',
-      height: 43,
-    },
-    icon: {
-      marginRight: 0,
-    },
 
     headerContainer: {
     flex: 1,

@@ -87,8 +87,8 @@ const MainTab = ({ navigation, route }) => {
             />
           );
         },
-        tabBarActiveTintColor: isDarkMode ? '#6E3DFF' : '#4C28BC',
-        tabBarInactiveTintColor: 'grey',
+        tabBarActiveTintColor: isDarkMode ? '#BF73FA' : '#4C28BC',
+        tabBarInactiveTintColor: isDarkMode ? 'white' : 'grey',
         tabBarShowLabel: false,
         tabBarStyle: styles.tabStyle,
       })}
@@ -108,7 +108,7 @@ const MainTab = ({ navigation, route }) => {
 const createStyles = (isDarkMode) => {
   return StyleSheet.create({
   tabStyle: {
-    backgroundColor: isDarkMode ? 'black' : 'white', // Adjust background color based on dark mode
+    backgroundColor: isDarkMode ? 'black' : 'white', 
     height: 70,
     paddingBottom: 1,
   },

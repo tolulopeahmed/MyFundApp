@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchKYCStatus, setKYCStatus } from '../../ReduxActions';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
+import { useTheme } from '../../ThemeContext';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -34,7 +35,8 @@ const KYC = ({ navigation, firstName }) => {
     const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
     const kycStatus = useSelector((state) => state.bank.kycStatus);
     const [isInputsFilled, setInputsFilled] = useState(false);
-
+    const { isDarkMode, colors } = useTheme();
+    const styles = createStyles(isDarkMode);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -296,7 +298,7 @@ const KYC = ({ navigation, firstName }) => {
 
 
       <View style={styles.propertyContainer}>
-        <Ionicons name="shield-checkmark-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
+        <Ionicons name="shield-checkmark-outline" size={34} style={styles.icon} />
         <View style={styles.progressBarContainer}> 
         <Text style={styles.propertyText}>KYC (Know Your Customer) guidelines by CBN are meant to prevent your account from being used, intentionally or unintentionally, by criminal elements for money laundering activities.
 </Text>
@@ -469,7 +471,7 @@ const KYC = ({ navigation, firstName }) => {
     </>
   ) : (
     <TouchableOpacity style={styles.uploadButton} onPress={openImagePicker}>
-      <Ionicons name="arrow-up-outline" size={24} color="#4C28BC" marginRight={10}/>
+      <Ionicons name="arrow-up-outline" size={24} style={{color: isDarkMode ? '#6E3DFF' : '#4C28BC', marginRight: 10}}/>
       <Text style={styles.uploadText}>Upload ID</Text>
     </TouchableOpacity>
   )}
@@ -557,12 +559,13 @@ const KYC = ({ navigation, firstName }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F1FF',
-  },
 
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+container: {
+flex: 1,
+backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
+},
 
    header: {
         marginTop: 50,
@@ -570,7 +573,7 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 15,
-      backgroundColor: 'white',
+      backgroundColor: isDarkMode ? 'black' : 'white',
       height: 43,
     },
    
@@ -616,12 +619,15 @@ const styles = StyleSheet.create({
     },
 
   
-
+    icon: {
+      marginRight: 15,
+      color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+     },
   propertyContainer: {
     alignItems: 'center',
     paddingHorizontal: 13,
     flexDirection: 'row',
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#2B1667' : '#DCD1FF',
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
@@ -629,7 +635,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
  
 },
-
+icon: {
+  marginRight: 15,
+  color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+ },
 statusContainer: {
 alignContent: 'center',
 alignSelf: 'center',
@@ -642,7 +651,7 @@ flex: 1,
     fontWeight: 'regular',
     fontFamily: 'karla',
     letterSpacing: -0.4,
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
     marginRight: 25,
     },
 
@@ -669,7 +678,7 @@ flex: 1,
         fontSize: 15,
         height: 37,
         width: screenWidth * 0.80,
-        backgroundColor: 'white',
+        backgroundColor: isDarkMode ? '#686183' : 'white',
         borderRadius: 10,
         marginBottom: 10,
         paddingLeft: 14,    
@@ -693,7 +702,7 @@ flex: 1,
         height: 35,
         width: screenWidth * 0.80,
         marginBottom: 10,
-        backgroundColor: '#fff',
+        backgroundColor:  isDarkMode ? '#686183' : '#fff',
         borderColor: 'silver',
         borderWidth: 0.5,
       },
@@ -728,7 +737,7 @@ flex: 1,
       borderStyle: 'dashed', // Add this line
       borderRadius: 9,
       borderColor: '#4C28BC',
-      backgroundColor: "#DCD1FF",
+      backgroundColor: isDarkMode ? '#200D61' : '#DCD1FF',
       justifyContent: 'center',
       alignItems: 'center',
       alignSelf: 'center',
@@ -746,7 +755,7 @@ flex: 1,
     uploadButton: {
       flexDirection: 'row',
       borderColor: 'silver',
-      backgroundColor: '#F5F1FF',
+      backgroundColor: isDarkMode ? '#331C82' : '#F5F1FF',
       height: 40,
       width: '40%',
       padding: 10,
@@ -758,7 +767,7 @@ flex: 1,
     uploadText: {
       fontSize: 16,
       fontFamily: 'karla',
-      color: '#4C28BC',
+      color: isDarkMode ? 'silver' : '#4C28BC',
       alignSelf: 'center', // Center the text within the button
     },
    
@@ -793,9 +802,7 @@ flex: 1,
     fontSize: 18,
     fontFamily: 'ProductSans',
   },
-
-
-
 });
+}
 
 export default KYC;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Text, Alert, KeyboardAvoidingView, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { Modal, Text, Alert, StyleSheet, ActivityIndicator, Keyboard,ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
@@ -10,7 +10,7 @@ import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
 import { MaterialIcons } from '@expo/vector-icons'; // Add this import statement
 import bankOptions from '../components/BankOptions'; // Add this import statement
-
+import { useTheme } from '../../ThemeContext';
 
 const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisible, setIsSuccessVisible, defaultFromAccount }) => {
   const [fromAccount, setFromAccount ] = useState(defaultFromAccount.toLowerCase()); // Set the default account from prop
@@ -29,6 +29,9 @@ const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisib
   const [withdrawButtonDisabled, setWithdrawButtonDisabled] = useState(true); // State to control the button disabled state
   const [selectedBankAccountId, setSelectedBankAccountId] = useState(null); // Initialize with null or another suitable default value
   const [userEmail, setUserEmail] = useState('');
+
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
 // Inside your component function/componentDidMount
 useEffect(() => {
@@ -669,19 +672,40 @@ const bankAccountField = (
   };
 
 
-
-
-
-
   const formattedAmount = parseFloat(amount.replace(/,/g, '')).toFixed(2);
   const handleTransferToBankAccount = async () => {
-    setProcessing(true);    
+    setProcessing(true);
+  
+    let sourceAccountBalance; // Declare sourceAccountBalance outside the try block
+  
     try {
+      // Determine the source account balance based on the selected account
+      switch (fromAccount) {
+        case 'savings':
+          sourceAccountBalance = accountBalances.savings;
+          break;
+        case 'investment':
+          sourceAccountBalance = accountBalances.investment;
+          break;
+        case 'wallet':
+          sourceAccountBalance = accountBalances.wallet;
+          break;
+        default:
+          // Handle other cases or set a default balance
+          sourceAccountBalance = 0;
+      }
+  
+      console.log('sourceAccountBalance:', sourceAccountBalance);
+console.log('formattedAmount:', formattedAmount);
+
       // Check if the source account balance is sufficient for the withdrawal
-      if (accountBalances.wallet < formattedAmount) {
+      if (sourceAccountBalance < formattedAmount) {
         setProcessing(false);
         // Show an alert for insufficient balance
-        Alert.alert('Insufficient Balance', 'You do not have sufficient funds in your wallet for this withdrawal. Please check and try again.');
+        Alert.alert(
+          'Insufficient Balance',
+          'You do not have sufficient funds in your account for this withdrawal. Please check and try again.'
+        );
       } else {
         // Prepare the request data based on user selections
         const requestData = {
@@ -727,7 +751,10 @@ const bankAccountField = (
             Alert.alert('Error', 'You are not authorized. Please login again.');
           } else {
             setProcessing(false);
-            Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+            Alert.alert(
+              'Error',
+              'An error occurred while processing your request. Please try again later.'
+            );
           }
         }
       }
@@ -738,85 +765,13 @@ const bankAccountField = (
     }
   };
   
-
-    
-    const transferToWallet = async () => {
-      try {
-        const requestedAmount = parseFloat(amount.replace(/,/g, ''));
-        if (!isValidEmail(userEmail)) {
-          // Check for invalid email format
-          Alert.alert('Send Error', "Invalid email format. Please enter a valid email.");
-          return;
-        }
-    
-        if (userEmail === userInfo.email) {
-          // User is trying to send money to themselves
-          Alert.alert('Send Error', "You cannot send money to yourself. Please enter another user's email");
-          return;
-        }
-    
-        // Prepare the data to send to the backend API
-        const requestData = {
-          recipient_email: userEmail,  // Replace with the recipient's email
-          amount: requestedAmount,
-        };
-    
-        console.log('Request Data:', requestData);
-    
-        const response = await axios.post(
-          `${ipAddress}/api/wallet-to-wallet/`,
-          requestData,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${userInfo.token}`,
-            },
-          }
-        );
-    
-        console.log('API Response:', response);
-    
-        if (response.status === 200) {
-          const responseData = response.data;
-          // Handle success, e.g., show a success message
-          setIsSuccessVisible(true);
-          setWithdrawModalVisible(false);
-          setProcessing(false);
-          dispatch(updateAccountBalances(responseData.newAccountBalances));
-          dispatch(fetchAccountBalances());
-          dispatch(fetchUserTransactions());
-          Alert.alert('Success!', `You've successfully transferred N${requestedAmount} to ${userEmail}.`);
-        }
-      } catch (error) {
-        console.error('Wallet Transfer Error:', error);
-        setProcessing(false); // Reset the processing state
-    
-        if (error.response && error.response.status === 404) {
-          // Handle the case when the recipient email is not found
-          Alert.alert('User Not Found!', 'Recipient email not found on the platform. Please check the email and try again.');
-        } else if (error.response && error.response.status === 400) {
-          // Handle API errors when the input is invalid
-          Alert.alert('Error', 'Invalid input. Please check your entry and try again.');
-        } else if (error.response && error.response.status === 401) {
-          // Handle unauthorized access
-          Alert.alert('Error', 'You are not authorized. Please login again.');
-        } else if (error.response && error.response.status === 500) {
-          // Handle other API errors and show an appropriate alert
-          Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
-        } else {
-          // Handle other unanticipated errors
-          Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
-        }
-      }
-    };
-    
     
 
-    const isValidEmail = (email) => {
-      // Regular expression to check for a valid email format
-      const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-      return emailRegex.test(email);
-    };
+    // const isValidEmail = (email) => {
+    //   // Regular expression to check for a valid email format
+    //   const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    //   return emailRegex.test(email);
+    // };
     
     
     console.log('formatted Amount:', amount); // Log the API response
@@ -824,6 +779,8 @@ const bankAccountField = (
     console.log('fromAccount::', fromAccount); // Log the API response
     console.log('toAccount::', toAccount); // Log the API response
     console.log('sender Email::', userInfo.email); // Log the API response
+    console.log('savings balance:', accountBalances.savings); // Log the API response
+    console.log('formatted/Entered amount:', formattedAmount); // Log the API response
 
 
 
@@ -874,7 +831,7 @@ const bankAccountField = (
 <View>
 <Text style={styles.modalSubText}>
           Move money from Savings to Investment or to your bank. {"\n"} {"\n"}
-          <Text style={{fontFamily: 'proxima', color: 'black'}}>Withdrawal attracts...{"\n"}</Text> 
+          <Text style={{fontFamily: 'proxima', color: isDarkMode? "#fff" : 'black'}}>Withdrawal attracts...{"\n"}</Text> 
           <View style={styles.arrow} /><Text style={{fontFamily: 'proxima', color: 'brown'}}>5%</Text> charge if from Savings {"\n"}
           <View style={styles.arrow} /><Text style={{fontFamily: 'proxima', color: 'brown'}}>10%</Text> charge if from Investments {"\n"}
           <View style={styles.arrow} /><Text style={{fontFamily: 'proxima', color: 'green'}}>0%</Text> charge if from Wallet
@@ -1026,15 +983,16 @@ const bankAccountField = (
 
 
 
-const styles = {
-  modalContainer: {
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({  
+    modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   modalContent: {
-    backgroundColor: '#F6F3FF',
+    backgroundColor: isDarkMode ? '#271561' : '#F5F1FF',
     width: '105%',
     alignItems: 'center',
     alignSelf: 'center',
@@ -1048,7 +1006,7 @@ const styles = {
     marginTop: 20,
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
     flex: 1,
   },
 
@@ -1070,6 +1028,8 @@ const styles = {
     color: 'black',
     textAlign: 'left',
     marginHorizontal: 30,
+    color: isDarkMode ? '#fff' : 'black',
+
   },
    
   modalSubText2: {
@@ -1080,6 +1040,8 @@ const styles = {
     textAlign: 'center',
     marginHorizontal: 45,
     letterSpacing: -0.5,
+    color: isDarkMode ? '#fff' : 'black',
+
   },
 
 
@@ -1281,6 +1243,6 @@ const styles = {
 
 
 
-};
-
+});
+}
 export default WithdrawModal;

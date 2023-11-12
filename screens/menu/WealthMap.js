@@ -3,12 +3,13 @@ import { View, Text, Image, SafeAreaView, ScrollView, TouchableOpacity, StyleShe
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Title from '../components/Title';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, updateAccountBalances, } from '../../ReduxActions';
+import { useTheme } from '../../ThemeContext';
 
 const WealthMap = ({ navigation, firstName }) => {
   const userInfo = useSelector((state) => state.bank.userInfo);
   const accountBalances = useSelector((state) => state.bank.accountBalances);
-
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
  
   const wealthStages = [
     {
@@ -103,7 +104,7 @@ const WealthMap = ({ navigation, firstName }) => {
 
       <Title>My WealthMap</Title>
       <View style={styles.propertyContainer}>
-        <Ionicons name="cellular-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
+        <Ionicons name="cellular-outline" size={34} style={styles.icon}/>
         <View style={styles.progressBarContainer}> 
         <Text style={styles.propertyText}>Based on your usage, your financial status is <Text style={{fontFamily: 'proxima', color: 'green'}}>Stage {currentStage.stage}: {(currentStage.text).toUpperCase()}</Text>. Keep growing your funds to move up the 9 stages to financial freedom.</Text>
       </View>
@@ -115,7 +116,7 @@ const WealthMap = ({ navigation, firstName }) => {
           <Text style={styles.greyText}>Stage {currentStage.stage}</Text>
         </View>
         <View style={styles.amountContainer}>
-        <Text style={styles.savingsAmount}>{currentStage.text}</Text>
+        <Text style={styles.savingsAmount}>{currentStage ? currentStage.text : 'Unknown'}</Text>
         </View>
         <Text style={styles.greyText2}>{currentStage.description}</Text>
       </View>
@@ -135,12 +136,12 @@ const WealthMap = ({ navigation, firstName }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({  
+    container: {
     flex: 1,
-    backgroundColor: '#F5F1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
   },
-
 
    header: {
         marginTop: 50,
@@ -148,12 +149,14 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 15,
-      backgroundColor: 'white',
+      backgroundColor: isDarkMode ? 'black' : 'white',
       height: 43,
     },
+
     icon: {
-      marginRight: 0,
-    },
+      marginRight: 15,
+      color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+     },
 
     headerContainer: {
     flex: 1,
@@ -211,7 +214,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     flexDirection: 'row',
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#2B1667' : '#DCD1FF',
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
@@ -247,24 +250,11 @@ const styles = StyleSheet.create({
     fontWeight: 'regular',
     fontFamily: 'karla',
     letterSpacing: -0.4,
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
 
     },
-    goalText:{
-      flex: 1,
-      fontSize: 14,
-      fontFamily: 'karla',
-      letterSpacing: -0.2,
-     color: '#4C28BC',
 
-    },
-    restText:{
-      flex: 1,
-      fontSize: 14,
-      fontFamily: 'karla',
-      letterSpacing: -0.2,
-      color: 'black',
-    },
+
 
     progressBarContainer: {
       flex: 1,
@@ -327,7 +317,7 @@ const styles = StyleSheet.create({
     
 
     savingsAmount: {
-    fontSize: 70,
+    fontSize: 60,
     fontFamily: 'nexa',
     textAlign: 'center',
     letterSpacing: -4,
@@ -383,10 +373,7 @@ primaryButtonText: {
   fontFamily: 'ProductSans',
 },
 
-
-
-
-
 });
+}
 
 export default WealthMap;

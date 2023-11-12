@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, ScrollView, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../ThemeContext';
+import Title from '../components/Title';
+import Subtitle from '../components/Subtitle';
 
 const FAQ = ({ navigation }) => {
   const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
+
 
   const questions = [
     {
@@ -19,11 +25,11 @@ const FAQ = ({ navigation }) => {
     {
         id: 3,
         question: "If I've cumulatively saved up to N100,000 in my Savings, can I move it to Investment?",
-        answer: "Yes. you're encouraged to do so especially because it gives 20% ROI (compared to 10% on your Savings). Simply click the WITHDRAW button and follow the prompt to move your accumulated funds from Savings to Sponsorship Investment.",
+        answer: "Yes. you're encouraged to do so especially because it gives 20% ROI (compared to 10% on your Savings). Simply click the WITHDRAW button and follow the prompt to move your accumulated funds from SAVINGS to INVESTMENT.",
       },
       {
         id: 4,
-        question: 'What is Onwership Investment?',
+        question: 'What is Ownership Investment?',
         answer: "It means buying a property to own for rental income. We're setting up rental properties in high traffic areas across the country for you to own a part of. The ongoing investment plan is at Harmony Estate, opposite the Federal University of Agriculture Abeokuta (FUNAAB), Ogun State (41 apartments). Simply go to Invest > Ownership Investment and select Buy Now!",
       },
       {
@@ -54,6 +60,9 @@ const FAQ = ({ navigation }) => {
           <Text style={styles.headerText}>FAQs</Text>
         </View>
       </View>
+
+<Title>FAQs</Title>
+<Subtitle>See the answers to top Frequently Asked Questions</Subtitle>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Top Frequently Asked Questions</Text>
@@ -92,18 +101,19 @@ const FAQ = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F1FF',
-  },
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+container: {
+flex: 1,
+backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
+},
   header: {
     marginTop: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? 'black' : 'white',
     height: 43,
   },
   headerContainer: {
@@ -123,7 +133,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginLeft: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
     marginTop: 10,
     marginBottom: 10,
     marginLeft: 20,
@@ -134,7 +144,7 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     borderColor: 'silver',
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? '#2B1667' : '#fff',
     width: '90%',
     padding: 8,
     borderWidth: 1,
@@ -143,7 +153,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonSelected: {
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? 'black' : '#DCD1FF',
     alignSelf: 'center',
     borderBottomRightRadius: 9,
     borderBottomLeftRadius: 9,
@@ -153,7 +163,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontFamily: 'ProductSans',
-    color: '#4C28BC',
+    color: isDarkMode ? 'silver' : '#4C28BC',
     marginTop: 5,
   },
   answerContainer: {
@@ -203,5 +213,5 @@ primaryButtonText: {
 },
 
 });
-
+}
 export default FAQ;

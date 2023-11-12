@@ -9,6 +9,7 @@ import { deleteBankAccount, fetchUserBankAccounts  } from '../../ReduxActions';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
 import bankOptions from '../components/BankOptions';
+import { useTheme } from '../../ThemeContext';
 
 const Bank = ({ navigation, route, initialBankRecords}) => {
   const [addBankModalVisible, setAddBankModalVisible] = useState(false); // define modalVisible state
@@ -16,7 +17,8 @@ const Bank = ({ navigation, route, initialBankRecords}) => {
   const dispatch = useDispatch();
   const userInfo = useSelector((state) => state.bank.userInfo);
   const [bankRecords, setBankRecords] = useState([]);
-
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
   useEffect(() => {
     dispatch(fetchUserBankAccounts()); // Use the correct action name here
@@ -132,7 +134,7 @@ const Bank = ({ navigation, route, initialBankRecords}) => {
       </View>
 
       <View style={styles.propertyContainer}>
-        <MaterialIcons name="account-balance" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
+        <MaterialIcons name="account-balance" size={34} style={styles.icon}/>
         <Text style={styles.propertyText}>Set up your bank accounts so you can perform faster withdrawals.</Text>
       </View>
       
@@ -209,12 +211,14 @@ const Bank = ({ navigation, route, initialBankRecords}) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
 
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+container: {
+flex: 1,
+backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
+},
 
    header: {
         marginTop: 50,
@@ -222,7 +226,7 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 15,
-      backgroundColor: '#F5F1FF',
+      backgroundColor: isDarkMode ? 'black' : 'white',
       height: 43,
     },
     icon: {
@@ -271,11 +275,13 @@ const styles = StyleSheet.create({
             borderColor: '#4C28BC',
             alignItems: 'center',
             flex: 1,
-            borderTopWidth: 0,
-            borderRightWidth: 0,
-            borderLeftWidth: 0,
-            backgroundColor: '#F5F1FF'
-            },
+            borderTopRightRadius: 15,
+            borderTopLeftRadius: 15,
+            borderBottomWidth: 0.8,
+            borderLeftWidth: 0.8,
+            borderRightWidth: 0.8,
+            backgroundColor: isDarkMode ? 'black' : 'white',
+          },
     
       title2: {
         fontSize: 16,
@@ -298,7 +304,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 16,
         flexDirection: 'row',
-        backgroundColor: '#DCD1FF',
+        backgroundColor: isDarkMode ? '#2B1667' : '#DCD1FF',
         padding: 15,
         marginHorizontal: 20,
         borderRadius: 10,
@@ -312,7 +318,7 @@ const styles = StyleSheet.create({
         width: '70%',
         fontFamily: 'karla',
         letterSpacing: -0.2,
-        color: 'black',
+        color: isDarkMode ? 'silver' : 'black',
     
         },
  
@@ -344,9 +350,11 @@ const styles = StyleSheet.create({
           flexDirection: 'column',
           justifyContent: 'space-between', // Arrange content vertically
           flex: 1, // Take up remaining space
-
-
         },
+        icon: {
+          marginRight: 15,
+          color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+         },
         bankCardBankName: {
           fontSize: 16,
           color: 'white',
@@ -414,5 +422,5 @@ const styles = StyleSheet.create({
   },
 
 });
-
+}
 export default Bank;

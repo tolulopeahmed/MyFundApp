@@ -32,10 +32,27 @@ const Home = ({ navigation, route}) => {
   const kycStatus = useSelector((state) => state.bank.kycStatus);
   const [showBalances, setShowBalances] = useState(true);
   const isFocused = useIsFocused();
+  const { toggleDarkMode } = useTheme();
+
 
   const { isDarkMode, colors } = useTheme();
   const styles = createStyles(isDarkMode);
+  
+  const retrieveDarkModePreference = async () => {
+    try {
+      const value = await AsyncStorage.getItem('darkMode');
+      if (value !== null) {
+        toggleDarkMode(JSON.parse(value));
+      }
+    } catch (error) {
+      console.error('Error retrieving dark mode preference:', error);
+    }
+  };
 
+  useEffect(() => {
+    retrieveDarkModePreference();
+  }, []);
+  
   useEffect(() => {
     // Fetch KYC status when the component mounts
     dispatch(fetchKYCStatus());
@@ -68,7 +85,9 @@ const Home = ({ navigation, route}) => {
     "QuickInvest (Pending)": "ellipsis-horizontal-circle-outline",
     "QuickInvest (Confirmed)": "checkmark-circle",
     "QuickSave (Pending)": "ellipsis-horizontal-circle-outline",
+    "QuickSave (Failed)": "close-circle-outline",
     "QuickSave (Confirmed)": "checkmark-circle",
+
     "Sent to User": "arrow-up-outline"
   };
 
@@ -611,11 +630,11 @@ const formatTime = (timeString) => {
 
 <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["QuickSave", "AutoSave", "QuickInvest (Pending)", "QuickInvest (Confirmed)","QuickSave (Pending)", "QuickSave (Confirmed)", "FUNAAB","IBADAN", "Referral Reward (Confirmed)", "Referral Reward (Pending)", "Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)","Sent to User", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+    ["QuickSave", "AutoSave", "QuickInvest (Pending)", "QuickSave (Failed)", "QuickInvest (Confirmed)","QuickSave (Pending)", "QuickSave (Confirmed)", "FUNAAB","IBADAN", "Referral Reward (Confirmed)", "Referral Reward (Pending)", "Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)","Sent to User", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["QuickSave", "AutoSave", "QuickInvest (Pending)", "QuickInvest (Confirmed)","QuickSave (Pending)", "QuickSave (Confirmed)", "FUNAAB","IBADAN","Referral Reward (Confirmed)","Referral Reward (Pending)","Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Sent to User", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+        ["QuickSave", "AutoSave", "QuickInvest (Pending)","QuickSave (Failed)", "QuickInvest (Confirmed)","QuickSave (Pending)", "QuickSave (Confirmed)", "FUNAAB","IBADAN","Referral Reward (Confirmed)","Referral Reward (Pending)","Card Successful", "QuickInvest", "AutoInvest", "Withdrawal (Savings > Investment)", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Sent to User", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (
@@ -670,8 +689,11 @@ backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
 },
 
 headerContainer: {
-  backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
-},
+  flex: 1,
+  flexDirection: 'row',
+  justifyContent: 'flex-end',
+
+  },
 
 
 headerText: {

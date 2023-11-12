@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Text, Alert, View, ActivityIndicator, TextInput, TouchableOpacity } from 'react-native';
+import { Modal, Text, Alert, View, StyleSheet, ActivityIndicator, TextInput, TouchableOpacity } from 'react-native';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addBankAccount } from '../../ReduxActions';
 import LoadingModal from '../components/LoadingModal';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useTheme } from '../../ThemeContext';
 
 const bankOptions = [
     { id: 1, name: 'Access Bank', code: '044' },
@@ -87,8 +88,8 @@ const bankOptions = [
     const userInfo = useSelector((state) => state.bank.userInfo);
 
 
-    //console.log('User Token from Redux:', userInfo.token);
-
+    const { isDarkMode, colors } = useTheme();
+    const styles = createStyles(isDarkMode); 
 
     const handleSelect = (value) => {
       const selectedBankObj = bankOptions.find((bank) => bank.name === value);
@@ -220,7 +221,7 @@ const bankOptions = [
         ) {
           Alert.alert(
             'Error',
-            'This bank account is already added by another MyFund user.'
+            'This bank account is already added by another MyFund user. Kindly add another.'
           );
         } else {
           setIsLoading(false);
@@ -372,7 +373,7 @@ const bankOptions = [
 
 
   
-  <Text style={{fontFamily: 'karla', letterSpacing: -0.8, marginBottom: 7, marginTop: 20, alignSelf: 'center', color: 'grey', fontSize: 12,}}>This bank account can only be used by you for receiving money</Text>
+  <Text style={{fontFamily: 'karla', letterSpacing: -0.8, marginBottom: 7, marginTop: 20, alignSelf: 'center',     color: isDarkMode ? 'silver' : 'grey', fontSize: 12,}}>This bank account can only be used by you for receiving money</Text>
   
     
 
@@ -404,15 +405,16 @@ const bankOptions = [
   );
 };
 
-const styles = {
-  modalContainer: {
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+    modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   modalContent: {
-    backgroundColor: '#F6F3FF',
+    backgroundColor: isDarkMode ? '#271561' : '#F5F1FF',
     width: '100%',
     alignItems: 'center',
     borderTopRightRadius: 25,
@@ -425,7 +427,7 @@ const styles = {
     marginTop: 20,
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
     flex: 1,
   },
 
@@ -434,10 +436,11 @@ const styles = {
     fontFamily: 'karla',
     color: 'black',
     textAlign: 'left',
-    marginHorizontal: 30,
+    alignSelf: 'flex-start',
+    marginHorizontal: 20,
     marginTop: 5,
-    marginLeft: 15,
-
+    marginLeft: 25,
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
    
 
@@ -446,6 +449,7 @@ const styles = {
     marginLeft: 3,
     marginBottom: 5,
     textAlign: 'left',
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
 
   fieldContainer3: {
@@ -528,6 +532,6 @@ const styles = {
 
   
 
-};
-
+});
+}
 export default AddBankModal;

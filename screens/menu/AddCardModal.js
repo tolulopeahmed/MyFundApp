@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Modal, Text, ActivityIndicator, Image, Alert, Pressable, View, TextInput, TouchableOpacity } from 'react-native';
+import { Modal, Text, ActivityIndicator, StyleSheet, Image, Alert, Pressable, View, TextInput, TouchableOpacity } from 'react-native';
 import Divider from '../components/Divider'
 import { Ionicons } from '@expo/vector-icons';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -8,6 +8,7 @@ import { ipAddress } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCard, fetchUserData, fetchUserCards } from '../../ReduxActions';
 import LoadingModal from '../components/LoadingModal';
+import { useTheme } from '../../ThemeContext';
 
 const bankOptions = [
   { id: 1, name: 'Access Bank', code: '044' },
@@ -99,6 +100,8 @@ const AddCardModal = ({ navigation, addCardModalVisible, setAddCardModalVisible,
   checkAllFieldsFilled();
   };
 
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);  
 
   
   const handleSelect = (value) => {
@@ -459,7 +462,9 @@ An initial charge of ₦50 will be made and returned back as to your savings acc
   );
 };
 
-const styles = {
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -467,7 +472,7 @@ const styles = {
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   modalContent: {
-    backgroundColor: '#F6F3FF',
+    backgroundColor: isDarkMode ? '#271561' : '#F5F1FF',
     width: '100%',
     alignItems: 'center',
     borderTopRightRadius: 25,
@@ -480,7 +485,7 @@ const styles = {
     marginTop: 20,
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
     flex: 1,
   },
   modalSubText: {
@@ -492,6 +497,7 @@ const styles = {
     marginTop: 5,
     marginLeft: 15,
     marginBottom: 30,
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
    
   
@@ -527,6 +533,7 @@ labelText2: {
   fontFamily: 'proxima',
   marginBottom: 7,
   textAlign: 'left',
+  color: isDarkMode ? '#fff' : '#4C28BC',
 },
 
 iconContainer: {
@@ -586,6 +593,7 @@ amountInput: {
     marginLeft: 3,
     marginBottom: 5,
     textAlign: 'left',
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
   
   amountInput2: {
@@ -607,6 +615,7 @@ amountInput: {
   
   alertIcon: {
     marginLeft: 4,
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
   
   
@@ -671,6 +680,6 @@ amountInput: {
     color: 'white',
   },
 
-};
-
+});
+}
 export default AddCardModal;

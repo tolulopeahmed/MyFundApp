@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import SectionTitle from '../components/SectionTitle';
 import Subtitle from '../components/Subtitle';
 import Divider from '../components/Divider';
-
+import { useTheme } from '../../ThemeContext';
 
 
 const DOAModal = ({ navigation, DOAModalVisible, setDOAModalVisible }) => {
@@ -16,6 +16,9 @@ const DOAModal = ({ navigation, DOAModalVisible, setDOAModalVisible }) => {
   const year = currentDate.getFullYear();
   const [isSaved, setIsSaved] = useState(false);
   const scrollViewRef = useRef(null);
+
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);  
 
 
   const saveAsImage = async () => {
@@ -158,8 +161,8 @@ const DOAModal = ({ navigation, DOAModalVisible, setDOAModalVisible }) => {
   );
 };
 
-const styles = StyleSheet.create({
-
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
   modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -168,7 +171,7 @@ const styles = StyleSheet.create({
   },
 
   modalContent: {
-    backgroundColor: '#F6F3FF',
+    backgroundColor: isDarkMode ? '#271561' : '#F5F1FF',
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     borderBottomLeftRadius: 0,
@@ -195,7 +198,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
     flex: 1,
   },
   modalSubText: {
@@ -205,6 +208,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginHorizontal: 30,
     marginTop: 5,
+    color: isDarkMode ? '#fff' : 'black',
   },
    
   container: {
@@ -217,7 +221,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? 'black' : '#fff',
     height: 43,
   },
   headerContainer: {
@@ -226,14 +230,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   
-  headerText: {
-    flex: 1,
-    color: 'silver',
-    alignSelf: 'center',
-    marginLeft: 15,
-    fontFamily: 'nexa',
-    letterSpacing: 3,
-  },
+
   contentContainer: {
     paddingHorizontal: 30,
     paddingTop: 20,
@@ -244,7 +241,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginBottom: 20,
     paddingHorizontal: 20,
-
+    color: isDarkMode ? '#fff' : 'black',
   },
 
   scrollToBottomButton: {
@@ -297,6 +294,6 @@ const styles = StyleSheet.create({
   },
   
 });
-
+}
 
 export default DOAModal;

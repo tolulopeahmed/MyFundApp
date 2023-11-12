@@ -9,6 +9,7 @@ import { ipAddress } from '../../constants';
 import Subtitle from '../components/Subtitle';
 import { MaterialIcons } from '@expo/vector-icons';
 import moment from 'moment';
+import { useTheme } from '../../ThemeContext';
 
 
 const TopSavers = ({ navigation }) => {
@@ -19,7 +20,8 @@ const TopSavers = ({ navigation }) => {
   const [currentMonth, setCurrentMonth] = useState(''); 
   const profileImageUri = useSelector((state) => state.bank.profileImageUri);
   const [selectedImage, setSelectedImage] = useState(null);
-
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
   useEffect(() => {
     dispatch(fetchTopSaversData());
@@ -49,7 +51,7 @@ const TopSavers = ({ navigation }) => {
         key={saver.id}
         style={[
           styles.transactionItem,
-          saver.email === userInfo.email && { backgroundColor: '#EAE2FC', flex: 1, },
+          saver.email === userInfo.email && { backgroundColor: isDarkMode ? '#2B1667' : '#EAE2FC',          flex: 1, },
         ]}
       >
         <Text style={styles.transactionRank}>{index + 1}</Text>
@@ -144,8 +146,7 @@ const TopSavers = ({ navigation }) => {
           : 'wallet-outline'
       }
       size={34}
-      color="#4C28BC"
-      style={{ marginRight: 15 }}
+      style={styles.icon}
     />
     <View style={styles.progressBarContainer}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -232,18 +233,21 @@ const TopSavers = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({  
+    container: {
     flex: 1,
-    backgroundColor: '#F5F1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
   },
+
   header: {
     marginTop: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? 'black' : 'white',
     height: 43,
   },
 
@@ -272,7 +276,7 @@ const styles = StyleSheet.create({
   propertyContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#2B1667' : '#DCD1FF',
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
@@ -284,7 +288,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     flexDirection: 'row',
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#2B1667' : '#DCD1FF',
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
@@ -294,9 +298,15 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
     fontFamily: 'karla',
     letterSpacing: -0.2,
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
     marginBottom: 8,
   },
+
+  
+icon: {
+  marginRight: 15,
+  color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+ },
   containerText: {
     fontSize: 14,
     fontWeight: 'normal',
@@ -406,12 +416,13 @@ const styles = StyleSheet.create({
   },
 
   transactionRank: {
-    color: '#4C28BC',
+    color: isDarkMode ? 'white' : '#4C28BC',
     fontSize: 15,
     fontFamily: 'nexa',
   },
   transactionDescription: {
     color: '#4C28BC',
+    color: isDarkMode ? 'white' : '#4C28BC',
     letterSpacing: -0.2,
     fontSize: 17,
     fontFamily: 'proxima',
@@ -477,5 +488,5 @@ percentageText: {
     alignContent: 'center',
   },
 });
-
+}
 export default TopSavers;

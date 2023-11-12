@@ -41,7 +41,6 @@ const Stack = createStackNavigator();
 
 const App = ({ styles, darkModeStyles, }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
   
 
 
@@ -126,24 +125,3 @@ const App = ({ styles, darkModeStyles, }) => {
 };
 
 export default App;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
-
-const darkModeStyles = StyleSheet.create({
-  container: {
-    backgroundColor: '#303030',
-  },
-  text: {
-    color: 'white',
-  },
-  whiteBackground: {
-    backgroundColor: '#303030',
-  },
-});

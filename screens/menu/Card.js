@@ -9,7 +9,7 @@ import { fetchUserCards, deleteCardSuccess, fetchAutoSaveSettings } from '../../
 import axios from 'axios';
 import { ipAddress } from '../../constants';
 import bankOptions from '../components/BankOptions';
-
+import { useTheme } from '../../ThemeContext';
 
 
 const getBackgroundColor = (bankName) => {
@@ -25,6 +25,8 @@ const Card = ({ navigation, route }) => {
   const userCards = useSelector((state) => state.bank.userCards); // Define and use userCards
   const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
   const autoInvestSettings = useSelector((state) => state.bank.autoInvestSettings);
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
 
   useEffect(() => {
@@ -165,7 +167,7 @@ const Card = ({ navigation, route }) => {
       </View>
 
       <View style={styles.propertyContainer}>
-        <Ionicons name="card-outline" size={34} color="#4C28BC" style={{ marginRight: 15 }} />
+        <Ionicons name="card-outline" size={34} style={styles.icon} />
         <Text style={styles.propertyText}>Set up your cards so you can perform faster transactions including AutoSave, AutoInvest, Buy Property, etc.</Text>
       </View>
       
@@ -240,12 +242,14 @@ const Card = ({ navigation, route }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F1FF',
-  },
 
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+container: {
+flex: 1,
+backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
+},
 
    header: {
         marginTop: 50,
@@ -253,7 +257,7 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 15,
-      backgroundColor: 'white',
+      backgroundColor: isDarkMode ? 'black' : 'white',
       height: 43,
     },
     icon: {
@@ -303,17 +307,22 @@ const styles = StyleSheet.create({
     borderRightWidth: 0.8,
     borderColor: '#4C28BC',
     },
-
+    icon: {
+      marginRight: 15,
+      color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+     },
     bankContainer: {
         borderWidth: 0.8,
         borderColor: '#4C28BC',
         alignItems: 'center',
         flex: 1,
-        borderTopWidth: 0,
-        borderRightWidth: 0,
-        borderLeftWidth: 0,
-        backgroundColor: 'white'
-        },
+        borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
+    borderBottomWidth: 0.8,
+    borderLeftWidth: 0.8,
+    borderRightWidth: 0.8,
+        backgroundColor: isDarkMode ? 'black' : 'white',
+      },
 
   title: {
     fontSize: 16,
@@ -336,7 +345,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     flexDirection: 'row',
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#2B1667' : '#DCD1FF',
     padding: 15,
     marginHorizontal: 20,
     borderRadius: 10,
@@ -351,7 +360,7 @@ const styles = StyleSheet.create({
     fontWeight: 'regular',
     fontFamily: 'karla',
     letterSpacing: -0.2,
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
 
     },
 
@@ -462,10 +471,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'ProductSans',
   },
-
-
-
-
 });
+}
 
 export default Card;

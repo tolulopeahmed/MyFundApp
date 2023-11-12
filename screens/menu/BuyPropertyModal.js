@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Text, Alert, KeyboardAvoidingView, ActivityIndicator, Keyboard, ScrollView, Image, View, TextInput, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { Modal, Text, Alert, KeyboardAvoidingView, StyleSheet, ActivityIndicator, Keyboard, ScrollView, Image, View, TextInput, Stylesh, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Divider from '../components/Divider';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,8 +10,7 @@ import axios from 'axios';
 import LoadingModal from '../components/LoadingModal';
 import bankOptions from '../components/BankOptions';
 import DOAModal from './DOAModal'
-import { useHandler } from 'react-native-reanimated';
-
+import { useTheme } from '../../ThemeContext';
 
 
 const getBackgroundColor = (bankName) => {
@@ -38,7 +37,8 @@ const BuyPropertyModal = ({ navigation, propertyModalVisible, setPropertyModalVi
 
   const [DOAModalVisible, setDOAModalVisible] = useState(false);
 
-
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);  
   
   const handleDOA = () => {
     setDOAModalVisible(true);
@@ -245,7 +245,7 @@ console.log('selectedCardId:', selectedCardId);
                     <Text style={styles.modalSubText}>
                       Buy {selectedProperty.name}, at {selectedProperty.location}. {'\n'}
                       {'\n'}
-                      Pay: <Text style={{ color: '#4C28BC', fontFamily: 'proxima' }}>₦{Math.floor(selectedProperty.price).toLocaleString()}/unit</Text> {'\n'}
+                      Pay: <Text style={{ color: isDarkMode ? '#6E3DFF' : '#4C28BC', fontFamily: 'proxima' }}>₦{Math.floor(selectedProperty.price).toLocaleString()}/unit</Text> {'\n'}
                       Earn: <Text style={{ color: 'green', fontFamily: 'proxima' }}>₦{Math.floor(selectedProperty.rent).toLocaleString()}/year</Text>{'\n'}
                       {/* ROI: <Text style={{ color: 'green', fontFamily: 'proxima' }}>{(selectedProperty.rent) / (selectedProperty.price) * 100}% p.a.</Text> */}
                     </Text>
@@ -371,7 +371,7 @@ console.log('selectedCardId:', selectedCardId);
 
                             </View>
                     <TouchableOpacity  onPress={handleDOA}>
-                      <Text style={styles.modalSubText4}>By clicking Buy Now, you agree to the  <Text style={{ color: '#4C28BC', fontFamily: 'proxima' }}>Deed of Agreement.</Text></Text>
+                      <Text style={styles.modalSubText4}>By clicking Buy Now, you agree to the  <Text style={{ color: isDarkMode ? '#6E3DFF' : '#4C28BC', fontFamily: 'proxima' }}>Deed of Agreement.</Text></Text>
                       </TouchableOpacity>
                     </View>
                   )}
@@ -406,20 +406,21 @@ console.log('selectedCardId:', selectedCardId);
   );
 };
 
-const styles = {
-  modalContainer: {
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+    modalContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   modalContent: {
-    backgroundColor: '#F6F3FF',
+    backgroundColor: isDarkMode ? '#271561' : '#F5F1FF',
     width: '103%',
     alignItems: 'center',
-    alignSelf: 'center',
-    borderTopRightRadius: 45,
-    borderTopLeftRadius: 45,
+    borderTopRightRadius: 25,
+    borderTopLeftRadius: 25,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,      
   },
@@ -427,14 +428,13 @@ const styles = {
     marginTop: 20,
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
     flex: 1,
   },
-  
   modalSubText: {
     fontSize: 14,
     fontFamily: 'karla',
-    color: 'black',
+    color: isDarkMode ? '#fff' : 'black',
     textAlign: 'left',
     marginHorizontal: 30,
     marginTop: 5,
@@ -444,7 +444,7 @@ const styles = {
     fontSize: 14,
     fontFamily: 'karla',
     textAlign: 'center',
-    color: 'black',
+    color: isDarkMode ? '#fff' : 'black',
     textAlign: 'center',
     marginHorizontal: 45,
     marginTop: 5,
@@ -455,7 +455,7 @@ const styles = {
     fontSize: 13,
     fontFamily: 'karla-italic',
     textAlign: 'center',
-    color: 'black',
+    color: isDarkMode ? '#fff' : 'black',
     textAlign: 'center',
     marginHorizontal: 45,
     marginTop: 25,
@@ -478,7 +478,7 @@ const styles = {
     fontSize: 15,
     fontFamily: 'proxima',
     textAlign: 'center',
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
     textAlign: 'center',
     marginHorizontal: 45,
     letterSpacing: -0.5,
@@ -638,7 +638,7 @@ const styles = {
   
   dropdown: {
     height: 50,
-    width: '80%',
+    width: '85%',
     backgroundColor: 'white',
     borderRadius: 10,
     paddingLeft: 15,
@@ -664,7 +664,7 @@ const styles = {
     marginTop: 15,
     position: 'relative',
     marginBottom: 10,
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
 
   primaryButton: {
@@ -702,6 +702,6 @@ const styles = {
     marginRight: 5,
   },
 
-};
-
+});
+}
 export default BuyPropertyModal;
