@@ -147,6 +147,6 @@ declare type TextInputHandles = Pick<TextInput, 'setNativeProps' | 'isFocused' |
 
  * ```
  */
-declare const Searchbar: import("../utils/forwardRef").ForwarRefComponent<TextInputHandles, Props>;
+declare const Searchbar: import("../utils/forwardRef").ForwardRefComponent<TextInputHandles, Props>;
 export default Searchbar;
 //# sourceMappingURL=Searchbar.d.ts.map

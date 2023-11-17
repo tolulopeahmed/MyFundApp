@@ -6,12 +6,13 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "build:android": "eas build --local -p android --profile preview"
   },
   "dependencies": {
     "@apollo/client": "^3.8.3",
-    "@expo/config-plugins": "^7.2.5",
-    "@expo/prebuild-config": "^6.2.6",
+    "@expo/config-plugins": "^7.2.2",
+    "@expo/prebuild-config": "^6.2.4",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-native-fontawesome": "^0.3.0",
     "@react-native-async-storage/async-storage": "1.18.2",
@@ -34,7 +35,6 @@
     "expo-dev-client": "~2.4.12",
     "expo-font": "~11.4.0",
     "expo-google-app-auth": "~8.3.0",
-    "expo-google-sign-in": "^10.0.0",
     "expo-image-picker": "~14.3.2",
     "expo-local-authentication": "~13.4.1",
     "expo-splash-screen": "~0.20.5",

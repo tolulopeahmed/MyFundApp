@@ -77,7 +77,7 @@ function configureV3Fonts(config) {
       }];
     }));
   }
-  return Object.assign(typescale, ...Object.entries(config).map(_ref2 => {
+  return Object.assign({}, typescale, ...Object.entries(config).map(_ref2 => {
     let [variantName, variantProperties] = _ref2;
     return {
       [variantName]: {

@@ -113,6 +113,10 @@ export declare type Props = $Omit<React.ComponentProps<typeof Surface>, 'mode'> 
      * Ellipsize Mode for the children text
      */
     ellipsizeMode?: EllipsizeProp;
+    /**
+     * Specifies the largest possible scale a text font can reach.
+     */
+    maxFontSizeMultiplier?: number;
 };
 /**
  * Chips are compact elements that can represent inputs, attributes, or actions.
@@ -137,6 +141,6 @@ export declare type Props = $Omit<React.ComponentProps<typeof Surface>, 'mode'> 
  * export default MyComponent;
  * ```
  */
-declare const Chip: ({ mode, children, icon, avatar, selected, disabled, accessibilityLabel, closeIconAccessibilityLabel, onPress, onLongPress, onPressOut, onPressIn, delayLongPress, onClose, closeIcon, textStyle, style, theme: themeOverrides, testID, selectedColor, rippleColor: customRippleColor, showSelectedOverlay, showSelectedCheck, ellipsizeMode, compact, elevated, ...rest }: Props) => React.JSX.Element;
+declare const Chip: ({ mode, children, icon, avatar, selected, disabled, accessibilityLabel, closeIconAccessibilityLabel, onPress, onLongPress, onPressOut, onPressIn, delayLongPress, onClose, closeIcon, textStyle, style, theme: themeOverrides, testID, selectedColor, rippleColor: customRippleColor, showSelectedOverlay, showSelectedCheck, ellipsizeMode, compact, elevated, maxFontSizeMultiplier, ...rest }: Props) => React.JSX.Element;
 export default Chip;
 //# sourceMappingURL=Chip.d.ts.map

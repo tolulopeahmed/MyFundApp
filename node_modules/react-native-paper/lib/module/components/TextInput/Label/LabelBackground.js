@@ -56,7 +56,7 @@ const LabelBackground = _ref => {
     }],
     numberOfLines: 1,
     maxFontSizeMultiplier: maxFontSizeMultiplier
-  }, label)];
+  }, typeof label === 'string' ? label : label === null || label === void 0 ? void 0 : label.props.children)];
 };
 export default LabelBackground;
 const styles = StyleSheet.create({

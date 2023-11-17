@@ -116,7 +116,7 @@ declare const Card: {
         displayName: string;
     };
     Title: {
-        ({ title, titleStyle, titleNumberOfLines, titleVariant, subtitle, subtitleStyle, subtitleNumberOfLines, subtitleVariant, left, leftStyle, right, rightStyle, style, theme: themeOverrides, }: import("./CardTitle").Props): React.JSX.Element;
+        ({ title, titleStyle, titleNumberOfLines, titleVariant, titleMaxFontSizeMultiplier, subtitle, subtitleStyle, subtitleNumberOfLines, subtitleVariant, subtitleMaxFontSizeMultiplier, left, leftStyle, right, rightStyle, style, theme: themeOverrides, }: import("./CardTitle").Props): React.JSX.Element;
         displayName: string;
     };
 };

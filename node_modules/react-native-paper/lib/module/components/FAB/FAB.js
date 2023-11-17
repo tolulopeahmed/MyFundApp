@@ -62,6 +62,7 @@ const FAB = forwardRef((_ref, ref) => {
     customSize,
     mode = 'elevated',
     variant = 'primary',
+    labelMaxFontSizeMultiplier,
     ...rest
   } = _ref;
   const theme = useInternalTheme(themeOverrides);
@@ -175,7 +176,8 @@ const FAB = forwardRef((_ref, ref) => {
     variant: "labelLarge",
     selectable: false,
     testID: `${testID}-text`,
-    style: [styles.label, uppercase && styles.uppercaseLabel, textStyle]
+    style: [styles.label, uppercase && styles.uppercaseLabel, textStyle],
+    maxFontSizeMultiplier: labelMaxFontSizeMultiplier
   }, label) : null)));
 });
 const styles = StyleSheet.create({

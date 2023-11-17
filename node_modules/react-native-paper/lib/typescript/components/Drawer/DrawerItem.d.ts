@@ -30,6 +30,10 @@ export declare type Props = React.ComponentPropsWithRef<typeof View> & {
         color: string;
     }) => React.ReactNode;
     /**
+     * Specifies the largest possible scale a label font can reach.
+     */
+    labelMaxFontSizeMultiplier?: number;
+    /**
      * Color of the ripple effect.
      */
     rippleColor?: ColorValue;
@@ -59,7 +63,7 @@ export declare type Props = React.ComponentPropsWithRef<typeof View> & {
  * ```
  */
 declare const DrawerItem: {
-    ({ icon, label, active, theme: themeOverrides, rippleColor: customRippleColor, style, onPress, accessibilityLabel, right, ...rest }: Props): React.JSX.Element;
+    ({ icon, label, active, theme: themeOverrides, rippleColor: customRippleColor, style, onPress, accessibilityLabel, right, labelMaxFontSizeMultiplier, ...rest }: Props): React.JSX.Element;
     displayName: string;
 };
 export default DrawerItem;

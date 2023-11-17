@@ -42,6 +42,7 @@ const DataTableTitle = _ref => {
     style,
     theme: themeOverrides,
     numberOfLines = 1,
+    maxFontSizeMultiplier,
     ...rest
   } = _ref;
   const theme = useInternalTheme(themeOverrides);
@@ -88,7 +89,8 @@ const DataTableTitle = _ref => {
     numberOfLines > 1 ? numeric ? I18nManager.getConstants().isRTL ? styles.leftText : styles.rightText : styles.centerText : {}, sortDirection ? styles.sorted : {
       color: alphaTextColor
     }, textStyle],
-    numberOfLines: numberOfLines
+    numberOfLines: numberOfLines,
+    maxFontSizeMultiplier: maxFontSizeMultiplier
   }, children)));
 };
 DataTableTitle.displayName = 'DataTable.Title';

@@ -114,7 +114,8 @@ const Ownership = ({navigation}) => {
 
     
   return (
-    <>
+    <View style={styles.container}>
+
     <View style={styles.header}>
     <TouchableOpacity onPress={() => navigation.goBack()}>
       <Ionicons name="arrow-back-outline" size={30} color="#4C28BC" />
@@ -188,7 +189,7 @@ const Ownership = ({navigation}) => {
       setIsSuccessVisible={setIsSuccessVisible} // Pass the function here
       />
       )}
-    </>
+      </View>
   );
 };
 
@@ -320,7 +321,7 @@ bell: {
   rate: {
     fontSize: 14,
     fontFamily: 'karla',
-    color: 'green',
+    color: isDarkMode ? '#43FF8E' : 'green',
     marginBottom: 50,
     letterSpacing: -0.7,
     alignSelf: 'flex-start',

@@ -28,6 +28,10 @@ export declare type Props = React.ComponentPropsWithRef<typeof TouchableWithoutF
      */
     textStyle?: StyleProp<TextStyle>;
     /**
+     * Specifies the largest possible scale a text font can reach.
+     */
+    maxFontSizeMultiplier?: number;
+    /**
      * @optional
      */
     theme?: ThemeProp;
@@ -58,7 +62,7 @@ export declare type Props = React.ComponentPropsWithRef<typeof TouchableWithoutF
  * ```
  */
 declare const DataTableTitle: {
-    ({ numeric, children, onPress, sortDirection, textStyle, style, theme: themeOverrides, numberOfLines, ...rest }: Props): React.JSX.Element;
+    ({ numeric, children, onPress, sortDirection, textStyle, style, theme: themeOverrides, numberOfLines, maxFontSizeMultiplier, ...rest }: Props): React.JSX.Element;
     displayName: string;
 };
 export default DataTableTitle;

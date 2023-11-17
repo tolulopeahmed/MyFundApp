@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { PressableAndroidRippleConfig, StyleProp, ViewStyle, Pressable, GestureResponderEvent, ColorValue } from 'react-native';
+import { PressableAndroidRippleConfig, StyleProp, ViewStyle, GestureResponderEvent, ColorValue } from 'react-native';
+import type { PressableProps } from './Pressable';
 import type { ThemeProp } from '../../types';
-export declare type Props = React.ComponentProps<typeof Pressable> & {
+export declare type Props = PressableProps & {
     borderless?: boolean;
     background?: PressableAndroidRippleConfig;
     centered?: boolean;

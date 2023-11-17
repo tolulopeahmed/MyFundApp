@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { ColorValue, GestureResponderEvent, Pressable, StyleProp, ViewStyle } from 'react-native';
+import { ColorValue, GestureResponderEvent, StyleProp, ViewStyle } from 'react-native';
+import type { PressableProps, PressableStateCallbackType } from './Pressable';
 import type { ThemeProp } from '../../types';
-export declare type Props = React.ComponentPropsWithRef<typeof Pressable> & {
+export declare type Props = PressableProps & {
     /**
      * Whether to render the ripple outside the view bounds.
      */
@@ -46,8 +47,8 @@ export declare type Props = React.ComponentPropsWithRef<typeof Pressable> & {
     /**
      * Content of the `TouchableRipple`.
      */
-    children: React.ReactNode;
-    style?: StyleProp<ViewStyle>;
+    children: ((state: PressableStateCallbackType) => React.ReactNode) | React.ReactNode;
+    style?: StyleProp<ViewStyle> | ((state: PressableStateCallbackType) => StyleProp<ViewStyle>) | undefined;
     /**
      * @optional
      */

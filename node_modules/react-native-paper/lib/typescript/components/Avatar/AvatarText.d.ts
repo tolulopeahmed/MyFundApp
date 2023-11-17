@@ -23,6 +23,10 @@ export declare type Props = React.ComponentPropsWithRef<typeof View> & {
      */
     labelStyle?: StyleProp<TextStyle>;
     /**
+     * Specifies the largest possible scale a text font can reach.
+     */
+    maxFontSizeMultiplier?: number;
+    /**
      * @optional
      */
     theme?: ThemeProp;
@@ -41,7 +45,7 @@ export declare type Props = React.ComponentPropsWithRef<typeof View> & {
  * ```
  */
 declare const AvatarText: {
-    ({ label, size, style, labelStyle, color: customColor, theme: themeOverrides, ...rest }: Props): React.JSX.Element;
+    ({ label, size, style, labelStyle, color: customColor, theme: themeOverrides, maxFontSizeMultiplier, ...rest }: Props): React.JSX.Element;
     displayName: string;
 };
 export default AvatarText;

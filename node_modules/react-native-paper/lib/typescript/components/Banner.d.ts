@@ -39,6 +39,10 @@ export declare type Props = $Omit<$RemoveChildren<typeof Surface>, 'mode'> & {
      * Changes Banner shadow and background on iOS and Android.
      */
     elevation?: 0 | 1 | 2 | 3 | 4 | 5 | Animated.Value;
+    /**
+     * Specifies the largest possible scale a text font can reach.
+     */
+    maxFontSizeMultiplier?: number;
     style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
     ref?: React.RefObject<View>;
     /**
@@ -100,6 +104,6 @@ export declare type Props = $Omit<$RemoveChildren<typeof Surface>, 'mode'> & {
  * export default MyComponent;
  * ```
  */
-declare const Banner: ({ visible, icon, children, actions, contentStyle, elevation, style, theme: themeOverrides, onShowAnimationFinished, onHideAnimationFinished, ...rest }: Props) => React.JSX.Element;
+declare const Banner: ({ visible, icon, children, actions, contentStyle, elevation, style, theme: themeOverrides, onShowAnimationFinished, onHideAnimationFinished, maxFontSizeMultiplier, ...rest }: Props) => React.JSX.Element;
 export default Banner;
 //# sourceMappingURL=Banner.d.ts.map

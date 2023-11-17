@@ -32,10 +32,12 @@ const CardTitle = _ref => {
     titleStyle,
     titleNumberOfLines = 1,
     titleVariant = 'bodyLarge',
+    titleMaxFontSizeMultiplier,
     subtitle,
     subtitleStyle,
     subtitleNumberOfLines = 1,
     subtitleVariant = 'bodyMedium',
+    subtitleMaxFontSizeMultiplier,
     left,
     leftStyle,
     right,
@@ -63,11 +65,13 @@ const CardTitle = _ref => {
       marginBottom
     }, titleStyle],
     numberOfLines: titleNumberOfLines,
-    variant: titleVariant
+    variant: titleVariant,
+    maxFontSizeMultiplier: titleMaxFontSizeMultiplier
   }, title), subtitle && /*#__PURE__*/React.createElement(SubtitleComponent, {
     style: [styles.subtitle, subtitleStyle],
     numberOfLines: subtitleNumberOfLines,
-    variant: subtitleVariant
+    variant: subtitleVariant,
+    maxFontSizeMultiplier: subtitleMaxFontSizeMultiplier
   }, subtitle)), /*#__PURE__*/React.createElement(View, {
     style: rightStyle
   }, right ? right({

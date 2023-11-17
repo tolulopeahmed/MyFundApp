@@ -14,6 +14,10 @@ export declare type Props = React.ComponentPropsWithRef<typeof View> & {
      * Whether to show `Divider` at the end of the section. True by default.
      */
     showDivider?: boolean;
+    /**
+     * Specifies the largest possible scale a title font can reach.
+     */
+    titleMaxFontSizeMultiplier?: number;
     style?: StyleProp<ViewStyle>;
     /**
      * @optional
@@ -51,7 +55,7 @@ export declare type Props = React.ComponentPropsWithRef<typeof View> & {
  * ```
  */
 declare const DrawerSection: {
-    ({ children, title, theme: themeOverrides, style, showDivider, ...rest }: Props): React.JSX.Element;
+    ({ children, title, theme: themeOverrides, style, showDivider, titleMaxFontSizeMultiplier, ...rest }: Props): React.JSX.Element;
     displayName: string;
 };
 export default DrawerSection;

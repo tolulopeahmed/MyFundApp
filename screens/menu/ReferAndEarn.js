@@ -9,6 +9,7 @@ import { fetchUserTransactions } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
+import { useTheme } from '../../ThemeContext';
 
 const images = [
   require('./refer.png'),
@@ -31,6 +32,9 @@ const ReferAndEarn = ({ navigation, firstName }) => {
   }, [userTransactions]);
   
   
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
+
   
   const iconMapping = {
    
@@ -208,18 +212,21 @@ const ReferAndEarn = ({ navigation, firstName }) => {
 );
 };
 
-const styles = StyleSheet.create({
-  container: {
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({  
+    container: {
     flex: 1,
-    backgroundColor: '#F5F1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
   },
+
   header: {
     marginTop: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 15,
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? 'black' : 'white',
     height: 43,
   },
   icon: {
@@ -349,7 +356,7 @@ const styles = StyleSheet.create({
   },
   
   containerHead: {
-    backgroundColor: '#fff',
+    backgroundColor: isDarkMode ? '#2B1667' : '#fff',
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '93%',
@@ -364,7 +371,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   text: {
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
     fontFamily: 'proxima',
     fontSize: 15,
     letterSpacing: -0.5,
@@ -401,7 +408,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   transactionIcon: {
-    backgroundColor: '#DEE4FC',
+    backgroundColor: isDarkMode ? '#1D0E4A' : '#DEE4FC',
     color: 'green',
     padding: 8,
     borderRadius: 10,
@@ -413,7 +420,7 @@ const styles = StyleSheet.create({
   
   },
   transactionDescription: {
-    color: '#4C28BC',
+    color: isDarkMode ? 'white' : '#4C28BC',
     letterSpacing: -1,
     fontSize: 18,
     fontFamily: 'karla',
@@ -425,6 +432,8 @@ const styles = StyleSheet.create({
     fontFamily: 'karla',
     fontSize: 12,
     marginTop: 3,
+    color: isDarkMode ? 'grey' : 'black',
+
   },
   transactionID: {
     fontFamily: 'nexa',
@@ -488,5 +497,5 @@ const styles = StyleSheet.create({
   },
 
 });
-
+}
 export default ReferAndEarn;

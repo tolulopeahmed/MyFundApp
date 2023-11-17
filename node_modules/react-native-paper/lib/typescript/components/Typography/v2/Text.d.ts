@@ -8,6 +8,6 @@ declare type Props = React.ComponentProps<typeof NativeText> & {
      */
     theme?: MD2Theme;
 };
-declare const _default: import("../../../utils/forwardRef").ForwarRefComponent<{}, Props>;
+declare const _default: import("../../../utils/forwardRef").ForwardRefComponent<{}, Props>;
 export default _default;
 //# sourceMappingURL=Text.d.ts.map

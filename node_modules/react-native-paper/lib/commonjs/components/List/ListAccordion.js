@@ -74,7 +74,9 @@ const ListAccordion = _ref => {
     delayLongPress,
     expanded: expandedProp,
     accessibilityLabel,
-    pointerEvents = 'none'
+    pointerEvents = 'none',
+    titleMaxFontSizeMultiplier,
+    descriptionMaxFontSizeMultiplier
   } = _ref;
   const theme = (0, _theming.useInternalTheme)(themeOverrides);
   const [expanded, setExpanded] = React.useState(expandedProp || false);
@@ -144,14 +146,16 @@ const ListAccordion = _ref => {
     numberOfLines: titleNumberOfLines,
     style: [styles.title, {
       color: titleTextColor
-    }, titleStyle]
+    }, titleStyle],
+    maxFontSizeMultiplier: titleMaxFontSizeMultiplier
   }, title), description ? /*#__PURE__*/React.createElement(_Text.default, {
     selectable: false,
     numberOfLines: descriptionNumberOfLines,
     style: [styles.description, {
       color: descriptionColor
     }, descriptionStyle],
-    onTextLayout: onDescriptionTextLayout
+    onTextLayout: onDescriptionTextLayout,
+    maxFontSizeMultiplier: descriptionMaxFontSizeMultiplier
   }, description) : null), /*#__PURE__*/React.createElement(_reactNative.View, {
     style: [styles.item, description ? styles.multiline : undefined]
   }, right ? right({

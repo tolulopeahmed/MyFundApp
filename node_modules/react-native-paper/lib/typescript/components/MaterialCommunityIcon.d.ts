@@ -6,6 +6,7 @@ export declare type IconProps = {
     size: number;
     direction: 'rtl' | 'ltr';
     allowFontScaling?: boolean;
+    testID?: string;
 };
 declare type AccessibilityProps = {
     role?: Role;
@@ -15,6 +16,6 @@ declare type AccessibilityProps = {
     importantForAccessibility?: 'auto' | 'yes' | 'no' | 'no-hide-descendants';
 };
 export declare const accessibilityProps: AccessibilityProps;
-declare const defaultIcon: ({ name, color, size, direction, allowFontScaling, }: IconProps) => React.JSX.Element;
+declare const defaultIcon: ({ name, color, size, direction, allowFontScaling, testID, }: IconProps) => React.JSX.Element;
 export default defaultIcon;
 //# sourceMappingURL=MaterialCommunityIcon.d.ts.map

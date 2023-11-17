@@ -103,6 +103,10 @@ export declare type Props = $Omit<$RemoveChildren<typeof Surface>, 'mode'> & {
      * Color mappings variant for combinations of container and icon colors.
      */
     variant?: 'primary' | 'secondary' | 'tertiary' | 'surface';
+    /**
+     * Specifies the largest possible scale a label font can reach.
+     */
+    labelMaxFontSizeMultiplier?: number;
     style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
     /**
      * @optional
@@ -143,7 +147,7 @@ export declare type Props = $Omit<$RemoveChildren<typeof Surface>, 'mode'> & {
  * export default MyComponent;
  * ```
  */
-declare const FAB: import("../../utils/forwardRef").ForwarRefComponent<View, Props>;
+declare const FAB: import("../../utils/forwardRef").ForwardRefComponent<View, Props>;
 export default FAB;
 export { FAB };
 //# sourceMappingURL=FAB.d.ts.map

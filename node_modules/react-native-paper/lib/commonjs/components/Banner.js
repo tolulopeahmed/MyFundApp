@@ -73,6 +73,7 @@ const Banner = _ref => {
     theme: themeOverrides,
     onShowAnimationFinished = () => {},
     onHideAnimationFinished = () => {},
+    maxFontSizeMultiplier,
     ...rest
   } = _ref;
   const theme = (0, _theming.useInternalTheme)(themeOverrides);
@@ -172,7 +173,8 @@ const Banner = _ref => {
       color: theme.isV3 ? theme.colors.onSurface : theme.colors.text
     }],
     accessibilityLiveRegion: visible ? 'polite' : 'none',
-    accessibilityRole: "alert"
+    accessibilityRole: "alert",
+    maxFontSizeMultiplier: maxFontSizeMultiplier
   }, children)), /*#__PURE__*/React.createElement(_reactNative.View, {
     style: styles.actions
   }, actions.map((_ref3, i) => {

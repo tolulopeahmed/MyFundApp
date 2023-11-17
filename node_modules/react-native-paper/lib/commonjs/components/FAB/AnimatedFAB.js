@@ -117,6 +117,7 @@ const AnimatedFAB = _ref => {
     extended = false,
     iconMode = 'dynamic',
     variant = 'primary',
+    labelMaxFontSizeMultiplier,
     ...rest
   } = _ref;
   const theme = (0, _theming.useInternalTheme)(themeOverrides);
@@ -339,7 +340,8 @@ const AnimatedFAB = _ref => {
       }]
     }, styles.label, uppercase && styles.uppercaseLabel, textStyle],
     theme: theme,
-    testID: `${testID}-text`
+    testID: `${testID}-text`,
+    maxFontSizeMultiplier: labelMaxFontSizeMultiplier
   }, label)), !isIOS &&
   /*#__PURE__*/
   // Method `onTextLayout` on Android returns sizes of text visible on the screen,

@@ -1,5 +1,5 @@
 /// <reference types="react" />
-declare const ToggleButton: import("../../utils/forwardRef").ForwarRefComponent<import("react-native").View, import("./ToggleButton").Props> & {
+declare const ToggleButton: import("../../utils/forwardRef").ForwardRefComponent<import("react-native").View, import("./ToggleButton").Props> & {
     Group: {
         <Value = string>({ value, onValueChange, children, }: import("./ToggleButtonGroup").Props<Value>): import("react").JSX.Element;
         displayName: string;

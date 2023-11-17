@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var React = _interopRequireWildcard(require("react"));
 var _reactNative = require("react-native");
+var _Pressable = require("./Pressable");
 var _utils = require("./utils");
 var _settings = require("../../core/settings");
 var _theming = require("../../core/theming");
@@ -63,13 +64,13 @@ const TouchableRipple = _ref => {
       borderless,
       foreground: useForeground
     } : undefined;
-    return /*#__PURE__*/React.createElement(_reactNative.Pressable, _extends({}, rest, {
+    return /*#__PURE__*/React.createElement(_Pressable.Pressable, _extends({}, rest, {
       disabled: disabled,
       style: [borderless && styles.overflowHidden, style],
       android_ripple: androidRipple
     }), React.Children.only(children));
   }
-  return /*#__PURE__*/React.createElement(_reactNative.Pressable, _extends({}, rest, {
+  return /*#__PURE__*/React.createElement(_Pressable.Pressable, _extends({}, rest, {
     disabled: disabled,
     style: [borderless && styles.overflowHidden, style]
   }), _ref2 => {

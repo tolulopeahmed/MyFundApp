@@ -227,7 +227,8 @@ const FABGroup = _ref => {
       }, isV3 && styles.v3ContainerStyle, it.containerStyle]
     }, /*#__PURE__*/React.createElement(_Text.default, {
       variant: "titleMedium",
-      style: [labelTextStyle, it.labelStyle]
+      style: [labelTextStyle, it.labelStyle],
+      maxFontSizeMultiplier: it.labelMaxFontSizeMultiplier
     }, it.label))), /*#__PURE__*/React.createElement(_FAB.default, {
       size: size,
       icon: it.icon,

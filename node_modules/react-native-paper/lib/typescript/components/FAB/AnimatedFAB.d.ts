@@ -69,6 +69,10 @@ export declare type Props = $Omit<$RemoveChildren<typeof Surface>, 'mode'> & {
      */
     extended: boolean;
     /**
+     * Specifies the largest possible scale a label font can reach.
+     */
+    labelMaxFontSizeMultiplier?: number;
+    /**
      * @supported Available in v5.x with theme version 3
      *
      * Color mappings variant for combinations of container and icon colors.
@@ -160,6 +164,6 @@ export declare type Props = $Omit<$RemoveChildren<typeof Surface>, 'mode'> & {
  * });
  * ```
  */
-declare const AnimatedFAB: ({ icon, label, accessibilityLabel, accessibilityState, color: customColor, rippleColor: customRippleColor, disabled, onPress, onLongPress, delayLongPress, theme: themeOverrides, style, visible, uppercase: uppercaseProp, testID, animateFrom, extended, iconMode, variant, ...rest }: Props) => React.JSX.Element;
+declare const AnimatedFAB: ({ icon, label, accessibilityLabel, accessibilityState, color: customColor, rippleColor: customRippleColor, disabled, onPress, onLongPress, delayLongPress, theme: themeOverrides, style, visible, uppercase: uppercaseProp, testID, animateFrom, extended, iconMode, variant, labelMaxFontSizeMultiplier, ...rest }: Props) => React.JSX.Element;
 export default AnimatedFAB;
 //# sourceMappingURL=AnimatedFAB.d.ts.map

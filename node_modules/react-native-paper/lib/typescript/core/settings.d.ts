@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IconProps } from '../components/MaterialCommunityIcon';
 export declare type Settings = {
-    icon?: ({ name, color, size, direction }: IconProps) => React.ReactNode;
+    icon?: ({ name, color, size, direction, testID, }: IconProps) => React.ReactNode;
     rippleEffectEnabled?: boolean;
 };
 export declare const SettingsContext: React.Context<Settings>;

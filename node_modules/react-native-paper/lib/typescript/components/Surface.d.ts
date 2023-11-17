@@ -67,6 +67,6 @@ export declare type Props = React.ComponentPropsWithRef<typeof View> & {
  * });
  * ```
  */
-declare const Surface: import("../utils/forwardRef").ForwarRefComponent<View, Props>;
+declare const Surface: import("../utils/forwardRef").ForwardRefComponent<View, Props>;
 export default Surface;
 //# sourceMappingURL=Surface.d.ts.map

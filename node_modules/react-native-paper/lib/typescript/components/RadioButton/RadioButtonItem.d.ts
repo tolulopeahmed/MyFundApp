@@ -60,6 +60,10 @@ export declare type Props = {
      */
     labelVariant?: keyof typeof MD3TypescaleKey;
     /**
+     * Specifies the largest possible scale a label font can reach.
+     */
+    labelMaxFontSizeMultiplier?: number;
+    /**
      * @optional
      */
     theme?: ThemeProp;
@@ -100,7 +104,7 @@ export declare type Props = {
  *```
  */
 declare const RadioButtonItem: {
-    ({ value, label, style, labelStyle, onPress, disabled, color, uncheckedColor, status, theme: themeOverrides, accessibilityLabel, testID, mode, position, labelVariant, }: Props): React.JSX.Element;
+    ({ value, label, style, labelStyle, onPress, disabled, color, uncheckedColor, status, theme: themeOverrides, accessibilityLabel, testID, mode, position, labelVariant, labelMaxFontSizeMultiplier, }: Props): React.JSX.Element;
     displayName: string;
 };
 export default RadioButtonItem;

@@ -80,7 +80,7 @@ export declare type Props = {
  *
  * ```
  */
-declare const ToggleButton: import("../../utils/forwardRef").ForwarRefComponent<View, Props>;
+declare const ToggleButton: import("../../utils/forwardRef").ForwardRefComponent<View, Props>;
 export default ToggleButton;
 export { ToggleButton };
 //# sourceMappingURL=ToggleButton.d.ts.map

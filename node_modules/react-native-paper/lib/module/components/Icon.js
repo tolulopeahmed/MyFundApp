@@ -19,12 +19,33 @@ const getIconId = source => {
 };
 export const isValidIcon = source => typeof source === 'string' || typeof source === 'function' || isImageSource(source);
 export const isEqualIcon = (a, b) => a === b || getIconId(a) === getIconId(b);
+/**
+ * An icon component which renders icon from vector library.
+ *
+ * ## Usage
+ * ```js
+ * import * as React from 'react';
+ * import { Icon, MD3Colors } from 'react-native-paper';
+ *
+ * const MyComponent = () => (
+ *   <Icon
+ *     source="camera"
+ *     color={MD3Colors.error50}
+ *     size={20}
+ *   />
+ * );
+ *
+ * export default MyComponent;
+ * ```
+ */
+
 const Icon = _ref => {
   let {
     source,
     color,
     size,
     theme: themeOverrides,
+    testID,
     ...rest
   } = _ref;
   const theme = useInternalTheme(themeOverrides);
@@ -33,6 +54,7 @@ const Icon = _ref => {
   const iconColor = color || (theme.isV3 ? theme.colors.onSurface : theme.colors.text);
   if (isImageSource(s)) {
     return /*#__PURE__*/React.createElement(Image, _extends({}, rest, {
+      testID: testID,
       source: s,
       style: [{
         transform: [{
@@ -56,14 +78,16 @@ const Icon = _ref => {
         name: s,
         color: iconColor,
         size,
-        direction
+        direction,
+        testID
       });
     });
   } else if (typeof s === 'function') {
     return s({
       color: iconColor,
       size,
-      direction
+      direction,
+      testID
     });
   }
   return null;

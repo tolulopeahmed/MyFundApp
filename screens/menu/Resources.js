@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, Linking, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Title from '../components/Title';
+import { useTheme } from '../../ThemeContext';
 
 
 const Resources = ({navigation}) => {
@@ -27,10 +28,14 @@ const Resources = ({navigation}) => {
     Linking.openURL(buyNowUrl);
   };
 
+    
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
   
 
   return (
-    <>
+    <View style={styles.container}>
+    
     <View style={styles.header}>
     <TouchableOpacity onPress={() => navigation.goBack()}>
       <Ionicons name="arrow-back-outline" size={30} color="#4C28BC" />
@@ -112,26 +117,27 @@ const Resources = ({navigation}) => {
      
       
     </ScrollView>
-    </>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F1FF',
-  },
 
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({  
+    container: {
+    flex: 1,
+    backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
+  },
 
   header: {
     marginTop: 50,
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  paddingHorizontal: 15,
-  backgroundColor: 'white',
-  height: 43,
-},
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    backgroundColor: isDarkMode ? 'black' : 'white',
+    height: 43,
+  },
 icon: {
   marginRight: 0,
 },
@@ -140,7 +146,6 @@ headerContainer: {
 flex: 1,
 flexDirection: 'row',
 justifyContent: 'flex-end',
-
 },
 
 headerText:{
@@ -194,6 +199,7 @@ bell: {
   itemContainer: {
     flex: 0.5,
     backgroundColor: '#E5DDFF',
+    backgroundColor: isDarkMode ? '#2B1667' : '#DCD1FF',
     borderRadius: 10,
     borderWidth: 0.3,
     alignItems: 'center',
@@ -226,7 +232,7 @@ bell: {
   },
 
   headerText2: {
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
     fontSize: 16,
     fontFamily: 'proxima',
     letterSpacing: -0.5,
@@ -244,6 +250,7 @@ bell: {
     marginBottom: 3,
     width: 170,
     letterSpacing: -0.3,
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
 
   subText2: {
@@ -251,6 +258,7 @@ bell: {
     width: '95%',
     width: '95%',
     color: '#808080',
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
 
   rate: {
@@ -262,6 +270,8 @@ bell: {
     letterSpacing: -0.5,
     alignSelf: 'flex-start',
     marginLeft: 4,
+    color: isDarkMode ? '#43FF8E' : 'green',
+
   },
 
   button: {
@@ -315,5 +325,5 @@ bell: {
   },
 
 });
-
+}
 export default Resources;

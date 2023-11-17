@@ -672,106 +672,93 @@ const bankAccountField = (
   };
 
 
-  const formattedAmount = parseFloat(amount.replace(/,/g, '')).toFixed(2);
-  const handleTransferToBankAccount = async () => {
-    setProcessing(true);
-  
-    let sourceAccountBalance; // Declare sourceAccountBalance outside the try block
-  
-    try {
-      // Determine the source account balance based on the selected account
-      switch (fromAccount) {
-        case 'savings':
-          sourceAccountBalance = accountBalances.savings;
-          break;
-        case 'investment':
-          sourceAccountBalance = accountBalances.investment;
-          break;
-        case 'wallet':
-          sourceAccountBalance = accountBalances.wallet;
-          break;
-        default:
-          // Handle other cases or set a default balance
-          sourceAccountBalance = 0;
-      }
-  
-      console.log('sourceAccountBalance:', sourceAccountBalance);
-console.log('formattedAmount:', formattedAmount);
 
-      // Check if the source account balance is sufficient for the withdrawal
-      if (sourceAccountBalance < formattedAmount) {
+  const formattedAmount = parseFloat(amount.replace(/,/g, '')).toFixed(2);
+
+  const handleTransferToBankAccount = async () => {
+  setProcessing(true);
+  let sourceAccountBalance;
+
+  try {
+    switch (fromAccount) {
+      case 'savings':
+        sourceAccountBalance = accountBalances.savings;
+        break;
+      case 'investment':
+        sourceAccountBalance = accountBalances.investment;
+        break;
+      case 'wallet':
+        sourceAccountBalance = accountBalances.wallet;
+        break;
+      default:
+        sourceAccountBalance = 0;
+    }
+
+    const formattedAmount = parseFloat(amount.replace(/,/g, '')); // Removed the toFixed(2)
+
+    console.log('sourceAccountBalance:', sourceAccountBalance);
+    console.log('formattedAmount:', formattedAmount);
+
+    if (sourceAccountBalance < formattedAmount) {
+      setProcessing(false);
+      Alert.alert(
+        'Insufficient Balance',
+        'You do not have sufficient funds in your account for this withdrawal. Please check and try again.'
+      );
+    } else {
+      const requestData = {
+        source_account: fromAccount,
+        target_bank_account_id: selectedBankAccountId,
+        amount: formattedAmount.toFixed(2), // Moved the toFixed(2) here
+      };
+
+      console.log('formatted Amount in api call:', formattedAmount);
+      console.log('Request Data:', requestData);
+
+      const response = await axios.post(
+        `${ipAddress}/api/withdraw-to-bank/`,
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const responseData = response.data;
+        console.log('API Response:', response.data);
+
+        dispatch(updateAccountBalances(responseData.newAccountBalances));
+        dispatch(fetchAccountBalances());
+        dispatch(fetchUserTransactions());
+        setIsSuccessVisible(true);
+        setWithdrawModalVisible(false);
         setProcessing(false);
-        // Show an alert for insufficient balance
-        Alert.alert(
-          'Insufficient Balance',
-          'You do not have sufficient funds in your account for this withdrawal. Please check and try again.'
-        );
+        Alert.alert('Success', 'Withdrawal to local bank successful.');
       } else {
-        // Prepare the request data based on user selections
-        const requestData = {
-          source_account: fromAccount,
-          target_bank_account_id: selectedBankAccountId, // Use the selected bank account ID
-          amount: formattedAmount, // Use the formatted amount
-        };
-  
-        console.log('formatted Amount in api call:', formattedAmount); // Log the API response
-        console.log('Request Data:', requestData);
-  
-        const response = await axios.post(
-          `${ipAddress}/api/withdraw-to-bank/`,
-          requestData,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${userInfo.token}`,
-            },
-          }
-        );
-  
-        // Handle the API response
-        if (response.status === 200) {
-          const responseData = response.data;
-          console.log('API Response:', response.data);
-  
-          dispatch(updateAccountBalances(responseData.newAccountBalances));
-          dispatch(fetchAccountBalances());
-          dispatch(fetchUserTransactions());
-          setIsSuccessVisible(true);
-          setWithdrawModalVisible(false);
+        if (response.status === 400) {
           setProcessing(false);
-          // Show a success message to the user
-          Alert.alert('Success', 'Withdrawal to local bank successful.');
+          Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+        } else if (response.status === 401) {
+          setProcessing(false);
+          Alert.alert('Error', 'You are not authorized. Please login again.');
         } else {
-          // Handle API errors and show appropriate error messages
-          if (response.status === 400) {
-            setProcessing(false);
-            Alert.alert('Error', 'Invalid input. Please check your data and try again.');
-          } else if (response.status === 401) {
-            setProcessing(false);
-            Alert.alert('Error', 'You are not authorized. Please login again.');
-          } else {
-            setProcessing(false);
-            Alert.alert(
-              'Error',
-              'An error occurred while processing your request. Please try again later.'
-            );
-          }
+          setProcessing(false);
+          Alert.alert(
+            'Error',
+            'An error occurred while processing your request. Please try again later.'
+          );
         }
       }
-    } catch (error) {
-      // Handle network or other errors and show an appropriate error message
-      setProcessing(false);
-      Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
     }
-  };
-  
-    
+  } catch (error) {
+    setProcessing(false);
+    Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+  }
+};
 
-    // const isValidEmail = (email) => {
-    //   // Regular expression to check for a valid email format
-    //   const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-    //   return emailRegex.test(email);
-    // };
     
     
     console.log('formatted Amount:', amount); // Log the API response
@@ -779,9 +766,10 @@ console.log('formattedAmount:', formattedAmount);
     console.log('fromAccount::', fromAccount); // Log the API response
     console.log('toAccount::', toAccount); // Log the API response
     console.log('sender Email::', userInfo.email); // Log the API response
+    console.log('wallet balance:', accountBalances.wallet); // Log the API response
     console.log('savings balance:', accountBalances.savings); // Log the API response
+    console.log('investment balance:', accountBalances.investment); // Log the API response
     console.log('formatted/Entered amount:', formattedAmount); // Log the API response
-
 
 
 

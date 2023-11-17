@@ -13,7 +13,7 @@ declare const RadioButton: (({ theme: themeOverrides, ...props }: import("./Radi
         displayName: string;
     };
     Item: {
-        ({ value, label, style, labelStyle, onPress, disabled, color, uncheckedColor, status, theme: themeOverrides, accessibilityLabel, testID, mode, position, labelVariant, }: import("./RadioButtonItem").Props): import("react").JSX.Element;
+        ({ value, label, style, labelStyle, onPress, disabled, color, uncheckedColor, status, theme: themeOverrides, accessibilityLabel, testID, mode, position, labelVariant, labelMaxFontSizeMultiplier, }: import("./RadioButtonItem").Props): import("react").JSX.Element;
         displayName: string;
     };
 };

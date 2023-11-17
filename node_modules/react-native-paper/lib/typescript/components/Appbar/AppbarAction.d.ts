@@ -67,7 +67,7 @@ export declare type Props = React.ComponentPropsWithoutRef<typeof IconButton> & 
  * export default MyComponent;
  * ```
  */
-declare const AppbarAction: import("../../utils/forwardRef").ForwarRefComponent<View, Props>;
+declare const AppbarAction: import("../../utils/forwardRef").ForwardRefComponent<View, Props>;
 export default AppbarAction;
 export { AppbarAction };
 //# sourceMappingURL=AppbarAction.d.ts.map

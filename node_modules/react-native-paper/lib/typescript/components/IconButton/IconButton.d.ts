@@ -85,6 +85,6 @@ export declare type Props = $RemoveChildren<typeof TouchableRipple> & {
  *
  * @extends TouchableRipple props https://callstack.github.io/react-native-paper/docs/components/TouchableRipple
  */
-declare const IconButton: import("../../utils/forwardRef").ForwarRefComponent<View, Props>;
+declare const IconButton: import("../../utils/forwardRef").ForwardRefComponent<View, Props>;
 export default IconButton;
 //# sourceMappingURL=IconButton.d.ts.map

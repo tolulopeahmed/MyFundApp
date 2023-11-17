@@ -82,6 +82,7 @@ const Snackbar = _ref => {
     wrapperStyle,
     style,
     theme: themeOverrides,
+    maxFontSizeMultiplier,
     rippleColor,
     testID,
     ...rest
@@ -181,7 +182,8 @@ const Snackbar = _ref => {
         variant: "bodyMedium",
         style: [styles.content, {
           color: textColor
-        }]
+        }],
+        maxFontSizeMultiplier: maxFontSizeMultiplier
       }, children);
     }
     return /*#__PURE__*/React.createElement(_reactNative.View, {

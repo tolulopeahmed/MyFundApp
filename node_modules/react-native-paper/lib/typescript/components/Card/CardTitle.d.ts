@@ -88,6 +88,14 @@ export declare type Props = React.ComponentPropsWithRef<typeof View> & {
      * @internal
      */
     total?: number;
+    /**
+     * Specifies the largest possible scale a title font can reach.
+     */
+    titleMaxFontSizeMultiplier?: number;
+    /**
+     * Specifies the largest possible scale a subtitle font can reach.
+     */
+    subtitleMaxFontSizeMultiplier?: number;
     style?: StyleProp<ViewStyle>;
     /**
      * @optional
@@ -115,7 +123,7 @@ export declare type Props = React.ComponentPropsWithRef<typeof View> & {
  * ```
  */
 declare const CardTitle: {
-    ({ title, titleStyle, titleNumberOfLines, titleVariant, subtitle, subtitleStyle, subtitleNumberOfLines, subtitleVariant, left, leftStyle, right, rightStyle, style, theme: themeOverrides, }: Props): React.JSX.Element;
+    ({ title, titleStyle, titleNumberOfLines, titleVariant, titleMaxFontSizeMultiplier, subtitle, subtitleStyle, subtitleNumberOfLines, subtitleVariant, subtitleMaxFontSizeMultiplier, left, leftStyle, right, rightStyle, style, theme: themeOverrides, }: Props): React.JSX.Element;
     displayName: string;
 };
 export default CardTitle;

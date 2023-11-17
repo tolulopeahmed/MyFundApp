@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var React = _interopRequireWildcard(require("react"));
 var _reactNative = require("react-native");
+var _color = _interopRequireDefault(require("color"));
+var _Pressable = require("./Pressable");
 var _utils = require("./utils");
 var _settings = require("../../core/settings");
 var _theming = require("../../core/theming");
@@ -53,6 +55,13 @@ const TouchableRipple = _ref => {
   } = _ref;
   const theme = (0, _theming.useInternalTheme)(themeOverrides);
   const {
+    calculatedRippleColor
+  } = (0, _utils.getTouchableRippleColors)({
+    theme,
+    rippleColor
+  });
+  const hoverColor = (0, _color.default)(calculatedRippleColor).fade(0.5).rgb().string();
+  const {
     rippleEffectEnabled
   } = React.useContext(_settings.SettingsContext);
   const {
@@ -67,12 +76,6 @@ const TouchableRipple = _ref => {
       const {
         centered
       } = rest;
-      const {
-        calculatedRippleColor
-      } = (0, _utils.getTouchableRippleColors)({
-        theme,
-        rippleColor
-      });
       const button = e.currentTarget;
       const style = window.getComputedStyle(button);
       const dimensions = button.getBoundingClientRect();
@@ -155,7 +158,7 @@ const TouchableRipple = _ref => {
         });
       });
     }
-  }, [onPressIn, rest, rippleColor, theme, rippleEffectEnabled]);
+  }, [onPressIn, rest, rippleEffectEnabled, calculatedRippleColor]);
   const handlePressOut = React.useCallback(e => {
     onPressOut === null || onPressOut === void 0 ? void 0 : onPressOut(e);
     if (rippleEffectEnabled) {
@@ -190,12 +193,17 @@ const TouchableRipple = _ref => {
     onPressOut
   });
   const disabled = disabledProp || !hasPassedTouchHandler;
-  return /*#__PURE__*/React.createElement(_reactNative.Pressable, _extends({}, rest, {
+  return /*#__PURE__*/React.createElement(_Pressable.Pressable, _extends({}, rest, {
     onPressIn: handlePressIn,
     onPressOut: handlePressOut,
     disabled: disabled,
-    style: [styles.touchable, borderless && styles.borderless, style]
-  }), React.Children.only(children));
+    style: state => [styles.touchable, borderless && styles.borderless,
+    // focused state is not ready yet: https://github.com/necolas/react-native-web/issues/1849
+    // state.focused && { backgroundColor: ___ },
+    state.hovered && {
+      backgroundColor: hoverColor
+    }, typeof style === 'function' ? style(state) : style]
+  }), state => React.Children.only(typeof children === 'function' ? children(state) : children));
 };
 
 /**
@@ -206,7 +214,8 @@ const styles = _reactNative.StyleSheet.create({
   touchable: {
     position: 'relative',
     ...(_reactNative.Platform.OS === 'web' && {
-      cursor: 'pointer'
+      cursor: 'pointer',
+      transition: '150ms background-color'
     })
   },
   borderless: {

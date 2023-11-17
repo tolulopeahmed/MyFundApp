@@ -62,6 +62,7 @@ const Chip = _ref => {
     ellipsizeMode,
     compact,
     elevated = false,
+    maxFontSizeMultiplier,
     ...rest
   } = _ref;
   const theme = useInternalTheme(themeOverrides);
@@ -195,7 +196,8 @@ const Chip = _ref => {
     selectable: false,
     numberOfLines: 1,
     style: [isV3 ? styles.md3LabelText : styles.labelText, labelTextStyle, labelSpacings, textStyle],
-    ellipsizeMode: ellipsizeMode
+    ellipsizeMode: ellipsizeMode,
+    maxFontSizeMultiplier: maxFontSizeMultiplier
   }, children))), onClose ? /*#__PURE__*/React.createElement(View, {
     style: styles.closeButtonStyle
   }, /*#__PURE__*/React.createElement(TouchableWithoutFeedback, {

@@ -43,6 +43,7 @@ const AppbarContent = _ref => {
     titleRef,
     titleStyle,
     title,
+    titleMaxFontSizeMultiplier,
     mode = 'small',
     theme: themeOverrides,
     testID = 'appbar-content',
@@ -80,7 +81,8 @@ const AppbarContent = _ref => {
     // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
     ,
     accessibilityTraits: "header",
-    testID: `${testID}-title-text`
+    testID: `${testID}-title-text`,
+    maxFontSizeMultiplier: titleMaxFontSizeMultiplier
   }), title) : title, !isV3 && subtitle ? /*#__PURE__*/React.createElement(_Text.default, {
     style: [styles.subtitle, {
       color: subtitleColor

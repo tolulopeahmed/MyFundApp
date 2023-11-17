@@ -46,6 +46,10 @@ export declare type Props = $RemoveChildren<typeof View> & {
      */
     color?: string;
     /**
+     * Specifies the largest possible scale a title font can reach.
+     */
+    titleMaxFontSizeMultiplier?: number;
+    /**
      * @internal
      */
     mode?: 'small' | 'medium' | 'large' | 'center-aligned';
@@ -77,7 +81,7 @@ export declare type Props = $RemoveChildren<typeof View> & {
  * ```
  */
 declare const AppbarContent: {
-    ({ color: titleColor, subtitle, subtitleStyle, onPress, disabled, style, titleRef, titleStyle, title, mode, theme: themeOverrides, testID, ...rest }: Props): React.JSX.Element;
+    ({ color: titleColor, subtitle, subtitleStyle, onPress, disabled, style, titleRef, titleStyle, title, titleMaxFontSizeMultiplier, mode, theme: themeOverrides, testID, ...rest }: Props): React.JSX.Element;
     displayName: string;
 };
 export default AppbarContent;

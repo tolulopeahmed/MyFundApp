@@ -77,6 +77,14 @@ export declare type Props = {
      */
     descriptionNumberOfLines?: number;
     /**
+     * Specifies the largest possible scale a title font can reach.
+     */
+    titleMaxFontSizeMultiplier?: number;
+    /**
+     * Specifies the largest possible scale a description font can reach.
+     */
+    descriptionMaxFontSizeMultiplier?: number;
+    /**
      * Id is used for distinguishing specific accordion when using List.AccordionGroup. Property is required when using List.AccordionGroup and has no impact on behavior when using standalone List.Accordion.
      */
     id?: string | number;
@@ -131,7 +139,7 @@ export declare type Props = {
  * ```
  */
 declare const ListAccordion: {
-    ({ left, right, title, description, children, theme: themeOverrides, titleStyle, descriptionStyle, titleNumberOfLines, descriptionNumberOfLines, rippleColor: customRippleColor, style, id, testID, onPress, onLongPress, delayLongPress, expanded: expandedProp, accessibilityLabel, pointerEvents, }: Props): React.JSX.Element;
+    ({ left, right, title, description, children, theme: themeOverrides, titleStyle, descriptionStyle, titleNumberOfLines, descriptionNumberOfLines, rippleColor: customRippleColor, style, id, testID, onPress, onLongPress, delayLongPress, expanded: expandedProp, accessibilityLabel, pointerEvents, titleMaxFontSizeMultiplier, descriptionMaxFontSizeMultiplier, }: Props): React.JSX.Element;
     displayName: string;
 };
 export default ListAccordion;

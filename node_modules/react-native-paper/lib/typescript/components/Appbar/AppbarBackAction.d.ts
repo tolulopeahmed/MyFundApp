@@ -43,7 +43,7 @@ export declare type Props = $Omit<React.ComponentPropsWithoutRef<typeof AppbarAc
  * export default MyComponent;
  * ```
  */
-declare const AppbarBackAction: import("../../utils/forwardRef").ForwarRefComponent<View, Props>;
+declare const AppbarBackAction: import("../../utils/forwardRef").ForwardRefComponent<View, Props>;
 export default AppbarBackAction;
 export { AppbarBackAction };
 //# sourceMappingURL=AppbarBackAction.d.ts.map

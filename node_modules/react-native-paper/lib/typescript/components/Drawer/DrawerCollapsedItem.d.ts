@@ -30,6 +30,10 @@ export declare type Props = React.ComponentPropsWithRef<typeof View> & {
      */
     onPress?: (e: GestureResponderEvent) => void;
     /**
+     * Specifies the largest possible scale a label font can reach.
+     */
+    labelMaxFontSizeMultiplier?: number;
+    /**
      * Accessibility label for the button. This is read by the screen reader when the user taps the button.
      */
     accessibilityLabel?: string;
@@ -65,7 +69,7 @@ export declare type Props = React.ComponentPropsWithRef<typeof View> & {
  * ```
  */
 declare const DrawerCollapsedItem: {
-    ({ focusedIcon, unfocusedIcon, label, active, theme: themeOverrides, style, onPress, accessibilityLabel, badge, testID, ...rest }: Props): React.JSX.Element | null;
+    ({ focusedIcon, unfocusedIcon, label, active, theme: themeOverrides, style, onPress, accessibilityLabel, badge, testID, labelMaxFontSizeMultiplier, ...rest }: Props): React.JSX.Element | null;
     displayName: string;
 };
 export default DrawerCollapsedItem;

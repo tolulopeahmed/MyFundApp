@@ -55,7 +55,8 @@ const RadioButtonItem = _ref => {
     testID,
     mode,
     position = 'trailing',
-    labelVariant = 'bodyLarge'
+    labelVariant = 'bodyLarge',
+    labelMaxFontSizeMultiplier
   } = _ref;
   const theme = (0, _theming.useInternalTheme)(themeOverrides);
   const radioButtonProps = {
@@ -109,7 +110,8 @@ const RadioButtonItem = _ref => {
       pointerEvents: "none"
     }, isLeading && radioButton, /*#__PURE__*/React.createElement(_Text.default, {
       variant: labelVariant,
-      style: [styles.label, !theme.isV3 && styles.font, computedStyle, labelStyle]
+      style: [styles.label, !theme.isV3 && styles.font, computedStyle, labelStyle],
+      maxFontSizeMultiplier: labelMaxFontSizeMultiplier
     }, label), !isLeading && radioButton));
   });
 };

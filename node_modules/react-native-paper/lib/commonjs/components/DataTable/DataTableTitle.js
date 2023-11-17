@@ -51,6 +51,7 @@ const DataTableTitle = _ref => {
     style,
     theme: themeOverrides,
     numberOfLines = 1,
+    maxFontSizeMultiplier,
     ...rest
   } = _ref;
   const theme = (0, _theming.useInternalTheme)(themeOverrides);
@@ -97,7 +98,8 @@ const DataTableTitle = _ref => {
     numberOfLines > 1 ? numeric ? _reactNative.I18nManager.getConstants().isRTL ? styles.leftText : styles.rightText : styles.centerText : {}, sortDirection ? styles.sorted : {
       color: alphaTextColor
     }, textStyle],
-    numberOfLines: numberOfLines
+    numberOfLines: numberOfLines,
+    maxFontSizeMultiplier: maxFontSizeMultiplier
   }, children)));
 };
 exports.DataTableTitle = DataTableTitle;

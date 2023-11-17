@@ -11,6 +11,10 @@ export declare type Props = React.ComponentProps<typeof Text> & {
      * Style that is passed to Text element.
      */
     style?: StyleProp<TextStyle>;
+    /**
+     * Specifies the largest possible scale a text font can reach.
+     */
+    maxFontSizeMultiplier?: number;
 };
 /**
  * A component used to display a header in lists.
@@ -26,7 +30,7 @@ export declare type Props = React.ComponentProps<typeof Text> & {
  * ```
  */
 declare const ListSubheader: {
-    ({ style, theme: overrideTheme, ...rest }: Props): React.JSX.Element;
+    ({ style, theme: overrideTheme, maxFontSizeMultiplier, ...rest }: Props): React.JSX.Element;
     displayName: string;
 };
 export default ListSubheader;

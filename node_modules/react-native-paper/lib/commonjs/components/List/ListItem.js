@@ -51,6 +51,8 @@ const ListItem = _ref => {
     titleEllipsizeMode,
     descriptionEllipsizeMode,
     descriptionStyle,
+    descriptionMaxFontSizeMultiplier,
+    titleMaxFontSizeMultiplier,
     ...rest
   } = _ref;
   const theme = (0, _theming.useInternalTheme)(themeOverrides);
@@ -77,7 +79,8 @@ const ListItem = _ref => {
       style: [styles.description, {
         color: descriptionColor
       }, descriptionStyle],
-      onTextLayout: onDescriptionTextLayout
+      onTextLayout: onDescriptionTextLayout,
+      maxFontSizeMultiplier: descriptionMaxFontSizeMultiplier
     }, description);
   };
   const renderTitle = () => {
@@ -93,7 +96,8 @@ const ListItem = _ref => {
       numberOfLines: titleNumberOfLines,
       style: [styles.title, {
         color: titleColor
-      }, titleStyle]
+      }, titleStyle],
+      maxFontSizeMultiplier: titleMaxFontSizeMultiplier
     }, title);
   };
   const descriptionColor = theme.isV3 ? theme.colors.onSurfaceVariant : (0, _color.default)(theme.colors.text).alpha(0.54).rgb().string();

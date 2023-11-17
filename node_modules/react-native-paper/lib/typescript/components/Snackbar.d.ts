@@ -55,6 +55,10 @@ export declare type Props = $Omit<React.ComponentProps<typeof Surface>, 'mode'> 
      */
     elevation?: 0 | 1 | 2 | 3 | 4 | 5 | Animated.Value;
     /**
+     * Specifies the largest possible scale a text font can reach.
+     */
+    maxFontSizeMultiplier?: number;
+    /**
      * Style for the wrapper of the snackbar
      */
     wrapperStyle?: StyleProp<ViewStyle>;
@@ -116,7 +120,7 @@ export declare type Props = $Omit<React.ComponentProps<typeof Surface>, 'mode'> 
  * ```
  */
 declare const Snackbar: {
-    ({ visible, action, icon, onIconPress, iconAccessibilityLabel, duration, onDismiss, children, elevation, wrapperStyle, style, theme: themeOverrides, rippleColor, testID, ...rest }: Props): React.JSX.Element | null;
+    ({ visible, action, icon, onIconPress, iconAccessibilityLabel, duration, onDismiss, children, elevation, wrapperStyle, style, theme: themeOverrides, maxFontSizeMultiplier, rippleColor, testID, ...rest }: Props): React.JSX.Element | null;
     /**
      * Show the Snackbar for a short duration.
      */

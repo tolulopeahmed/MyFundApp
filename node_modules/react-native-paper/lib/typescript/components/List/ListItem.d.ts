@@ -80,6 +80,14 @@ export declare type Props = $RemoveChildren<typeof TouchableRipple> & {
      * See [`ellipsizeMode`](https://reactnative.dev/docs/text#ellipsizemode)
      */
     descriptionEllipsizeMode?: EllipsizeProp;
+    /**
+     * Specifies the largest possible scale a title font can reach.
+     */
+    titleMaxFontSizeMultiplier?: number;
+    /**
+     * Specifies the largest possible scale a description font can reach.
+     */
+    descriptionMaxFontSizeMultiplier?: number;
 };
 /**
  * A component to show tiles inside a List.
@@ -103,7 +111,7 @@ export declare type Props = $RemoveChildren<typeof TouchableRipple> & {
  * @extends TouchableRipple props https://callstack.github.io/react-native-paper/docs/components/TouchableRipple
  */
 declare const ListItem: {
-    ({ left, right, title, description, onPress, theme: themeOverrides, style, titleStyle, titleNumberOfLines, descriptionNumberOfLines, titleEllipsizeMode, descriptionEllipsizeMode, descriptionStyle, ...rest }: Props): React.JSX.Element;
+    ({ left, right, title, description, onPress, theme: themeOverrides, style, titleStyle, titleNumberOfLines, descriptionNumberOfLines, titleEllipsizeMode, descriptionEllipsizeMode, descriptionStyle, descriptionMaxFontSizeMultiplier, titleMaxFontSizeMultiplier, ...rest }: Props): React.JSX.Element;
     displayName: string;
 };
 export default ListItem;
