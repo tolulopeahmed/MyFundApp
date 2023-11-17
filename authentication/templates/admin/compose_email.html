@@ -1,0 +1,13 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+  <form method="post" action="">
+    {% csrf_token %}
+    <h2>Compose Email</h2>
+    <label for="subject">Subject:</label>
+    <input type="text" name="subject" required><br>
+    <label for="body">Body (you can use {{ user.first_name }} to personalize):</label>
+    <textarea name="body" required></textarea><br>
+    <input type="submit" name="apply" value="Send Email">
+  </form>
+{% endblock %}

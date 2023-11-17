@@ -1,0 +1,34 @@
+{% extends 'admin/change_list.html' %}
+
+{% block object-tools-items %}
+    {{ block.super }}
+    <style>
+        .total-metrics {
+            position: absolute;
+            font-size: 12px;
+            top: 580px;
+            right: 480px;
+            width: 360px;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #000;
+            border: 1px solid #322222;
+        }
+
+        .total-metrics strong {
+            color: #888;
+            font-weight: bold;
+        }
+    </style>
+    <div class="total-metrics">
+        TOTAL <br>
+        <strong>Users:</strong> {{ total_users|floatformat:0 }}<br>
+        <strong>Savings:</strong> ₦{{ total_savings|floatformat:2 }}<br>
+        <strong>Investments:</strong> ₦{{ total_investments|floatformat:2 }}<br>
+        <strong>Wallets:</strong> ₦{{ total_wallets|floatformat:2 }}<br>
+        <strong>Properties:</strong> {{ total_properties }}<br>
+        <strong>Savings/Investments:</strong> ₦{{ total_savings_and_investments|floatformat:2 }}<br>
+        <strong>Savings/Investments This Month:</strong> ₦{{ total_savings_and_investments_this_month|floatformat:2 }}
+    </div>
+{% endblock %}

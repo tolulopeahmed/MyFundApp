@@ -918,6 +918,9 @@ def quicksave(request):
 
 import time
 import threading
+import logging
+
+logger = logging.getLogger(__name__)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -1004,6 +1007,9 @@ def autosave(request):
 
                 # Call the confirm_referral_rewards method here
                 user.confirm_referral_rewards(is_referrer=True)  # Pass True if the user is a referrer, or False if not
+               
+                # After processing a savings or investment transaction
+                user.update_total_savings_and_investment_this_month()
 
                 # Send a confirmation email
                 subject = "AutoSave Successful!"
@@ -1013,8 +1019,7 @@ def autosave(request):
 
                 send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 
-                # After processing a savings or investment transaction
-                user.update_total_savings_and_investment_this_month()
+
 
     # Start a new thread for the auto charge process
     threading.Thread(target=auto_charge).start()

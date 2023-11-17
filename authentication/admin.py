@@ -6,12 +6,14 @@ from django.urls import reverse
 from rest_framework.response import Response
 from django.http import HttpResponseRedirect
 from django.contrib import admin
-from django.db.models import Sum, F, Case, When, IntegerField, Q
+from django.db.models import Sum, F, Case, When, IntegerField, Q, DecimalField, ExpressionWrapper
 from django.db import models
 from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 from .models import CustomUser, CustomUserMetrics
+
+
 
 class CustomUserAdmin(UserAdmin):
     list_display = (
@@ -20,7 +22,7 @@ class CustomUserAdmin(UserAdmin):
         'savings', 'investment', 'properties', 'wallet', 'total_savings_and_investments', 'total_savings_and_investments_this_month', 'user_percentage_to_top_saver'
     )
     list_filter = ('is_staff', 'is_active', 'kyc_updated')
-    actions = ['view_kyc_details', 'approve_kyc', 'reject_kyc']
+    actions = ['send_custom_email', 'view_kyc_details', 'approve_kyc', 'reject_kyc']
 
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
@@ -46,6 +48,9 @@ class CustomUserAdmin(UserAdmin):
     )
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
+
+    
+    
 
     def view_kyc_details(self, request, queryset):
         if queryset.count() == 1:
@@ -151,6 +156,46 @@ class CustomUserAdmin(UserAdmin):
     user_percentage_to_top_saver.admin_order_field = 'total_savings_and_investments_this_month'
 
 
+
+
+    change_list_template = 'admin/custom_user_change_list.html'  # Use the same template file
+
+    def changelist_view(self, request, extra_context=None):
+        current_month_start = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        # Calculate the total metrics separately
+        total_users = CustomUser.objects.count()
+        total_savings = CustomUser.objects.aggregate(total_savings=Sum('savings'))['total_savings'] or 0
+        total_investments = CustomUser.objects.aggregate(total_investments=Sum('investment'))['total_investments'] or 0
+        total_wallets = CustomUser.objects.aggregate(total_wallets=Sum('wallet'))['total_wallets'] or 0
+        total_properties = CustomUser.objects.aggregate(total_properties=Sum('properties'))['total_properties'] or 0
+        total_savings_and_investments = CustomUser.objects.aggregate(total_savings_and_investments=Sum(F('savings') + F('investment')))['total_savings_and_investments'] or 0
+
+
+        total_savings_and_investments_this_month = CustomUser.objects.filter(
+            transaction__date__year=current_month_start.year,
+            transaction__date__month=current_month_start.month
+        ).aggregate(
+            total_savings_and_investments_this_month=Sum('total_savings_and_investments_this_month')
+        )['total_savings_and_investments_this_month'] or 0
+
+
+        # Get the existing context
+        response = super().changelist_view(request, extra_context=extra_context)
+
+        # Update the context with the total metrics
+        content_data = response.context_data
+        content_data['total_users'] = total_users
+        content_data['total_savings'] = total_savings
+        content_data['total_investments'] = total_investments
+        content_data['total_wallets'] = total_wallets
+        content_data['total_properties'] = total_properties
+        content_data['total_savings_and_investments'] = total_savings_and_investments
+        content_data['total_savings_and_investments_this_month'] = total_savings_and_investments_this_month
+
+        return response
+
+
 admin.site.register(CustomUser, CustomUserAdmin)
 
 
@@ -208,8 +253,21 @@ class BankTransferRequestAdmin(admin.ModelAdmin):
 
     def reject_bank_transfer(self, request, queryset):
         for request in queryset:
+            user = request.user
+
+            # Create a transaction record
+            transaction = Transaction.objects.create(
+                user=user,
+                transaction_type="debit",
+                amount=request.amount,
+                date=timezone.now().date(),
+                time=timezone.now().time(),
+                description=f"QuickSave (Failed)",
+                transaction_id=str(uuid.uuid4())[:10]
+            )
+            transaction.save()
             # Send a rejection email to the user
-            subject = "Bank Transfer Rejected"
+            subject = "QuickSave Failed. ❌"
             message = f"Hi {request.user.first_name}, \n\nYour bank transfer request for ₦{request.amount} could not be confirmed. Kindly check and try again.\n\nThank you for using MyFund. \n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
             from_email = "MyFund <info@myfundmobile.com>"
             recipient_list = [request.user.email]
@@ -273,8 +331,22 @@ class InvestTransferRequestAdmin(admin.ModelAdmin):
 
     def reject_invest_transfer(self, request, queryset):
         for request in queryset:
+            user = request.user
+
+            # Create a transaction record
+            transaction = Transaction.objects.create(
+                user=user,
+                transaction_type="debit",
+                amount=request.amount,
+                date=timezone.now().date(),
+                time=timezone.now().time(),
+                description=f"QuickInvest (Failed)",
+                transaction_id=str(uuid.uuid4())[:10]
+            )
+            transaction.save()
+
             # Send a rejection email to the user
-            subject = "Investment Transfer Rejected"
+            subject = "QuickInvest Failed. ❌"
             message = f"Hi {request.user.first_name}, \n\nYour investment transfer request for ₦{request.amount} could not be confirmed. Kindly check and try again.\n\nThank you for using MyFund. \n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
             from_email = "MyFund <info@myfundmobile.com>"
             recipient_list = [request.user.email]
@@ -344,82 +416,3 @@ admin.site.register(Property, PropertyAdmin)
 
 
 
-
-
-from django.contrib import admin
-from .models import CustomUserMetrics
-
-class CustomUserMetricsAdmin(admin.ModelAdmin):
-    list_display = ('user', 'total_users', 'total_savings', 'total_investments', 'total_wallet', 'total_active_users', 'total_dormant_users', 'pending_kyc_approvals', 'total_savings_and_investments', 'total_savings_and_investments_this_month')
-    list_filter = ('user__is_staff', 'user__is_active', 'user__kyc_updated')
-
-    def user(self, obj):
-        return obj.user
-
-    user.short_description = 'User'
-
-    # Calculate the total number of users
-    def total_users(self, obj):
-        return CustomUserMetrics.objects.count()
-    
-    total_users.short_description = 'Total Users'
-    
-    # Calculate the total savings of all users
-    def total_savings(self, obj):
-        return CustomUserMetrics.objects.aggregate(total_savings=Sum(F('total_savings_and_investments') - F('total_wallet'), output_field=models.DecimalField(max_digits=10, decimal_places=2)))['total_savings']
-    
-    total_savings.short_description = 'Total Savings'
-
-    # Calculate the total investments of all users
-    def total_investments(self, obj):
-        return CustomUserMetrics.objects.aggregate(total_investments=Sum(F('total_savings_and_investments') - F('total_wallet'), output_field=models.DecimalField(max_digits=10, decimal_places=2)))['total_investments']
-    
-    total_investments.short_description = 'Total Investments'
-
-    # Calculate the total wallet balance of all users
-    def total_wallet(self, obj):
-        return CustomUserMetrics.objects.aggregate(total_wallet=Sum('total_wallet'))['total_wallet']
-    
-    total_wallet.short_description = 'Total Wallet'
-
-    # Calculate the total active users (Users who have saved within the last two months)
-    def total_active_users(self, obj):
-        two_months_ago = timezone.now() - timezone.timedelta(days=60)
-        return CustomUserMetrics.objects.filter(user__last_login__gte=two_months_ago).count()
-    
-    total_active_users.short_description = 'Total Active Users'
-
-    # Calculate the total dormant users (Users who haven't saved within the last two months)
-    def total_dormant_users(self, obj):
-        two_months_ago = timezone.now() - timezone.timedelta(days=60)
-        return CustomUserMetrics.objects.filter(user__last_login__lt=two_months_ago).count()
-    
-    total_dormant_users.short_description = 'Total Dormant Users'
-
-    # Calculate the total number of pending KYC approvals
-    def pending_kyc_approvals(self, obj):
-        return CustomUserMetrics.objects.aggregate(pending_kyc_approvals=Sum(Case(
-            When(user__kyc_updated=False, then=1),
-            default=0,
-            output_field=IntegerField()
-        )))['pending_kyc_approvals']
-    
-    pending_kyc_approvals.short_description = 'Pending KYC Approvals'
-
-    # Calculate the total savings and investments of all users
-    def total_savings_and_investments(self, obj):
-        return CustomUserMetrics.objects.aggregate(total_savings_and_investments=Sum('total_savings_and_investments'))['total_savings_and_investments']
-    
-    total_savings_and_investments.short_description = 'Total Savings and Investments'
-
-    # Calculate the total savings and investments for the current month
-    def total_savings_and_investments_this_month(self, obj):
-        current_month_start = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        return CustomUserMetrics.objects.filter(user__transaction__date__gte=current_month_start).aggregate(
-            total_savings_and_investments_this_month=Coalesce(Sum('user__transaction__amount', filter=Q(user__transaction__date__gte=current_month_start), distinct=True), 0)
-        )['total_savings_and_investments_this_month']
-    
-    total_savings_and_investments_this_month.short_description = 'Total Savings and Investments this Month'
-
-# Register the CustomUserMetrics model with your CustomUserMetricsAdmin
-admin.site.register(CustomUserMetrics, CustomUserMetricsAdmin)

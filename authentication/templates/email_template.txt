@@ -1,0 +1,12 @@
+Subject: Hello {{ user.first_name }}, Personalized Email from MyFund
+
+Hello {{ user.first_name }},
+
+I hope this message finds you well. We wanted to reach out to you personally and express our gratitude for being a part of the MyFund community.
+
+{{ body }}
+
+If you have any questions or need assistance, feel free to reply to this email.
+
+Best regards,
+MyFund Team
