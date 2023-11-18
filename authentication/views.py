@@ -1199,6 +1199,7 @@ def autoinvest(request):
 
     # Calculate the interval based on the selected frequency (in seconds)
     intervals = {
+        'hourly': 3600,
         'daily': 86400,
         'weekly': 604800,
         'monthly': 2419200,  # Approximation for 28-31 days
@@ -1249,6 +1250,9 @@ def autoinvest(request):
                 user.investment += int(amount)
                 user.save()
 
+                # Call the confirm_referral_rewards method here
+                user.confirm_referral_rewards(is_referrer=True)  # Pass True if the user is a referrer, or False if not
+
                 # Create a transaction record
                 Transaction.objects.create(
                     user=user,
@@ -1260,8 +1264,8 @@ def autoinvest(request):
                     transaction_id=paystack_response.get("data", {}).get("reference"),
                 )
 
-                # Call the confirm_referral_rewards method here
-                user.confirm_referral_rewards(is_referrer=True)  # Pass True if the user is a referrer, or False if not
+                # After processing a savings or investment transaction
+                user.update_total_savings_and_investment_this_month()
 
                 # Send a confirmation email
                 subject = "AutoInvest Successful!"
@@ -1271,8 +1275,7 @@ def autoinvest(request):
 
                 send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 
-                # After processing a savings or investment transaction
-                user.update_total_savings_and_investment_this_month()
+
 
     # Start a new thread for the auto invest process
     threading.Thread(target=auto_invest).start()

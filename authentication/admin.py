@@ -4,13 +4,12 @@ from .models import CustomUser, Message, Property, BankAccount, InvestTransferRe
 from django.core.mail import send_mail
 from django.urls import reverse
 from rest_framework.response import Response
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib import admin
 from django.db.models import Sum, F, Case, When, IntegerField, Q, DecimalField, ExpressionWrapper
 from django.db import models
 from django.db.models.functions import Coalesce
 from django.utils import timezone
-
 from .models import CustomUser, CustomUserMetrics
 
 
@@ -102,6 +101,10 @@ class CustomUserAdmin(UserAdmin):
                 message_bit = f"{len(rejected_users)} users were"
             self.message_user(request, f'{message_bit} already approved for KYC update.')
 
+        # Redirect to the changelist view after processing
+        return HttpResponseRedirect(reverse('admin:authentication_customuser_changelist'))
+
+
     approve_kyc.short_description = "Approve KYC Details"
 
 
@@ -126,6 +129,8 @@ class CustomUserAdmin(UserAdmin):
 
         self.message_user(request, f'Rejected KYC for {queryset.count()} user(s).')
 
+       # Redirect to the changelist view after processing
+        return HttpResponseRedirect(reverse('admin:authentication_customuser_changelist'))
 
     reject_kyc.short_description = 'Reject KYC Details'
 
@@ -162,6 +167,13 @@ class CustomUserAdmin(UserAdmin):
 
     def changelist_view(self, request, extra_context=None):
         current_month_start = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if request.method == 'POST' and '_delete_selected' in request.POST:
+            # Handle the delete action
+            deleted_users = self.delete_selected(request, queryset=request.POST.getlist('_selected_action'))
+            self.message_user(request, f'Deleted {len(deleted_users)} user(s).')
+
+            # Redirect to the changelist view after processing the delete action
+            return HttpResponseRedirect(reverse('admin:authentication_customuser_changelist'))
 
         # Calculate the total metrics separately
         total_users = CustomUser.objects.count()
