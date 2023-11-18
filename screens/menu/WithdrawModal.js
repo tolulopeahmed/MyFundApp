@@ -819,9 +819,9 @@ const bankAccountField = (
 <View>
 <Text style={styles.modalSubText}>
           Move money from Savings to Investment or to your bank. {"\n"} {"\n"}
-          <Text style={{fontFamily: 'proxima', color: isDarkMode? "#fff" : 'black'}}>Withdrawal attracts...{"\n"}</Text> 
+          <Text style={{fontFamily: 'proxima', color: isDarkMode? "#fff" : 'black'}}>Withdrawal to <Text style={{color: isDarkMode? "grey" : 'grey'}}>Bank Account</Text> attracts...{"\n"}</Text> 
           <View style={styles.arrow} /><Text style={{fontFamily: 'proxima', color: 'brown'}}>5%</Text> charge if from Savings {"\n"}
-          <View style={styles.arrow} /><Text style={{fontFamily: 'proxima', color: 'brown'}}>10%</Text> charge if from Investments {"\n"}
+          <View style={styles.arrow} /><Text style={{fontFamily: 'proxima', color: 'brown'}}>10%</Text> charge if from Investment {"\n"}
           <View style={styles.arrow} /><Text style={{fontFamily: 'proxima', color: 'green'}}>0%</Text> charge if from Wallet
 {/*           
           <Text style={{fontFamily: 'proxima', color: 'black'}}>Schedule Withdrawal <Text style={{fontFamily: 'proxima', color: 'green'}}>(no charge)</Text>{"\n"}</Text> 
@@ -981,7 +981,7 @@ const createStyles = (isDarkMode) => {
   },
   modalContent: {
     backgroundColor: isDarkMode ? '#271561' : '#F5F1FF',
-    width: '105%',
+    width: '100%',
     alignItems: 'center',
     alignSelf: 'center',
     borderTopRightRadius: 25,
@@ -1007,7 +1007,6 @@ const createStyles = (isDarkMode) => {
     borderRightColor: 'transparent',
     borderBottomColor: 'transparent',
     borderLeftColor: '#DCD1FF',
-    // rotation: 180,
   },
   
   modalSubText: {

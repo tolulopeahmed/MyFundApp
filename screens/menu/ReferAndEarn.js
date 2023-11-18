@@ -77,7 +77,7 @@ const ReferAndEarn = ({ navigation, firstName }) => {
   };
 
   const handleShare = () => {
-    const message = `Earn ₦1000 when you sign up on MyFund using my referral email: ${referralID}. Signup at www.myfundmobile.com/register`;
+    const message = `We'll both earn ₦1000 when you sign up on MyFund using my referral email: ${referralID}. Signup at www.myfundmobile.com/register`;
     Share.share({
       message,
     });

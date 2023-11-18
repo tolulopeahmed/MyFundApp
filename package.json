@@ -73,7 +73,7 @@
     "react-native-sound": "^0.11.2",
     "react-native-sound-player": "^0.13.2",
     "react-native-splash-screen": "^3.3.0",
-    "react-native-svg": "^13.9.0",
+    "react-native-svg": "13.9.0",
     "react-native-svg-circular-progress": "^1.0.4",
     "react-native-swiper": "^1.6.0",
     "react-native-swiper-flatlist": "^3.2.3",

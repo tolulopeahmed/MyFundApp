@@ -278,7 +278,7 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
         <View style={styles.progressBarContainer}>
           <ScrollView showsVerticalScrollIndicator={false}>
             <Text style={styles.propertyText}>
-              <Text style={{ fontFamily: 'proxima', color: '#4C28BC' }}>Your Savings Goal: </Text>
+              <Text style={{ fontFamily: 'proxima', color: isDarkMode ? '#6E3DFF' : '#4C28BC', }}>Your Savings Goal: </Text>
               {`You should be saving ₦${formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount / (userInfo.time_period * 12)))}/month to reach `}
               <Text style={styles.goalText}>{`₦${formatWithCommas(roundToNearestThousand(userInfo.savings_goal_amount))}`}</Text>
               {` for your ${userInfo.preferred_asset} investment in ${userInfo.time_period} years. And you're now `}

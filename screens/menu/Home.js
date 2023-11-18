@@ -499,41 +499,44 @@ const formatTime = (timeString) => {
   </TouchableOpacity>
 </View>
 
-        <View style={styles.todoList1}>
-        <TouchableOpacity
-        style={[styles.todoButton, autoInvestSettings.active && styles.disabledButton]}
-        onPress={handleActivateAutoInvest}
-        disabled={autoInvest}
-      >
-        {autoInvestSettings.active ? (
-          <>
-            <Ionicons
-              name="car-sport-outline"
-              size={24}
-              color="green"
-              style={{ marginRight: 10, marginLeft: 10 }}
-            />
-            <Text style={styles.disabledText} onPress={() => navigation.navigate('Sponsorship')}>AutoInvest is ON</Text>
-            <Ionicons
-              name="checkmark-circle"
-              size={24}
-              color="green"
-              style={{ marginRight: 10, marginLeft: 10 }}
-              onPress={() => navigation.navigate('Sponsorship')}
-            />
-          </>
-        ) : (
-          <>
-            <Ionicons
-              name="car-sport-outline"
-              size={24}
-              style={{ marginRight: 10, marginLeft: 10, color: isDarkMode ? 'grey' : 'black',}}
-            />
-            <Text style={styles.todoText}>Turn ON AutoInvest</Text>
-          </>
-        )}
-      </TouchableOpacity>
-        </View>
+<View style={styles.todoList1}>
+  <TouchableOpacity
+    style={[styles.todoButton, autoInvestSettings.active && styles.disabledButton]}
+    onPress={handleActivateAutoInvest}
+    disabled={autoInvestSettings.active} 
+  >
+    {autoInvestSettings.active ? (
+      <>
+        <Ionicons
+          name="car-sport-outline"
+          size={24}
+          color="green"
+          style={{ marginRight: 10, marginLeft: 10 }}
+        />
+        <Text style={styles.disabledText} onPress={() => navigation.navigate('Sponsorship')}>
+          AutoInvest is ON
+        </Text>
+        <Ionicons
+          name="checkmark-circle"
+          size={24}
+          color="green"
+          style={{ marginRight: 10, marginLeft: 10 }}
+          onPress={() => navigation.navigate('Sponsorship')}
+        />
+      </>
+    ) : (
+      <>
+        <Ionicons
+          name="car-sport-outline"
+          size={24}
+          style={{ marginRight: 10, marginLeft: 10, color: isDarkMode ? 'grey' : 'black' }}
+        />
+        <Text style={styles.todoText}>Turn ON AutoInvest</Text>
+      </>
+    )}
+  </TouchableOpacity>
+</View>
+
 
         <View style={styles.todoList1}>
         <TouchableOpacity style={styles.todoButton} onPress={() => navigation.navigate('ReferAndEarn')}>
