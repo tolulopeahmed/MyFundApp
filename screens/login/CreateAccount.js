@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
 import LoadingModal from '../components/LoadingModal';
+import { useTheme } from '../../ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -26,7 +27,8 @@ const CreateAccount = ({ route, navigation }) => {
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
   const [referralEmail, setReferralEmail] = useState('');
   const { prefillEmail } = route.params || {}; // Ensure that route.params is defined
-
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
 
   useEffect(() => {
         // Check if both email and password are valid
@@ -153,8 +155,11 @@ const CreateAccount = ({ route, navigation }) => {
       
         <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
           <View style={styles.logoContainer}>
-            <Image source={require('./logo..png')} style={styles.logo} />
-          </View>
+          <Image
+        source={isDarkMode ? require('../images/icon.png') : require('../images/logo..png')}
+        style={styles.logo}
+      />
+            </View>
           <View style={styles.textContainer}>
             <Text style={styles.header}>Create Account</Text>
             <Text style={styles.subText}>Earn up to <Text style={{fontFamily: 'proxima'}}>20% p.a. </Text>every January and July. Own properties and earn a <Text style={{fontFamily: 'proxima'}}>lifetime rental income </Text>on MyFund. Signup here.</Text>
@@ -170,6 +175,7 @@ const CreateAccount = ({ route, navigation }) => {
         <TextInput 
               style={[styles.input, !validFirstName && styles.invalidInput]} 
               placeholder="First Name"
+              placeholderTextColor="grey" 
               value={firstName}
               onChangeText={(text) => {
                 setFirstName(text);
@@ -188,6 +194,7 @@ const CreateAccount = ({ route, navigation }) => {
         <TextInput 
               style={[styles.input, !validLastName && styles.invalidInput]} 
               placeholder="Last Name"
+              placeholderTextColor="grey" 
               value={lastName}
               onChangeText={(text) => {
                 setLastName(text);
@@ -206,6 +213,7 @@ const CreateAccount = ({ route, navigation }) => {
         <TextInput 
               style={[styles.input, !validEmail && styles.invalidInput]} 
               placeholder="Email Address (e.g. name@mail.com)" 
+              placeholderTextColor="grey" 
               keyboardType="email-address"
               value={email}
               onChangeText={(text) => {
@@ -227,7 +235,8 @@ const CreateAccount = ({ route, navigation }) => {
         <View style={styles.inputContainer}>        
                     <TextInput
               style={[styles.input2, !validPhoneNumber && styles.invalidInput]}
-              placeholder="Phone Number (e.g. 8034567890)"
+              placeholder=" Phone Number (e.g. 8034567890)"
+              placeholderTextColor="grey" 
               keyboardType="phone-pad"
               value={phoneNumber}
               onChangeText={(text) => {
@@ -254,6 +263,7 @@ const CreateAccount = ({ route, navigation }) => {
               <TextInput
                 style={[styles.input, !validPassword && styles.invalidInput]}
                 placeholder="Password (at least 8 characters)"
+                placeholderTextColor="grey" 
                 secureTextEntry={!isPasswordVisible}
                 keyboardType="default"
                 value={password}
@@ -277,6 +287,7 @@ const CreateAccount = ({ route, navigation }) => {
               <TextInput
                   style={styles.input}
                   placeholder="Referral email (optional)"
+                  placeholderTextColor="grey" 
                   keyboardType="email-address"
                   value={referralValue}
                   onChangeText={(text) => setReferralValue(text)}
@@ -296,7 +307,7 @@ const CreateAccount = ({ route, navigation }) => {
               Keyboard.dismiss(); // Dismiss the keyboard
               handleSignup(); // Call the handleSignup function
             }}
-            disabled={!isFormValid || isCreatingAccount}  // Disable the button while account is being created
+            disabled={!isFormValid || isCreatingAccount }  // Disable the button while account is being created
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {isCreatingAccount ? (
@@ -339,10 +350,12 @@ const CreateAccount = ({ route, navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#DCD1FF',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -355,17 +368,7 @@ const styles = StyleSheet.create({
     minHeight: height,
   },
 
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    zIndex: 1,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: '#4C28BC',
-    fontFamily: 'proxima',
-  },
+ 
   
   logoContainer: {
     alignItems: 'center',
@@ -388,12 +391,12 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
   },
   subText: {
     fontSize: 14,
     fontFamily: 'karla',
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
     textAlign: 'center',
     marginHorizontal: 40,
     marginTop: 10,
@@ -401,7 +404,7 @@ const styles = StyleSheet.create({
 
   subText2: {
     fontSize: 15,
-    color: 'black',
+    color: isDarkMode ? 'white' : 'black',
     textAlign: 'center',
     marginHorizontal: 25,
     marginTop: 0.5,
@@ -447,24 +450,26 @@ const styles = StyleSheet.create({
     fontSize: 15,
     height: 40,
     width: '80%',
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? '#313151' : '#F5F5F5',
     borderRadius: 10,
     marginBottom: 10,
     paddingLeft: 40,
     borderWidth: 1,
     borderColor: 'green',
+    color: isDarkMode ? 'white' : 'black',
   },
 
   input2: {
     fontSize: 15,
     height: 40,
     width: '80%',
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? '#313151' : '#F5F5F5',
     borderRadius: 10,
     marginBottom: 10,
     paddingLeft: 77,
     borderWidth: 1,
     borderColor: 'green',
+    color: isDarkMode ? 'white' : 'black',
   },
 
   invalidInput: {
@@ -478,7 +483,7 @@ const styles = StyleSheet.create({
  },
 
   createAccountButton: {
-    backgroundColor: '#4C28BC',
+    backgroundColor: isDarkMode ? '#6E3DFF' : '#4C28BC',
     width: '80%',
     height: 50,
     alignItems: 'center',
@@ -502,7 +507,7 @@ const styles = StyleSheet.create({
   loginTextContainer: {
     fontSize: 16,
     fontFamily: 'karla',
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
     textAlign: 'center',
     marginTop: 20,
     marginBottom: 20,
@@ -511,7 +516,7 @@ const styles = StyleSheet.create({
   loginText: {
     fontSize: 14,
     fontFamily: 'karla',
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
     textAlign: 'center',
     marginHorizontal: 40,
     marginTop: 5,
@@ -519,7 +524,7 @@ const styles = StyleSheet.create({
   login: {
     fontSize: 14,
     fontFamily: 'karla',
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
     textAlign: 'center',
     marginHorizontal: 40,
     marginTop: 5,
@@ -601,5 +606,5 @@ const styles = StyleSheet.create({
 
 
 });
-
+}
 export default CreateAccount;

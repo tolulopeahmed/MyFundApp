@@ -1,9 +1,17 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { useTheme } from '../../ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
 const Onboarding3 = ({ navigation }) => {
+
+  
+  const { isDarkMode, colors } = useTheme(null);
+  const styles = createStyles(isDarkMode);
+
+
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -18,9 +26,10 @@ const Onboarding3 = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
   container: {
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#DCD1FF',
     padding: 30,
     width: width,
     alignContent: 'center',
@@ -32,7 +41,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: width - 60, // Adjust the image width to fit the screen
     height: height * 0.4, // Adjust the image height to fit the screen
-    resizeMode: 'cover',
+    resizeMode: 'contain',
   },
   textContainer: {
     alignItems: 'center',
@@ -44,23 +53,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 15,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
   subText: {
     fontSize: 16,
     fontFamily: 'karla',
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
     textAlign: 'center',
     marginRight: 20,
     marginLeft: 20,
   },
-  navigationIndicatorContainer: {
-    marginTop: 50,
-    flexDirection: 'row',
-    position: 'relative',
-    bottom: 10,
-    color: '#4C28BC',
-  },
+
   navigationIndicator: {
     width: 8,
     height: 8,
@@ -73,5 +76,6 @@ const styles = StyleSheet.create({
     width: 25,
   },
 });
+}
 
 export default Onboarding3;

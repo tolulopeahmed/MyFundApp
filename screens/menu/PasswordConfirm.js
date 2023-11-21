@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Alert, StyleSheet, Image, TouchableOpacity, TextInput, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import logo from '../login/logo..png';
 import Divider from '../components/Divider';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
 import LoadingModal from '../components/LoadingModal';
+import { useTheme } from '../../ThemeContext';
 
 const PasswordConfirm = ({ navigation, route }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -16,6 +16,10 @@ const PasswordConfirm = ({ navigation, route }) => {
   const [isConfirmPasswordVisible, setConfirmPasswordVisibility] = useState(false);
   const [isConfirmButtonDisabled, setIsConfirmButtonDisabled] = useState(true);
   const [isConfirming, setIsConfirming] = useState(false);
+
+  
+  const { isDarkMode, colors } = useTheme(null);
+  const styles = createStyles(isDarkMode);
 
   const handleOtpChange = (text) => {
     setOtp(text);
@@ -77,8 +81,11 @@ const PasswordConfirm = ({ navigation, route }) => {
 
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.logoContainer}>
-          <Image source={logo} style={styles.logo} />
-        </View>
+        <Image
+        source={isDarkMode ? require('../images/icon.png') : require('../images/logo..png')}
+        style={styles.logo}
+      />
+              </View>
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Confirm Password Reset</Text>
           <Text style={styles.subText}>
@@ -191,13 +198,16 @@ const PasswordConfirm = ({ navigation, route }) => {
 };
 
 
-const styles = StyleSheet.create({
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#DCD1FF',
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   backButton: {
     position: 'absolute',
     top: 50,
@@ -222,12 +232,12 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
   },
   subText: {
     fontSize: 14,
     fontFamily: 'karla',
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
     textAlign: 'center',
     marginHorizontal: 40,
     marginTop: 5,
@@ -404,5 +414,5 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
 });
-
+}
 export default PasswordConfirm;

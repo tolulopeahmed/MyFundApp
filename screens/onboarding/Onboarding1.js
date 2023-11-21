@@ -1,10 +1,19 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
 import { PrimaryButton, SecondaryButton } from '../components/MainButtons';
+import { useTheme } from '../../ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
 const Onboarding1 = ({ navigation }) => {
+
+
+  const { isDarkMode, colors } = useTheme(null);
+  const styles = createStyles(isDarkMode);
+
+
+
+  
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -19,9 +28,10 @@ const Onboarding1 = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
   container: {
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#DCD1FF',
     padding: 30,
     width: width,
     alignContent: 'center',
@@ -45,12 +55,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 15,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#fff' : '#4C28BC',
   },
   subText: {
     fontSize: 16,
     fontFamily: 'karla',
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
     textAlign: 'center',
     marginRight: 20,
     marginLeft: 20,
@@ -68,5 +78,5 @@ const styles = StyleSheet.create({
     width: 25,
   },
 });
-
+}
 export default Onboarding1;

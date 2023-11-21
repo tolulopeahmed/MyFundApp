@@ -123,14 +123,15 @@ const handleUserEmailChange = (value) => {
     };
 
 
-    useEffect(() => {
-      // Check if the amount is empty, and update the button disabled state accordingly
-      if (amount === '') {
-        setWithdrawButtonDisabled(true);
-      } else {
-        setWithdrawButtonDisabled(false);
-      }
-    }, [amount]);
+ useEffect(() => {
+  // Check if the amount is empty or 'target_bank_account_id' is null, and update the button disabled state accordingly
+  if (amount === '' || selectedBankAccountId === null) {
+    setWithdrawButtonDisabled(true);
+  } else {
+    setWithdrawButtonDisabled(false);
+  }
+}, [amount, selectedBankAccountId]);
+
 
 
 
@@ -295,7 +296,7 @@ const bankAccountField = (
     ) : (
       <TouchableOpacity onPress={handleAddBankAccount}>
         <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginTop: 5, marginLeft: 15 }}>No bank accounts added yet...
-          <Text style={{ color: '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginTop: 5, marginLeft: 15 }}>   Add Bank Account Now!</Text>
+          <Text style={{ color: isDarkMode ? '#6E3DFF' : '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginTop: 5, marginLeft: 15 }}>   Add Bank Account Now!</Text>
         </Text>
       </TouchableOpacity>
     )}

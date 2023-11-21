@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 15,
-    marginBottom: 10,
+    marginBottom: 17,
   },
   secondaryButton: {
     backgroundColor: '#ffffff',

@@ -4,12 +4,38 @@ import Onboarding1 from './Onboarding1';
 import Onboarding2 from './Onboarding2';
 import Onboarding3 from './Onboarding3';
 import { PrimaryButton, SecondaryButton } from '../components/MainButtons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../../ThemeContext';
 
 const { width } = Dimensions.get('window');
 
 const OnboardingScreens = ({ navigation }) => {
   const scrollViewRef = useRef(null);
   const [currentPage, setCurrentPage] = useState(0);
+
+  const { isDarkMode, colors } = useTheme(null);
+  const styles = createStyles(isDarkMode);
+
+
+
+  const { toggleDarkMode } = useTheme();
+
+
+  const retrieveDarkModePreference = async () => {
+    try {
+      const value = await AsyncStorage.getItem('darkMode');
+      if (value !== null) {
+        // Set the initial dark mode state
+        toggleDarkMode(JSON.parse(value));
+      }
+    } catch (error) {
+      console.error('Error retrieving dark mode preference:', error);
+    }
+  };
+
+  useEffect(() => {
+    retrieveDarkModePreference();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -19,6 +45,10 @@ const OnboardingScreens = ({ navigation }) => {
     }, 5000);
     return () => clearInterval(interval);
   }, [currentPage]);
+
+
+
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -62,13 +92,14 @@ const OnboardingScreens = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: isDarkMode ? '#140A32' : '#DCD1FF',
     alignItems: 'center',
     alignContent: 'center',
     alignSelf: 'center',
-    backgroundColor: '#DCD1FF',
     borderWidth: 0.5,
   },
   content: {
@@ -86,7 +117,7 @@ const styles = StyleSheet.create({
   },
   skipButtonText: {
     fontSize: 18,
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
     fontFamily: 'proxima',
   },
 
@@ -124,5 +155,5 @@ const styles = StyleSheet.create({
     marginBottom: 45,
   },
 });
-
+}
 export default OnboardingScreens;

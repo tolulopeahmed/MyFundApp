@@ -42,20 +42,7 @@ const Profile = ({ navigation, route }) => {
     }
   };
 
-  const retrieveDarkModePreference = async () => {
-    try {
-      const value = await AsyncStorage.getItem('darkMode');
-      if (value !== null) {
-        toggleDarkMode(JSON.parse(value));
-      }
-    } catch (error) {
-      console.error('Error retrieving dark mode preference:', error);
-    }
-  };
-
-  // useEffect(() => {
-  //   retrieveDarkModePreference();
-  // }, []);
+  
 
   const handleDarkModeToggle = (value) => {
     toggleDarkMode(value);
@@ -558,6 +545,15 @@ const Profile = ({ navigation, route }) => {
       </View>
 
       <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ReferAndEarn')}>
+          <Ionicons name="person-add-outline" size={24} style={styles.icon} />
+          <Text style={styles.buttonText}>Refer and Earn</Text>
+          <Text style={styles.todoText2}> ₦1000 EACH</Text>
+        </TouchableOpacity>
+      </View>
+
+
+      <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Chat')}>
           <Ionicons name="chatbubbles" size={24} style={styles.icon} />
           <Text style={styles.buttonText}>Message Admin</Text>
@@ -576,8 +572,8 @@ const Profile = ({ navigation, route }) => {
       </View>
       <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.button} onPress={handleLogout}>
-  <MaterialIcons name="logout" size={24} style={styles.icon}/>
-  <Text color='brown' style={styles.buttonText}>Log Out</Text>
+  <MaterialIcons name="logout" size={24} style={styles.logoutIcon}/>
+  <Text style={styles.buttonText}>Log Out</Text>
 </TouchableOpacity>
       </View>
       </View>
@@ -750,6 +746,12 @@ icon: {
     color: isDarkMode ? '#6E3DFF' : '#4C28BC',
    },
 
+   logoutIcon: {
+    marginRight: 15,
+    color: isDarkMode ? 'brown' : '#4C28BC',
+   },
+
+
   buttonsContainer: {
     alignItems: 'center',
     marginTop: 20,
@@ -775,6 +777,14 @@ icon: {
     color: isDarkMode ? 'white' : '#4C28BC',
     flex: 1,
   },
+  todoText2: {
+    marginTop: 3,
+  fontSize: 16,
+  fontFamily: 'karla',
+  color: 'green',
+  marginRight: 10,
+  },
+  
 
   buttonsContainer1: {
     flexDirection: 'row',

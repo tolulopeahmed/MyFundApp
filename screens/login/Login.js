@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Alert,Keyboard, ActivityIndicator, Text, ScrollView, StyleSheet,Image,animation,TouchableOpacity,TextInput,Modal,Animated,} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as LocalAuthentication from 'expo-local-authentication';
-import logo from './logo..png';
 import axios from 'axios';
 import { CommonActions } from '@react-navigation/native';
 import { ipAddress } from '../../constants';
@@ -11,6 +10,7 @@ import { Audio } from 'expo-av';
 import { useDispatch } from 'react-redux';
 import { loadBankAccounts, setUserToken, fetchUserCards } from '../../ReduxActions';
 import LoadingModal from '../components/LoadingModal';
+import { useTheme } from '../../ThemeContext';
 
 const Login = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,6 +26,8 @@ const Login = ({ navigation }) => {
 
   const passwordInputRef = useRef(null); // Create a ref for the password input
 
+  const { isDarkMode, colors } = useTheme(null);
+  const styles = createStyles(isDarkMode);
 
 
   useEffect(() => {
@@ -152,7 +154,10 @@ const handleLogin = async () => {
         keyboardShouldPersistTaps="handled" // Ensure taps outside input fields dismiss the keyboard
       >   
            <View style={styles.logoContainer}>
-          <Image source={logo} style={styles.logo} />
+          <Image
+        source={isDarkMode ? require('../images/icon.png') : require('../images/logo..png')}
+        style={styles.logo}
+      />
         </View>
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Welcome Back</Text>
@@ -170,6 +175,7 @@ const handleLogin = async () => {
            <TextInput
           style={[styles.input, !validEmail && styles.invalidInput]}
           placeholder="Email Address"
+          placeholderTextColor="grey" 
           value={email}
           onChangeText={(text) => {
             setEmail(text);
@@ -189,6 +195,7 @@ const handleLogin = async () => {
           <TextInput
           style={[styles.passwordInput, !validPassword && styles.invalidInput]}
           placeholder="Password"
+          placeholderTextColor="grey" 
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={(text) => {
@@ -294,19 +301,16 @@ const handleLogin = async () => {
   );
 };
 
-const styles = StyleSheet.create({
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#DCD1FF',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    zIndex: 1,
-  },
+
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -332,7 +336,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
   },
   subText: {
     fontSize: 14,
@@ -342,7 +346,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 40,
     marginTop: 5,
     marginBottom: 15,
-
+    color: isDarkMode ? 'silver' : 'black',
   },
 
   fieldContainer2: {
@@ -363,14 +367,14 @@ const styles = StyleSheet.create({
     fontSize: 17,
     height: 45,
     width: '100%',
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? '#313151' : '#F5F5F5',
     borderRadius: 10,
     marginBottom: 15,
     paddingLeft: 40,
     paddingRight: 5,
     borderWidth: 1,
     borderColor: 'green',
-        
+    color: isDarkMode ? 'white' : 'black',        
   },
   passwordInputContainer: {
     position: 'relative',
@@ -400,7 +404,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 17,
     height: 45,
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? '#313151' : '#F5F5F5',
     borderRadius: 10,
     marginBottom: 5,
     paddingLeft: 15,
@@ -408,7 +412,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'green',
     paddingLeft: 40,
-  
+    color: isDarkMode ? 'white' : 'black',        
   },
   passwordToggle: {
     position: 'absolute',
@@ -418,7 +422,7 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     fontSize: 12,
     fontFamily: 'karla',
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
     alignSelf: 'flex-end',
     marginLeft: '56%',
     marginBottom: 1,
@@ -468,6 +472,7 @@ const styles = StyleSheet.create({
     color: 'black',
     textAlign: 'center',
     marginHorizontal: 1,
+    marginBottom: 10,
   },
   createAccountText: {
     fontSize: 13,
@@ -475,13 +480,14 @@ const styles = StyleSheet.create({
     color: 'black',
     textAlign: 'center',
     marginHorizontal: 5,
-    marginBottom: 5,
+    marginBottom: 10,
     letterSpacing: -0.2,
+    color: isDarkMode ? 'silver' : 'black',
   },
   createAccount: {
     fontSize: 14,
     fontFamily: 'karla',
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
     textAlign: 'center',
     marginHorizontal: 10,
     marginTop: 5,
@@ -580,5 +586,5 @@ const styles = StyleSheet.create({
   },
 
 });
-
+}
 export default Login;

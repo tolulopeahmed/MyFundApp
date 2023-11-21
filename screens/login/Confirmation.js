@@ -9,12 +9,15 @@ import LoadingModal from '../components/LoadingModal';
 import { CommonActions } from '@react-navigation/native';
 import { loadBankAccounts, setUserToken, fetchUserCards } from '../../ReduxActions';
 import { useDispatch } from 'react-redux';
+import { useTheme } from '../../ThemeContext';
 
   const Confirmation = ({ navigation, route }) => {
     const [error, setError] = useState(""); // Declare the error state
     const inputRefs = useRef([]);
     const { email, password } = route.params;
 
+    const { isDarkMode, colors } = useTheme();
+    const styles = createStyles(isDarkMode);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
@@ -158,11 +161,14 @@ console.log('password:', password);
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="#4C28BC" />
+        <Ionicons name="arrow-back" size={24} color={isDarkMode ? '#6E3DFF' : '#4C28BC'}/>
       </TouchableOpacity>
       <View style={styles.logoContainer}>
-        <Image source={MyFundLogo} style={styles.logo} />
-      </View>
+        <Image
+        source={isDarkMode ? require('../images/icon.png') : require('../images/logo..png')}
+        style={styles.logo}
+      />     
+       </View>
       <View style={styles.textContainer}>
         <Text style={styles.header}>Enter Confirmation Code</Text>
         <Text style={styles.subText}>Use the code we just sent to your email/phone number to complete your signup</Text>
@@ -270,11 +276,12 @@ console.log('password:', password);
   );
 };
 
-const styles = StyleSheet.create({
 
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#DCD1FF',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -302,12 +309,12 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
   },
   subText: {
     fontSize: 14,
     fontFamily: 'karla',
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
     textAlign: 'center',
     marginHorizontal: 40,
     marginTop: 10,
@@ -335,7 +342,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: '13%',
     fontFamily: 'karla',
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? '#313151' : '#F5F5F5',
     borderRadius: 5,
     marginBottom: 15,
     paddingLeft: 5,
@@ -345,6 +352,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignSelf: 'center',
     alignItems: 'center',
+    color: isDarkMode ? 'white' : 'black',
   },
 
   disabledConfirmCodeButton: {
@@ -376,7 +384,7 @@ const styles = StyleSheet.create({
       resendText: {
         fontSize: 14,
         fontFamily: 'karla',
-        color: 'black',
+        color: isDarkMode ? 'silver' : 'white',
         textAlign: 'center',
         marginHorizontal: 40,
         marginTop: 5,
@@ -384,7 +392,7 @@ const styles = StyleSheet.create({
       resendLinkText: {
         fontSize: 14,
         fontFamily: 'karla',
-        color: '#4C28BC',
+        color: isDarkMode ? '#6E3DFF' : '#4C28BC',
         textAlign: 'center',
         marginHorizontal: 40,
         marginTop: 5,
@@ -423,6 +431,6 @@ const styles = StyleSheet.create({
       },
 
     });
-    
+  }
     export default Confirmation;
     

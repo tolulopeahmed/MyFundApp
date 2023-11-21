@@ -12,6 +12,7 @@ import moment from 'moment';
 import { useTheme } from '../../ThemeContext';
 
 
+
 const TopSavers = ({ navigation }) => {
   const dispatch = useDispatch();
   const userPercentage = useSelector((state) => state.bank.userPercentage);
@@ -143,7 +144,7 @@ const TopSavers = ({ navigation }) => {
         topSaversData?.current_user.individual_percentage === 100 ||
         topSaversData?.top_savers.findIndex(saver => saver.email === userInfo.email) < 3
           ? 'trophy-outline'
-          : 'wallet-outline'
+          : 'podium-outline'
       }
       size={34}
       style={styles.icon}

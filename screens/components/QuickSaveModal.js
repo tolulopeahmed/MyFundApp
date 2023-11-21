@@ -247,10 +247,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
       if (response.status === 200 || response.status === 201) {
         // Dispatch the necessary actions
         const responseData = response.data;
-        dispatch(updateAccountBalances(responseData.newAccountBalances));
-        dispatch(fetchAccountBalances());
         dispatch(fetchUserTransactions());
-        dispatch(fetchTopSaversData());
   
         // Send a POST request to create an alert message associated with the user
         const currentDate = new Date();
@@ -412,7 +409,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                     <Text style={styles.label3}>Which of them?     </Text>
                     {userCards.length === 0 ? (
                       <TouchableOpacity onPress={handleAddCard}>
-                      <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>No cards added yet... 
+                      <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>No cards added yet. Use Transfer or... 
                       <Text style={{ color: isDarkMode ? '#8A63F7' : '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>    Add Card Now!</Text>
                       </Text>
                       </TouchableOpacity>
@@ -480,9 +477,9 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                     ) : (
 
                       <View style={styles.paymentOptionsContainer}>
-                      <Text style={styles.modalSubText2} alignSelf='flex-start'>1. Transfer the exact amount you entered above to... {'\n'} 
-                      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} VCORP SYSTEMS LIMITED</Text> {'\n'}
-                     2. Click <Text style={{fontFamily: 'proxima'}}>'Submit Payment'</Text> after making the transfer and your account will be updated within minutes.</Text>
+                      <Text style={styles.modalSubText2} alignSelf='flex-start'>{'\n'} 1. Transfer the exact amount you entered above to... {'\n'} 
+                      <Text style={styles.accountDetails}> 0821326433 (Access Bank) {'\n'} VCORP SYSTEMS LIMITED</Text> {'\n'}
+                     2. Click <Text style={{fontFamily: 'proxima'}}>'I've Sent The Payment'</Text> after making the transfer and your account will be updated within minutes.</Text>
                       <View style={styles.buttonsContainer}>
                         <TouchableOpacity
                           style={[
@@ -502,8 +499,10 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                             <MaterialIcons name="account-balance" size={24} color="#fff" marginRight={10} />
                           )}
                           <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
-                            {processing ? 'Processing Your Payment...' : 'Submit Payment'}
+                            {processing ? 'Processing Your Payment...' : 'I\'ve Sent The Payment'}
                           </Text>
+                          <Ionicons name="checkmark-circle-outline" size={24} color="green" marginRight={10} />
+
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -632,6 +631,16 @@ const createStyles = (isDarkMode) => {
     textAlign: 'center',
     letterSpacing: -0.5,
     color: isDarkMode ? '#fff' : 'black',
+  },
+
+  accountDetails: {
+    fontSize: 17,
+    fontFamily: 'proxima',
+    marginTop: 20,
+    marginBottom: 5,
+    textAlign: 'center',
+    letterSpacing: -0.5,
+    color: isDarkMode ? 'yellow' : '#4C28BC',
   },
 
   label3: {

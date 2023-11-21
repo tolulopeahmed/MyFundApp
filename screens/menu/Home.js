@@ -6,10 +6,8 @@ import Divider from '../components/Divider';
 import Swiper from 'react-native-swiper';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
-import { AutoSaveContext } from '../components/AutoSaveContext';
-import { AutoInvestContext } from '../components/AutoInvestContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAccountBalances, fetchKYCStatus, setKYCStatus , fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
+import { fetchAccountBalances, fetchKYCStatus, fetchAutoInvestSettings , fetchUserTransactions, fetchUserData, fetchAutoSaveSettings } from '../../ReduxActions';
 import SectionTitle from '../components/SectionTitle';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsFocused } from '@react-navigation/native';
@@ -18,8 +16,6 @@ import { useTheme } from '../../ThemeContext';
 
 const Home = ({ navigation, route}) => {
   const [greeting, setGreeting] = useState('');
-  const { autoSave } = useContext(AutoSaveContext)
-  const { autoInvest } = useContext(AutoInvestContext)
   const userInfo = useSelector((state) => state.bank.userInfo);
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
@@ -41,9 +37,8 @@ const Home = ({ navigation, route}) => {
   const retrieveDarkModePreference = async () => {
     try {
       const value = await AsyncStorage.getItem('darkMode');
-      if (value !== null) {
-        toggleDarkMode(JSON.parse(value));
-      }
+      // Log the value directly, whether it's null or the retrieved value.
+      console.log('Dark mode preference retrieved:', value);
     } catch (error) {
       console.error('Error retrieving dark mode preference:', error);
     }
@@ -54,8 +49,9 @@ const Home = ({ navigation, route}) => {
   }, []);
   
   useEffect(() => {
-    // Fetch KYC status when the component mounts
     dispatch(fetchKYCStatus());
+    dispatch(fetchAutoInvestSettings()); // Fetch auto-save status and settings when the component mounts
+
   }, []);
 
   useEffect(() => {
@@ -316,8 +312,11 @@ const formatTime = (timeString) => {
 
 
       <View style={styles.propertyContainer}>
-        <Ionicons name="home-outline" size={24} style={styles.icon}/>
-        <Text style={styles.propertyText}><Text style={{ fontFamily: 'proxima', color: "#4C28BC" }}></Text><Text style={{fontFamily: 'proxima'}}>Every January and July</Text>, you'll earn 10% p.a. on Savings and 20% p.a. on your Investments until you've saved enough to buy properties and earn lifetime rent. Keep growing your funds.</Text>
+      <Image
+        source={isDarkMode ? require('../images/icon.png') : require('../images/logo..png')}
+        style={styles.icon}
+      />
+       <Text style={styles.propertyText}><Text style={{fontFamily: 'proxima', color:isDarkMode ? '#6E3DFF' : '#4C28BC'}}>Every January and July</Text>, you'll earn 10% p.a. on Savings and 20% p.a. on your Investments (credited to your wallet) until you've saved enough to buy properties and earn lifetime rent. Keep growing your funds.</Text>
       </View>
 
 
@@ -545,7 +544,8 @@ const formatTime = (timeString) => {
           size={23} 
           style={{ marginRight: 10, marginLeft: 10, color: isDarkMode ? 'grey' : 'black',}}
           />
-          <Text style={styles.todoText}>Refer and Earn ₦1000 EACH</Text>
+          <Text style={styles.todoText}>Refer and Earn </Text>
+          <Text style={styles.todoText2}> ₦1000 EACH</Text>
         </TouchableOpacity>
         </View>
 
@@ -613,7 +613,7 @@ const formatTime = (timeString) => {
           <Ionicons 
           name="cellular-outline" 
           size={23} 
-          style={{ marginRight: 10, marginLeft: 10, color: isDarkMode ? 'grey' : 'black',}}
+          style={{ marginRight: 10, marginLeft: 10, color: isDarkMode ? 'green' : 'green',}}
           />
           <Text style={styles.todoText}>Financial Level: </Text>
          <Pressable onPress={() => navigation.push('WealthMap')}> 
@@ -767,7 +767,10 @@ color: isDarkMode ? 'silver' : 'black',
 
 icon: {
   marginRight: 15,
-  color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+  padding: 9,
+  resizeMode: 'contain',
+  height: 50,
+  width: 50,
  },
 
 swiperContainer: {

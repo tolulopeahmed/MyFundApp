@@ -6,12 +6,17 @@ import Divider from '../components/Divider';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
 import LoadingModal from '../components/LoadingModal';
+import { useTheme } from '../../ThemeContext';
 
 const PasswordForgot = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [isResetButtonDisabled, setIsResetButtonDisabled] = useState(true);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+
+  
+  const { isDarkMode, colors } = useTheme(null);
+  const styles = createStyles(isDarkMode);
 
   const handleEmailChange = (text) => {
     setEmail(text);
@@ -89,8 +94,11 @@ const PasswordForgot = ({ navigation }) => {
 
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.logoContainer}>
-          <Image source={logo} style={styles.logo} />
-        </View>
+        <Image
+        source={isDarkMode ? require('../images/icon.png') : require('../images/logo..png')}
+        style={styles.logo}
+      />
+             </View>
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Reset Password</Text>
           <Text style={styles.subText}>
@@ -102,6 +110,7 @@ const PasswordForgot = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Enter Your Email Address"
+            placeholderTextColor="grey" 
             value={email}
             onChangeText={handleEmailChange}
           />
@@ -128,13 +137,16 @@ const PasswordForgot = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#DCD1FF',
+    backgroundColor: isDarkMode ? '#140A32' : '#DCD1FF',
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   backButton: {
     position: 'absolute',
     top: 50,
@@ -164,12 +176,12 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 25,
     fontFamily: 'proxima',
-    color: '#4C28BC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
   },
   subText: {
     fontSize: 14,
     fontFamily: 'karla',
-    color: 'black',
+    color: isDarkMode ? 'silver' : 'black',
     textAlign: 'center',
     marginHorizontal: 40,
     marginTop: 5,
@@ -184,7 +196,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     height: 45,
     width: '80%',
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? '#313151' : '#F5F5F5',
     borderRadius: 10,
     marginBottom: 25,
     paddingLeft: 15,
@@ -295,5 +307,5 @@ modalContent: {
   },
 
 });
-
+}
 export default PasswordForgot;
