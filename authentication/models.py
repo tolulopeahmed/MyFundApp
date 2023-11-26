@@ -41,6 +41,7 @@ class CustomUserManager(BaseUserManager):
 
 import uuid
 from datetime import date
+from decimal import Decimal
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=30)
@@ -118,7 +119,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     
     def save(self, *args, **kwargs):
         # Update the savings_and_investments field
-        self.savings_and_investments = self.savings + self.investment
+        self.savings_and_investments = Decimal(str(self.savings)) + Decimal(str(self.investment))
         super().save(*args, **kwargs)
 
     def generate_reset_token(self):

@@ -1365,33 +1365,49 @@ def savings_to_investment(request):
     if user.savings < amount:
         return Response({'error': 'Insufficient savings balance.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Generate a unique transaction ID
-    transaction_id = str(uuid.uuid4())[:16]
+    # Generate unique transaction IDs for debit and credit transactions
+    debit_transaction_id = str(uuid.uuid4())[:16]
+    credit_transaction_id = str(uuid.uuid4())[:16]
 
     try:
-        # Create a transaction record with the details
-        transaction = Transaction(
+        # Create a debit transaction record
+        debit_transaction = Transaction(
             user=user,
-            transaction_type='credit',
+            transaction_type='debit',
             amount=amount,
             date=timezone.now().date(),
             time=timezone.now().time(),
             description='Withdrawal (Savings > Investment)',
-            transaction_id=transaction_id
+            transaction_id=debit_transaction_id
         )
-        transaction.save()
+        debit_transaction.save()
+        
+        # Create a credit transaction record
+        credit_transaction = Transaction(
+            user=user,
+            transaction_type="credit",
+            amount=int(amount),
+            date=timezone.now().date(),
+            time=timezone.now().time(),
+            description="QuickInvest",
+            transaction_id=credit_transaction_id
+        )
+        credit_transaction.save()
 
         # Perform the savings to investment transfer
         user.savings -= amount
         user.investment += amount
         user.save()
 
-        return Response({'message': 'Savings to investment transfer successful.', 'transaction_id': transaction_id}, status=status.HTTP_200_OK)
+        return Response({
+            'message': 'Savings to investment transfer successful.',
+            'debit_transaction_id': debit_transaction_id,
+            'credit_transaction_id': credit_transaction_id
+        }, status=status.HTTP_200_OK)
 
     except IntegrityError:
         # Handle the case where a unique constraint (transaction_id) is violated
         return Response({'error': 'Transaction ID conflict. Please try again.'}, status=status.HTTP_400_BAD_REQUEST)
-    
 
 
 @api_view(['POST'])
@@ -1782,27 +1798,27 @@ def schedule_rent_reward(user_id, rent_reward, transaction_id, property_name):
     # Create a transaction for the rent reward with the unique transaction_id
     transaction = Transaction(
         user_id=user_id,
-        transaction_type='credit',
+        transaction_type='pending',
         amount=rent_reward,
-        description="Annual rental income reward",
-        date=timezone.now().date(),
-        time=timezone.now().time(),
+        description="Annual Rent (Pending)",
+        date=next_payment_date.date(),  # Use the calculated next_payment_date
+        time=next_payment_date.time(),  # Use the calculated next_payment_date
         transaction_id=transaction_id  # Include the unique transaction_id
     )
     transaction.save()
 
-    # Update the user's wallet with the rent reward
-    user = transaction.user
-    user.wallet += Decimal(rent_reward)  # Convert rent_reward to Decimal
-    user.save()
+    # # Update the user's wallet with the rent reward
+    # user = transaction.user
+    # user.wallet += Decimal(rent_reward)  # Convert rent_reward to Decimal
+    # user.save()
 
-    # Send an email to the user for the rental income
-    subject = "You've Earned a Rental Income!"
-    message = f"Hi {user.first_name},\n\nYou've received an annual rental income of ₦{rent_reward} from your {property_name} property. Keep growing your portfolio to enjoy more returns on your investment.🥂 \n\nThank you for using MyFund!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
-    from_email = "MyFund <info@myfundmobile.com>"
-    recipient_list = [user.email]
+    # # Send an email to the user for the rental income
+    # subject = "You've Earned a Rental Income!"
+    # message = f"Hi {user.first_name},\n\nYou've received an annual rental income of ₦{rent_reward} from your {property_name} property. Keep growing your portfolio to enjoy more returns on your investment.🥂 \n\nThank you for using MyFund!\n\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
+    # from_email = "MyFund <info@myfundmobile.com>"
+    # recipient_list = [user.email]
 
-    send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+    # send_mail(subject, message, from_email, recipient_list, fail_silently=False)
 
 
 
@@ -1936,7 +1952,7 @@ class BuyPropertyView(generics.CreateAPIView):
                     # Generate a unique ID with 15 characters
                     def generate_short_id():
                         unique_id = str(uuid.uuid4().int)
-                        return unique_id[:15]
+                        return unique_id[:10]
 
 
                     transaction = Transaction(
