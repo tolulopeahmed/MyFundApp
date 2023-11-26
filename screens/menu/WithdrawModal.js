@@ -384,7 +384,7 @@ const bankAccountField = (
     console.log("From Account (in handleWithdraw):", fromAccount);
     console.log("To Account (in handleWithdraw):", toAccount);
   
-    if (fromAccount === 'Savings' && toAccount === 'Investment') {
+    if (fromAccount === 'savings' && toAccount === 'Investment') {
       handleSavingsToInvestmentTransfer();
     } else if (fromAccount === 'investment' && toAccount === 'Savings') {
       handleInvestmentToSavingsTransfer();

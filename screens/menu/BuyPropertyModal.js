@@ -11,6 +11,7 @@ import LoadingModal from '../components/LoadingModal';
 import bankOptions from '../components/BankOptions';
 import DOAModal from './DOAModal'
 import { useTheme } from '../../ThemeContext';
+import { MaterialIcons } from '@expo/vector-icons';
 
 
 const getBackgroundColor = (bankName) => {
@@ -127,7 +128,7 @@ const handleBuyProperty = async () => {
       paymentData = {
         property: selectedProperty.id,
         num_units: parseInt(units),
-        payment_source: frequency.toLowerCase(),
+        payment_source: frequency.toLowerCase(), 
       };
     } else if (frequency === 'My Saved Cards') {
       paymentData = {
@@ -377,14 +378,25 @@ console.log('selectedCardId:', selectedCardId);
                   )}
 
                   {showSubmitButton && (
-                    <View style={styles.paymentOptionsContainer}>
-                      <Text style={styles.modalSubText3} alignSelf="center">
-                        Transfer the exact total amount above to the account below. Click 'Submit' after payment and your purchase would be processed.
-                      </Text>
-                      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} Vcorp Systems Limited</Text>
-                      <View style={styles.buttonsContainer}>
+                  <View style={styles.paymentOptionsContainer}>
+                  <Text style={styles.modalSubText2} alignSelf='flex-start'>{'\n'} 1. Transfer the exact amount you entered above to... {'\n'} 
+                  <Text style={styles.accountDetails}> 0821326433 (Access Bank) {'\n'} VCORP SYSTEMS LIMITED</Text> {'\n'}
+                 2. Click <Text style={{fontFamily: 'proxima'}}>'I've Sent The Payment'</Text> after making the transfer and your account will be updated within minutes.</Text>
+                  <View style={styles.buttonsContainer}>
+
                         <TouchableOpacity style={styles.primaryButton}>
-                          <Text style={styles.primaryButtonText}>Submit</Text>
+                        {processing ? (
+                            <>
+                              <ActivityIndicator color="white" style={styles.activityIndicator} />
+                              <MaterialIcons name="account-balance" size={24} color="#fff" marginRight={10} />
+                            </>
+                          ) : (
+                            <MaterialIcons name="account-balance" size={24} color="#fff" marginRight={10} />
+                          )}
+                          <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
+                            {processing ? 'Processing Your Payment...' : 'I\'ve Sent The Payment'}
+                          </Text>
+                          <Ionicons name="checkmark-circle-outline" size={24} color="green" marginRight={10} />
                         </TouchableOpacity>
                       </View>
                       <Text style={styles.modalSubText4}>By clicking Submit, you agree to the  <Text style={{ color: '#4C28BC', fontFamily: 'proxima' }}>Deed of Agreement.</Text></Text>
@@ -511,7 +523,15 @@ const createStyles = (isDarkMode) => {
     marginLeft: 20
   },
   
-
+  accountDetails: {
+    fontSize: 17,
+    fontFamily: 'proxima',
+    marginTop: 20,
+    marginBottom: 5,
+    textAlign: 'center',
+    letterSpacing: -0.5,
+    color: isDarkMode ? 'yellow' : '#4C28BC',
+  },
   presetAmountsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

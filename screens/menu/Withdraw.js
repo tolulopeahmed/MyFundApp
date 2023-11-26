@@ -89,6 +89,7 @@ const Withdraw = ({ navigation, route }) => {
     "Withdrawal (Savings > Bank)": "arrow-down-outline",
     "Sent to User": "arrow-up-outline",
     "Received from User": "arrow-down-outline",
+    "Annual Rent (Pending)": "checkmark-circle",
     "Withdrawal (Investment > Bank)": "arrow-down-outline",
     "Withdrawal (Wallet > Bank)": "arrow-down-outline",
     "Referral Reward (Pending)": "ellipsis-horizontal-circle-outline",
@@ -331,11 +332,11 @@ const handleCloseSuccessModal = () => {
 
       <View style={styles.transactionsContainer}>
   {userTransactions.some((transaction) =>
-    ["Withdrawal (Savings > Investment)", `Sent to User`, "Referral Reward (Confirmed)", "Referral Reward (Pending)", "Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+    ["Withdrawal (Savings > Investment)", `Sent to User`, "Annual Rent (Pending)", "Referral Reward (Confirmed)", "Referral Reward (Pending)", "Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
   ) ? (
     userTransactions
       .filter((transaction) =>
-        ["Withdrawal (Savings > Investment)", `Sent to User`,"Referral Reward (Confirmed)","Referral Reward (Pending)","Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+        ["Withdrawal (Savings > Investment)", `Sent to User`,"Annual Rent (Pending)","Referral Reward (Confirmed)","Referral Reward (Pending)","Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
       )
       .slice(0, 5)
       .map((transaction, index) => (

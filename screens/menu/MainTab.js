@@ -88,7 +88,7 @@ const MainTab = ({ navigation, route }) => {
           );
         },
         tabBarActiveTintColor: isDarkMode ? '#BF73FA' : '#4C28BC',
-        tabBarInactiveTintColor: isDarkMode ? 'white' : 'grey',
+        tabBarInactiveTintColor: isDarkMode ? 'lightgrey' : 'grey',
         tabBarShowLabel: false,
         tabBarStyle: styles.tabStyle,
       })}

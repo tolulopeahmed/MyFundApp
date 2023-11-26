@@ -122,7 +122,7 @@ const Ownership = ({navigation}) => {
     </TouchableOpacity>
     <View style={styles.headerContainer}>
       <Text style={styles.headerText}>BUY PROPERTIES</Text>
-      <TouchableOpacity style={styles.bell} onPress={() => navigation.naviage('Notifications')}>
+      <TouchableOpacity style={styles.bell} onPress={() => navigation.navigate('Notifications')}>
           <Ionicons name="notifications-outline" size={22} style={{color: isDarkMode ? '#6E3DFF' : '#4C28BC'}}/>
         </TouchableOpacity>
       </View>

@@ -55,6 +55,7 @@ const Notifications = ({ navigation }) => {
     "QuickSave (Confirmed)": "checkmark-circle",
     "Sent to User": "arrow-up-outline",
     "QuickSave (Failed)": "close-circle-outline",
+    "Annual Rent (Pending)": "checkmark-circle",
   };
 
   const formatDate = (dateString) => {

@@ -1,9 +1,15 @@
 import React from 'react';
 import { TouchableOpacity, Text, Dimensions, StyleSheet } from 'react-native';
+import { useTheme } from '../../ThemeContext';
 
 const { width } = Dimensions.get('window');
 
+
+
 export const PrimaryButton = ({ title, onPress }) => {
+  const { isDarkMode, colors } = useTheme(null);
+  const styles = createStyles(isDarkMode);
+
   return (
     <TouchableOpacity style={styles.primaryButton} onPress={onPress}>
       <Text style={styles.buttonText}>{title}</Text>
@@ -12,6 +18,9 @@ export const PrimaryButton = ({ title, onPress }) => {
 };
 
 export const SecondaryButton = ({ title, onPress }) => {
+  const { isDarkMode, colors } = useTheme(null);
+  const styles = createStyles(isDarkMode);
+  
   return (
     <TouchableOpacity style={styles.secondaryButton} onPress={onPress}>
       <Text style={[styles.buttonText, { color: '#4C28BC' }]}>{title}</Text>
@@ -19,8 +28,10 @@ export const SecondaryButton = ({ title, onPress }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  primaryButton: {
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+    primaryButton: {
     backgroundColor: '#4C28BC',
     width: width * 0.7,
     height: 50,
@@ -30,7 +41,7 @@ const styles = StyleSheet.create({
     marginBottom: 17,
   },
   secondaryButton: {
-    backgroundColor: '#ffffff',
+    backgroundColor: isDarkMode ? '#DCD1FF' : '#fff',
     width: width * 0.7,
     height: 50,
     alignItems: 'center',
@@ -45,3 +56,4 @@ const styles = StyleSheet.create({
     fontFamily: 'proxima',
   },
 });
+}

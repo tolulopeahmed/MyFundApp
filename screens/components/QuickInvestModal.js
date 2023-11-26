@@ -33,6 +33,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
   const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true); // New state variable
   const { isDarkMode, colors } = useTheme();
   const styles = createStyles(isDarkMode);
+  const accountBalances = useSelector((state) => state.bank.accountBalances);
 
   const dispatch = useDispatch();
 
@@ -55,6 +56,24 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
     }
   }, [amount, frequency]);
 
+
+  useEffect(() => {
+    if (frequency === "savings") {
+      // Check if the amount is empty or less than 100,000, and update the button disabled state accordingly
+      const numericAmount = parseFloat(amount.replace(/,/g, ''));
+      if (amount === '' || numericAmount < 100000) {
+        setIsSubmitButtonDisabled(true);
+      } else {
+        setIsSubmitButtonDisabled(false);
+      }
+    } else {
+      // Adjust this part based on your existing logic for other frequencies
+      setShowQuickInvestButton(true);
+      setIsSubmitButtonDisabled(false); // Set to false if needed for other frequencies
+    }
+  }, [amount, frequency]);
+  
+  
 
   const handleAmountButtonPress = (presetAmount) => {
     handleAmountPreset(presetAmount);
@@ -279,11 +298,81 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
       setProcessing(false);
     }
   };
+
+
+
   
-  console.log('Selected card in invest:', selectedCardId);
+  const handleSavingsToInvestmentTransfer = async () => {
+    try {
+      setProcessing(true);
+      const requestedAmount = parseFloat(amount.replace(/,/g, ''));
+      const savingsBalance = accountBalances.savings; // Replace with the actual balance value from your state
+  
+      if (requestedAmount > savingsBalance) {
+        // Display an alert for insufficient balance
+        Alert.alert('Insufficient Balance', 'You do not have enough balance in your SAVINGS account for this transfer.');
+        return;
+      }
+  
+      // Prepare the data to send to the backend API
+      const requestData = {
+        amount: requestedAmount,
+      };
+  
+      console.log('Request Data:', requestData); // Log the requestData
+  
+      const response = await axios.post(
+        `${ipAddress}/api/savings-to-investment/`,
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+  
+      console.log('API Response:', response); // Log the API response
+  
+      if (response.status === 200) {
+     
+        const responseData = response.data;
+        dispatch(updateAccountBalances(responseData.newAccountBalances));  
+        dispatch(fetchAccountBalances()); // Add this line   
+        dispatch(fetchUserTransactions()); // Add this line
+ 
+        setIsSuccessVisible(true);
+        setQuickInvestModalVisible(false);
+        setProcessing(false);
+
+      } else {
+        // Handle API errors here and show appropriate alerts
+        if (response.status === 400) {
+          setProcessing(false);
+          Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+        } else if (response.status === 401) {
+          setProcessing(false);
+          Alert.alert('Error', 'You are not authorized. Please login again.');
+        } else {
+          setProcessing(false);
+          Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+        }
+      }
+    } catch (error) {
+      console.error('Savings to Investment Transfer Error:', error);
+      // Handle network or other errors here and show an appropriate alert
+      Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+    } finally {
+      // Reset the processing state
+      setProcessing(false);
+    }
+  };
+
+
+  
   console.log('Amount entered in invest:', amount);
 
-
+  
 
 
 
@@ -329,7 +418,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
           <Divider />
 
           <Text style={styles.modalSubText}>
-          Manually move multiples of N100,000 from your local bank acount into your Sponsorship Investment Account with a few taps to enjoy <Text style={{fontFamily: 'proxima'}}>20% ROI p.a. </Text> {'\n'}
+          Manually move multiples of N100,000 from your SAVINGS or local bank into your INVESTMENT account with a few taps to enjoy <Text style={{fontFamily: 'proxima'}}>20% ROI p.a. </Text> {'\n'}
             {'\n'}QuickInvest...
           </Text>
         
@@ -398,12 +487,40 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                   >
                     <Picker.Item label="My Saved Cards" value="My Saved Cards" />
                     <Picker.Item label="Bank Transfer" value="Bank Transfer" />
+                    <Picker.Item label={`Savings (₦${Math.floor(accountBalances.savings).toLocaleString()})`} value="savings" />
                   </Picker>
                 </View>
               </View>
 
-                <>
 
+
+              {frequency === "savings" ? (
+                <View style={styles.buttonsContainer}>
+                  <TouchableOpacity
+                    style={[
+                      styles.primaryButton,
+                      (isSubmitButtonDisabled || processing) && styles.primaryButtonDisabled,
+                      { backgroundColor: processing ? 'green' : isSubmitButtonDisabled ? 'grey' : '#4C28BC' },
+                    ]}
+                    onPress={handleSavingsToInvestmentTransfer} 
+                    disabled={isSubmitButtonDisabled || processing}
+                  >
+                    {processing ? (
+                      <>
+                        <ActivityIndicator color="white" style={styles.activityIndicator} />
+                        <MaterialIcons name="send" size={24} color="#fff" marginRight={10} />
+                      </>
+                    ) : (
+                      <MaterialIcons name="send" size={24} color="#fff" marginRight={10} />
+                    )}
+                    <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
+                      {processing ? 'Processing Your Payment...' : 'Move Funds to Investment'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                ) : (
+
+                <>
                 {showQuickInvestButton ? (
                   <View style={styles.inputContainer}>
                     <Text style={styles.label3}>Which of them?     </Text>
@@ -475,16 +592,17 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                     ) : (
 
                       <View style={styles.paymentOptionsContainer}>
-                      <Text style={styles.modalSubText2} alignSelf='center'>Transfer the exact amount you entered above to the account below. Click <Text style={{fontFamily: 'proxima'}}>'Submit Payment'</Text> after making the transfer and your account will be updated within minutes.</Text>
-                      <Text style={styles.label}>Access Bank {'\n'} 0821326433 {'\n'} VCORP SYSTEMS LIMITED</Text>
+                      <Text style={styles.modalSubText2} alignSelf='flex-start'>{'\n'} 1. Transfer the exact amount you entered above to... {'\n'} 
+                      <Text style={styles.accountDetails}> 0821326433 (Access Bank) {'\n'} VCORP SYSTEMS LIMITED</Text> {'\n'}
+                     2. Click <Text style={{fontFamily: 'proxima'}}>'I've Sent The Payment'</Text> after making the transfer and your account will be updated within minutes.</Text>
                       <View style={styles.buttonsContainer}>
-                      <TouchableOpacity
+                        <TouchableOpacity
                           style={[
                             styles.primaryButton,
                             (isSubmitButtonDisabled || processing) && styles.primaryButtonDisabled,
                             { backgroundColor: processing ? 'green' : isSubmitButtonDisabled ? 'grey' : '#4C28BC' },
                           ]}
-                          onPress={handleInvestTransfer} // Modify the function for bank transfer
+                          onPress={handleInvestTransfer} 
                           disabled={isSubmitButtonDisabled || processing}
                         >
                           {processing ? (
@@ -494,16 +612,19 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                             </>
                           ) : (
                             <MaterialIcons name="account-balance" size={24} color="#fff" marginRight={10} />
-                            )}
+                          )}
                           <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
-                            {processing ? 'Processing Your Payment...' : 'Submit Payment'}
+                            {processing ? 'Processing Your Payment...' : 'I\'ve Sent The Payment'}
                           </Text>
+                          <Ionicons name="checkmark-circle-outline" size={24} color="green" marginRight={10} />
+
                         </TouchableOpacity>
                       </View>
                     </View>
                   )}
 
                   </>
+)}
 
                   </View>
 
@@ -568,6 +689,15 @@ const createStyles = (isDarkMode) => {
     marginHorizontal: 45,
     marginTop: 5,
     letterSpacing: -0.5,
+  },
+  accountDetails: {
+    fontSize: 17,
+    fontFamily: 'proxima',
+    marginTop: 20,
+    marginBottom: 5,
+    textAlign: 'center',
+    letterSpacing: -0.5,
+    color: isDarkMode ? 'yellow' : '#4C28BC',
   },
 
   modalSubText3: {

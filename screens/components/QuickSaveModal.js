@@ -346,6 +346,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
                 <TextInput
                   style={styles.amountInput}
                   placeholder="Amount (e.g. 20,000)"
+                  placeholderTextColor="grey"                  
                   keyboardType="numeric"
                   onChangeText={(value) => handleAmountChange(value)}
                   value={amount}

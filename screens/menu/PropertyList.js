@@ -63,15 +63,13 @@ const PropertyList = ({ navigation, properties }) => {
 
 <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back-outline" size={30} color="#4C28BC" />
+        <Ionicons name="arrow-back-outline" size={30} color={isDarkMode ? '#6E3DFF' : '#4C28BC'}/>
       </TouchableOpacity>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>PROPERTY LIST</Text>
-        <TouchableOpacity style={styles.person}> 
-            <Ionicons name="person-outline" size={22} color="#4C28BC" onPress={() => navigation.navigate('More', component={Profile} )}/>
-          </TouchableOpacity>
-      <TouchableOpacity style={styles.bell}>
-            <Ionicons name="notifications-outline" size={22} color="#4C28BC" />
+
+      <TouchableOpacity style={styles.bell} onPress={() => navigation.navigate('Notifications')}>
+            <Ionicons name="notifications-outline" size={22} color={isDarkMode ? '#6E3DFF' : '#4C28BC'}/>
           </TouchableOpacity>
         </View>
     </View>
@@ -412,6 +410,7 @@ const createStyles = (isDarkMode) => {
       },
     quickSaveButton: {
       marginTop: 30,
+      marginBottom: 25,
       flexDirection: 'row',
       backgroundColor: '#4C28BC',
       width: 146,
@@ -594,7 +593,7 @@ const createStyles = (isDarkMode) => {
     alignSelf: 'flex-end'
   },
   sellPropertyButtonText: {
-    color: '#fff',
+    color: isDarkMode ? 'lightgrey' : '#fff',
     fontSize: 9,
     fontFamily: 'ProductSans',
     paddingHorizontal: 7,
