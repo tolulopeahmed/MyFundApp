@@ -1,0 +1,9 @@
+Django==3.2.8
+graphene-django==3.0.0
+channels==3.0.4
+django-graphql-jwt==0.4.0
+django-filter==2.4.0
+djangorestframework==3.12.4
+djangorestframework-simplejwt==4.8.0
+requests==2.26.0
+Pillow==8.4.0
