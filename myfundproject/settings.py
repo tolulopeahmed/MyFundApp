@@ -46,6 +46,7 @@ ALLOWED_HOSTS = [
     "10.10.4.174",
     "192.168.84.34",
     "10.10.4.174",
+    "myfund.onrender.com"
 ]
 
 
@@ -124,6 +125,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://10.10.4.82:8443",
     "https://www.myfundmobile.com",  # Add your domain here
     "http://192.168.238.34:8000",
+    "myfund.onrender.com"
 ]
 
 
