@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('authentication', '0047_alter_customuser_kyc_status'),
+        ("authentication", "0047_alter_customuser_kyc_status"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='customuser',
-            name='kyc_status',
-            field=models.CharField(default='Not yet started', max_length=10),
+            model_name="customuser",
+            name="kyc_status",
+            field=models.CharField(default="Not yet started", max_length=10),
         ),
     ]

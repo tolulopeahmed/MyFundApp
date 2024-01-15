@@ -34,7 +34,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-rct_mdzr=x!99kwy+xy1$#x=5_+!_-dynu%z&!jx_-qkj7*%*%"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = "RENDER" not in os.environ
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
@@ -46,8 +46,12 @@ ALLOWED_HOSTS = [
     "10.10.4.174",
     "192.168.84.34",
     "10.10.4.174",
-    "myfund.onrender.com"
+    "myfund.onrender.com",
 ]
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
@@ -115,6 +119,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     #   "channels.middleware.WebSocketMiddleware",
 ]
 
@@ -125,7 +130,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://10.10.4.82:8443",
     "https://www.myfundmobile.com",  # Add your domain here
     "http://192.168.238.34:8000",
-    "myfund.onrender.com"
+    "https://myfund.onrender.com",
 ]
 
 
@@ -202,7 +207,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+# Following settings only make sense on production and may break development environments.
+if not DEBUG:
+    # Tell Django to copy statics to the `staticfiles` directory
+    # in your application directory on Render.
+    STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+    # Turn on WhiteNoise storage backend that takes care of compressing static files
+    # and creating unique names for each version so they can safely be cached forever.
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 # Default primary key field type
