@@ -177,7 +177,7 @@ DATABASES = {
         "NAME": "myfund_db_6l04",
         "USER": "myfund_db_6l04_user",
         "PASSWORD": "9fGOA4kijCHJznvawsmtR6fnS8ef5qmM",
-        "HOST": "dpg-cmg4v4qcn0vc73abh52g-a.frankfurt-postgres.render.com",
+        "HOST": "ddpg-cmg4v4qcn0vc73abh52g-a",
         "PORT": "5432",
     }
 }
