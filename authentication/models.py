@@ -194,8 +194,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     # KYC status
     kyc_updated = models.BooleanField(default=False)
-    kyc_status = models.CharField(max_length=10, default="Not yet started")
-    admin_approval_status = models.CharField(max_length=10, default="Not yet started")
+    kyc_status = models.CharField(max_length=20, default="Not yet started")
+    admin_approval_status = models.CharField(max_length=20, default="Not yet started")
 
     def __str__(self):
         return self.email

@@ -164,10 +164,21 @@ WSGI_APPLICATION = "myfundproject.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "myfund_db_6l04",
+        "USER": "myfund_db_6l04_user",
+        "PASSWORD": "9fGOA4kijCHJznvawsmtR6fnS8ef5qmM",
+        "HOST": "dpg-cmg4v4qcn0vc73abh52g-a.frankfurt-postgres.render.com",
+        "PORT": "5432",
     }
 }
 
