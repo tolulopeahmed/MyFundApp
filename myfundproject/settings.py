@@ -186,7 +186,7 @@ WSGI_APPLICATION = "myfundproject.wsgi.application"
 DATABASES = {
     "default": dj_database_url.config(
         # Feel free to alter this value to suit your needs.
-        default="postgres://myfund_db_6l04_user:9fGOA4kijCHJznvawsmtR6fnS8ef5qmM@dpg-cmg4v4qcn0vc73abh52g-a/myfund_db_6l04",
+        default=os.environ.get("DATABASE_URL"),
         conn_max_age=600,
     )
 }
