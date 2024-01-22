@@ -172,24 +172,24 @@ WSGI_APPLICATION = "myfundproject.wsgi.application"
 #     }
 # }
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "myfund_db_6l04",
-#         "USER": "myfund_db_6l04_user",
-#         "PASSWORD": "9fGOA4kijCHJznvawsmtR6fnS8ef5qmM",
-#         "HOST": "dpg-cmg4v4qcn0vc73abh52g-a.frankfurt-postgres.render.com",
-#         "PORT": "5432",
-#     }
-# }
-
 DATABASES = {
-    "default": dj_database_url.config(
-        # Feel free to alter this value to suit your needs.
-        default=os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
-    )
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "myfund_db_6l04",
+        "USER": "myfund_db_6l04_user",
+        "PASSWORD": "9fGOA4kijCHJznvawsmtR6fnS8ef5qmM",
+        "HOST": "dpg-cmg4v4qcn0vc73abh52g-a.frankfurt-postgres.render.com",
+        "PORT": "5432",
+    }
 }
+
+# DATABASES = {
+#     "default": dj_database_url.config(
+#         # Feel free to alter this value to suit your needs.
+#         default=os.environ.get("DATABASE_URL"),
+#         conn_max_age=600,
+#     )
+# }
 
 
 # Password validation
