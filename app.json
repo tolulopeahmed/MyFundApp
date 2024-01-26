@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "MyFundApp",
+    "slug": "MyFundApp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.tolulopeahmed.MyFundApp"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "owner": "possibledeveloper",
+    "extra": {
+      "eas": {
+        "projectId": "6ec89b97-a393-4e49-9141-eee8e3b26cd4"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/6ec89b97-a393-4e49-9141-eee8e3b26cd4"
+    }
+  }
+}
