@@ -138,7 +138,7 @@ const handleCloseSuccessModal = () => {
     <View style={styles.walletDetails}>
        
      <View flexDirection='row' marginTop={-4}>  
-     <Ionicons name="md-save-outline" size={19} color="silver" />
+     <Ionicons name="save-outline" size={19} color="silver" />
           <Text style={styles.walletTitle}>SAVINGS</Text> 
           </View> 
 
@@ -180,7 +180,7 @@ const handleCloseSuccessModal = () => {
   <View style={styles.walletDetails}>
        
      <View flexDirection='row' marginTop={-4}>  
-     <Ionicons name="md-trending-up-outline" size={19} color="silver" />
+     <Ionicons name="trending-up-outline" size={19} color="silver" />
           <Text style={styles.walletTitle}>SPONSORSHIP INVESTMENT</Text> 
           </View> 
 
@@ -268,7 +268,7 @@ const handleCloseSuccessModal = () => {
             <View style={styles.walletDetails}>
        
      <View flexDirection='row' marginTop={-4}>  
-     <Ionicons name="md-wallet-outline" size={19} color="silver" />
+     <Ionicons name="wallet-outline" size={19} color="silver" />
           <Text style={styles.walletTitle}>WALLET</Text> 
           </View> 
 

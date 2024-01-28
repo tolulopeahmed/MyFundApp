@@ -265,7 +265,7 @@ const AutoSaveModal = ({ navigation, onConfirm, autoSaveModalVisible, autoSave, 
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          AutoSave allows you to set an amount to automatically debit your local bank account to credit your MyFund Savings account.{"\n"}
+          Automatically move funds from your local bank account to your MyFund Savings account for a<Text style={{fontFamily: 'proxima', color: isDarkMode? '#43FF8E':'green'}}> 10% p.a. ROI</Text> every January and July.{"\n"}
           </Text>
         
           <View style={styles.inputContainer}>

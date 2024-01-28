@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, StatusBar } from 'react-native';
 import { useState, useEffect } from 'react';
 import { ImageProvider } from './ImageContext';
 import { AutoSaveProvider } from '../components/AutoSaveContext';
@@ -58,6 +58,8 @@ const MainTab = ({ navigation, route }) => {
 
   return (
     <UserProvider>
+            <StatusBar backgroundColor="transparent" translucent barStyle={isDarkMode ? 'light-content' : 'dark-content'}/> 
+
     <ImageProvider>
       <AutoSaveProvider>
     <Tab.Navigator
@@ -67,15 +69,15 @@ const MainTab = ({ navigation, route }) => {
           let iconName;
 
           if (route.name === 'MyFund') {
-            iconName = 'md-home';
+            iconName = 'home';
           } else if (route.name === 'Save') {
-            iconName = 'md-save';
+            iconName = 'save';
           } else if (route.name === 'Invest') {
-            iconName = 'md-trending-up';
+            iconName = 'trending-up';
           } else if (route.name === 'Withdraw') {
-            iconName = 'md-wallet';
+            iconName = 'wallet';
           } else if (route.name === 'More...') {
-            iconName = 'md-menu';
+            iconName = 'menu';
           }
 
           return (

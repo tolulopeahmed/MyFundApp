@@ -338,7 +338,7 @@ const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVi
               </View>
               <Divider />
               <Text style={styles.modalSubText}>
-                Manually move funds from your local bank account into your <Text style={{ fontFamily: 'nexa', fontSize: 12 }}>SAVINGS</Text> account with a few taps. <Text style={{ fontFamily: 'proxima' }}>(@10% interest p.a.)</Text> {'\n'}
+                Manually move funds from your local bank account into your <Text style={{ fontFamily: 'nexa', fontSize: 12 }}>SAVINGS</Text> account with a few taps. <Text style={{ fontFamily: 'proxima', color: isDarkMode? '#43FF8E' : 'green' }}>(@10% interest p.a.)</Text> {'\n'}
                 {'\n'}Enter or Select an amount.
               </Text>
               <View style={styles.inputContainer2}>

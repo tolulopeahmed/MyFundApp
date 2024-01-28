@@ -218,7 +218,7 @@ const Chat = ({ navigation }) => {
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>CHAT ADMIN</Text>
           <TouchableOpacity onPress={() => navigation.navigate('FAQ')}>
-            <Ionicons name="ios-information-circle-outline" size={24} color="silver" />
+            <Ionicons name="information-circle-outline" size={24} color="silver" />
           </TouchableOpacity>
         </View>
       </View>
@@ -246,7 +246,7 @@ const Chat = ({ navigation }) => {
 
         <Divider />
 
-        <SectionTitle>CONVERSATION WITH MYFUND</SectionTitle>
+        <SectionTitle>COMING SOON...</SectionTitle>
 
         {messages.map((message, index) => (
                 <View
@@ -301,7 +301,7 @@ const Chat = ({ navigation }) => {
     <Ionicons name="attach-outline" size={24} style={{color: isDarkMode ? '#6E3DFF' : '#4C28BC'}} />
   </TouchableOpacity>
   <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-    <Ionicons name="ios-send" size={24} color="white" />
+    <Ionicons name="send" size={24} color="white" />
   </TouchableOpacity>
 </View>
 

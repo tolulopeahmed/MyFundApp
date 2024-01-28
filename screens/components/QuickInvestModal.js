@@ -20,7 +20,7 @@ const getBackgroundColor = (bankName) => {
 
 
 const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestModalVisible, setIsSuccessVisible }) => {
-  const [frequency, setFrequency] = useState('');
+  const [frequency, setFrequency] = useState('savings');
   const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
   const [amount, setAmount] = useState('');
   const [selectedCard, setSelectedCard] = useState(null);
@@ -43,23 +43,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
 
 
   useEffect(() => {
-    if (frequency === "Bank Transfer") {
-      setShowQuickInvestButton(false);
-  
-      if (amount === '') {
-        setIsSubmitButtonDisabled(true);
-      } else {
-        setIsSubmitButtonDisabled(false);
-      }
-    } else {
-      setShowQuickInvestButton(true);
-    }
-  }, [amount, frequency]);
-
-
-  useEffect(() => {
     if (frequency === "savings") {
-      // Check if the amount is empty or less than 100,000, and update the button disabled state accordingly
       const numericAmount = parseFloat(amount.replace(/,/g, ''));
       if (amount === '' || numericAmount < 100000) {
         setIsSubmitButtonDisabled(true);
@@ -67,12 +51,42 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
         setIsSubmitButtonDisabled(false);
       }
     } else {
-      // Adjust this part based on your existing logic for other frequencies
       setShowQuickInvestButton(true);
-      setIsSubmitButtonDisabled(false); // Set to false if needed for other frequencies
     }
   }, [amount, frequency]);
-  
+
+  useEffect(() => {
+    if (frequency === "savings") {
+      if (amount === '' || isNaN(parseFloat(amount.replace(/,/g, '')))) {
+        setIsSubmitButtonDisabled(true);
+      } else {
+        setIsSubmitButtonDisabled(false);
+      }
+    }
+  }, [amount, frequency]);
+
+  useEffect(() => {
+    if (frequency === "My Saved Cards") {
+      // Check if a card is selected
+      if (selectedCardId !== null) {
+        setIsContinueButtonDisabled(false);
+      } else {
+        setIsContinueButtonDisabled(true);
+      }
+    }
+  }, [selectedCardId, frequency]);
+
+  useEffect(() => {
+    if (frequency === "Bank Transfer") {
+      // Check if the amount is empty or not a valid number
+      const numericAmount = parseFloat(amount.replace(/,/g, ''));
+      if (amount === '' || isNaN(numericAmount)) {
+        setIsSubmitButtonDisabled(true);
+      } else {
+        setIsSubmitButtonDisabled(false);
+      }
+    }
+  }, [amount, frequency]);
   
 
   const handleAmountButtonPress = (presetAmount) => {
@@ -418,7 +432,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
           <Divider />
 
           <Text style={styles.modalSubText}>
-          Manually move multiples of N100,000 from your SAVINGS or local bank into your INVESTMENT account with a few taps to enjoy <Text style={{fontFamily: 'proxima'}}>20% ROI p.a. </Text> {'\n'}
+          Manually move multiples of N100,000 from your SAVINGS or local bank into your INVESTMENT account with a few taps to enjoy <Text style={{fontFamily: 'proxima', color: isDarkMode? '#43FF8E': 'green'}}>20% ROI p.a. </Text> {'\n'}
             {'\n'}QuickInvest...
           </Text>
         
@@ -435,7 +449,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                   onBlur={() => {
                     const numericAmount = parseFloat(amount.replace(/,/g, ''));
                     if (numericAmount < 100000) {
-                      Alert.alert('Invalid Amount', 'The minimum amount is 1,000,000. Please enter a valid amount.');
+                      Alert.alert('Invalid Amount', 'The minimum amount is 100,000. Please enter a valid amount or select a preset amount.');
                     }
                   }}
                   
@@ -494,8 +508,110 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
 
 
 
-              {frequency === "savings" ? (
-                <View style={styles.buttonsContainer}>
+              {frequency === "My Saved Cards" && (
+        <View style={styles.inputContainer}>
+          <Text style={styles.label3}>Which of them?     </Text>
+          {userCards.length === 0 ? (
+            <TouchableOpacity onPress={handleAddCard}>
+              <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>
+                No cards added yet...{' '}
+                <Text style={{ color: isDarkMode ? '#8A63F7' : '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>
+                  Add Card Now!
+                </Text>
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.inputContainer}>
+              <View style={styles.iconContainer}>
+                <Ionicons
+                  name="card"
+                  size={28}
+                  color={selectedCard ? getBackgroundColor(selectedCard.bank_name) : null}
+                  zIndex={-1}
+                />
+              </View>
+              <View style={styles.dropdown}>
+                <Picker
+                  style={styles.labelItem}
+                  selectedValue={selectedCardId}
+                  onValueChange={(value) => setSelectedCardId(value)}
+                >
+                  {userCards.map((card) => (
+                    <Picker.Item
+                      label={`         ${card.bank_name} - **** ${card.card_number.slice(-4)}`}
+                      value={card.id}
+                      key={card.id}
+                      color={getBackgroundColor(card.bank_name)}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+          )}
+
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              style={[
+                styles.primaryButton,
+                (isContinueButtonDisabled || processing) && styles.primaryButtonDisabled,
+                { backgroundColor: processing ? 'green' : isContinueButtonDisabled ? 'grey' : '#4C28BC' },
+              ]}
+              onPress={handleQuickInvest}
+              disabled={isContinueButtonDisabled || processing}
+            >
+              {processing ? (
+                <>
+                  <ActivityIndicator color="white" style={styles.activityIndicator} />
+                  <Image source={require('./paystack.png')} style={styles.image} />
+                </>
+              ) : (
+                <Image source={require('./paystack.png')} style={styles.image} />
+              )}
+              <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
+                {processing ? 'Funding Your Account...' : 'QuickInvest Now!'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {frequency === "Bank Transfer" && (
+        <View style={styles.paymentOptionsContainer}>
+          <Text style={styles.modalSubText2} alignSelf='flex-start'>
+            {'\n'} 1. Transfer the exact amount you entered above to... {'\n'}
+            <Text style={styles.accountDetails}> 0821326433 (Access Bank) {'\n'} VCORP SYSTEMS LIMITED</Text> {'\n'}
+            2. Click <Text style={{ fontFamily: 'proxima' }}> 'I Have Sent The Payment'</Text> after making the transfer and your account will be updated within minutes.
+          </Text>
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity
+              style={[
+                styles.primaryButton,
+                (isSubmitButtonDisabled || processing) && styles.primaryButtonDisabled,
+                { backgroundColor: processing ? 'green' : isSubmitButtonDisabled ? 'grey' : '#4C28BC' },
+              ]}
+              onPress={handleInvestTransfer}
+              disabled={isSubmitButtonDisabled || processing}
+            >
+              {processing ? (
+                <>
+                  <ActivityIndicator color="white" style={styles.activityIndicator} />
+                  <MaterialIcons name="account-balance" size={24} color="#fff" marginRight={10} />
+                </>
+              ) : (
+                <MaterialIcons name="account-balance" size={24} color="#fff" marginRight={10} />
+              )}
+              <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
+                {processing ? 'Processing Your Payment...' : 'I Have Sent The Payment'}
+              </Text>
+              <Ionicons name="checkmark-circle-outline" size={24} color="green" marginRight={10} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+
+{frequency === "savings" && (
+<View style={styles.buttonsContainer}>
                   <TouchableOpacity
                     style={[
                       styles.primaryButton,
@@ -518,115 +634,10 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
                     </Text>
                   </TouchableOpacity>
                 </View>
-                ) : (
+                      )}
 
-                <>
-                {showQuickInvestButton ? (
-                  <View style={styles.inputContainer}>
-                    <Text style={styles.label3}>Which of them?     </Text>
-                    {userCards.length === 0 ? (
-                      <TouchableOpacity onPress={handleAddCard}>
-                      <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>No cards added yet... 
-                      <Text style={{ color: isDarkMode ? '#8A63F7' : '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>    Add Card Now!</Text>
-                      </Text>
-                      </TouchableOpacity>
-                    ) : (
-                      
-                      <View style={styles.inputContainer}>
-                      <View style={styles.iconContainer}> 
-                      <Ionicons
-                          name="card"
-                          size={28}
-                          color={selectedCard ? getBackgroundColor(selectedCard.bank_name) : null}
-                          zIndex={-1}
-                        />
-                        </View>
-                      <View style={styles.dropdown}>
-                        <Picker
-                          style={styles.labelItem}
-                          selectedValue={selectedCard}
-                          onValueChange={(value) => {
-                            console.log('Selected Card Value:', value);
-                            setSelectedCardId(value); // Set selectedCardId to the selected card's ID
-                          }}
-                        >
-                          {userCards.map((card) => (
-                            <Picker.Item
-                              label={`         ${card.bank_name} - **** ${card.card_number.slice(-4)}`}
-                              value={card.id} // Use the card's ID as the value
-                              key={card.id}
-                              color={getBackgroundColor(card.bank_name)}
-                            />
-                          ))}
-                        </Picker>
-                      </View>
-                    </View>
+</View>
 
-                    )}
-
-                        <View style={styles.buttonsContainer}>
-                          <TouchableOpacity
-                            style={[
-                              styles.primaryButton,
-                              (isContinueButtonDisabled || processing) && styles.primaryButtonDisabled,
-                              { backgroundColor: processing ? 'green' : isContinueButtonDisabled ? 'grey' : '#4C28BC' },
-                            ]}
-                            onPress={handleQuickInvest}
-                            disabled={isContinueButtonDisabled || processing}
-                          >
-                            {processing ? (
-                              <>
-                                <ActivityIndicator color="white" style={styles.activityIndicator} />
-                                <Image source={require('./paystack.png')} style={styles.image} />
-                              </>
-                            ) : (
-                              <Image source={require('./paystack.png')} style={styles.image} />
-                            )}
-                            <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
-                              {processing ? 'Funding Your Account...' : 'QuickInvest Now!'}
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                  </View>
-
-                    ) : (
-
-                      <View style={styles.paymentOptionsContainer}>
-                      <Text style={styles.modalSubText2} alignSelf='flex-start'>{'\n'} 1. Transfer the exact amount you entered above to... {'\n'} 
-                      <Text style={styles.accountDetails}> 0821326433 (Access Bank) {'\n'} VCORP SYSTEMS LIMITED</Text> {'\n'}
-                     2. Click <Text style={{fontFamily: 'proxima'}}>'I've Sent The Payment'</Text> after making the transfer and your account will be updated within minutes.</Text>
-                      <View style={styles.buttonsContainer}>
-                        <TouchableOpacity
-                          style={[
-                            styles.primaryButton,
-                            (isSubmitButtonDisabled || processing) && styles.primaryButtonDisabled,
-                            { backgroundColor: processing ? 'green' : isSubmitButtonDisabled ? 'grey' : '#4C28BC' },
-                          ]}
-                          onPress={handleInvestTransfer} 
-                          disabled={isSubmitButtonDisabled || processing}
-                        >
-                          {processing ? (
-                            <>
-                              <ActivityIndicator color="white" style={styles.activityIndicator} />
-                              <MaterialIcons name="account-balance" size={24} color="#fff" marginRight={10} />
-                            </>
-                          ) : (
-                            <MaterialIcons name="account-balance" size={24} color="#fff" marginRight={10} />
-                          )}
-                          <Text style={[styles.primaryButtonText, processing && styles.processingText]}>
-                            {processing ? 'Processing Your Payment...' : 'I\'ve Sent The Payment'}
-                          </Text>
-                          <Ionicons name="checkmark-circle-outline" size={24} color="green" marginRight={10} />
-
-                        </TouchableOpacity>
-                      </View>
-                    </View>
-                  )}
-
-                  </>
-)}
-
-                  </View>
 
 
             <LoadingModal visible={processing} />

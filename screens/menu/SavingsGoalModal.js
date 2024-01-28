@@ -193,7 +193,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-          Hey {userInfo?.firstName ? `${userInfo.firstName},` : ''} {'\n'} {'\n'}As part of helping you grow your funds to own properties and developing your savings habit, you'll need to set a savings goal.
+          Hey <Text style={{fontFamily: 'proxima', color: isDarkMode? 'yellow' : '#4C28BC'}}>{userInfo?.firstName ? `${userInfo.firstName},` : ''}</Text> {'\n'} {'\n'}As part of helping you grow your funds to own properties and developing your savings habit, you'll need to set a savings goal.
           </Text>
 
           <Text style={{fontFamily: 'proxima',     color: isDarkMode ? '#fff' : '#4C28BC', marginTop: 15,marginBottom: 5, marginLeft: 40, alignSelf: 'flex-start'}}>Preferred Asset</Text>

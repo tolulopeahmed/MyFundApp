@@ -1,5 +1,5 @@
 import React, { useRef, useState} from 'react';
-import { View, Text, animation, StyleSheet, Image, TouchableOpacity, TextInput, Modal, Animated } from 'react-native';
+import { View, Text, animation, StyleSheet, Image, TouchableOpacity, TextInput, Modal, Animated, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import MyFundLogo from './logo..png';
 import axios from 'axios';
@@ -58,8 +58,38 @@ import { useTheme } from '../../ThemeContext';
     setIsConfirmButtonEnabled(allDigitsEntered);
   };
   
+  const [isCodeResent, setIsCodeResent] = useState(false);
+
+  const handleResendCode = async () => {
+    if (!isCodeResent) {
+      setIsCodeResent(true);
   
+      try {
+        const response = await axios.post(`${ipAddress}/api/signup/`, {
+          email: email,
+          resend: true,  // Set the resend flag
+        });
   
+        // Handle the response as needed...
+        // For example, show a success message
+        Alert.alert('Success', 'OTP resent successfully');
+  
+      } catch (error) {
+        // Handle errors...
+        // For example, show an error message
+        Alert.alert('Error', 'Failed to resend OTP. Please try again.');
+      }
+    } else {
+      // Code has already been resent
+      Alert.alert('Check Your Email', 'Code has already been sent. Please check your email again. Try checking your Trash or Spam folders as well.');
+    }
+  };
+  
+
+
+
+
+
   const handleConfirm = async (email) => {
     setIsCreatingAccount(true);
 
@@ -250,7 +280,7 @@ console.log('password:', password);
         <Text style={styles.confirmCodeButtonText}>CONFIRM CODE</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.resendTextContainer}>
+      <TouchableOpacity style={styles.resendTextContainer} onPress={handleResendCode}>
         <Text style={styles.resendText}>Didn't receive a code? <Text style={styles.resendLinkText}>Resend</Text></Text>
       </TouchableOpacity>
 

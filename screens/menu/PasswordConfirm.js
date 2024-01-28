@@ -102,6 +102,7 @@ const PasswordConfirm = ({ navigation, route }) => {
               <TextInput
                 style={styles.input}
                 placeholder="Enter OTP"
+                placeholderTextColor="grey" 
                 value={otp}
                 onChangeText={handleOtpChange}
               />
@@ -116,6 +117,7 @@ const PasswordConfirm = ({ navigation, route }) => {
               <TextInput
                 style={styles.input}
                 placeholder="New Password"
+                placeholderTextColor="grey" 
                 value={password}
                 onChangeText={handlePasswordChange}
                 secureTextEntry={!isPasswordVisible}
@@ -138,6 +140,7 @@ const PasswordConfirm = ({ navigation, route }) => {
               <TextInput
                 style={styles.input}
                 placeholder="Confirm New Password"
+                placeholderTextColor="grey" 
                 value={confirmPassword}
                 onChangeText={handleConfirmPasswordChange}
                 secureTextEntry={!isConfirmPasswordVisible}
@@ -271,14 +274,15 @@ const createStyles = (isDarkMode) => {
     fontSize: 17,
     height: 45,
     width: '100%',
-    backgroundColor: 'white',
+    backgroundColor: isDarkMode ? '#313151' : '#F5F5F5',
     borderRadius: 10,
     marginBottom: 15,
     paddingLeft: 40,
     paddingRight: 5,
     borderWidth: 1,
     borderColor: 'green',
-        
+    color: isDarkMode ? 'silver' : 'black',
+
   },
   passwordInputContainer: {
     position: 'relative',

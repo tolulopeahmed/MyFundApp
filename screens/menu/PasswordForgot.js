@@ -28,13 +28,16 @@ const PasswordForgot = ({ navigation }) => {
     try {
       setIsResetting(true);
   
+      // Trim spaces from the email
+      const trimmedEmail = email.trim();
+  
       const response = await axios.post(`${ipAddress}/api/request-password-reset/`, {
-        email: email.toLowerCase(),
+        email: trimmedEmail.toLowerCase(),
       });
   
       if (response.status === 200) {
         // Password reset request successful, navigate to the PasswordConfirm screen
-        navigation.navigate('PasswordConfirm', { email: email, token: response.data.token });
+        navigation.navigate('PasswordConfirm', { email: trimmedEmail, token: response.data.token });
       } else {
         // Check if the response contains an error message
         const errorMessage = response.data.error; // Replace 'error' with the actual field name containing the error message in your response.
@@ -52,8 +55,9 @@ const PasswordForgot = ({ navigation }) => {
               {
                 text: 'Sign Up',
                 onPress: () => {
-                  navigation.navigate('CreateAccount', { prefillEmail: email }); // Pass the email to CreateAccount
-                },              },
+                  navigation.navigate('CreateAccount', { prefillEmail: trimmedEmail }); // Pass the trimmedEmail to CreateAccount
+                },
+              },
             ]
           );
         } else {
@@ -74,12 +78,12 @@ const PasswordForgot = ({ navigation }) => {
           {
             text: 'Sign Up',
             onPress: () => {
-              navigation.navigate('CreateAccount', { prefillEmail: email }); // Pass the email to CreateAccount
+              navigation.navigate('CreateAccount', { prefillEmail: trimmedEmail }); // Pass the trimmedEmail to CreateAccount
             },
           },
         ]
       );
-      } finally {
+    } finally {
       setIsResetting(false);
     }
   };
@@ -203,6 +207,7 @@ const createStyles = (isDarkMode) => {
     paddingRight: 5,
     borderWidth: 1,
     borderColor: 'silver',
+    color: isDarkMode ? 'silver' : 'black',
   },
   
   

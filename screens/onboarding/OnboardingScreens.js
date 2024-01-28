@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, ScrollView, TouchableOpacity, Text, Dimensions } from 'react-native';
+import { StyleSheet, SafeAreaView, View, ScrollView, TouchableOpacity, Text, Dimensions, StatusBar } from 'react-native';
 import Onboarding1 from './Onboarding1';
 import Onboarding2 from './Onboarding2';
 import Onboarding3 from './Onboarding3';
@@ -52,7 +52,8 @@ const OnboardingScreens = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('Login')}>
+      <StatusBar backgroundColor="transparent" translucent barStyle={isDarkMode ? 'light-content' : 'dark-content'}/> 
+    <TouchableOpacity style={styles.skipButton} onPress={() => navigation.navigate('Login')}>
         <Text style={styles.skipButtonText}>SKIP</Text>
       </TouchableOpacity>
       <View style={styles.content}>

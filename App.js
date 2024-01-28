@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, Text, View } from 'react-native';
+import { StyleSheet, SafeAreaView, Text, View, StatusBar } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
@@ -39,7 +39,7 @@ import { ThemeProvider } from './ThemeContext';
 
 const Stack = createStackNavigator();
 
-const App = ({ styles, darkModeStyles, }) => {
+const App = ({ darkModeStyles, }) => {
   const [isLoading, setIsLoading] = useState(true);
   
 
@@ -70,6 +70,7 @@ const App = ({ styles, darkModeStyles, }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar backgroundColor="transparent" translucent barStyle="dark-content" />
      <Provider store={store}> 
       <UserProvider>
       <ThemeProvider>

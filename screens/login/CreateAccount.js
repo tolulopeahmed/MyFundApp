@@ -52,31 +52,35 @@ const CreateAccount = ({ route, navigation }) => {
       ]);
 
 
-  const validateEmail = (email) => {
-    setValidEmail(email.includes('@'));
-    setIsFormTouched(true); // Set the form touched when field value changes
-  };
-
-  const validatePassword = (password) => {
-    setValidPassword(password.length >= 8);
-    setIsFormTouched(true); // Set the form touched when field value changes
-  };
-
-
-  const validateFirstName = (firstName) => {
-    setValidFirstName(firstName && /^[a-zA-Z0-9]+$/.test(firstName));
-    setIsFormTouched(true); // Set the form touched when field value changes
-  };
-  
-  const validateLastName = (lastName) => {
-    setValidLastName(lastName && /^[a-zA-Z0-9]+$/.test(lastName));
-    setIsFormTouched(true); // Set the form touched when field value changes
-  };
-  
-  const validatePhoneNumber = (phoneNumber) => {
-    setValidPhoneNumber(phoneNumber && /^\d+$/.test(phoneNumber) && phoneNumber.length <= 11);
-    setIsFormTouched(true); // Set the form touched when field value changes
-  };
+      const validateEmail = (email) => {
+        setValidEmail(email.trim().includes('@'));
+        setIsFormTouched(true);
+      };
+      
+      const validateFirstName = (firstName) => {
+        const trimmedFirstName = firstName.trim();
+        setValidFirstName(trimmedFirstName && /^[a-zA-Z0-9]+$/.test(trimmedFirstName));
+        setIsFormTouched(true);
+      };
+      
+      const validateLastName = (lastName) => {
+        const trimmedLastName = lastName.trim();
+        setValidLastName(trimmedLastName && /^[a-zA-Z0-9]+$/.test(trimmedLastName));
+        setIsFormTouched(true);
+      };
+      
+      const validatePhoneNumber = (phoneNumber) => {
+        const trimmedPhoneNumber = phoneNumber.trim();
+        setValidPhoneNumber(
+          trimmedPhoneNumber && /^\d+$/.test(trimmedPhoneNumber) && trimmedPhoneNumber.length <= 11
+        );
+        setIsFormTouched(true);
+      };
+      
+      const validatePassword = (password) => {
+        setValidPassword(password.trim().length >= 8);
+        setIsFormTouched(true);
+      };      
   
   const togglePasswordVisibility = () => {
     setPasswordVisible(!isPasswordVisible);
@@ -88,14 +92,21 @@ const CreateAccount = ({ route, navigation }) => {
     try {
       setIsCreatingAccount(true);
   
-      const response = await axios.post(`${ipAddress}/api/signup/`, {
+      // Build the request payload
+      const payload = {
         email: email.toLowerCase(),
         password: password,
         first_name: firstName,
         last_name: lastName,
         phone_number: phoneNumber,
-        referral: referralValue.toLowerCase(), // Assuming referralValue contains the referral email
-      });
+      };
+  
+      // Include referral email only if it's provided
+      if (referralValue.trim() !== '') {
+        payload.referral = referralValue.toLowerCase().trim();
+      }
+  
+      const response = await axios.post(`${ipAddress}/api/signup/`, payload);
   
       if (response.status === 201) {
         // Extract and set the referral email

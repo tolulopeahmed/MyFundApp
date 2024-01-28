@@ -448,41 +448,41 @@ const Profile = ({ navigation, route }) => {
 
       <Divider/>
       
-     <View style={styles.settingsContainer}>
-      {/* <View style={styles.settingContainer}>
-        <Text style={styles.settingText}>Dark Mode</Text>
-        <Switch
-          trackColor={{ false: 'grey', true: '#4C28BC' }}
-          thumbColor={enableFingerprint ? '#8976FF' : 'silver'}
-          ios_backgroundColor="#3e3e3e"
-          onValueChange={() => setPinModalVisible(!enableFingerprint)}
-          value={enableFingerprint}
-        />
-      </View> */}
-
-
-      <View style={styles.settingContainer}>
-        <Text style={styles.settingText}>Hide Balances</Text>
-        <Switch
+      <View style={styles.buttonContainer}>
+        <View style={styles.button2}>
+          <Ionicons name="eye-off" size={24} style={styles.icon2} />
+          <Text style={styles.buttonText2}>Hide Balances</Text>
+          <Switch
           trackColor={{ false: 'grey', true: '#4C28BC' }}
           thumbColor={showBalances ? '#8976FF' : 'silver'}
           ios_backgroundColor="#3e3e3e"
           onValueChange={handleToggleShowBalances}
           value={showBalances}
         />
+        </View>
       </View>
 
-
-      <View style={styles.settingContainer}>
-        <Text style={styles.settingText}>Turn on Dark Mode</Text>
-        <Switch
+      <View style={styles.buttonContainer2}>
+        <View style={styles.button2}>
+          <Ionicons name="contrast" size={24} style={styles.icon2} />
+          <Text style={styles.buttonText2}>Turn on Dark Mode</Text>
+          <Switch
           trackColor={{ false: 'grey', true: '#4C28BC' }}
           thumbColor={isDarkMode ? '#8976FF' : 'silver'}
           ios_backgroundColor="#3e3e3e"
           onValueChange={handleDarkModeToggle}
           value={isDarkMode}        />
+        </View>
       </View>
-      </View>
+
+ 
+
+
+
+   
+
+
+
     
       <SavingsGoalModal 
         navigation={navigation} 
@@ -501,7 +501,7 @@ const Profile = ({ navigation, route }) => {
 
     
 
-<SectionTitle>SETTINGS</SectionTitle>
+<SectionTitle style={{marginTop: 20}}>SETTINGS</SectionTitle>
 <View>
 <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => setGoalModalVisible(true)}>
@@ -546,7 +546,7 @@ const Profile = ({ navigation, route }) => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ReferAndEarn')}>
-          <Ionicons name="person-add-outline" size={24} style={styles.icon} />
+          <Ionicons name="person-add" size={24} style={styles.icon} />
           <Text style={styles.buttonText}>Refer and Earn</Text>
           <Text style={styles.todoText2}> ₦1000 EACH</Text>
         </TouchableOpacity>
@@ -720,19 +720,16 @@ icon: {
     letterSpacing: -0.5,
   },
 
-  settingsContainer:{
-    marginTop: 20,
-    marginBottom: 20,
-
-  },
 
   settingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 25,
-    marginTop: -14,
+    marginBottom: 15,
+
   },
+  
   settingText: {
     fontFamily: 'ProductSans',
     letterSpacing: -0.1,
@@ -746,6 +743,11 @@ icon: {
     color: isDarkMode ? '#6E3DFF' : '#4C28BC',
    },
 
+   icon2: {
+    marginRight: 15,
+    color: isDarkMode ? 'white' : 'black',
+   },
+
    logoutIcon: {
     marginRight: 15,
     color: isDarkMode ? 'brown' : '#4C28BC',
@@ -756,10 +758,19 @@ icon: {
     alignItems: 'center',
     marginTop: 20,
   },
+
   buttonContainer: {
     alignItems: 'center',
     marginTop: 13,
   },
+
+  buttonContainer2: {
+    alignItems: 'center',
+    marginBottom: 15,
+    marginTop: -5,
+  },
+
+
   button: {
   flexDirection: 'row',
   borderColor: isDarkMode ? 'grey' : 'grey',
@@ -770,6 +781,16 @@ icon: {
   borderWidth: 0.4,
   borderRadius: 9,
   },
+
+  button2: {
+    flexDirection: 'row',
+    borderColor: isDarkMode ? 'grey' : 'grey',
+    height: 45,
+    width: '90%',
+    padding: 8,
+    borderRadius: 9,
+    },
+
   buttonText: {
     marginTop: 5,
    fontSize: 16,
@@ -777,11 +798,22 @@ icon: {
     color: isDarkMode ? 'white' : '#4C28BC',
     flex: 1,
   },
+
+
+  buttonText2: {
+    marginTop: 5,
+   fontSize: 16,
+    fontFamily: 'ProductSans',
+    color: isDarkMode ? 'silver' : 'black',
+    flex: 1,
+  },
+
+
   todoText2: {
     marginTop: 3,
   fontSize: 16,
   fontFamily: 'karla',
-  color: 'green',
+    color: isDarkMode ? '#43FF8E' : 'green',
   marginRight: 10,
   },
   
