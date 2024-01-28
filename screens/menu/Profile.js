@@ -15,6 +15,7 @@ import SectionTitle from '../components/SectionTitle';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchUserData } from '../../ReduxActions';
 import { useTheme } from '../../ThemeContext';
+import LoadingModal from '../components/LoadingModal';
 
 const Profile = ({ navigation, route }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -23,6 +24,7 @@ const Profile = ({ navigation, route }) => {
   const { isDarkMode, toggleDarkMode } = useTheme();
   const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
   const [pinModalVisible, setPinModalVisible] = useState(false); // define modalVisible state
+  const [processing, setProcessing] = useState(false);
 
   const [profileEditModalVisible, setProfileEditModalVisible] = useState(false); // define modalVisible state
   const [profile, setProfile] = useState({});
@@ -159,6 +161,7 @@ const Profile = ({ navigation, route }) => {
           });
   
           try {
+            setProcessing(true);
             const response = await axios.patch(
               `${ipAddress}/api/profile-picture-update/`,
               formData,
@@ -171,6 +174,7 @@ const Profile = ({ navigation, route }) => {
             );
   
             if (response.status === 200) {
+              setProcessing(false);
               Alert.alert('Success', 'Profile picture updated successfully');
               console.log('New profile image URI:', selectedAsset.uri);
   
@@ -180,18 +184,22 @@ const Profile = ({ navigation, route }) => {
               dispatch(fetchUserData());
 
             } else {
+              setProcessing(false);
               Alert.alert('Error', response.data.message); // Assuming the API returns an error message in the 'message' field
             }
           } catch (error) {
+            setProcessing(false);
             Alert.alert('Error', 'An error occurred while updating the profile picture');
             console.error('API Request Error:', error);
           }
         }
       } catch (error) {
+        setProcessing(false);
         Alert.alert('Error', 'Failed to access the image library');
         console.error('Image Picker Error:', error);
       }
     } else {
+      setProcessing(false);
       Alert.alert('Permission Denied', 'You need to grant permission to access the image library');
     }
   };
@@ -589,6 +597,7 @@ const Profile = ({ navigation, route }) => {
     <Text style={styles.version}>version 1.0.0</Text>
   </View>
 </View>
+<LoadingModal visible={processing} />
 
     </ScrollView>
     </View> 
