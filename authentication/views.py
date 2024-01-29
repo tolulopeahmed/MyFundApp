@@ -39,8 +39,23 @@ import uuid
 @csrf_exempt
 def signup(request):
     serializer = SignupSerializer(data=request.data)
+
     if serializer.is_valid():
         user = serializer.save()
+
+        # Check if it's a resend request
+        is_resend = request.data.get('resend', False)
+
+        if is_resend:
+            # If it's a resend request, generate a new OTP and send it
+            otp = generate_otp()
+            user.otp = otp
+            user.save()
+            send_otp_email(user, otp)
+
+            # Update the response data for resend case
+            response_data = {"message": "OTP resent successfully"}
+            return Response(response_data, status=status.HTTP_200_OK)
 
         # Check if the user has a referrer (referral relationship)
         if user.referral:
@@ -84,7 +99,7 @@ def signup(request):
             # Send an email to the referred user (new user)
             send_referred_pending_reward_email(user)
 
-        # Generate OTP (you can use your own logic here)
+        # Generate OTP for initial signup
         otp = generate_otp()
         user.otp = otp
         user.is_active = False  # Set the user as inactive until OTP confirmation
@@ -99,6 +114,7 @@ def signup(request):
             response_data["referral_email"] = user.referral.email
 
         return Response(response_data, status=status.HTTP_201_CREATED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -2499,3 +2515,23 @@ def initiate_invest_transfer(request):
         )
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_by_email(request):
+    email = request.query_params.get('email', '')
+    try:
+        user = CustomUser.objects.get(email=email)
+        user_data = {
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email,
+            # Add any other user details you want to include
+        }
+        return Response(user_data, status=status.HTTP_200_OK)
+    except CustomUser.DoesNotExist:
+        return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)

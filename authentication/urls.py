@@ -5,16 +5,7 @@ from django.conf.urls.static import static
 from django.urls import re_path
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from .views import (
-    CardListCreateView,
-    CardDetailView,
-    KYCUpdateView,
-    KYCApprovalViewSet,
-    BuyPropertyView,
-    UserTransactionListView,
-    UserCardListView,
-    AccountBalancesAPIView,
-)
+from .views import CardListCreateView, CardDetailView, KYCUpdateView, get_user_by_email, KYCApprovalViewSet, BuyPropertyView, UserTransactionListView, UserCardListView, AccountBalancesAPIView
 from django.views.decorators.csrf import csrf_exempt
 from authentication.views import CustomGraphQLView
 from authentication.schema import schema  # Adjust the import path
@@ -118,28 +109,14 @@ urlpatterns = [
         name="get_autoinvest_status",
     ),
     # Withdrawals-related APIs
-    path(
-        "savings-to-investment/",
-        views.savings_to_investment,
-        name="savings-to-investment",
-    ),
-    path(
-        "investment-to-savings/",
-        views.investment_to_savings,
-        name="investment_to_savings",
-    ),
-    path("wallet-to-savings/", views.wallet_to_savings, name="wallet_to_savings"),
-    path(
-        "wallet-to-investment/", views.wallet_to_investment, name="wallet_to_investment"
-    ),
-    path(
-        "withdraw-to-bank/", views.withdraw_to_local_bank, name="withdraw_to_local_bank"
-    ),
-    path(
-        "wallet-to-wallet/",
-        views.initiate_wallet_transfer,
-        name="initiate-wallet-transfer",
-    ),
+    path('savings-to-investment/', views.savings_to_investment, name='savings-to-investment'),
+    path('investment-to-savings/', views.investment_to_savings, name='investment_to_savings'),
+    path('wallet-to-savings/', views.wallet_to_savings, name='wallet_to_savings'),
+    path('wallet-to-investment/', views.wallet_to_investment, name='wallet_to_investment'),
+    path('withdraw-to-bank/', views.withdraw_to_local_bank, name='withdraw_to_local_bank'),
+    path('wallet-to-wallet/', views.initiate_wallet_transfer, name='initiate-wallet-transfer'),
+    path('get-user-by-email/', get_user_by_email, name='get-user-by-email'),
+
     # Property-related APIs
     path("buy-property/", BuyPropertyView.as_view(), name="buy-property"),
     # Top savers
