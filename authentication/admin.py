@@ -102,7 +102,8 @@ class CustomUserAdmin(UserAdmin):
             self.message_user(request, f'{message_bit} already approved for KYC update.')
 
         # Redirect to the changelist view after processing
-        return HttpResponseRedirect(reverse('admin:authentication_customuser_changelist'))
+        self.message_user(request, f'Deleted {len(deleted_users)} user(s).', messages.SUCCESS)
+
 
 
     approve_kyc.short_description = "Approve KYC Details"
