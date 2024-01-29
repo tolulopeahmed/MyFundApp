@@ -1,4 +1,4 @@
 // constants.js
-export const ipAddress = "http://192.168.143.34:8000";
+export const ipAddress = "https://myfund.onrender.com";
 
-// export const RedisAddress = "ws://192.168.240.1:6379";
+// export const RedisAddress = "ws://192.168.159.34:6379";

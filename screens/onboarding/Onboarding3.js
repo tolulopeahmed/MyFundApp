@@ -19,7 +19,7 @@ const Onboarding3 = ({ navigation }) => {
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.header}>EARN RENT</Text>
-        <Text style={styles.subText}>Earn <Text style={{fontFamily: 'proxima'}}>rental income for life</Text> every year as the landlord.</Text>
+        <Text style={styles.subText}>Earn <Text style={{fontFamily: 'proxima', color: isDarkMode? '#43FF8E' : 'green'}}>rental income for life</Text> every year as the landlord.</Text>
       </View>
   
     </View>

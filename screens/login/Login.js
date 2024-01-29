@@ -162,7 +162,7 @@ const handleLogin = async () => {
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Welcome Back</Text>
           <Text style={styles.subText}>
-          Earn up to <Text style={{fontFamily: 'proxima'}}>20% p.a. </Text>every January and July. Own properties and earn a <Text style={{fontFamily: 'proxima'}}>lifetime rental income </Text>on MyFund. Jump right back in!
+          Earn up to <Text style={{fontFamily: 'proxima', color: isDarkMode? '#43FF8E' : 'green'}}>20% p.a. </Text>every January and July. Own properties and earn a <Text style={{fontFamily: 'proxima', }}>lifetime rental income </Text>on MyFund. Jump right back in!
           </Text>
         </View>
 

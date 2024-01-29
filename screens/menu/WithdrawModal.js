@@ -29,6 +29,11 @@ const WithdrawModal = ({ navigation, withdrawModalVisible, setWithdrawModalVisib
   const [withdrawButtonDisabled, setWithdrawButtonDisabled] = useState(true); // State to control the button disabled state
   const [selectedBankAccountId, setSelectedBankAccountId] = useState(null); // Initialize with null or another suitable default value
   const [userEmail, setUserEmail] = useState('');
+  const [userDetails, setUserDetails] = useState(null);
+  const [userFirstName, setUserFirstName] = useState('');
+  const [userLastName, setUserLastName] = useState('');
+
+  
 
   const { isDarkMode, colors } = useTheme();
   const styles = createStyles(isDarkMode);
@@ -78,10 +83,32 @@ useEffect(() => {
 }, [bankAccounts]);
 
 
-
 const handleUserEmailChange = (value) => {
   setUserEmail(value);
+
+  // Check if the entered email ends with '.com'
+  const isValidEmail = value.toLowerCase().endsWith('.com');
+
+  if (isValidEmail) {
+    const correctedEmail = encodeURIComponent(value); // Encode email before passing to API
+    console.log('Corrected Email:', correctedEmail); // Log the corrected email for debugging
+
+
+    getUserDetailsByEmail(correctedEmail);
+  } else {
+    // Clear user details when the email format is not valid
+    setUserDetails(null);
+    setUserFirstName('');
+    setUserLastName('');
+  }
 };
+
+
+
+
+
+
+
 
 
 
@@ -140,6 +167,9 @@ const handleUserEmailChange = (value) => {
     };
     const clearEmail = () => {
       setUserEmail('');
+      setUserDetails(null);
+      setUserFirstName('');
+      setUserLastName('');
     };
 
     const renderPresetAmounts = (amounts) => {
@@ -760,6 +790,121 @@ const bankAccountField = (
   }
 };
 
+
+
+
+
+const transferToWallet = async () => {
+  setProcessing(true);
+
+  try {
+    // Use userEmail instead of recipientEmail
+    const requestData = {
+      recipient_email: userEmail,  // Make sure this matches the key used in the Django view
+      amount: parseFloat(amount.replace(/,/g, '')),
+    };
+
+    // Replace with the actual API endpoint for wallet-to-wallet transfer
+    const response = await axios.post(
+      `${ipAddress}/api/wallet-to-wallet/`,
+      requestData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      const responseData = response.data;
+      // Assuming you have Redux actions to update user data and transactions
+      dispatch(updateAccountBalances(responseData.newAccountBalances));
+      dispatch(fetchAccountBalances());
+      dispatch(fetchUserTransactions());
+      
+      // Show success alert and handle any other UI updates
+      setIsSuccessVisible(true);
+      setWithdrawModalVisible(false);
+      setProcessing(false);
+    } else {
+      // Handle API errors here and show appropriate alerts
+      if (response.status === 400) {
+        setProcessing(false);
+        Alert.alert('Error', 'Invalid input. Please check your data and try again.');
+      } else if (response.status === 401) {
+        setProcessing(false);
+        Alert.alert('Error', 'You are not authorized. Please login again.');
+      } else {
+        setProcessing(false);
+        Alert.alert('Error', 'An error occurred while processing your request. Please try again later.');
+      }
+    }
+  } catch (error) {
+    console.error('Wallet to Wallet Transfer Error:', error);
+    // Handle network or other errors here and show an appropriate alert
+    Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+  } finally {
+    // Reset the processing state
+    setProcessing(false);
+  }
+};
+
+
+
+
+
+const getUserDetailsByEmail = async (correctedEmail) => {
+  setProcessing(true);
+
+  try {
+    // Replace with the actual API endpoint for fetching user details by email
+    const response = await axios.get(
+      `${ipAddress}/api/get-user-by-email/?email=${correctedEmail.toLowerCase()}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userInfo.token}`, // Make sure to replace userInfo.token with your actual token
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      setProcessing(false);
+      const userData = response.data;
+
+      // Assuming you have Redux actions to update user data in the state
+      // Update user details in the state
+      setUserDetails(userData);
+
+      // Now you can access the user's first and last names from the state
+      const firstName = userData.first_name;
+      const lastName = userData.last_name;
+
+      // Display the user's first and last names or use them as needed
+      console.log('User First Name:', firstName);
+      console.log('User Last Name:', lastName);
+      
+      // You can update your component state or UI with the user's details
+      // For example, set state variables for first and last names
+      setUserFirstName(firstName);
+      setUserLastName(lastName);
+    } else {
+      setProcessing(false);
+      // Handle API errors here and show appropriate alerts
+      console.error('Error fetching user details:', response.data);
+      // You might want to display an error message to the user
+      Alert.alert('Error', 'An error occurred while fetching user details.');
+    }
+  } catch (error) {
+    setProcessing(false);
+    console.error('Error fetching user details:', error);
+    // Handle network or other errors here and show an appropriate alert
+    Alert.alert('Error', `Could not find user with email - '${correctedEmail}' . Please check and try again.`);
+  }
+};
+
+
     
     
     console.log('formatted Amount:', amount); // Log the API response
@@ -876,7 +1021,7 @@ const bankAccountField = (
                 {toAccount === 'Bank Account' && bankAccountField }
                 {toAccount === 'Another User' && (
                   <>
-                    <Text style={styles.modalSubText2} alignSelf='flex-start' marginTop={20}>Enter User's Email</Text>
+                    <Text style={styles.modalSubText2} alignSelf='flex-start' marginTop={20}>Enter User's Unique Email</Text>
                     <View style={styles.inputContainer2}>
                       <TextInput
                         style={styles.amountInput}
@@ -892,6 +1037,16 @@ const bankAccountField = (
                         </TouchableOpacity>
                       )}
                     </View>
+                    {userDetails && (
+            <View style={styles.modalSubText3}>
+            <Text style={styles.modalSubText4}>{userDetails.first_name.toUpperCase()} {userDetails.last_name.toUpperCase()}</Text>
+            <View style={{ alignSelf: 'flex-end'}}>
+              <Ionicons name="checkmark-circle-outline" size={15} color={isDarkMode ? '#43FF8E' : 'green'} />
+            </View>
+          </View>
+          
+                      )}
+
                     <Text style={styles.modalSubText2} alignSelf='flex-start' marginTop={20}>Amount</Text>
                     <View style={styles.inputContainer2}>
                       <Text style={styles.nairaSign}>₦</Text>
@@ -1032,6 +1187,24 @@ const createStyles = (isDarkMode) => {
 
   },
 
+  modalSubText3: {
+    fontSize: 13,
+    fontFamily: 'karla',
+    alignSelf: 'flex-end',
+    marginRight: 45,
+    letterSpacing: -0.5,
+    color: isDarkMode ? 'silver' : 'black',
+    marginBottom: -15,
+  },
+  modalSubText4: {
+    fontSize: 13,
+    fontFamily: 'karla',
+    alignSelf: 'flex-end',
+    marginRight: 17,
+    letterSpacing: -0.5,
+    color: isDarkMode ? 'silver' : 'black',
+    marginBottom: -15,
+  },
 
   inputContainer: {
     marginTop: 3,
