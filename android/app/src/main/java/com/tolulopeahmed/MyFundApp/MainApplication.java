@@ -1,13 +1,13 @@
-package com.tolulopeahmed.MyFundApp;
+import com.tolulopeahmed.MyFundApp.BuildConfig;
 
 import static com.tolulopeahmed.MyFundApp.ReactNativeFlipper.*;
 
 import android.app.Application;
 import android.content.res.Configuration;
+import com.facebook.react.PackageList;
 
 import androidx.annotation.NonNull;
 
-import com.facebook.react.BuildConfig;
 import expo.modules.ApplicationLifecycleDispatcher;
 import expo.modules.ReactNativeHostWrapper;
 
@@ -85,4 +85,4 @@ public class MainApplication extends Application implements ReactApplication {
         ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig);
     }
 }
-'
+

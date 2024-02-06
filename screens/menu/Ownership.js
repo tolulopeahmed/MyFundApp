@@ -80,7 +80,7 @@ const Ownership = ({navigation}) => {
         price: 7000000,
         rent: 300000,
         roi: 4.5,
-        image: require('./phase3.png'), // Include the image source
+        image: require('./phase4.png'), // Include the image source
       },
       {
         id: 6,

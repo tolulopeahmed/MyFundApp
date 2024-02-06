@@ -173,7 +173,7 @@ const CreateAccount = ({ route, navigation }) => {
             </View>
           <View style={styles.textContainer}>
             <Text style={styles.header}>Create Account</Text>
-            <Text style={styles.subText}>Earn up to <Text style={{fontFamily: 'proxima'}}>20% p.a. </Text>every January and July. Own properties and earn a <Text style={{fontFamily: 'proxima'}}>lifetime rental income </Text>on MyFund. Signup here.</Text>
+            <Text style={styles.subText}>Earn up to <Text style={{fontFamily: 'proxima', color: isDarkMode? '#43FF8E' : 'green'}}>20% p.a. </Text>every January and July. Own properties and earn a <Text style={{fontFamily: 'proxima'}}>lifetime rental income </Text>on MyFund. Signup here.</Text>
           </View>
 
 

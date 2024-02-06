@@ -316,7 +316,7 @@ const formatTime = (timeString) => {
         source={isDarkMode ? require('../images/icon.png') : require('../images/logo..png')}
         style={styles.icon}
       />
-       <Text style={styles.propertyText}><Text style={{fontFamily: 'proxima', color:isDarkMode ? '#6E3DFF' : '#4C28BC'}}>Every January and July</Text>, you'll earn 10% p.a. on Savings and 20% p.a. on your Investments (credited to your wallet) until you've saved enough to buy properties and earn lifetime rent. Keep growing your funds.</Text>
+       <Text style={styles.propertyText}><Text style={{fontFamily: 'proxima', color:isDarkMode ? '#6E3DFF' : '#4C28BC'}}>Every January and July</Text>, you'll earn 10% p.a. on Savings and 20% p.a. on your Investments (credited to your wallet) until you've saved enough to buy properties and earn lifetime rent. So , keep growing your funds.</Text>
       </View>
 
 

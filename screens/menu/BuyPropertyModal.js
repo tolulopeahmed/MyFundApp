@@ -194,7 +194,7 @@ const handleBuyProperty = async () => {
   } catch (error) {
     console.error('Buy Property Error:', error);
     setProcessing(false);
-    Alert.alert('Error', 'An error occurred. Please check your network connection and try again.');
+    Alert.alert('Error Buying Property', 'An error occurred. It is possible this property is no longer available. Kindly contact admin.');
   }
 };
 

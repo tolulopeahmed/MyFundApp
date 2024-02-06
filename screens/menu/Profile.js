@@ -595,6 +595,8 @@ const Profile = ({ navigation, route }) => {
       <Image source={logoSource} style={styles.logo} />
   <View style={styles.creditsContainer}>
     <Text style={styles.version}>version 1.0.0</Text>
+    <Text style={styles.date}>March, 2024</Text>
+
   </View>
 </View>
 <LoadingModal visible={processing} />
@@ -895,9 +897,15 @@ icon: {
     fontSize: 10,
     fontFamily: 'karla',
     textAlign: 'center',
-    marginBottom: 15,
+    marginBottom: 1,
     color: isDarkMode ? 'white' : '#4C28BC',
-
+  },
+  date: {
+    fontSize: 9,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    marginBottom: 15,
+    color: isDarkMode ? 'silver' : 'grey',
   },
 });
 }
