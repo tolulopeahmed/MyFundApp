@@ -1,0 +1,27 @@
+[33md5985ee3[m[33m ([m[1;36mHEAD -> [m[1;32mfrontend[m[33m, [m[1;31morigin/frontend[m[33m)[m HEAD@{0}: commit: AutoSave Status in progress...
+[33mb1bba563[m HEAD@{1}: commit: AutoSave Pesistence in progress...
+[33m8ef1970b[m HEAD@{2}: commit: AutoSave activation and deactivation
+[33m55e93885[m HEAD@{3}: commit: Updated AutoSave Modal
+[33md16244dc[m HEAD@{4}: commit: QuickSave working fine!
+[33m212e95ba[m HEAD@{5}: commit: Card deletion working + QuickSave Modal Updates
+[33m929eec2e[m HEAD@{6}: commit: Updated QuickInvest and Update Savings Goal.
+[33m205ad232[m HEAD@{7}: commit: completed Authentication App
+[33m4950ecc4[m HEAD@{8}: commit: Quick Save Processing...
+[33m45672ce4[m HEAD@{9}: reset: moving to 45672ce4
+[33m45672ce4[m HEAD@{10}: commit: Completed Transition to Redux
+[33m90715ec4[m HEAD@{11}: reset: moving to 90715ec4
+[33m90715ec4[m HEAD@{12}: checkout: moving from 90715ec41ac2b98ef611a2ce165cddb0c24886ef to frontend
+[33m90715ec4[m HEAD@{13}: checkout: moving from frontend to 90715ec4
+[33m90715ec4[m HEAD@{14}: commit: Add Bank working fine
+[33mb8464917[m HEAD@{15}: commit: Redux Updated
+[33m78c97c8c[m HEAD@{16}: commit: Updated Card Addition 50naira charge
+[33me55bc93b[m HEAD@{17}: commit: Account Balances Updated!
+[33m2dbaed38[m HEAD@{18}: commit: Card and Bank Account Management Updated!
+[33mffdbb120[m HEAD@{19}: commit: Adding Bank Account now working
+[33m21722b64[m HEAD@{20}: commit: Message Admin System working
+[33m52d22c1a[m HEAD@{21}: commit: Updated Savings Goal Update for New and Old users
+[33me5aac970[m HEAD@{22}: commit: Updated Frontend
+[33m6671c801[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{23}: checkout: moving from develop to frontend
+[33m6671c801[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{24}: commit: Updated frontend
+[33m8c3983d3[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{25}: checkout: moving from master to develop
+[33m8c3983d3[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{26}: commit (initial): Fist frontend commit after recovery

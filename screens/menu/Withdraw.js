@@ -1,0 +1,863 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Alert, ImageBackground, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import Header from '../components/Header';
+import { Ionicons } from '@expo/vector-icons';
+import Divider from '../components/Divider';
+import WithdrawModal from './WithdrawModal';
+import Title from '../components/Title';
+import Subtitle from '../components/Subtitle';
+import { useSelector, useDispatch } from 'react-redux'; 
+import SectionTitle from '../components/SectionTitle';
+import Success from '../components/Success';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useIsFocused } from '@react-navigation/native';
+import { useTheme } from '../../ThemeContext';
+
+
+const Withdraw = ({ navigation, route }) => {
+  const [withdrawModalVisible, setWithdrawModalVisible] = useState(false); // define modalVisible state
+  const dispatch = useDispatch(); // Create a dispatch function
+  const accountBalances = useSelector((state) => state.bank.accountBalances);
+  const userTransactions = useSelector((state) => state.bank.userTransactions);
+  const userInfo = useSelector((state) => state.bank.userInfo);
+  const [isSuccessVisible, setIsSuccessVisible] = useState(false);
+  const [defaultFromAccount, setDefaultFromAccount] = useState('Savings'); // Set the initial default account
+  const [fromAccount, setFromAccount ] = useState(defaultFromAccount); // Set the default account from prop
+  const [showBalances, setShowBalances] = useState(true);
+  const isFocused = useIsFocused();
+
+  const { isDarkMode, colors } = useTheme();
+  const styles = createStyles(isDarkMode);
+
+  useEffect(() => {
+    if (isFocused) {
+      // Fetch the value from AsyncStorage and update the state
+      const fetchShowBalances = async () => {
+        const showBalancesValue = await AsyncStorage.getItem('showBalances');
+        setShowBalances(showBalancesValue === 'true'); // Convert to boolean
+      };
+      fetchShowBalances();
+    }
+  }, [isFocused]);
+
+
+  // Function to set the default 'fromAccount' based on the selected type
+  const setDefaultFromAccountByType = (type) => {
+    switch (type) {
+      case 'savings':
+        setDefaultFromAccount('Savings');
+        break;
+      case 'investment':
+        setDefaultFromAccount('Investment');
+        break;
+      case 'wallet':
+        setDefaultFromAccount('Wallet');
+        break;
+      default:
+        setDefaultFromAccount('Savings'); // Default to Savings if none matches
+        break;
+    }
+  };
+
+  useEffect(() => {
+    console.log("useEffect is running!"); // Add this line for debugging
+    if (route.params?.withdrawModalVisible) {
+      setWithdrawModalVisible(true);
+      const selectedWithdrawType = route.params.selectedWithdrawType;
+      console.log("Selected Withdraw Type:", selectedWithdrawType);
+      setDefaultFromAccountByType(selectedWithdrawType);
+    }
+    // ... (other useEffect code)
+  }, [route.params]);
+  
+
+
+
+  
+  const iconMapping = {
+    "Card Successful": "card-outline",
+    "QuickSave": "save-outline",
+    "AutoSave": "car-outline",
+    "QuickInvest": "trending-up-outline",
+    "AutoInvest": "car-sport-outline",
+    "Pending Referral Reward": "ellipsis-horizontal-circle-outline",
+    "Referral Reward": "checkmark-circle",
+    "Withdrawal (Savings > Investment)": "arrow-up-outline",
+    "Withdrawal (Investment > Savings)": "arrow-up-outline",
+    "Withdrawal (Wallet > Savings)": "arrow-up-outline",
+    "Withdrawal (Wallet > Investment)": "arrow-up-outline",
+    "Withdrawal (Savings > Bank)": "arrow-down-outline",
+    "Sent to User": "arrow-up-outline",
+    "Received from User": "arrow-down-outline",
+    "Annual Rent (Pending)": "checkmark-circle",
+    "Withdrawal (Investment > Bank)": "arrow-down-outline",
+    "Withdrawal (Wallet > Bank)": "arrow-down-outline",
+    "Referral Reward (Pending)": "ellipsis-horizontal-circle-outline",
+    "Referral Reward (Confirmed)": "checkmark-circle"
+};
+
+
+const formatDate = (dateString) => {
+  const options = { year: 'numeric', month: 'short', day: '2-digit' };
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', options);
+};
+
+// Function to format the time
+const formatTime = (timeString) => {
+  const options = { hour: 'numeric', minute: '2-digit', hour12: true };
+  const time = new Date(`2023-01-01T${timeString}`);
+  return time.toLocaleTimeString('en-US', options);
+};
+
+
+const handleCloseSuccessModal = () => {
+  setIsSuccessVisible(false);
+};
+
+
+
+
+  return (
+    <SafeAreaView style={styles.container}>
+          <Header navigation={navigation} headerText="WITHDRAW" />
+
+    <ScrollView showsVerticalScrollIndicator={false}>
+
+      <Title>Withdraw</Title>
+      <Subtitle>Move funds between accounts or to your bank</Subtitle>
+
+      
+          
+
+      <ImageBackground
+  source={require('./scb.png')}
+  style={styles.walletContainer}
+  imageStyle={styles.backgroundImage}
+  >        
+    <View style={styles.walletDetails}>
+       
+     <View flexDirection='row' marginTop={-4}>  
+     <Ionicons name="save-outline" size={19} color="silver" />
+          <Text style={styles.walletTitle}>SAVINGS</Text> 
+          </View> 
+
+         <View style={styles.amountContainer2}> 
+         <Text style={styles.nairaSign}>₦</Text>
+         {showBalances ? (
+            <>
+         <Text style={styles.savingsBalance}>{Math.floor(accountBalances.savings).toLocaleString()}</Text>
+         <Text style={styles.nairaSign}>.{String(accountBalances.savings).split('.')[1]}</Text>
+           </>
+          ) : (
+            <Text style={styles.savingsBalance}>****</Text>
+          )}
+         </View>
+         <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>5%</Text> fee.
+</Text>
+              
+      <View style={styles.quickWithdrawButtonContainer}>
+      <TouchableOpacity
+      style={styles.quickWithdrawButton}
+      onPress={() => {
+        setDefaultFromAccountByType('savings'); // Set the type to 'savings'
+        setWithdrawModalVisible(true);
+        setFromAccount('Savings'); // Set the fromAccount to 'Savings'
+
+      }}    >
+      <Text style={styles.quickWithdrawText}>Withdraw</Text>
+    </TouchableOpacity>
+    </View>
+        </View>      
+      </ImageBackground>
+
+
+      <ImageBackground
+  source={require('./icb2.png')}
+  style={styles.walletContainer}
+  imageStyle={styles.backgroundImage}
+  >        
+  <View style={styles.walletDetails}>
+       
+     <View flexDirection='row' marginTop={-4}>  
+     <Ionicons name="trending-up-outline" size={19} color="silver" />
+          <Text style={styles.walletTitle}>SPONSORSHIP INVESTMENT</Text> 
+          </View> 
+
+         <View style={styles.amountContainer2}> 
+         <Text style={styles.nairaSign}>₦</Text>
+         {showBalances ? (
+            <>
+          <Text style={styles.investmentBalance}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
+         <Text style={styles.nairaSign}>.{String(accountBalances.investment).split('.')[1]}</Text>
+           </>
+          ) : (
+            <Text style={styles.investmentBalance}>****</Text>
+          )}
+         </View>
+
+         <Text style={styles.walletMessage}>Immediate withdrawal attracts <Text style={{color: 'orange'}}>10%</Text> fee.
+</Text>
+
+<View style={styles.quickWithdrawButtonContainer}>
+      <TouchableOpacity
+      style={styles.quickWithdrawButton}
+      onPress={() => {
+        setDefaultFromAccountByType('investment'); // Set the type to 'savings'
+        setWithdrawModalVisible(true);
+        setFromAccount('Investment'); // Set the fromAccount to 'Investment'
+      }}
+      >
+      <Text style={styles.quickWithdrawText}>Withdraw</Text>
+    </TouchableOpacity>
+    </View>
+        </View>
+      </ImageBackground>
+
+
+
+
+      <ImageBackground
+  source={require('./icb2.png')}
+  style={styles.walletContainer}
+  imageStyle={styles.backgroundImage}
+  >        
+  <View style={styles.walletDetails}>
+       
+     <View flexDirection='row' marginTop={-4}>  
+     <Ionicons name="home-outline" size={19} color="silver" />
+          <Text style={styles.walletTitle}>PROPERTIES ACQUIRED</Text> 
+          </View> 
+
+         <View style={styles.amountContainer2}> 
+         {showBalances ? (
+            <>
+         <Text style={styles.propertiesBalance}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
+           </>
+          ) : (
+            <Text style={styles.propertiesBalance}>**</Text>
+          )}
+         </View>
+         <Text style={styles.walletMessage}>Completed sales attract <Text style={{color: 'orange'}}>5%</Text> fee.
+</Text>
+
+        <View style={styles.quickWithdrawButtonContainer}>
+        <TouchableOpacity
+              style={styles.quickWithdrawButton2}
+              onPress={() => {
+                if (accountBalances.properties == 0) {
+                  Alert.alert('Sell Property', "You're yet to acquire any property. Keep growing your funds.");
+                } else {
+                  navigation.navigate('PropertyList');
+                }
+              }}
+            >
+              <Text style={styles.quickWithdrawText}>Sell Property</Text>
+            </TouchableOpacity>
+
+    </View>
+        </View>
+      </ImageBackground>
+
+
+      <ImageBackground
+  source={require('./icb2.png')}
+  style={styles.walletContainer}
+  imageStyle={styles.backgroundImage}
+  >
+            <View style={styles.walletDetails}>
+       
+     <View flexDirection='row' marginTop={-4}>  
+     <Ionicons name="wallet-outline" size={19} color="silver" />
+          <Text style={styles.walletTitle}>WALLET</Text> 
+          </View> 
+
+         <View style={styles.amountContainer2}> 
+         <Text style={styles.nairaSign}>₦</Text>
+         {showBalances ? (
+            <>
+         <Text style={styles.walletBalance}>{Math.floor(accountBalances.wallet).toLocaleString()}</Text>
+         <Text style={styles.nairaSign}>.{String(accountBalances.wallet).split('.')[1]}</Text>
+           </>
+          ) : (
+            <Text style={styles.walletBalance}>****</Text>
+          )}
+         </View>
+         <Text style={styles.walletMessage}>Withdraw for <Text style={{color: '#43FF8E'}}>free</Text> anytime</Text>
+ 
+        <WithdrawModal 
+        navigation={navigation} 
+        withdrawModalVisible={withdrawModalVisible} 
+        setWithdrawModalVisible={setWithdrawModalVisible} 
+        setIsSuccessVisible={setIsSuccessVisible} // Pass the function here
+        defaultFromAccount={defaultFromAccount} // Pass the defaultFromAccount prop here
+        setFromAccount={setFromAccount} // Pass the setFromAccount function as a prop
+       // fromAccount={fromAccount}
+        />
+
+
+      <View style={styles.quickWithdrawButtonContainer}>
+      <TouchableOpacity
+      style={styles.quickWithdrawButton}
+      onPress={() => {
+        setDefaultFromAccountByType('wallet'); 
+        setWithdrawModalVisible(true);
+        setFromAccount('Wallet'); // Set the fromAccount to 'Wallet'
+
+      }}
+      >
+      <Text style={styles.quickWithdrawText}>Withdraw</Text>
+    </TouchableOpacity>
+    </View>
+
+        </View>      
+      </ImageBackground>
+
+
+      
+     
+
+
+      <TouchableOpacity style={styles.withdrawButton2} onPress={() => setWithdrawModalVisible(true)}>
+          <Ionicons name="arrow-down-outline" size={24} color="#fff" style={{ marginRight: 4 }} />
+          <Text style={styles.withdrawText2}>Withdraw</Text>
+        </TouchableOpacity>
+      
+      <Divider />
+     
+      <SafeAreaView style={styles.transactionContainer}>
+      <SectionTitle>WITHDRAWAL TRANSACTIONS</SectionTitle>
+
+
+
+      <View style={styles.transactionsContainer}>
+  {userTransactions.some((transaction) =>
+    ["Withdrawal (Savings > Investment)", `Sent to User`, "Annual Rent (Pending)", "Referral Reward (Confirmed)", "Referral Reward (Pending)", "Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+  ) ? (
+    userTransactions
+      .filter((transaction) =>
+        ["Withdrawal (Savings > Investment)", `Sent to User`,"Annual Rent (Pending)","Referral Reward (Confirmed)","Referral Reward (Pending)","Received from User", "Withdrawal (Investment > Savings)", "Withdrawal (Wallet > Savings)", "Withdrawal (Wallet > Investment)", "Withdrawal (Savings > Bank)", "Withdrawal (Investment > Bank)", "Withdrawal (Wallet > Bank)"].includes(transaction.description)
+      )
+      .slice(0, 5)
+      .map((transaction, index) => (
+        <View key={index} style={styles.transactionItem}>
+          <Ionicons
+            name={iconMapping[transaction.description] || "arrow-down-outline"}
+            size={25}
+            style={styles.transactionIcon}
+          />
+          <View style={styles.transactionText}>
+            <Text style={styles.transactionDescription}>{transaction.description}</Text>
+            <Text style={styles.transactionDate}>{formatDate(transaction.date)} | {formatTime(transaction.time)}</Text>
+            <Text style={styles.transactionID}>ID: {transaction.transaction_id} - <Text style={{fontFamily: 'proxima'}}>{transaction.referral_email}</Text></Text>
+          </View>
+          <View style={styles.transactionAmountContainer}>
+          <Text style={
+                transaction.transaction_type === "debit" ? styles.negativeAmount :
+                transaction.transaction_type === "credit" ? styles.transactionAmount :
+                styles.pendingAmount  // You can set your pendingAmount style here
+              }>
+                <Text style={{ fontSize: 12,}}>₦</Text><Text>{Math.floor(transaction.amount).toLocaleString()}<Text style={{ fontSize: 12 }}>.{String(transaction.amount).split('.')[1]}</Text>
+              </Text>
+            </Text>
+          </View>
+        </View>
+      ))
+  ) : (
+    <View style={styles.noTransactionsContainer}>
+      <Text style={styles.noTransactionsMessage}>You're yet to make any withdrawals.</Text>
+    </View>
+  )}
+</View>
+
+
+{isSuccessVisible && (
+      <Success  
+      isVisible={isSuccessVisible}
+      onClose={handleCloseSuccessModal} // Pass the callback function
+      navigation={navigation}
+      />
+      )}
+
+    </SafeAreaView>
+    </ScrollView>
+
+    <TouchableOpacity
+        style={styles.quickSaveButtonCircle}
+        onPress={() => setWithdrawModalVisible(true)}
+      >
+        <Ionicons name="arrow-down-outline" size={25} color="#fff" />
+      </TouchableOpacity>
+
+
+    </SafeAreaView>
+  );
+};
+
+
+const createStyles = (isDarkMode) => {
+  return StyleSheet.create({
+container: {
+flex: 1,
+backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
+},
+
+  walletContainer: {
+    flexDirection: 'row',
+    padding: 15,
+    backgroundColor: '#4C28BC',
+    marginHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 5,
+    marginBottom: 10,
+    alignItems: 'center',
+    height: 120,
+  },
+
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+
+  amountContainer:{
+    flex:1,
+    flexDirection: 'column',
+  },
+
+  walletDetails: {
+    flex: 1,
+    flexDirection: 'column',
+    marginLeft: 10,
+  },
+  
+  walletTitle: {
+    color: 'silver',
+    fontSize: 12,
+    fontFamily: 'ProductSans',
+    marginTop: 3,
+    marginBottom: 5,
+    marginLeft: 7,
+  },
+
+  amountContainer2: {
+    flexDirection: 'row',
+    alignContent: 'flex-start',
+    marginRight: 1,
+    marginTop: -9,
+  },
+
+  walletBalance: {
+    fontSize: 61,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    letterSpacing: -3,
+    marginBottom: -25,
+    marginTop: -1,
+      color: '#43FF8E',
+      padding: 1.5,
+  },
+
+  savingsBalance: {
+    fontSize: 61,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    letterSpacing: -3,
+    marginBottom: -25,
+    marginTop: -1,
+      color: '#fff',
+      padding: 1.5,
+  },
+
+  investmentBalance: {
+    fontSize: 61,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    letterSpacing: -3,
+    marginBottom: -25,
+    marginTop: -1,
+      color: 'yellow',
+      padding: 1.5,
+  },
+
+  propertiesBalance: {
+    fontSize: 61,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    letterSpacing: -3,
+    marginBottom: -25,
+    marginTop: -1,
+      color: 'gold',
+      padding: 1.5,
+  },
+
+  nairaSign: {
+    fontSize: 16,
+    fontFamily: 'karla',
+    marginTop: 20,
+      color: 'silver',
+      letterSpacing: -0.5,
+    
+    },
+
+    decimal: {
+      fontSize: 16,
+      fontFamily: 'karla',
+      marginTop: 10,
+        color: 'silver',
+        letterSpacing: -2,
+      
+      },
+
+   
+
+  walletMessage: {
+    color: 'silver',
+    fontSize: 10,
+    fontFamily: 'karla',
+    letterSpacing: -0.3,
+    marginLeft: 5,
+    marginTop: 25,
+  },
+
+  withdrawButton: {
+    backgroundColor: '#9D8CD7',
+borderRadius: 8,
+paddingVertical: 4,
+width: 65,
+marginLeft: 265,
+marginTop: -15,
+    
+    },
+    withdrawText: {
+      fontSize: 12,
+      color: "white",
+      fontFamily: 'ProductSans',
+      alignSelf: 'center',
+    },
+
+  savingsContainer: {
+    marginVertical: 10,
+    marginHorizontal: 20,
+    borderRadius: 10,
+    padding: 15,
+  },
+  savingsIconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  savingsIcon: {
+    color: '#9D8CD7',
+    fontSize: 30,
+    marginRight: 10,
+  },
+  savingsHeaderText: {
+    color: '#6C63FF',
+    fontFamily: 'ProductSansBold',
+    fontSize: 18,
+    marginBottom: 5,
+  },
+  savingsSubText: {
+    color: '#958FA3',
+    fontFamily: 'ProductSans',
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  savingsBalanceText: {
+    color: '#6C63FF',
+    fontFamily: 'ProductSansBold',
+    fontSize: 20,
+    marginRight: 10,
+  },
+  savingsButton: {
+    backgroundColor: '#9D8CD7',
+    width: 100,
+    height: 40,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  savingsButtonText: {
+    color: '#fff',
+    fontFamily: 'ProductSans',
+    fontSize: 16,
+  },
+  sponsorshipContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#4C28BC',
+    marginVertical: 10,
+    marginHorizontal: 20,
+    borderRadius: 10,
+    padding: 15,
+  },
+  sponsorshipIconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sponsorshipIcon: {
+    color: '#E5E5E5',
+    fontSize: 30,
+    marginRight: 10,
+  },
+  sponsorshipHeaderText: {
+    color: '#fff',
+    fontFamily: 'ProductSansBold',
+    fontSize: 18,
+    marginBottom: 5,
+  },
+  sponsorshipSubText: {
+    color: '#E5E5E5',
+    fontFamily: 'ProductSans',
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  sponsorshipBalanceText: {
+    color: '#fff',
+    fontFamily: 'ProductSansBold',
+    fontSize: 20,
+    marginRight: 10,
+  },
+  sponsorshipButton: {
+    backgroundColor: '#9D8CD7',
+    width: 100,
+    height: 40,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sponsorshipButtonText: {
+    color: '#fff',
+    fontFamily: 'ProductSans',
+    fontSize: 16,
+  },
+  transactionsContainer: {
+    backgroundColor: '#F6F6F6',
+    padding: 20,
+    flex: 1,
+  },
+  transactionCard: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+  },
+  transactionHeaderText: {
+    color: '#6C63FF',
+    fontFamily: 'ProductSansBold',
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  transactionSubText: {
+    color: '#958FA3',
+    fontFamily: 'ProductSans',
+    fontSize: 14,
+    marginBottom: 5,
+  },
+  transactionAmountText: {
+    color: '#6C63FF',
+    fontFamily: 'ProductSansBold',
+    fontSize: 20,
+  },
+
+
+  pendingAmount: {
+    color: 'grey', // Change to your desired color
+    fontSize: 23,
+    fontFamily: 'karla',
+    letterSpacing: -1,
+    marginTop: 10,
+    textAlign: 'right',
+  },
+
+
+  
+quickWithdrawButtonContainer: {
+  position: 'absolute',
+  bottom: 2,
+  right: 2,
+},
+
+quickWithdrawButton: {
+  backgroundColor: '#9D8CD7',
+  borderRadius: 8,
+  paddingVertical: 4,
+  paddingHorizontal: 9,
+  alignSelf: 'flex-end',
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+
+quickWithdrawButton2: {
+  backgroundColor: 'grey',
+  borderRadius: 8,
+  paddingVertical: 4,
+  paddingHorizontal: 9,
+  alignSelf: 'flex-end',
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+quickWithdrawText: {
+  fontSize: 14,
+  color: 'white',
+  fontFamily: 'ProductSans',
+  alignSelf: 'center',
+},
+
+
+
+  withdrawButton2: {
+    marginTop: 10,
+    flexDirection: 'row',
+    backgroundColor: '#4C28BC',
+    width: 140,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 10,
+    marginBottom: 5,
+    alignSelf: 'center'
+  },
+  withdrawText2: {
+    color: '#fff',
+    fontSize: 18,
+    fontFamily: 'ProductSans',
+  },
+
+  
+  todoList: {
+    marginTop: 2,
+    marginLeft:20,
+    color: 'grey',
+    fontFamily: 'karla',
+    letterSpacing: 2,
+    marginBottom: 2,
+  },
+
+  
+  quickSaveButtonCircle: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#4C28BC',
+    width: 60,
+    height: 60,
+    borderRadius: 40,
+    borderBottomRightRadius: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 10, // Add elevation to create a shadow
+
+  },
+  
+
+  transactionContainer: {
+    marginTop: 5,
+    marginBottom: 5,
+    flex: 1,
+      },
+  
+  transactionsContainer: {
+    borderRadius: 10,
+    marginHorizontal: 20,
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  
+  transactionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#ccc',
+  },
+  
+  transactionIcon: {
+    backgroundColor: isDarkMode ? '#1D0E4A' : '#DEE4FC',
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+    padding: 8,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+  
+  transactionText: {
+    flex: 1,
+    alignItems: 'flex-start',
+  
+  },
+  transactionDescription: {
+    color: isDarkMode ? '#6E3DFF' : '#4C28BC',
+    letterSpacing: -1,
+    fontSize: 19,
+    fontFamily: 'karla',
+    marginTop: 3,
+    textAlign: 'left',
+    alignItems: 'flex-start',
+  },
+  transactionDate: {
+    fontFamily: 'karla',
+    fontSize: 10,
+    marginTop: 1,
+    color: isDarkMode ? 'grey' : 'black',
+  },
+  transactionID: {
+    fontFamily: 'nexa',
+    fontSize: 10,
+    marginTop: 1,
+    color: '#4C28BC',
+  },
+  transactionAmount: {
+    color: 'green',
+    fontSize: 23,
+    fontFamily: 'karla',
+    letterSpacing: -1,
+    marginTop: 10,
+    textAlign: 'right',
+  },
+  
+  transactionAmount2: {
+    color: '#4C28BC',
+    fontSize: 23,
+    fontFamily: 'karla',
+    letterSpacing: -1,
+    marginTop: 10,
+    textAlign: 'right',
+  },
+  
+  negativeAmount: {
+    color: 'brown',
+    fontSize: 23,
+    fontFamily: 'karla',
+    letterSpacing: -1,
+    marginTop: 10,
+    textAlign: 'right',
+  },
+
+  transactionAmountContainer: {
+    textAlign: 'right',
+    
+  },
+
+  
+  noTransactionsContainer: {
+    flex: 1,
+    justifyContent: 'center', // Center vertically
+    alignItems: 'center', // Center horizontally
+  },
+  noTransactionsMessage: {
+    fontSize: 15,
+    color: 'silver',
+    fontFamily: 'karla-italic',
+    marginTop: 60,
+    marginBottom: 60,
+    textAlign: 'center', // Center the text
+
+  },
+
+});
+}
+export default Withdraw;
+
+
+
