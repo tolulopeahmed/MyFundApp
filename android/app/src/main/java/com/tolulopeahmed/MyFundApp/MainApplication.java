@@ -1,3 +1,4 @@
+package com.tolulopeahmed.MyFundApp;
 import com.tolulopeahmed.MyFundApp.BuildConfig;
 
 import static com.tolulopeahmed.MyFundApp.ReactNativeFlipper.*;

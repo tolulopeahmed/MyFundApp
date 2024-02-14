@@ -70,7 +70,7 @@ const App = ({ darkModeStyles, }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar backgroundColor="transparent" translucent barStyle="dark-content" />
+        <StatusBar backgroundColor="transparent" translucent barStyle="dark-content" hidden/>
      <Provider store={store}> 
       <UserProvider>
       <ThemeProvider>
