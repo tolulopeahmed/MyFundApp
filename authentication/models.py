@@ -68,6 +68,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         max_digits=10, decimal_places=2, default=0
     )
 
+    how_did_you_hear = models.CharField(max_length=50, choices=[
+        ('SM', 'Social Media - Facebook, Instagram, etc.'),
+        ('IMs', 'Instant Messaging - Whatsapp, Telegram, etc.'),
+        ('FF', 'Family and Friend'),
+        ('GS', 'Google Search'),
+        ('REC', 'Recommended'),
+        ('CFG', 'Cashflow Game'),
+        ('OTHER', 'Other'),
+    ], default='OTHER')
+
     myfund_pin = models.CharField(max_length=4, null=True, blank=True)
 
     preferred_asset = models.CharField(max_length=50, blank=True, null=True)

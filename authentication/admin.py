@@ -18,9 +18,9 @@ class CustomUserAdmin(UserAdmin):
     list_display = (
         'id', 'email', 'first_name', 'last_name', 'phone_number', 'profile_picture', 'kyc_updated',
         'is_staff', 'is_active', 'preferred_asset', 'savings_goal_amount', 'time_period',
-        'savings', 'investment', 'properties', 'wallet', 'total_savings_and_investments', 'total_savings_and_investments_this_month', 'user_percentage_to_top_saver'
+        'savings', 'investment', 'properties', 'wallet', 'total_savings_and_investments', 'total_savings_and_investments_this_month', 'user_percentage_to_top_saver', 'how_did_you_hear'
     )
-    list_filter = ('is_staff', 'is_active', 'kyc_updated')
+    list_filter = ('is_staff', 'is_active', 'kyc_updated', 'how_did_you_hear')
     actions = ['send_custom_email', 'view_kyc_details', 'approve_kyc', 'reject_kyc']
 
     fieldsets = (

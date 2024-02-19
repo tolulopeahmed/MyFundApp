@@ -43,6 +43,11 @@ def signup(request):
     if serializer.is_valid():
         user = serializer.save()
 
+        # Access the new field through the serializer's validated data
+        how_did_you_hear = serializer.validated_data.get('how_did_you_hear', 'OTHER')
+        user.how_did_you_hear = how_did_you_hear
+        user.save()
+        
         # Check if it's a resend request
         is_resend = request.data.get('resend', False)
 
