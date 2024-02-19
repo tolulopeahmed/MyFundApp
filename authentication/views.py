@@ -1791,13 +1791,6 @@ def withdraw_to_local_bank(request):
                 f"Before deduction - {source_account.capitalize()} balance: {user.savings if source_account == 'savings' else user.investment if source_account == 'investment' else user.wallet}"
             )
 
-            # Deduct the total amount (including service charge) from the source account
-            # Convert total_amount to Decimal
-            total_amount_decimal = Decimal(total_amount)
-            print(
-                f"Before deduction - {source_account.capitalize()} balance: {user.savings if source_account == 'savings' else user.investment if source_account == 'investment' else user.wallet}"
-            )
-
             if source_account == "savings":
                 if user.savings >= total_amount_decimal:
                     user.savings -= total_amount_decimal
