@@ -166,7 +166,6 @@ const ReferAndEarn = ({ navigation, firstName }) => {
       .filter((transaction) =>
       ["Referral Reward (Confirmed)", "Referral Reward (Pending)"].includes(transaction.description)
       )
-      .slice(0, 5)
       .map((transaction, index) => (
         <View key={index} style={styles.transactionItem}>
 

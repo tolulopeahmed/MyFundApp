@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -22,7 +20,14 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.tolulopeahmed.MyFundApp"
+      "package": "com.tolulopeahmed.MyFundApp",
+      "config": {
+        "androidStatusBar": {
+          "barStyle": "dark-content",
+          "backgroundColor": "transparent",
+          "translucent": true
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -39,8 +44,6 @@
     "updates": {
       "url": "https://u.expo.dev/6ec89b97-a393-4e49-9141-eee8e3b26cd4"
     },
-    "plugins": [
-      "expo-font"
-    ]
+    "plugins": ["expo-font"]
   }
 }

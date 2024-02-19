@@ -2,14 +2,12 @@
 
 buildscript {
     ext {
-        buildToolsVersion = findProperty('android.buildToolsVersion') ?: '33.0.0'
-        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '21')
-        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '34')
-        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.8.10'
-        frescoVersion = findProperty('expo.frescoVersion') ?: '2.5.0'
-
-        // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
+        buildToolsVersion = '33.0.0'
+        minSdkVersion = 21
+        compileSdkVersion = 34
+        targetSdkVersion = 34
+        kotlinVersion = '1.8.10'
+        frescoVersion = '2.5.0'
         ndkVersion = "23.1.7779620"
     }
     repositories {
@@ -17,24 +15,27 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath('com.android.tools.build:gradle:7.4.2')
-        classpath('com.facebook.react:react-native-gradle-plugin')
+        classpath 'com.android.tools.build:gradle:8.2.2'
+        classpath 'com.facebook.react:react-native-gradle-plugin:2.0.0' // Replace with the correct version if necessary
     }
 }
 
 allprojects {
     repositories {
         maven {
-            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url(new File(['node', '--print', "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), '../android'))
+            url 'https://maven.google.com' // Google's Maven repository
         }
         maven {
-            // Android JSC is installed from npm
-            url(new File(['node', '--print', "require.resolve('jsc-android/package.json')"].execute(null, rootDir).text.trim(), '../dist'))
+            url 'https://jitpack.io' // JitPack repository
         }
-
-        google()
-        mavenCentral()
-        maven { url 'https://www.jitpack.io' }
+        maven {
+            url 'https://dl.bintray.com/android/android-tools' // Android's tools repository
+        }
+        maven {
+            url 'https://maven.fabric.io/public' // Fabric's Maven repository
+        }
+        maven {
+            url 'https://repo1.maven.org/maven2' // Default Maven Central repository
+        }
     }
 }

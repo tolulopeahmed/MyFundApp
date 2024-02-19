@@ -86,6 +86,9 @@ const WealthMap = ({ navigation, firstName }) => {
 
 
   return (
+
+    // <ScrollView style={styles.container}>
+
     <View style={styles.container}>
 
 <View style={styles.header}>
@@ -116,23 +119,27 @@ const WealthMap = ({ navigation, firstName }) => {
           <Text style={styles.greyText}>Stage {currentStage.stage}</Text>
         </View>
         <View style={styles.amountContainer}>
-        <Text style={styles.savingsAmount}>{currentStage ? currentStage.text : 'Unknown'}</Text>
+        <Text style={styles.savingsAmount} adjustsFontSizeToFit={true} numberOfLines={1}>{currentStage ? currentStage.text : 'Unknown'}</Text>
         </View>
         <Text style={styles.greyText2}>{currentStage.description}</Text>
       </View>
 
       <Image source={stageImageSources[currentStage.stage]} style={styles.image} />
 
-          
+          <ScrollView>
       <View style={styles.buttonsContainer}>
           <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.push('Resources')}>
           <Text style={styles.primaryButtonText}>Learn More</Text>
         </TouchableOpacity>
         </View>
 
+        
 
+        </ScrollView>
+  
 
    </View>
+  //  </ScrollView>
   );
 };
 
@@ -144,7 +151,7 @@ const createStyles = (isDarkMode) => {
   },
 
    header: {
-        marginTop: 50,
+    marginTop: 50,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -223,17 +230,12 @@ const createStyles = (isDarkMode) => {
   },
  
 
-    welcomeText: {
-     color: '#4C28BC',
-     fontFamily: 'ProductSansBold',
-    },
-    
     image: {
       width: "85%",
       height: '35%',
       resizeMode: 'center',
       borderRadius: 9,
-      marginTop: 20,
+      marginTop: 10,
   alignSelf: 'center',
     },
     
@@ -244,6 +246,7 @@ const createStyles = (isDarkMode) => {
     propertyIcon: {
     marginRight: 10,
     },
+    
     propertyText: {
     flex: 1,
     fontSize: 14,
@@ -260,13 +263,7 @@ const createStyles = (isDarkMode) => {
       flex: 1,
       flexDirection: 'column',
     },
-    progressBar: {
-      height: 3.5,
-      backgroundColor: '#AEA5E1',
-      borderRadius: 10,
 
-
-    },
 
     savingsContainer: {
     flexDirection: 'column',
@@ -275,8 +272,9 @@ const createStyles = (isDarkMode) => {
     borderRadius: 10,
     marginTop: 20,
     alignItems: 'center',
-    height: 135,
+    // height: 135,
     },
+    
     savingsLine1: {
       flexDirection: 'row',
     color: '#8E8E93',
@@ -287,7 +285,7 @@ const createStyles = (isDarkMode) => {
     marginLeft: 8,
     fontSize: 12,
     marginTop: 3,
-    color: '#43FF8E',
+    color: 'silver',
     fontFamily: 'karla',
     textAlign: 'center',
     },
@@ -295,7 +293,7 @@ const createStyles = (isDarkMode) => {
     greyText2: {
       marginLeft: 8,
       fontSize: 12,
-      marginTop: 1,
+      marginBottom: 11,
       color: '#8E8E93',
       fontFamily: 'karla',
       textAlign: 'center',
@@ -311,34 +309,20 @@ const createStyles = (isDarkMode) => {
 
     amountContainer: {
       flexDirection: 'row',
-      height: 80,
     },
   
     
 
     savingsAmount: {
-    fontSize: 60,
+    fontSize: 55,
     fontFamily: 'nexa',
     textAlign: 'center',
     letterSpacing: -4,
     marginRight: 0,
-    marginTop: -8,
-    marginBottom: 5,
+    marginTop: -2,
       color: '#fff',
 },
-
-
-      autoSaveContainer: {
-        flexDirection: 'row',
-      },
-
-      autoSaveText: {
-        color: 'silver',
-        fontFamily: 'karla',
-        marginRight: 5,
-      },
-
-  
+ 
 
       
       buttonIcon: {
@@ -351,9 +335,10 @@ const createStyles = (isDarkMode) => {
         flexDirection: 'row',
         justifyContent: 'center',
         position: 'relative',
-        top: 30,
+        top: 20,
         left: 0,
         right: 0,
+        marginBottom: 30,
       },
       
       primaryButton: {

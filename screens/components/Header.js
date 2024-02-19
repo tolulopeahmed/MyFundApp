@@ -45,7 +45,7 @@ const Header = ({ navigation, headerText,  }) => {
 const createStyles = (isDarkMode) => {
   return StyleSheet.create({
     header: {
-        marginTop: 50,
+      marginTop: 50,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',

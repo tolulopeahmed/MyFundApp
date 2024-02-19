@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, Text, View, StatusBar } from 'react-native';
+import { StatusBar, StyleSheet, SafeAreaView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
@@ -69,13 +69,14 @@ const App = ({ darkModeStyles, }) => {
 
 
   return (
+    <>
     <SafeAreaView style={{ flex: 1 }}>
-        <StatusBar backgroundColor="transparent" translucent barStyle="dark-content" />
      <Provider store={store}> 
       <UserProvider>
       <ThemeProvider>
         <ImageProvider>
         <AutoInvestProvider>
+
     <NavigationContainer>
 
       <Stack.Navigator
@@ -121,8 +122,17 @@ const App = ({ darkModeStyles, }) => {
     </UserProvider>
     </Provider>
     </SafeAreaView>
+    </>
 
   );
 };
+
+// Add a new StyleSheet for styles
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    marginTop: 50, // Add marginTop of 50 to push the content down
+  },
+});
 
 export default App;

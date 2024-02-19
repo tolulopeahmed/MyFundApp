@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, SafeAreaView, ScrollView, Image, Dimensions, TouchableOpacity, Keyboard, TextInput } from 'react-native';
+import { View, Text, ActivityIndicator, KeyboardAvoidingView, StyleSheet, SafeAreaView, ScrollView, Image, Dimensions, TouchableOpacity, Keyboard, TextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { ipAddress } from '../../constants';
@@ -163,6 +163,11 @@ const CreateAccount = ({ route, navigation }) => {
   return (
     <>
       <SafeAreaView style={styles.container}>
+
+      <KeyboardAvoidingView
+      behavior="padding"
+      style={styles.keyboardAvoidingContainer}
+    >
       
         <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
           <View style={styles.logoContainer}>
@@ -356,6 +361,9 @@ const CreateAccount = ({ route, navigation }) => {
             </TouchableOpacity>
           </View> */}
         </ScrollView>
+
+        </KeyboardAvoidingView>
+
       </SafeAreaView>
     </>
   );
@@ -369,6 +377,10 @@ const createStyles = (isDarkMode) => {
     backgroundColor: isDarkMode ? '#140A32' : '#DCD1FF',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+
+  keyboardAvoidingContainer: {
+    flex: 1,
   },
 
   contentContainer: {

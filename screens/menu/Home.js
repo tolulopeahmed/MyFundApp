@@ -316,7 +316,7 @@ const formatTime = (timeString) => {
         source={isDarkMode ? require('../images/icon.png') : require('../images/logo..png')}
         style={styles.icon}
       />
-       <Text style={styles.propertyText}><Text style={{fontFamily: 'proxima', color:isDarkMode ? '#6E3DFF' : '#4C28BC'}}>Every January and July</Text>, you'll earn 10% p.a. on Savings and 20% p.a. on your Investments (credited to your wallet) until you've saved enough to buy properties and earn lifetime rent. So , keep growing your funds.</Text>
+       <Text style={styles.propertyText}><Text style={{fontFamily: 'proxima', color:isDarkMode ? '#6E3DFF' : '#4C28BC'}}>Every January and July</Text>, you'll earn <Text style={{fontFamily: 'proxima'}}>13% p.a.</Text> on your <Text style={{fontFamily: 'nexa', fontSize: 12}}>SAVINGS</Text> and <Text style={{fontFamily: 'proxima'}}>20% p.a.</Text> on your <Text style={{fontFamily: 'nexa', fontSize: 12}}>INVESTMENTS</Text> (credited to your wallet) until you've saved enough to buy properties and earn lifetime rent. So, keep growing your funds.</Text>
       </View>
 
 
@@ -338,15 +338,16 @@ const formatTime = (timeString) => {
             <View style={styles.savingsLine1}>
           <Ionicons name="save-outline" size={17} color="#A9A9A9" style={{ marginLeft: 16, marginTop: 6 }} />
           <Text style={styles.greyText}>TOTAL SAVINGS    
-          <Text style={styles.rateText}>    @10% p.a.</Text> </Text>
+          <Text style={styles.rateText}>    @13% p.a.</Text> </Text>
         </View>
         <View style={styles.amountContainer}>
         <Text style={styles.dollarSign}>₦</Text>
         {showBalances ? (
             <>
-              <Text style={styles.savingsAmount}>{Math.floor(accountBalances.savings).toLocaleString()}</Text>
-              <Text style={styles.decimal}>.{String(accountBalances.savings).split('.')[1]}</Text>
-            </>
+<Text style={styles.savingsAmount} adjustsFontSizeToFit={true} numberOfLines={1}>
+  {Math.floor(accountBalances.savings).toLocaleString()}</Text>
+        <Text style={styles.decimal}>.{String(accountBalances.savings).split('.')[1]}</Text>
+           </>
           ) : (
             <Text style={styles.savingsAmount}>****</Text>
           )}
@@ -376,7 +377,9 @@ const formatTime = (timeString) => {
 
         {showBalances ? (
             <>
-              <Text style={styles.savingsAmount2}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
+              <Text style={styles.savingsAmount2} adjustsFontSizeToFit={true} numberOfLines={1}>
+                {Math.floor(accountBalances.investment).toLocaleString()}
+              </Text>
               <Text style={styles.decimal}>.{String(accountBalances.investment).split('.')[1]}</Text>
             </>
           ) : (
@@ -406,7 +409,7 @@ const formatTime = (timeString) => {
         <View style={styles.amountContainer}>
         {showBalances ? (
             <>
-        <Text style={styles.savingsAmount3}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
+        <Text style={styles.savingsAmount3} adjustsFontSizeToFit={true} numberOfLines={1}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
             </>
           ) : (
             <Text style={styles.savingsAmount3}>**</Text>
@@ -436,7 +439,7 @@ const formatTime = (timeString) => {
         <Text style={styles.dollarSign}>₦</Text>
         {showBalances ? (
             <>
-       <Text style={styles.savingsAmount4}>{Math.floor(accountBalances.wallet).toLocaleString()}</Text>
+       <Text style={styles.savingsAmount4} adjustsFontSizeToFit={true} numberOfLines={1}>{Math.floor(accountBalances.wallet).toLocaleString()}</Text>
         <Text style={styles.decimal}>.{String(accountBalances.wallet).split('.')[1]}</Text>
            </>
           ) : (
@@ -864,6 +867,7 @@ backgroundImage: {
       fontFamily: 'karla',
       textAlign: 'center',
       marginTop: 12,
+      marginRight: 50,
         color: 'silver',
       },
 
@@ -872,8 +876,8 @@ backgroundImage: {
   fontFamily: 'karla',
   textAlign: 'center',
   letterSpacing: -5.5,
-  marginRight: 5,
-  marginLeft: 5,
+  marginRight: 3,
+  marginLeft: 3,
   marginTop: -10,
   marginBottom: -10,
     color: '#fff',

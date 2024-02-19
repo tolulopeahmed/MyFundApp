@@ -248,7 +248,7 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
   <ScrollView showsVerticalScrollIndicator={false}>
 
       <Title>Save</Title>
-      <Subtitle>Earn 10% p.a. every January and July</Subtitle>
+      <Subtitle>Earn <Text style={{fontFamily: 'proxima', color: '#43FF8E'}}>13% p.a.</Text> every January and July</Subtitle>
 
 
       <View style={styles.swiper}>
@@ -350,7 +350,7 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
         <Text style={styles.dollarSign}>₦</Text>
         {showBalances ? (
             <>
-        <Text style={styles.savingsAmount}>{Math.floor(accountBalances.savings).toLocaleString()}</Text>
+        <Text style={styles.savingsAmount} adjustsFontSizeToFit={true} numberOfLines={1}>{Math.floor(accountBalances.savings).toLocaleString()}</Text>
         <Text style={styles.decimal}>.{String(accountBalances.savings).split('.')[1]}</Text>
            </>
           ) : (
@@ -479,6 +479,9 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
   )}
 </View>
 
+<TouchableOpacity style={{margin: 20, alignSelf: 'center'}} onPress={() => navigation.navigate('Notifications')}>
+<SectionTitle>VIEW ALL TRANSACTIONS...</SectionTitle>
+</TouchableOpacity>
 
     </SafeAreaView>
     </ScrollView>

@@ -239,7 +239,7 @@ console.log('autoInvestSettings.frequency:', autoInvestSettings.frequency)
         <Text style={styles.dollarSign}>₦</Text>
         {showBalances ? (
             <>
-         <Text style={styles.savingsAmount}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
+         <Text style={styles.savingsAmount} adjustsFontSizeToFit={true} numberOfLines={1}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
         <Text style={styles.decimal}>.{String(accountBalances.investment).split('.')[1]}</Text>
             </>
           ) : (
@@ -370,6 +370,9 @@ console.log('autoInvestSettings.frequency:', autoInvestSettings.frequency)
   )}
 </View>
 
+<TouchableOpacity style={{margin: 20, alignSelf: 'center'}} onPress={() => navigation.navigate('Notifications')}>
+<SectionTitle>VIEW ALL TRANSACTIONS...</SectionTitle>
+</TouchableOpacity>
 
 {isSuccessVisible && (
       <Success  
@@ -402,7 +405,7 @@ const createStyles = (isDarkMode) => {
   },
 
    header: {
-        marginTop: 50,
+    marginTop: 50,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',

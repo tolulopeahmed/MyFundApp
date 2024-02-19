@@ -146,7 +146,7 @@ const handleCloseSuccessModal = () => {
          <Text style={styles.nairaSign}>₦</Text>
          {showBalances ? (
             <>
-         <Text style={styles.savingsBalance}>{Math.floor(accountBalances.savings).toLocaleString()}</Text>
+         <Text style={styles.savingsBalance} adjustsFontSizeToFit={true} numberOfLines={1}>{Math.floor(accountBalances.savings).toLocaleString()}</Text>
          <Text style={styles.nairaSign}>.{String(accountBalances.savings).split('.')[1]}</Text>
            </>
           ) : (
@@ -188,7 +188,7 @@ const handleCloseSuccessModal = () => {
          <Text style={styles.nairaSign}>₦</Text>
          {showBalances ? (
             <>
-          <Text style={styles.investmentBalance}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
+          <Text style={styles.investmentBalance} adjustsFontSizeToFit={true} numberOfLines={1}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
          <Text style={styles.nairaSign}>.{String(accountBalances.investment).split('.')[1]}</Text>
            </>
           ) : (
@@ -232,7 +232,7 @@ const handleCloseSuccessModal = () => {
          <View style={styles.amountContainer2}> 
          {showBalances ? (
             <>
-         <Text style={styles.propertiesBalance}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
+         <Text style={styles.propertiesBalance} adjustsFontSizeToFit={true} numberOfLines={1}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
            </>
           ) : (
             <Text style={styles.propertiesBalance}>**</Text>
@@ -276,7 +276,7 @@ const handleCloseSuccessModal = () => {
          <Text style={styles.nairaSign}>₦</Text>
          {showBalances ? (
             <>
-         <Text style={styles.walletBalance}>{Math.floor(accountBalances.wallet).toLocaleString()}</Text>
+         <Text style={styles.walletBalance} adjustsFontSizeToFit={true} numberOfLines={1}>{Math.floor(accountBalances.wallet).toLocaleString()}</Text>
          <Text style={styles.nairaSign}>.{String(accountBalances.wallet).split('.')[1]}</Text>
            </>
           ) : (
@@ -325,6 +325,7 @@ const handleCloseSuccessModal = () => {
       
       <Divider />
      
+
       <SafeAreaView style={styles.transactionContainer}>
       <SectionTitle>WITHDRAWAL TRANSACTIONS</SectionTitle>
 
@@ -370,6 +371,10 @@ const handleCloseSuccessModal = () => {
   )}
 </View>
 
+
+<TouchableOpacity style={{margin: 20, alignSelf: 'center'}} onPress={() => navigation.navigate('Notifications')}>
+<SectionTitle>VIEW ALL TRANSACTIONS...</SectionTitle>
+</TouchableOpacity>
 
 {isSuccessVisible && (
       <Success  

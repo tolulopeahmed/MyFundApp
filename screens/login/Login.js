@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Alert,Keyboard, ActivityIndicator, Text, ScrollView, StyleSheet,Image,animation,TouchableOpacity,TextInput,Modal,Animated,} from 'react-native';
+import { View, Alert,Keyboard, KeyboardAvoidingView, ActivityIndicator, SafeAreaView, Text, ScrollView, StyleSheet,Image,animation,TouchableOpacity,TextInput,Modal,Animated,} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as LocalAuthentication from 'expo-local-authentication';
 import axios from 'axios';
@@ -146,13 +146,15 @@ const handleLogin = async () => {
   };
 
   return (
-    <>
-     
+    <SafeAreaView style={styles.container}>
 
-      <ScrollView
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps="handled" // Ensure taps outside input fields dismiss the keyboard
-      >   
+<KeyboardAvoidingView
+      behavior="padding"
+      style={styles.keyboardAvoidingContainer}
+    >
+
+    <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+
            <View style={styles.logoContainer}>
           <Image
         source={isDarkMode ? require('../images/icon.png') : require('../images/logo..png')}
@@ -189,7 +191,7 @@ const handleLogin = async () => {
 
         <View style={styles.fieldContainer2}>
         <View style={styles.iconContainer}> 
-          <Ionicons  name="lock-closed-outline" size={20} color="green"  zIndex={-1} marginTop={-3} />
+          <Ionicons  name="lock-closed-outline" size={20} color="green"  zIndex={-1} marginTop={-13} />
         </View> 
         <View style={styles.passwordInputContainer}>
           <TextInput
@@ -214,13 +216,16 @@ const handleLogin = async () => {
               />
             </TouchableOpacity>
             </View>
+
+            <View>
+            <Text style={styles.forgotPasswordText} onPress={() => navigation.navigate('PasswordForgot')}>Forgot Password?</Text>
+          </View>
+
           </View>
 
           
 
-          <View>
-            <Text style={styles.forgotPasswordText} onPress={() => navigation.navigate('PasswordForgot')}>Forgot Password?</Text>
-          </View>
+        
          
           <View style={styles.loginButtonContainer}>
   <TouchableOpacity
@@ -261,6 +266,7 @@ const handleLogin = async () => {
             </Text>
           </TouchableOpacity>
 
+
         {/* add a divider line */}
         {/* <View style={styles.divider} />
         <Text style={styles.orLoginText}>OR LOGIN WITH</Text>
@@ -297,7 +303,10 @@ const handleLogin = async () => {
           </View>
         </Modal>
       </ScrollView>
-    </>
+
+      </KeyboardAvoidingView>
+      </SafeAreaView>
+
   );
 };
 
@@ -309,6 +318,10 @@ const createStyles = (isDarkMode) => {
     backgroundColor: isDarkMode ? '#140A32' : '#DCD1FF',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+
+  keyboardAvoidingContainer: {
+    flex: 1,
   },
 
   logoContainer: {
@@ -424,12 +437,13 @@ const createStyles = (isDarkMode) => {
     fontFamily: 'karla',
     color: isDarkMode ? '#6E3DFF' : '#4C28BC',
     alignSelf: 'flex-end',
-    marginLeft: '56%',
+    marginLeft: '65%',
     marginBottom: 1,
   },
   loginButtonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    alignSelf: 'center',
     justifyContent: 'center',
     width: '90%',
     marginTop: 5,

@@ -61,7 +61,7 @@ const Resources = ({navigation}) => {
         <Text style={styles.subText1}>Identify and learn what to do to move up the 9 steps to financial freedom especially how to earn, save and acquire properties for rental income. {'\n'} {'\n'}It comes with bonus materials (audios and video links inside) and an opportunity to share profit. Enjoy!
 </Text>
        
-        <Text style={styles.rate}><Text style={{textDecorationLine: 'line-through', color: 'black', fontSize: 12,}}>N6000</Text>{'\n'}N4000</Text>
+        <Text style={styles.rate}><Text style={{textDecorationLine: 'line-through', color: isDarkMode? 'silver': 'black', fontSize: 12,}}>N6000</Text>{'\n'}N4000</Text>
         <TouchableOpacity style={styles.button} onPress={handleBuyNowClick}>
           <Text style={styles.buttonText}>Buy Now!</Text>
         </TouchableOpacity>
@@ -76,7 +76,7 @@ const Resources = ({navigation}) => {
         <Text style={styles.headerText2}>Wealth Leadership Academy (Season 1)</Text>
         <Text style={styles.subText1}>Enjoy the Multiple Skills of Income Session of the Wealth Leadership Academy Season 1</Text>
        
-        <Text style={styles.rate}><Text style={{textDecorationLine: 'line-through', color: 'black', fontSize: 12,}}>N20000</Text>{'\n'}N4000</Text>
+        <Text style={styles.rate}><Text style={{textDecorationLine: 'line-through', color: isDarkMode? 'silver': 'black', fontSize: 12,}}>N20000</Text>{'\n'}N4000</Text>
         <TouchableOpacity style={styles.button} onPress={handleBuyNowClick2}>
           <Text style={styles.buttonText}>Buy Now!</Text>
         </TouchableOpacity>
@@ -92,7 +92,7 @@ const Resources = ({navigation}) => {
         <Text style={styles.headerText2}>Financial Mentoring Class</Text>
         <Text style={styles.subText1}>A straightforward practical guide on how to Earn, Save and Invest (videos)</Text>
        
-<Text style={styles.rate}><Text style={{textDecorationLine: 'line-through', color: 'black', fontSize: 12,}}>N40000</Text>{'\n'}Free</Text>
+<Text style={styles.rate}><Text style={{textDecorationLine: 'line-through', color: isDarkMode? 'silver': 'black', fontSize: 12,}}>N40000</Text>{'\n'}Free</Text>
         <TouchableOpacity style={styles.button} onPress={handleBuyNowClick3}>
           <Text style={styles.buttonText}>Get!</Text>
         </TouchableOpacity>
@@ -108,7 +108,7 @@ const Resources = ({navigation}) => {
         <Text style={styles.subText1}>Here are ways you probably didn't know you can earn with MyFund. 
 {'\n'} {'\n'}The fifth way is long-term but it's permanent income. </Text>
        
-<Text style={styles.rate}><Text style={{textDecorationLine: 'line-through', color: 'black', fontSize: 12,}}>N40000</Text>{'\n'}Free</Text>
+<Text style={styles.rate}><Text style={{textDecorationLine: 'line-through', color: isDarkMode? 'silver': 'black', fontSize: 12,}}>N40000</Text>{'\n'}Free</Text>
         <TouchableOpacity style={styles.button} onPress={handleBuyNowClick4}>
           <Text style={styles.buttonText}>Watch!</Text>
         </TouchableOpacity>

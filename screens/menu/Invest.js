@@ -1,5 +1,5 @@
-import React, { useState }from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState }from 'react';
+import { View, Text, StyleSheet, Pressable, ScrollView, Image, ImageBackground, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/Header';
 import Divider from '../components/Divider';
@@ -8,6 +8,8 @@ import QuickInvestModal from '../components/QuickInvestModal';
 import Title from '../components/Title';
 import Subtitle from '../components/Subtitle';
 import SectionTitle from '../components/SectionTitle';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAccountBalances, fetchUserTransactions, fetchUserData, fetchAutoInvestSettings } from '../../ReduxActions';
 import { useTheme } from '../../ThemeContext';
 
 const images = [
@@ -22,6 +24,11 @@ const Invest = ({ navigation, firstName }) => {
   const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
   const { isDarkMode, colors } = useTheme();
   const styles = createStyles(isDarkMode);
+  const [showBalances, setShowBalances] = useState(true);
+  const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
+  const accountBalances = useSelector((state) => state.bank.accountBalances);
+  const dispatch = useDispatch();
+
 
   const handleQuickInvest = () => {
     navigation.navigate('Sponsorship', { quickInvestModalVisible: true });
@@ -39,6 +46,16 @@ const Invest = ({ navigation, firstName }) => {
         break;
     }
   };
+
+
+
+  useEffect(() => {
+    dispatch(fetchAccountBalances()); // Fetch account balances using Redux action
+    dispatch(fetchUserTransactions()); // Fetch user transactions using Redux action
+    dispatch(fetchUserData(userInfo.token));
+    dispatch(fetchAutoInvestSettings()); // Fetch auto-save status and settings when the component mounts
+  }, []);
+
 
   return (
     <>
@@ -78,33 +95,62 @@ const Invest = ({ navigation, firstName }) => {
 
       <View>
         <Text style={styles.title2}>Choose Type of Investment</Text>
-        <Text style={styles.subText}>SPONSOR: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>20% p.a. </Text>every January & July. {'\n'}
-        OWN: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>Lifetime rent</Text> every year</Text>
+        {/* <Text style={styles.subText}>SPONSOR: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>20% p.a. </Text>every January & July. {'\n'} */}
+        {/* OWN: Earn <Text style={{color:'green', fontFamily: 'proxima'}}>Lifetime rent</Text> every year</Text> */}
         <Divider />
 
         <SectionTitle>AVAILABLE INVESTMENTS</SectionTitle>
 
-        <View style={{ flexDirection: 'row', marginTop: 10, }}>
-          <TouchableOpacity onPress={() => navigation.navigate('Sponsorship')} style={{ backgroundColor: isDarkMode ? '#311161' : '#E0D7FF', flex: 1, padding: 7, alignItems: 'center', marginLeft: 20, marginRight: 5, borderRadius: 10, height: 230}}>
-            <Ionicons name="person-outline" size={40} alignItems='center' marginTop={5} style={styles.icon}/>
-            <Text style={{ padding: 3, marginTop: 2, fontSize: 17, fontFamily: 'proxima', textAlign: 'center', color: isDarkMode ? '#6E3DFF' : '#4C28BC', }}>Sponsorship Investment</Text>
-            <Text style={{ marginTop: 4, fontSize: 12, fontFamily: 'karla', textAlign: 'center', color: isDarkMode ? 'white' : 'black'}}>Earn up to <Text color='red'>20% per anum</Text> sponsoring our National Hostel Project. Paid every January and July</Text>
-            <TouchableOpacity style={styles.quickInvestButton} onPress={handleQuickInvest}>
-              <Ionicons name="trending-up-outline" size={24} color="#fff" />
-              <Text style={styles.quickInvestText}>QuickInvest</Text>
-            </TouchableOpacity>
-          </TouchableOpacity>
+        <View style={{ flexDirection: 'row', marginTop: 10 }}>
+  <TouchableOpacity onPress={() => navigation.navigate('Sponsorship')} style={{ flex: 1, marginLeft: 20, marginRight: 5, height: 230, }}>
+    {/* <Ionicons name="person-outline" size={40} alignItems='center' marginTop={5} style={styles.icon}/> */}
+    <ImageBackground source={require('./icb2.png')} imageStyle={styles.backgroundImage} style={{ flex: 1, padding: 7, alignItems: 'center' }}>
+      <Text style={{ padding: 3, marginTop: 2, fontSize: 25, fontFamily: 'proxima', textAlign: 'center', color: "#fff" }}>Sponsor</Text>
+      <Text style={{ marginTop: 4, fontSize: 12, fontFamily: 'karla', textAlign: 'center', color: 'white' }}>Earn <Text style={{ fontFamily: 'proxima', color: "#43FF8E"}}>20% p.a.</Text> every January and July sponsoring our National Hostel Project</Text>
 
-          <TouchableOpacity onPress={() => navigation.navigate('Ownership')} style={{ backgroundColor: isDarkMode ? '#2B1667' : '#E2E4FF', flex: 1, padding: 7, alignItems: 'center', marginLeft: 5, marginRight: 20, borderRadius: 10, height: 230}}>
-            <Ionicons name="home-outline" size={40} alignItems='center' marginTop={5} style={styles.icon} />
-            <Text style={{ padding: 3, marginTop: 2, fontSize: 17, fontFamily: 'proxima', textAlign: 'center', letterSpacing: -0.3, color: isDarkMode ? '#6E3DFF' : '#4C28BC', }}>Ownership Investment</Text>
-            <Text style={{ marginTop: 4, fontSize: 12, fontFamily: 'karla', textAlign: 'center', color: isDarkMode ? 'white' : 'black',}}>Earn rental income for life by buying a fraction of our hostels.</Text>
-            <TouchableOpacity style={styles.buyPropertyButton} onPress={() => navigation.navigate('Ownership')}>
-              <Ionicons name="home-outline" size={24} color="#fff" />
-              <Text style={styles.quickInvestText}>Buy Property</Text>
-            </TouchableOpacity>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.amountContainer}>
+        {showBalances ? (
+          <>
+           <Text style={styles.dollarSign} adjustsFontSizeToFit={true}>₦</Text>
+            <Text style={styles.savingsAmount} adjustsFontSizeToFit={true} numberOfLines={1}>{Math.floor(accountBalances.investment).toLocaleString()}</Text>
+            {/* <Text style={styles.decimal}>.{String(accountBalances.investment).split('.')[1]}</Text> */}
+          </>
+        ) : (
+          <Text style={styles.savingsAmount}>****</Text>
+        )}
+      </View>
+
+      <TouchableOpacity style={styles.quickInvestButton} onPress={handleQuickInvest}>
+        <Ionicons name="trending-up-outline" size={24} color="#fff" />
+        <Text style={styles.quickInvestText}>QuickInvest</Text>
+      </TouchableOpacity>
+    </ImageBackground>
+  </TouchableOpacity>
+
+  <TouchableOpacity onPress={() => navigation.navigate('Ownership')} style={{ flex: 1, marginLeft: 5, marginRight: 20, height: 230 }}>
+    {/* <Ionicons name="home-outline" size={40} alignItems='center' marginTop={5} style={styles.icon} /> */}
+    <ImageBackground source={require('./icb2.png')} imageStyle={styles.backgroundImage} style={{ flex: 1, padding: 7, alignItems: 'center', borderTopLeftRadius: 10, borderTopRightRadius: 10 }}>
+
+      <Text style={{ padding: 3, marginTop: 2, fontSize: 25, fontFamily: 'proxima', textAlign: 'center', letterSpacing: -0.3, color: "#fff" }}>Own</Text>
+      <Text style={{ marginTop: 4, fontSize: 12, fontFamily: 'karla', textAlign: 'center', color: 'white' }}>Earn <Text style={{ fontFamily: 'proxima', color: "#43FF8E"}}>rental income for life</Text> by buying a fraction of our hostels.</Text>
+
+      <View style={styles.amountContainer}>
+        {showBalances ? (
+          <>
+            <Text style={styles.savingsAmount3} adjustsFontSizeToFit={true} numberOfLines={1}>{accountBalances.properties < 10 ? `0${Math.floor(accountBalances.properties)}` : Math.floor(accountBalances.properties)}</Text>
+          </>
+        ) : (
+          <Text style={styles.savingsAmount3}>**</Text>
+        )}
+      </View>
+
+      <TouchableOpacity style={styles.buyPropertyButton} onPress={() => navigation.navigate('Ownership')}>
+        <Ionicons name="home-outline" size={24} color="#fff" />
+        <Text style={styles.quickInvestText}>Buy Property</Text>
+      </TouchableOpacity>
+    </ImageBackground>
+  </TouchableOpacity>
+</View>
 
         {quickInvestModalVisible && (
   <QuickInvestModal
@@ -220,23 +266,83 @@ const createStyles = (isDarkMode) => {
     textAlign: 'center',
     marginHorizontal: 10,
   },
+
+
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+
+  amountContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginTop: 5,
+  },
+
+  dollarSign: {
+    fontSize: 9,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    marginTop: 16,
+    marginLeft: 5,
+      color: 'silver',
+      letterSpacing: -2,
+    },
+
+    // decimal: {
+    //   fontSize: 9,
+    //   fontFamily: 'karla',
+    //   textAlign: 'center',
+    //   marginTop: 12,
+    //   marginLeft: -5,
+    //     color: 'silver',
+    //     letterSpacing: 0,
+    //   },
+
+
+  savingsAmount: {
+  fontSize: 55,
+  fontFamily: 'karla',
+  textAlign: 'center',
+  letterSpacing: -4,
+  marginRight: 5,
+  marginLeft: 5,
+  marginBottom: 5,
+    color: 'yellow',
+  },
+
+  savingsAmount3: {
+    fontSize: 55,
+    fontFamily: 'karla',
+    textAlign: 'center',
+    letterSpacing: -2,
+  marginRight: 5,
+  marginLeft: 5,
+  marginBottom: -5,
+      color: 'gold',
+    },
+
+
+
   quickInvestButton: {
     marginTop: 'auto', // Adjusts the margin to position the button at the bottom
     marginBottom: 10, // Adds a margin of 10 from the bottom
     flexDirection: 'row',
-    backgroundColor: '#4C28BC',
+    backgroundColor: '#9D8CD7',
     width: 140,
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 10,
+    borderRadius: 10,  
   },
   
   buyPropertyButton: {
     marginTop: 'auto', // Adjusts the margin to position the button at the bottom
     marginBottom: 10, // Adds a margin of 10 from the bottom
     flexDirection: 'row',
-    backgroundColor: '#4C28BC',
+    backgroundColor: '#9D8CD7',
     width: 147,
     height: 40,
     alignItems: 'center',

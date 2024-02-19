@@ -196,7 +196,7 @@ const createStyles = (isDarkMode) => {
     backgroundColor: isDarkMode ? '#140A32' : '#F5F1FF',
   },
    header: {
-        marginTop: 50,
+    marginTop: 50,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',

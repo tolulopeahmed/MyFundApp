@@ -31,7 +31,7 @@
     "expo-av": "~13.10.4",
     "expo-clipboard": "~5.0.1",
     "expo-constants": "~15.4.5",
-    "expo-dev-client": "~3.3.7",
+    "expo-dev-client": "~3.3.8",
     "expo-font": "~11.10.2",
     "expo-image-picker": "~14.7.1",
     "expo-local-authentication": "~13.8.0",
