@@ -500,7 +500,7 @@ class Transaction(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     time = models.TimeField(auto_now_add=True)
     description = models.CharField(max_length=255, default="No description available")
-    transaction_id = models.CharField(max_length=25, default="", unique=True)
+    transaction_id = models.CharField(max_length=50, default="", unique=True)
     service_charge = models.DecimalField(
         max_digits=10, decimal_places=2, default=0.0
     )  # Define a default value

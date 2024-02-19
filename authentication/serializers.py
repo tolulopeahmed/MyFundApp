@@ -292,7 +292,7 @@ class CardSerializer(serializers.ModelSerializer):
 
         else:
             print("Paystack API Error Response:", paystack_response)  # Add this line for debugging
-            raise serializers.ValidationError("Failed to verify card and process payment")
+            raise serializers.ValidationError("Failed to verify card and process the payment.")
 
 
 
