@@ -5,6 +5,8 @@ import axios from 'axios';
 import { ipAddress } from '../../constants';
 import LoadingModal from '../components/LoadingModal';
 import { useTheme } from '../../ThemeContext';
+import { Picker } from '@react-native-picker/picker';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -29,6 +31,8 @@ const CreateAccount = ({ route, navigation }) => {
   const { prefillEmail } = route.params || {}; // Ensure that route.params is defined
   const { isDarkMode, colors } = useTheme();
   const styles = createStyles(isDarkMode);
+  const [howDidYouHear, setHowDidYouHear] = useState({ value: '', isValid: true });
+
 
   useEffect(() => {
         // Check if both email and password are valid
@@ -39,6 +43,7 @@ const CreateAccount = ({ route, navigation }) => {
           validFirstName &&
           validLastName &&
           validPhoneNumber &&
+          howDidYouHear.isValid &&
           isFormTouched
         );
       }, [
@@ -48,6 +53,7 @@ const CreateAccount = ({ route, navigation }) => {
         validFirstName,
         validLastName,
         validPhoneNumber,
+        howDidYouHear.isValid,
         isFormTouched,
       ]);
 
@@ -99,6 +105,7 @@ const CreateAccount = ({ route, navigation }) => {
         first_name: firstName,
         last_name: lastName,
         phone_number: phoneNumber,
+        how_did_you_hear: howDidYouHear.value,
       };
   
       // Include referral email only if it's provided
@@ -311,6 +318,35 @@ const CreateAccount = ({ route, navigation }) => {
             </View>
             </View>
 
+            <View style={styles.fieldContainer3}>
+              <View style={styles.inputContainer}>
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={howDidYouHear.value}
+                    style={[
+                      styles.input,
+                      styles.picker,
+                      !howDidYouHear.isValid && styles.invalidInput,
+                    ]}
+                    onValueChange={(itemValue, itemIndex) => setHowDidYouHear({ value: itemValue, isValid: true })}
+                  >
+                    <Picker.Item label="How did you hear about MyFund?" value="" />
+                    <Picker.Item label="Social Media - Facebook, Instagram, etc." value="SM" />
+                    <Picker.Item label="Instant Messaging - Whatsapp, Telegram, etc." value="IMs" />
+                    <Picker.Item label="Family and Friend" value="FF" />
+                    <Picker.Item label="Google Search" value="GS" />
+                    <Picker.Item label="Recommended" value="REC" />
+                    <Picker.Item label="Cashflow Game" value="CFG" />
+                    <Picker.Item label="Other" value="OTHER" />
+                  </Picker>
+                </View>
+              </View>
+            </View>
+
+
+
+
+
 
 
           <TouchableOpacity 
@@ -440,7 +476,7 @@ const createStyles = (isDarkMode) => {
     justifyContent: 'center',
   },
 
-  
+
 
   fieldContainer2: {
     alignSelf: 'center',
@@ -448,6 +484,17 @@ const createStyles = (isDarkMode) => {
     alignContents: 'center',
     width: '100%',
     marginTop: -20,
+    
+  },
+
+  
+  fieldContainer3: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    alignContents: 'center',
+    width: '100%',
+    marginTop: -10,
+    borderRadius: 10,
   },
 
   iconContainer: {
@@ -553,8 +600,31 @@ const createStyles = (isDarkMode) => {
     marginTop: 5,
   },
 
-
-
+  pickerContainer: {
+    width: '80%',
+    backgroundColor: isDarkMode ? '#313151' : '#F5F5F5',
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderWidth: 1,  // Adjust the border width as needed
+    borderColor: 'green',  // Set the border color to grey
+    alignItems: 'center',
+    alignSelf: 'center',
+    alignContent: 'center',
+    marginTop: -10,
+    marginBottom: 10,
+  },
+  
+  picker: {
+    backgroundColor: isDarkMode ? '#313151' : '#F5F5F5',
+    borderRadius: 10,
+    width: '100%',
+    paddingLeft: 40,
+    marginTop: -9,
+    marginBottom: 7,
+    color: isDarkMode ? 'white' : 'black',
+  },
+  
+  
   
   divider: {
     width: '90%',
