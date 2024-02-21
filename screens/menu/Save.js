@@ -248,7 +248,7 @@ console.log('TopSaversData.Individual Percentage:', topSaversData.current_user.i
   <ScrollView showsVerticalScrollIndicator={false}>
 
       <Title>Save</Title>
-      <Subtitle>Earn <Text style={{fontFamily: 'proxima', color: '#43FF8E'}}>13% p.a.</Text> every January and July</Subtitle>
+      <Subtitle>Earn <Text style={{fontFamily: 'proxima', color: isDarkMode? '#43FF8E' : 'green'}}>13% p.a.</Text> every January and July</Subtitle>
 
 
       <View style={styles.swiper}>

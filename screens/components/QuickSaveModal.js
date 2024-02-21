@@ -20,7 +20,7 @@ const getBackgroundColor = (bankName) => {
 
 
 const QuickSaveModal = ({ navigation, quickSaveModalVisible, setQuickSaveModalVisible, setIsSuccessVisible }) => {
-  const [frequency, setFrequency] = useState('');
+  const [frequency, setFrequency] = useState('Bank Transfer');
   const [amount, setAmount] = useState('');
   const [isContinueButtonDisabled, setIsContinueButtonDisabled] = useState(true);
   const [selectedCard, setSelectedCard] = useState(null);

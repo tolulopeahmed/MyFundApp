@@ -514,7 +514,7 @@ const QuickInvestModal = ({ navigation, quickInvestModalVisible, setQuickInvestM
           {userCards.length === 0 ? (
             <TouchableOpacity onPress={handleAddCard}>
               <Text style={{ color: 'grey', fontFamily: 'karla-italic', marginBottom: 5, marginLeft: 15 }}>
-                No cards added yet...{' '}
+                No cards added yet. Use Transfer or...{' '}
                 <Text style={{ color: isDarkMode ? '#8A63F7' : '#4C28BC', fontFamily: 'proxima', marginBottom: 5, marginLeft: 15 }}>
                   Add Card Now!
                 </Text>

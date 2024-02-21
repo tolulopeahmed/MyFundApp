@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ipAddress } from '../../constants';
 import { updateSavingsGoal } from '../../ReduxActions';
 import { useTheme } from '../../ThemeContext';
+import LoadingModal from '../components/LoadingModal';
 
 const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible }) => {
   const [frequency, setFrequency] = useState('Real Estate');
@@ -17,6 +18,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
   const dispatch = useDispatch(); // Get the dispatch function from Redux
   const userInfo = useSelector(state => state.bank.userInfo); // Get user info from Redux store
   const savingsGoal = useSelector(state => state.bank.savingsGoal); // Get savings goal from Redux store
+  const [processing, setProcessing] = useState(false);
 
   const { isDarkMode, colors } = useTheme();
   const styles = createStyles(isDarkMode);
@@ -39,10 +41,13 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
 
 
   const handleUpdateSavingsGoal = async () => {
+    setProcessing(true);
+
     try {
       // Check if userInfo and token are available
       if (!userInfo || !userInfo.token) {
         console.error('User info or token is missing');
+        setProcessing(false);
         return;
       }
   
@@ -50,6 +55,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
       const numericAmount = parseFloat(amount.replace(/,/g, ''));
       if (isNaN(numericAmount) || numericAmount < 0) {
         console.error('Invalid amount');
+        setProcessing(false);
         return;
       }
       const data = {
@@ -71,6 +77,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
       );
   
       if (response.data && response.data.preferred_asset) {
+        setProcessing(false);
         // Update context states with the data from the response
         dispatch(updateSavingsGoal(data));
 
@@ -78,6 +85,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
       // Ensure the API response contains the expected data structure
       if (!response.data || typeof response.data !== 'object') {
         console.error('Invalid API response format');
+        setProcessing(false);
         return;
       }
   
@@ -94,7 +102,8 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
       } years. Keep saving to reach your goal!`;
       
       Alert.alert('Savings Goal Updated!', successMessage);
-      
+      setProcessing(false);
+
     
       // Close the modal
       setGoalModalVisible(false);
@@ -103,6 +112,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
       navigation.navigate('Save'); // Replace 'Save' with the correct screen name
     } catch (error) {
       console.error('Error updating savings goal:', error);
+      setProcessing(false);
     }
   };
 
@@ -312,6 +322,7 @@ const SavingsGoalModal = ({ navigation, goalModalVisible, setGoalModalVisible })
 
         </TouchableOpacity>
     </Modal>
+    <LoadingModal visible={processing} />
 
     </>
   );
@@ -349,7 +360,7 @@ const createStyles = (isDarkMode) => {
     textAlign: 'left',
     marginHorizontal: 30,
     marginTop: 5,
-    color: isDarkMode ? '#fff' : '#4C28BC',
+    color: isDarkMode ? '#fff' : 'black',
   },
    
   modalSubText2: {
@@ -360,7 +371,7 @@ const createStyles = (isDarkMode) => {
     textAlign: 'left',
     marginHorizontal: 30,
     marginTop: 5,
-    color: isDarkMode ? '#fff' : '#4C28BC',
+    color: isDarkMode ? '#fff' : 'black',
   },
 
   inputContainer: {
