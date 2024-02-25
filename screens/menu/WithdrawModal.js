@@ -150,14 +150,18 @@ const handleUserEmailChange = (value) => {
     };
 
 
- useEffect(() => {
-  // Check if the amount is empty or 'target_bank_account_id' is null, and update the button disabled state accordingly
-  if (amount === '' || selectedBankAccountId === null) {
-    setWithdrawButtonDisabled(true);
-  } else {
-    setWithdrawButtonDisabled(false);
-  }
-}, [amount, selectedBankAccountId]);
+    useEffect(() => {
+      // Check if the amount is empty or 'target_bank_account_id' is null, and update the button disabled state accordingly
+      if (amount === '') {
+        setWithdrawButtonDisabled(true);
+      } else if (toAccount === "Another User") {
+        // If sending to another user, check only the amount
+        setWithdrawButtonDisabled(false);
+      } else if (toAccount === "Bank Account") {
+        // If sending to a bank account, check if a bank account is selected
+        setWithdrawButtonDisabled(selectedBankAccountId === null);
+      }
+    }, [amount, toAccount, selectedBankAccountId]);
 
 
 
@@ -1077,32 +1081,32 @@ const getUserDetailsByEmail = async (correctedEmail) => {
 
            <View style={styles.buttonsContainer}>
            <TouchableOpacity
-                    style={[
-                      styles.primaryButton,
-                      {
-                        backgroundColor: withdrawButtonDisabled ? 'grey' : '#4C28BC',
-                      },
-                    ]}
-                    onPress={handleWithdraw}
-                    disabled={withdrawButtonDisabled}
-                  >
+                        style={[
+                          styles.primaryButton,
+                          {
+                            backgroundColor: withdrawButtonDisabled ? 'grey' : '#4C28BC',
+                          },
+                        ]}
+                        onPress={handleWithdraw}
+                        disabled={withdrawButtonDisabled || (toAccount === "Another User" && userEmail === '')} // Disable if either amount is empty or user email is not provided
+                      >
                     {processing ? (
                       <><ActivityIndicator color="white" style={styles.activityIndicator} /> 
                       <Text style={styles.primaryButtonText}>  Processing... Please wait...</Text>
                       </>
                     ) : (
                       <>
-                        {toAccount === "Another User" ? (
-                          <Ionicons name="send" size={21} color="white" style={{ marginRight: 10 }} />
-                        ) : (
-                          <Ionicons name="arrow-down" size={24} color="white" style={{ marginRight: 10 }} />
-                        )}
-                        <Text style={styles.primaryButtonText}>
-                          {toAccount === "Another User" ?   " Send to User" : "Withdraw Now"}
-                        </Text>
-                      </>
-                    )}
-                  </TouchableOpacity>
+                      {toAccount === "Another User" ? (
+                        <Ionicons name="send" size={21} color="white" style={{ marginRight: 10 }} />
+                      ) : (
+                        <Ionicons name="arrow-down" size={24} color="white" style={{ marginRight: 10 }} />
+                      )}
+                      <Text style={styles.primaryButtonText}>
+                        {toAccount === "Another User" ?   " Send to User" : "Withdraw Now"}
+                      </Text>
+                    </>
+                  )}
+                </TouchableOpacity>
 
 
                   </View>

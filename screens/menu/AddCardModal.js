@@ -321,7 +321,7 @@ const handleProceed = async () => {
          </View>
           <Divider />
           <Text style={styles.modalSubText}>
-An initial charge of ₦50 will be made and returned back as to your savings account just to confirm that your card works fine.</Text>
+An initial charge of ₦50 will be made and returned back to your savings account just to confirm that your card works fine.</Text>
 
 <View>
     <Text style={styles.labelText}>Bank</Text>

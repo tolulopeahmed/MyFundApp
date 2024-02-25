@@ -201,7 +201,7 @@ console.log('password:', password);
        </View>
       <View style={styles.textContainer}>
         <Text style={styles.header}>Enter Confirmation Code</Text>
-        <Text style={styles.subText}>Use the code we just sent to your email/phone number to complete your signup</Text>
+        <Text style={styles.subText}>Use the code we just sent to your email to complete your signup</Text>
       </View>
       <View style={styles.inputContainer}>
 

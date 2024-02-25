@@ -133,7 +133,7 @@ const Profile = ({ navigation, route }) => {
 }, [route.params?.goalModalVisible]);
   
   const handleRateMyFund = () => {
-    const buyNowUrl = 'https://bit.ly/Vback';
+    const buyNowUrl = 'https://g.page/r/CREMRjYR2SxYEBI/review';
     Linking.openURL(buyNowUrl);
   };
 

@@ -20,7 +20,7 @@ const FAQ = ({ navigation }) => {
     {
       id: 2,
       question: 'How do I earn income from MyFund?',
-      answer: 'You earn into your wallet... \n- 10% p.a. on Savings and 20% p.a. on Sponsorship Investments every January and July, \n- lifetime rental income on properties acquired, \n- 5% commission on sold properies you refer, \n- bonuses on referrals, and \n- as one of the top savers of the month.',
+      answer: 'You earn into your wallet... \n- 13% p.a. on Savings and 20% p.a. on Sponsorship Investments every January and July, \n- lifetime rental income on properties acquired, \n- 5% commission on sold properies you refer, \n- bonuses on referrals, and \n- as one of the top savers of the month.',
     },
     {
         id: 3,
@@ -42,7 +42,11 @@ const FAQ = ({ navigation }) => {
         question: 'How much do I get on Referrals?',
         answer: "You earn up to... \n- N1000 on referring friends to MyFund, and \n- 5% on all property sales that are completed by your referral.",
       },
-    
+      {
+        id: 7,
+        question: 'Why choose MyFund when there are other piggybank platforms out there?',
+        answer: "MyFund helps working and retiring-class people save towards owning properties. Unlike the currently existing piggybank solutions, MyFund offers a lifetime rental/retirement income via our national hostel project.",
+      },
     // Add more questions and answers as needed
   ];
 
