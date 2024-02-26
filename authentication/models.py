@@ -68,15 +68,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         max_digits=10, decimal_places=2, default=0
     )
 
-    how_did_you_hear = models.CharField(max_length=50, choices=[
-        ('SM', 'Social Media - Facebook, Instagram, etc.'),
-        ('IMs', 'Instant Messaging - Whatsapp, Telegram, etc.'),
-        ('FF', 'Family and Friend'),
-        ('GS', 'Google Search'),
-        ('REC', 'Recommended'),
-        ('CFG', 'Cashflow Game'),
-        ('OTHER', 'Other'),
-    ], default='OTHER')
+    how_did_you_hear = models.CharField(
+        max_length=50,
+        choices=[
+            ("SM", "Social Media - Facebook, Instagram, etc."),
+            ("IMs", "Instant Messaging - Whatsapp, Telegram, etc."),
+            ("FF", "Family and Friend"),
+            ("GS", "Google Search"),
+            ("REC", "Recommended"),
+            ("CFG", "Cashflow Game"),
+            ("OTHER", "Other"),
+        ],
+        default="OTHER",
+    )
 
     myfund_pin = models.CharField(max_length=4, null=True, blank=True)
 
@@ -255,9 +259,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                     ]  # Generate a unique UUID for the referrer
                     credit_transaction_referrer = Transaction.objects.create(
                         user=self,
-                        referral_email=self.referral.email
-                        if self.referral
-                        else "",  # Save the referral email if it exists
+                        referral_email=(
+                            self.referral.email if self.referral else ""
+                        ),  # Save the referral email if it exists
                         transaction_type="credit",
                         amount=1000,
                         description="Referral Reward (Confirmed)",
@@ -313,9 +317,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                     )
 
                     # Send confirmation email to the referred user
-                    subject_referred = (
-                        f"Congrats!🎊🥂 Referral Reward for {self.first_name} Confirmed!"
-                    )
+                    subject_referred = f"Congrats!🎊🥂 Referral Reward for {self.first_name} Confirmed!"
                     message_referred = f"Congratulations {self.referral.first_name},\n\nYou have received a referral reward of ₦1,000.00 in your wallet for referring {self.first_name}.\n\nThank you for using MyFund and referring others!\n\nKeep growing your funds.🥂\n\nMyFund\nSave, Buy Properties, Earn Rent\nwww.myfundmobile.com\n13, Gbajabiamila Street, Ayobo, Lagos, Nigeria."
 
                     from_email_referred = "MyFund <info@myfundmobile.com>"

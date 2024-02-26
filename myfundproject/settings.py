@@ -36,8 +36,18 @@ SECRET_KEY = "django-insecure-rct_mdzr=x!99kwy+xy1$#x=5_+!_-dynu%z&!jx_-qkj7*%*%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = "RENDER" not in os.environ
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.30.34','10.0.101.10','myfund.onrender.com','localhost', '192.168.226.34', '192.168.176.34', '10.10.4.174', '192.168.84.34', '10.10.4.174' ]
-
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "192.168.30.34",
+    "10.0.101.10",
+    "myfund.onrender.com",
+    "localhost",
+    "192.168.226.34",
+    "192.168.176.34",
+    "10.10.4.174",
+    "192.168.84.34",
+    "10.10.4.174",
+]
 
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
@@ -60,7 +70,7 @@ INSTALLED_APPS = [
     "corsheaders",
     # 'sslserver',
     "channels",
-    "graphene_django"
+    "graphene_django",
     # 'django_socketio',
 ]
 
@@ -104,11 +114,11 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     #   "channels.middleware.WebSocketMiddleware",

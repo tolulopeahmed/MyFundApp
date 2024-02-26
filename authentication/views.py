@@ -44,12 +44,12 @@ def signup(request):
         user = serializer.save()
 
         # Access the new field through the serializer's validated data
-        how_did_you_hear = serializer.validated_data.get('how_did_you_hear', 'OTHER')
+        how_did_you_hear = serializer.validated_data.get("how_did_you_hear", "OTHER")
         user.how_did_you_hear = how_did_you_hear
         user.save()
-        
+
         # Check if it's a resend request
-        is_resend = request.data.get('resend', False)
+        is_resend = request.data.get("resend", False)
 
         if is_resend:
             # If it's a resend request, generate a new OTP and send it
@@ -533,9 +533,9 @@ def get_messages(request, recipient_id):
             "content": message.content,
             "timestamp": message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
             "sender_id": message.sender.id,
-            "image": message.image.url
-            if message.image
-            else None,  # Include the image URL if available
+            "image": (
+                message.image.url if message.image else None
+            ),  # Include the image URL if available
         }
         message_data_list.append(message_data)
 
@@ -2522,21 +2522,18 @@ def initiate_invest_transfer(request):
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_user_by_email(request):
-    email = request.query_params.get('email', '')
+    email = request.query_params.get("email", "")
     try:
         user = CustomUser.objects.get(email=email)
         user_data = {
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "email": user.email,
             # Add any other user details you want to include
         }
         return Response(user_data, status=status.HTTP_200_OK)
     except CustomUser.DoesNotExist:
-        return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
