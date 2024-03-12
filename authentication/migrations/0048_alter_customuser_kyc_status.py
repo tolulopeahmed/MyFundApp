@@ -12,6 +12,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="customuser",
             name="kyc_status",
-            field=models.CharField(default="Not yet started", max_length=10),
+            field=models.CharField(default="Not yet started", max_length=20),
         ),
     ]

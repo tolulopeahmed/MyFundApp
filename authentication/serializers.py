@@ -96,7 +96,7 @@ class KYCUpdateSerializer(serializers.ModelSerializer):
 
 
 class KYCStatusUpdateSerializer(serializers.Serializer):
-    kyc_status = serializers.CharField(max_length=10)
+    kyc_status = serializers.CharField(max_length=30)
 
 
 from django.contrib.auth import authenticate
@@ -220,7 +220,6 @@ class CardSerializer(serializers.ModelSerializer):
         expiry_date = validated_data.pop(
             "expiry_date"
         )  # Get the expiry_date as a string
-        print(validated_data)
         # Parse the expiry_date in MM/YY format
         expiry_month, expiry_year = expiry_date.split("/")
         expiry_date = f"{expiry_month}/{expiry_year}"  # Convert to a valid date format
