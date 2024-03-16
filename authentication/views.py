@@ -2549,8 +2549,8 @@ def message_admin(request):
         first_name = request.user.first_name
         last_name = request.user.last_name
         message = request.data.get("message")
-        recipient_email = "timilehinadebambo@gmail.com"
-        from_email = "care@myfundmobile.com"
+        recipient_email = "care@myfundmobile.com"
+        from_email = "info@myfundmobile.com"
 
         if not message:
             return JsonResponse(
