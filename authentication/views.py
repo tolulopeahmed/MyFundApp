@@ -8,7 +8,6 @@ from rest_framework.decorators import (
     authentication_classes,
     permission_classes,
     api_view,
-    permission_classes,
     parser_classes,
 )
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -33,6 +32,9 @@ from datetime import datetime
 from django.utils.safestring import mark_safe
 from django.db.models import F
 import uuid
+from rest_framework import status
+from rest_framework.response import Response
+import traceback
 
 
 @api_view(["POST"])
@@ -2537,3 +2539,37 @@ def get_user_by_email(request):
         return Response(user_data, status=status.HTTP_200_OK)
     except CustomUser.DoesNotExist:
         return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def message_admin(request):
+    try:
+        email = request.user.email
+        first_name = request.user.first_name
+        last_name = request.user.last_name
+        message = request.data.get("message")
+        recipient_email = "timilehinadebambo@gmail.com"
+        from_email = "care@myfundmobile.com"
+
+        if not message:
+            return JsonResponse(
+                {"error": "Message is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        subject = f"Message from {first_name} {last_name}"
+        message = f"From: {first_name} {last_name} ({email})\n\n{message}"
+
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=from_email,
+            recipient_list=[recipient_email],
+            fail_silently=False,
+        )
+
+        return JsonResponse({"success": True})
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
