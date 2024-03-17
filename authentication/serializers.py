@@ -1,3 +1,4 @@
+import os
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import CustomUser, Message
@@ -225,7 +226,10 @@ class CardSerializer(serializers.ModelSerializer):
         expiry_date = f"{expiry_month}/{expiry_year}"  # Convert to a valid date format
 
         # Verify the card with Paystack
-        paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"
+        paystack_secret_key = os.environ.get(
+            "PAYSTACK_KEY_LIVE",
+            default="sk_test_dacd07b029231eed22f407b3da805ecafdf2668f",
+        )
         card_number = validated_data["card_number"]
         cvv = validated_data["cvv"]
         validated_data["expiry_date"] = expiry_date  # Add this line

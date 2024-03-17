@@ -1,3 +1,4 @@
+import os
 from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -624,7 +625,10 @@ class BankAccountViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def resolve_account(self, account_number, bank_code):
-        secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"
+        secret_key = os.environ.get(
+                "PAYSTACK_KEY_LIVE",
+                default="sk_test_dacd07b029231eed22f407b3da805ecafdf2668f",
+            )
         url = f"https://api.paystack.co/bank/resolve?account_number={account_number}&bank_code={bank_code}"
         headers = {"Authorization": f"Bearer {secret_key}"}
 
@@ -919,8 +923,9 @@ class CustomGraphQLView(GraphQLView):
             )
 
 
-paystack_secret_key = (
-    "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"  # Use your actual secret key
+paystack_secret_key = os.environ.get(
+    "PAYSTACK_KEY_LIVE",
+    default="sk_test_dacd07b029231eed22f407b3da805ecafdf2668f",
 )
 
 
@@ -2174,7 +2179,10 @@ class BuyPropertyView(generics.CreateAPIView):
             expiry_year = card.expiry_date.split("/")[1]
 
             # Define your payment gateway credentials and headers
-            paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"
+            paystack_secret_key = os.environ.get(
+                "PAYSTACK_KEY_LIVE",
+                default="sk_test_dacd07b029231eed22f407b3da805ecafdf2668f",
+            )
             headers = {
                 "Authorization": f"Bearer {paystack_secret_key}",
                 "Content-Type": "application/json",

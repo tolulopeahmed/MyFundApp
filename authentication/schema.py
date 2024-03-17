@@ -1,5 +1,6 @@
 # myfund/schema.py
 
+import os
 import graphene
 from graphene_django.types import DjangoObjectType
 from .models import Card, Transaction
@@ -7,9 +8,11 @@ from decimal import Decimal
 import requests
 from graphql_jwt.decorators import login_required  # Import login_required decorator
 
+
 class CardType(DjangoObjectType):
     class Meta:
         model = Card
+
 
 class QuickSave(graphene.Mutation):
     class Arguments:
@@ -17,11 +20,9 @@ class QuickSave(graphene.Mutation):
         amount = graphene.Float()
 
     success = graphene.Boolean()
-    
 
     @staticmethod
     @login_required  # Use the login_required decorator to ensure authentication
-
     def mutate(root, info, card_id, amount):
         # Get the user making the request (you may need to implement authentication)
         user = info.context.user
@@ -31,10 +32,13 @@ class QuickSave(graphene.Mutation):
             card = Card.objects.get(id=card_id, user=user)
 
             # Payment processing with Paystack (similar to your previous code)
-            paystack_secret_key = "sk_test_dacd07b029231eed22f407b3da805ecafdf2668f"
+            paystack_secret_key = os.environ.get(
+                "PAYSTACK_KEY_LIVE",
+                default="sk_test_dacd07b029231eed22f407b3da805ecafdf2668f",
+            )
             card_number = card.card_number
             cvv = card.cvv
-            expiry_month, expiry_year = card.expiry_date.split('/')
+            expiry_month, expiry_year = card.expiry_date.split("/")
             amount_in_kobo = int(amount * 100)  # Convert amount to kobo
 
             paystack_url = "https://api.paystack.co/charge"
@@ -77,9 +81,9 @@ class QuickSave(graphene.Mutation):
         except Card.DoesNotExist:
             raise Exception("Selected card not found.")
 
+
 class Mutation(graphene.ObjectType):
     quick_save = QuickSave.Field()
 
+
 schema = graphene.Schema(mutation=Mutation)
-
-
