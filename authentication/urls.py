@@ -178,4 +178,7 @@ urlpatterns = [
         name="initiate_invest_transfer",
     ),
     path("message-admin/", views.message_admin, name="message-admin"),
+    path("update-myfundpin/", views.update_myfund_pin, name="update-myfundpin"),
+    path("has-myfundpin/", views.has_myfund_pin, name="has-myfundpin"),
+    path("validate-myfundpin/", views.validate_myfund_pin, name="validate_myfundpin"),
 ]

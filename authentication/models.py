@@ -17,6 +17,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from django.db.models import Sum
+import secrets
+from django.contrib.auth.hashers import make_password
 
 
 class CustomUserManager(BaseUserManager):
@@ -82,7 +84,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         default="OTHER",
     )
 
-    myfund_pin = models.CharField(max_length=4, null=True, blank=True)
+    myfund_pin = models.CharField(null=True, blank=True)
 
     preferred_asset = models.CharField(max_length=50, blank=True, null=True)
     savings_goal_amount = models.DecimalField(
@@ -219,7 +221,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.savings_and_investments = Decimal(str(self.savings)) + Decimal(
             str(self.investment)
         )
+
+        if self.myfund_pin:
+            self.myfund_pin = make_password(self.myfund_pin)
+
         super().save(*args, **kwargs)
+
+    @property
+    def myfund_pin_encrypted(self):
+        return self.myfund_pin
 
     def generate_reset_token(self):
         token = "".join(random.choices(string.ascii_letters + string.digits, k=64))

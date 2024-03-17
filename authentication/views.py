@@ -35,6 +35,7 @@ from django.db.models import F
 import uuid
 from rest_framework import status
 from rest_framework.response import Response
+from django.contrib.auth.hashers import make_password, check_password
 import traceback
 
 
@@ -626,9 +627,9 @@ class BankAccountViewSet(viewsets.ModelViewSet):
 
     def resolve_account(self, account_number, bank_code):
         secret_key = os.environ.get(
-                "PAYSTACK_KEY_LIVE",
-                default="sk_test_dacd07b029231eed22f407b3da805ecafdf2668f",
-            )
+            "PAYSTACK_KEY_LIVE",
+            default="sk_test_dacd07b029231eed22f407b3da805ecafdf2668f",
+        )
         url = f"https://api.paystack.co/bank/resolve?account_number={account_number}&bank_code={bank_code}"
         headers = {"Authorization": f"Bearer {secret_key}"}
 
@@ -2581,3 +2582,61 @@ def message_admin(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated])
+def update_myfund_pin(request):
+    try:
+        user = request.user
+        myfund_pin = request.data.get("myfund_pin")
+
+        if not myfund_pin:
+            return Response(
+                {"error": "myfund_pin is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.myfund_pin = make_password(myfund_pin)
+        user.save()
+
+        return JsonResponse({"success": "myfund_pin updated successfully"})
+
+    except Exception as e:
+        return JsonResponse(
+            {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def has_myfund_pin(request):
+    try:
+        user = request.user
+        has_pin = user.myfund_pin is not None
+        return JsonResponse({"has_pin": has_pin})
+    except Exception as e:
+        return JsonResponse(
+            {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def validate_myfund_pin(request):
+    try:
+        user = request.user
+        entered_pin = request.data.get("entered_pin")
+
+        if not entered_pin:
+            return JsonResponse(
+                {"error": "entered_pin is not set"}, status=status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if check_password(entered_pin, user.myfund_pin):
+            return JsonResponse({"success": True})
+
+        return JsonResponse({"error": "Incorrect Pin"}, status=status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return JsonResponse(
+            {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
