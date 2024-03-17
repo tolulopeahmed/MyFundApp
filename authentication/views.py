@@ -2565,7 +2565,7 @@ def message_admin(request):
         if not message:
             return JsonResponse(
                 {"error": "Message is required."},
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_200_OK,
             )
 
         subject = f"Message from {first_name} {last_name}"
@@ -2579,7 +2579,7 @@ def message_admin(request):
             fail_silently=False,
         )
 
-        return JsonResponse({"success": True})
+        return JsonResponse({"success": True}, status=status.HTTP_200_OK)
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -2592,18 +2592,17 @@ def update_myfund_pin(request):
         user = request.user
         myfund_pin = request.data.get("myfund_pin")
 
-        print(encrypt_data(myfund_pin))
-        print(encrypt_data(myfund_pin))
-
         if not myfund_pin:
             return Response(
-                {"error": "myfund_pin is required"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "myfund_pin is required"}, status=status.HTTP_200_OK
             )
 
         user.myfund_pin = myfund_pin
         user.save()
 
-        return JsonResponse({"success": "myfund_pin updated successfully"})
+        return JsonResponse(
+            {"success": "myfund_pin updated successfully"}, status=status.HTTP_200_OK
+        )
 
     except Exception as e:
         return JsonResponse(
@@ -2617,7 +2616,7 @@ def has_myfund_pin(request):
     try:
         user = request.user
         has_pin = user.myfund_pin is not None
-        return JsonResponse({"has_pin": has_pin})
+        return JsonResponse({"has_pin": has_pin}, status=status.HTTP_200_OK)
     except Exception as e:
         return JsonResponse(
             {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -2632,23 +2631,17 @@ def validate_myfund_pin(request):
         entered_pin = request.data.get("entered_pin")
         myfund_pin = user.myfund_pin.tobytes()
 
-        print(type(myfund_pin))
-
         myfund_pin = decrypt_data(myfund_pin)
-
-        print(myfund_pin)
 
         if not entered_pin:
             return JsonResponse(
-                {"error": "entered_pin is not set"}, status=status.HTTP_400_BAD_REQUEST
+                {"error": "entered_pin is not set"}, status=status.HTTP_200_OK
             )
 
         if entered_pin == myfund_pin:
             return JsonResponse({"success": True})
 
-        return JsonResponse(
-            {"error": "Incorrect Pin"}, status=status.HTTP_400_BAD_REQUEST
-        )
+        return JsonResponse({"error": "Incorrect Pin"}, status=status.HTTP_200_OK)
     except Exception as e:
         return JsonResponse(
             {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
