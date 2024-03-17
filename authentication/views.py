@@ -2629,7 +2629,7 @@ def validate_myfund_pin(request):
 
         if not entered_pin:
             return JsonResponse(
-                {"error": "entered_pin is not set"}, status=status=status.HTTP_400_BAD_REQUEST
+                {"error": "entered_pin is not set"}, status=status.HTTP_400_BAD_REQUEST
             )
 
         if check_password(entered_pin, user.myfund_pin):
