@@ -2635,7 +2635,9 @@ def validate_myfund_pin(request):
         if check_password(entered_pin, user.myfund_pin):
             return JsonResponse({"success": True})
 
-        return JsonResponse({"error": "Incorrect Pin"}, status=status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(
+            {"error": "Incorrect Pin"}, status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
         return JsonResponse(
             {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
