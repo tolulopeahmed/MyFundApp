@@ -488,9 +488,9 @@ const Profile = ({ navigation, route }) => {
 
         {pinModalVisible && (
           <PinModal
-            navigation={navigation}
             pinModalVisible={pinModalVisible}
             setPinModalVisible={setPinModalVisible}
+            useMode="change"
           />
         )}
 
@@ -522,6 +522,15 @@ const Profile = ({ navigation, route }) => {
             >
               <Ionicons name="shield-checkmark" size={24} style={styles.icon} />
               <Text style={styles.buttonText}>Update KYC</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => setPinModalVisible(true)}
+            >
+              <Ionicons name="key-sharp" size={24} style={styles.icon} />
+              <Text style={styles.buttonText}>Update Transaction PIN</Text>
             </TouchableOpacity>
           </View>
 
