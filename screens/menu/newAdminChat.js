@@ -30,15 +30,8 @@ const Chat = ({ navigation }) => {
   const [messageText, setMessageText] = useState("");
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [sendingMessage, setSendingMessage] = useState(false);
-  const [attachmentImage, setAttachmentImage] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null);
-  const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
-  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const userInfo = useSelector((state) => state.bank.userInfo);
   const scrollViewRef = useRef(null);
-  const [fetchInterval, setFetchInterval] = useState(null);
-  const messages = useSelector((state) => state.bank.messages);
-  const dispatch = useDispatch();
 
   const { isDarkMode, colors } = useTheme();
   const styles = createStyles(isDarkMode);
@@ -157,7 +150,7 @@ const Chat = ({ navigation }) => {
               <Text
                 style={{
                   marginLeft: 20,
-                  color: "white",
+                  color: isDarkMode ? "white" : "black",
                   fontFamily: "nexa",
                   marginTop: 5,
                 }}
@@ -170,7 +163,7 @@ const Chat = ({ navigation }) => {
               <Text
                 style={{
                   marginLeft: 20,
-                  color: "white",
+                  color: isDarkMode ? "white" : "black",
                   fontFamily: "nexa",
                   marginTop: 5,
                 }}
