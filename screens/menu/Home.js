@@ -83,11 +83,10 @@ const Home = ({ navigation, route }) => {
   const checkUserHasPin = async () => {
     try {
       const hasPinSaved = await AsyncStorage.getItem("has-pin");
-      console.log(hasPinSaved);
       if (hasPinSaved !== null) return;
 
       const hasPin = await userHasTransactionPin(userInfo.token);
-      if (hasPin) setPinModalVisible(!hasPin);
+      if (!hasPin) setPinModalVisible(!hasPin);
     } catch (e) {
       console.error(e);
       Alert.alert("Please check your internet connection and restart the app");
