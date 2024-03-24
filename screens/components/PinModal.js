@@ -5,6 +5,7 @@ import Divider from "../components/Divider";
 import { useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
+  checkUserHasPin,
   quickLogout,
   setModalBodyText,
   setModalHeaderText,
@@ -23,6 +24,7 @@ const PinModal = ({
   onPinSubmit,
   useMode, // Can either be create, validate, change
 }) => {
+  const [action, setAction] = useState(useMode);
   const [pin, setPin] = useState(["", "", "", ""]);
   const [noOfTrial, setNoOfTrial] = useState(3);
   const [isConfirmMode, setIsConfirmMode] = useState(false); // Track if user is in confirmation mode
@@ -30,14 +32,23 @@ const PinModal = ({
   const [chosenPin, setChosenPin] = useState("");
   const [previusPinConfirmed, setPreviousPinConfirmed] = useState(false);
   const userInfo = useSelector((state) => state.bank.userInfo);
-  const modalHeaderText = setModalHeaderText(useMode);
+  const modalHeaderText = setModalHeaderText(action);
   const modalBodyText = setModalBodyText(
-    useMode,
+    action,
     previusPinConfirmed,
     isConfirmMode
   );
   const token = userInfo.token;
   const navigation = useNavigation();
+
+  const setModalAction = async () => {
+    const hasPin = await checkUserHasPin(userInfo.token);
+    if (!hasPin) setAction("create");
+  };
+
+  useEffect(() => {
+    setModalAction();
+  });
 
   const changeModeSubmit = async () => {
     setIsLoading(true);
@@ -145,6 +156,7 @@ const PinModal = ({
       );
       if (existingPinConfirmed) {
         await onPinSubmit();
+        triggerSuccessHapticFeedback();
       } else {
         setNoOfTrial((state) => {
           console.log(state);
@@ -174,13 +186,14 @@ const PinModal = ({
     } finally {
       setIsLoading(false);
       setPin(["", "", "", ""]);
+      closeModal();
     }
   };
 
   const onSubmit = () => {
-    if (useMode === "change") changeModeSubmit();
-    if (useMode === "create") createModeSubmit();
-    if (useMode === "validate") validatePinSubmit();
+    if (action === "change") changeModeSubmit();
+    if (action === "create") createModeSubmit();
+    if (action === "validate") validatePinSubmit();
   };
 
   useEffect(() => {
@@ -190,7 +203,7 @@ const PinModal = ({
   }, [pin]);
 
   const closeModal = () => {
-    setPinModalVisible(useMode === "create" ? true : false);
+    setPinModalVisible(action === "create" ? true : false);
     setPin(["", "", "", ""]);
   };
 

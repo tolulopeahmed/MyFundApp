@@ -1,20 +1,19 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import { View, Text, StyleSheet, StatusBar } from 'react-native';
-import { useState, useEffect } from 'react';
-import { ImageProvider } from './ImageContext';
-import { AutoSaveProvider } from '../components/AutoSaveContext';
-import { UserProvider } from '../../UserContext';
-import { useTheme } from '../../ThemeContext';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Ionicons } from "@expo/vector-icons";
+import { View, Text, StyleSheet, StatusBar } from "react-native";
+import { useState, useEffect } from "react";
+import { ImageProvider } from "./ImageContext";
+import { AutoSaveProvider } from "../components/AutoSaveContext";
+import { UserProvider } from "../../UserContext";
+import { useTheme } from "../../ThemeContext";
 
-import Home from './Home';
-import Save from './Save';
-import Invest from './Invest';
-import Withdraw from './Withdraw';
-import Profile from './Profile';
+import Home from "./Home";
+import Save from "./Save";
+import Invest from "./Invest";
+import Withdraw from "./Withdraw";
+import Profile from "./Profile";
 
 const Tab = createBottomTabNavigator();
-
 
 const Dot = ({ color }) => (
   <View
@@ -29,9 +28,11 @@ const Dot = ({ color }) => (
 );
 
 const TabBarIcon = ({ focused, iconName, color, label }) => (
-  <View style={{ alignItems: 'center' }}>
+  <View style={{ alignItems: "center" }}>
     <Ionicons name={iconName} size={focused ? 24 : 24} color={color} />
-    <Text style={{ color: color, fontSize: 11, fontFamily: 'nexa' }}>{label}</Text>
+    <Text style={{ color: color, fontSize: 11, fontFamily: "nexa" }}>
+      {label}
+    </Text>
     {focused && <Dot color={color} />}
   </View>
 );
@@ -43,78 +44,85 @@ const MainTab = ({ navigation, route }) => {
 
   useEffect(() => {
     // Check if the user is a first-time signup and came from the Confirmation Screen
-    if (route.name === 'Confirmation') {
+    if (route.name === "Confirmation") {
       // Set the SavingsGoalModal to be visible
       setGoalModalVisible(true);
-      
+
       setTimeout(() => {
         // Navigate to the correct "More..." screen after 3 seconds
-        navigation.navigate('More...');
+        navigation.navigate("More...");
       }, 3000); // 3 seconds delay
     }
   }, [route]);
-  
-  
 
   return (
     <UserProvider>
-            <StatusBar backgroundColor="transparent" translucent barStyle={isDarkMode ? 'light-content' : 'dark-content'}/> 
+      <StatusBar
+        backgroundColor="transparent"
+        translucent
+        barStyle={isDarkMode ? "light-content" : "dark-content"}
+      />
 
-    <ImageProvider>
-      <AutoSaveProvider>
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarIcon: ({ color, size, focused }) => {
-          let iconName;
+      <ImageProvider>
+        <AutoSaveProvider>
+          <Tab.Navigator
+            screenOptions={({ route }) => ({
+              headerShown: false,
+              tabBarIcon: ({ color, size, focused }) => {
+                let iconName;
 
-          if (route.name === 'MyFund') {
-            iconName = 'home';
-          } else if (route.name === 'Save') {
-            iconName = 'save';
-          } else if (route.name === 'Invest') {
-            iconName = 'trending-up';
-          } else if (route.name === 'Withdraw') {
-            iconName = 'wallet';
-          } else if (route.name === 'More...') {
-            iconName = 'menu';
-          }
+                if (route.name === "MyFund") {
+                  iconName = "home";
+                } else if (route.name === "Save") {
+                  iconName = "save";
+                } else if (route.name === "Invest") {
+                  iconName = "trending-up";
+                } else if (route.name === "Withdraw") {
+                  iconName = "wallet";
+                } else if (route.name === "More...") {
+                  iconName = "menu";
+                }
 
-          return (
-            <TabBarIcon
-              focused={focused}
-              iconName={iconName}
-              color={color}
-              label={route.name}
+                return (
+                  <TabBarIcon
+                    focused={focused}
+                    iconName={iconName}
+                    color={color}
+                    label={route.name}
+                  />
+                );
+              },
+              tabBarActiveTintColor: isDarkMode ? "#BF73FA" : "#4C28BC",
+              tabBarInactiveTintColor: isDarkMode ? "lightgrey" : "grey",
+              tabBarShowLabel: false,
+              tabBarStyle: styles.tabStyle,
+            })}
+          >
+            <Tab.Screen name="MyFund" component={Home} autoSave={autoSave} />
+            <Tab.Screen
+              name="Save"
+              component={Save}
+              autoSave={autoSave}
+              setAutoSave={setAutoSave}
             />
-          );
-        },
-        tabBarActiveTintColor: isDarkMode ? '#BF73FA' : '#4C28BC',
-        tabBarInactiveTintColor: isDarkMode ? 'lightgrey' : 'grey',
-        tabBarShowLabel: false,
-        tabBarStyle: styles.tabStyle,
-      })}
-    >
-      <Tab.Screen name="MyFund" component={Home} autoSave={autoSave} />
-      <Tab.Screen name="Save" component={Save} autoSave={autoSave} setAutoSave={setAutoSave} />
-      <Tab.Screen name="Invest" component={Invest} />
-      <Tab.Screen name="Withdraw" component={Withdraw} />
-      <Tab.Screen name="More..." component={Profile} />
-    </Tab.Navigator>
-    </AutoSaveProvider>
-    </ImageProvider>
+            <Tab.Screen name="Invest" component={Invest} />
+            <Tab.Screen name="Withdraw" component={Withdraw} />
+            <Tab.Screen name="More..." component={Profile} />
+          </Tab.Navigator>
+        </AutoSaveProvider>
+      </ImageProvider>
     </UserProvider>
   );
 };
 
 const createStyles = (isDarkMode) => {
   return StyleSheet.create({
-  tabStyle: {
-    backgroundColor: isDarkMode ? 'black' : 'white', 
-    height: 70,
-    paddingBottom: 1,
-  },
-});
-}
+    tabStyle: {
+      backgroundColor: isDarkMode ? "black" : "white",
+      height: 70,
+      paddingBottom: 1,
+    },
+  });
+};
 
 export default MainTab;

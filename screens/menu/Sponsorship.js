@@ -313,35 +313,31 @@ const Sponsorship = ({ navigation, route }) => {
               value={autoInvestSettings.active}
             />
 
-            {autoInvestModalVisible && (
-              <AutoInvestModal
-                autoInvest={autoInvest}
-                setAutoInvest={setAutoInvest}
-                autoInvestModalVisible={autoInvestModalVisible}
-                setAutoInvestModalVisible={setAutoInvestModalVisible}
-                onConfirm={handleConfirmAutoInvest}
-                navigation={navigation}
-                amount={amount} // Pass the amount as a prop
-                frequency={frequency} // Pass the frequency as a prop
-              />
-            )}
+            <AutoInvestModal
+              autoInvest={autoInvest}
+              setAutoInvest={setAutoInvest}
+              autoInvestModalVisible={autoInvestModalVisible}
+              setAutoInvestModalVisible={setAutoInvestModalVisible}
+              onConfirm={handleConfirmAutoInvest}
+              navigation={navigation}
+              amount={amount} // Pass the amount as a prop
+              frequency={frequency} // Pass the frequency as a prop
+            />
 
-            {deactivateAutoInvestModalVisible && (
-              <DeactivateAutoInvestModal
-                autoInvest={autoInvest}
-                setAutoInvest={setAutoInvest}
-                deactivateAutoInvestModalVisible={
-                  deactivateAutoInvestModalVisible
-                }
-                setDeactivateAutoInvestModalVisible={
-                  setDeactivateAutoInvestModalVisible
-                }
-                onConfirm={handleConfirmDeactivateAutoInvest}
-                frequency={frequency} // Pass the current frequency to the modal
-                navigation={navigation}
-                route={route} // Pass the route prop here
-              />
-            )}
+            <DeactivateAutoInvestModal
+              autoInvest={autoInvest}
+              setAutoInvest={setAutoInvest}
+              deactivateAutoInvestModalVisible={
+                deactivateAutoInvestModalVisible
+              }
+              setDeactivateAutoInvestModalVisible={
+                setDeactivateAutoInvestModalVisible
+              }
+              onConfirm={handleConfirmDeactivateAutoInvest}
+              frequency={frequency} // Pass the current frequency to the modal
+              navigation={navigation}
+              route={route} // Pass the route prop here
+            />
           </View>
         </ImageBackground>
 
@@ -379,14 +375,12 @@ const Sponsorship = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
 
-        {quickInvestModalVisible && (
-          <QuickInvestModal
-            navigation={navigation}
-            quickInvestModalVisible={quickInvestModalVisible}
-            setQuickInvestModalVisible={setQuickInvestModalVisible}
-            setIsSuccessVisible={setIsSuccessVisible} // Pass the setIsSuccessVisible function here
-          />
-        )}
+        <QuickInvestModal
+          navigation={navigation}
+          quickInvestModalVisible={quickInvestModalVisible}
+          setQuickInvestModalVisible={setQuickInvestModalVisible}
+          setIsSuccessVisible={setIsSuccessVisible} // Pass the setIsSuccessVisible function here
+        />
 
         <SafeAreaView style={styles.transactionContainer}>
           <Divider />
@@ -470,13 +464,11 @@ const Sponsorship = ({ navigation, route }) => {
             <SectionTitle>VIEW ALL TRANSACTIONS...</SectionTitle>
           </TouchableOpacity>
 
-          {isSuccessVisible && (
-            <Success
-              isVisible={isSuccessVisible}
-              onClose={handleCloseSuccessModal} // Pass the callback function
-              navigation={navigation}
-            />
-          )}
+          <Success
+            isVisible={isSuccessVisible}
+            onClose={handleCloseSuccessModal} // Pass the callback function
+            navigation={navigation}
+          />
         </SafeAreaView>
       </ScrollView>
 

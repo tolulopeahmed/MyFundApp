@@ -27,6 +27,7 @@ import axios from "axios";
 import LoadingModal from "../components/LoadingModal";
 import bankOptions from "../components/BankOptions";
 import { useTheme } from "../../ThemeContext";
+import PinModal from "../components/PinModal";
 
 const getBackgroundColor = (bankName) => {
   const bank = bankOptions.find((option) => option.name === bankName);
@@ -425,7 +426,10 @@ const AutoInvestModal = ({
                             : "#4C28BC",
                         },
                       ]}
-                      onPress={() => setShowPinModal(true)}
+                      onPress={() => {
+                        closeModal();
+                        setShowPinModal(true);
+                      }}
                       disabled={isContinueButtonDisabled || processing}
                     >
                       {processing ? (

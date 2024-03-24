@@ -28,6 +28,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchUserData } from "../../ReduxActions";
 import { useTheme } from "../../ThemeContext";
 import LoadingModal from "../components/LoadingModal";
+import {
+  checkUserHasPin,
+  userHasTransactionPin,
+} from "../../utils/pinModalUtils";
 
 const Profile = ({ navigation, route }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -35,7 +39,8 @@ const Profile = ({ navigation, route }) => {
   const [showBalances, setShowBalances] = useState(false);
   const { isDarkMode, toggleDarkMode } = useTheme();
   const [goalModalVisible, setGoalModalVisible] = useState(false); // define modalVisible state
-  const [pinModalVisible, setPinModalVisible] = useState(false); // define modalVisible state
+  const [pinModalVisible, setPinModalVisible] = useState(false);
+  const [userHasPin, setUserHasPin] = useState(null);
   const [processing, setProcessing] = useState(false);
 
   const [profileEditModalVisible, setProfileEditModalVisible] = useState(false); // define modalVisible state
@@ -47,6 +52,15 @@ const Profile = ({ navigation, route }) => {
   const accountBalances = useSelector((state) => state.bank.accountBalances);
 
   const styles = createStyles(isDarkMode);
+
+  const userPinCheckAction = async () => {
+    const hasPin = await checkUserHasPin(userInfo.token);
+    setUserHasPin(hasPin);
+  };
+
+  useEffect(() => {
+    userPinCheckAction();
+  });
 
   const storeDarkModePreference = async (value) => {
     try {
@@ -249,6 +263,7 @@ const Profile = ({ navigation, route }) => {
               // Make an API call to log the user out
               await AsyncStorage.removeItem("authToken");
               await AsyncStorage.removeItem("profileImageUri");
+              await AsyncStorage.removeItem("has-pin");
 
               const keys = await AsyncStorage.getAllKeys();
               for (const key of keys) {
@@ -486,11 +501,20 @@ const Profile = ({ navigation, route }) => {
           dispatch={dispatch} // Pass the dispatch function
         />
 
-        {pinModalVisible && (
+        {userHasPin === false && (
           <PinModal
             pinModalVisible={pinModalVisible}
             setPinModalVisible={setPinModalVisible}
-            useMode="change"
+            useMode={"create"}
+            onCreate={setUserHasPin}
+          />
+        )}
+
+        {userHasPin === true && (
+          <PinModal
+            pinModalVisible={pinModalVisible}
+            setPinModalVisible={setPinModalVisible}
+            useMode={"change"}
           />
         )}
 
@@ -524,15 +548,28 @@ const Profile = ({ navigation, route }) => {
               <Text style={styles.buttonText}>Update KYC</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setPinModalVisible(true)}
-            >
-              <Ionicons name="key-sharp" size={24} style={styles.icon} />
-              <Text style={styles.buttonText}>Update Transaction PIN</Text>
-            </TouchableOpacity>
-          </View>
+          {userHasPin === false && (
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => setPinModalVisible(true)}
+              >
+                <Ionicons name="key-sharp" size={24} style={styles.icon} />
+                <Text style={styles.buttonText}>Create Transaction Pin</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          {userHasPin === true && (
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => setPinModalVisible(true)}
+              >
+                <Ionicons name="key-sharp" size={24} style={styles.icon} />
+                <Text style={styles.buttonText}>Update Transaction PIN</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           {/* <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={() => setPinModalVisible(true)}>

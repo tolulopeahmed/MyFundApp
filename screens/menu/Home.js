@@ -30,12 +30,9 @@ import SectionTitle from "../components/SectionTitle";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { useTheme } from "../../ThemeContext";
-import PinModal from "../components/PinModal";
-import { userHasTransactionPin } from "../../utils/pinModalUtils";
 
 const Home = ({ navigation, route }) => {
   const [greeting, setGreeting] = useState("");
-  const [pinModalVisible, setPinModalVisible] = useState(false);
   const userInfo = useSelector((state) => state.bank.userInfo);
   const accountBalances = useSelector((state) => state.bank.accountBalances);
   const userTransactions = useSelector((state) => state.bank.userTransactions);
@@ -79,23 +76,6 @@ const Home = ({ navigation, route }) => {
       setCurrentStatus(currentStage.text);
     }
   }, [currentStage]);
-
-  const checkUserHasPin = async () => {
-    try {
-      const hasPinSaved = await AsyncStorage.getItem("has-pin");
-      if (hasPinSaved !== null) return;
-
-      const hasPin = await userHasTransactionPin(userInfo.token);
-      if (!hasPin) setPinModalVisible(!hasPin);
-    } catch (e) {
-      console.error(e);
-      Alert.alert("Please check your internet connection and restart the app");
-    }
-  };
-
-  useEffect(() => {
-    checkUserHasPin();
-  }, []);
 
   const iconMapping = {
     "Card Successful": "card-outline",
@@ -923,13 +903,6 @@ const Home = ({ navigation, route }) => {
           >
             <SectionTitle>VIEW ALL TRANSACTIONS...</SectionTitle>
           </TouchableOpacity>
-          {pinModalVisible && (
-            <PinModal
-              pinModalVisible={pinModalVisible}
-              setPinModalVisible={setPinModalVisible}
-              useMode="create"
-            />
-          )}
         </SafeAreaView>
       </ScrollView>
     </View>

@@ -31,6 +31,7 @@ import LoadingModal from "./LoadingModal";
 import bankOptions from "./BankOptions";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeContext";
+import PinModal from "./PinModal";
 
 const getBackgroundColor = (bankName) => {
   const bank = bankOptions.find((option) => option.name === bankName);
@@ -220,8 +221,8 @@ const QuickInvestModal = ({
         dispatch(fetchUserTransactions()); // Add this line
         dispatch(fetchTopSaversData());
 
-        setIsSuccessVisible(true);
         setQuickInvestModalVisible(false);
+        setIsSuccessVisible(true);
         setProcessing(false);
       } else {
         // Handle QuickInvest error here and show appropriate alerts
@@ -675,7 +676,10 @@ const QuickInvestModal = ({
                                 : "#4C28BC",
                             },
                           ]}
-                          onPress={() => setShowPinModal(true)}
+                          onPress={() => {
+                            closeModal();
+                            setShowPinModal(true);
+                          }}
                           disabled={isContinueButtonDisabled || processing}
                         >
                           {processing ? (
@@ -742,7 +746,10 @@ const QuickInvestModal = ({
                                 : "#4C28BC",
                             },
                           ]}
-                          onPress={() => setShowPinModal(true)}
+                          onPress={() => {
+                            closeModal();
+                            setShowPinModal(true);
+                          }}
                           disabled={isSubmitButtonDisabled || processing}
                         >
                           {processing ? (
@@ -802,7 +809,10 @@ const QuickInvestModal = ({
                               : "#4C28BC",
                           },
                         ]}
-                        onPress={() => setShowPinModal(true)}
+                        onPress={() => {
+                          closeModal();
+                          setShowPinModal(true);
+                        }}
                         disabled={isSubmitButtonDisabled || processing}
                       >
                         {processing ? (

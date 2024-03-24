@@ -561,7 +561,10 @@ const QuickSaveModal = ({
                                 : "#4C28BC",
                             },
                           ]}
-                          onPress={() => setShowPinModal(true)}
+                          onPress={() => {
+                            closeModal();
+                            setShowPinModal(true);
+                          }}
                           disabled={isContinueButtonDisabled || processing}
                         >
                           {processing ? (
@@ -625,7 +628,11 @@ const QuickSaveModal = ({
                                 : "#4C28BC",
                             },
                           ]}
-                          onPress={() => showPinModal(true)} // Modify the function for bank transfer
+                          onPress={() => {
+                            console.log("kkkk");
+                            closeModal();
+                            setShowPinModal(true);
+                          }} // Modify the function for bank transfer
                           disabled={isSubmitButtonDisabled || processing}
                         >
                           {processing ? (

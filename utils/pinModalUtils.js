@@ -93,4 +93,18 @@ export const userHasTransactionPin = async (token) => {
 
 export const quickLogout = async () => {
   await AsyncStorage.removeItem("authToken");
+  await AsyncStorage.removeItem("has-pin");
+};
+
+export const checkUserHasPin = async (token) => {
+  try {
+    const hasPinSaved = await AsyncStorage.getItem("has-pin");
+    if (hasPinSaved !== null) return true;
+
+    const hasPin = await userHasTransactionPin(token);
+    return hasPin;
+  } catch (e) {
+    console.error(e);
+    Alert.alert("Please check your internet connection and restart the app");
+  }
 };
