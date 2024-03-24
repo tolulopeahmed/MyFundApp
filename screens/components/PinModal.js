@@ -249,7 +249,7 @@ const PinModal = ({
             <View style={styles.pinContainer}>
               {pin.map((digit, index) => (
                 <View key={index} style={styles.pinInput}>
-                  {digit && <Text style={styles.pinText}>*</Text>}
+                  {digit !== "" && <Text style={styles.pinText}>*</Text>}
                 </View>
               ))}
             </View>
