@@ -219,6 +219,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             str(self.investment)
         )
 
+        if self.profile_picture:
+            self.profile_picture = self.profile_picture.replace(
+                "https://myfund.onrender.com", "", 1
+            )
+
         super().save(*args, **kwargs)
 
     @property
