@@ -30,6 +30,7 @@ import SectionTitle from "../components/SectionTitle";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { useTheme } from "../../ThemeContext";
+import extractSecondUrl from "../../utils/imageUtils";
 
 const Home = ({ navigation, route }) => {
   const [greeting, setGreeting] = useState("");
@@ -42,8 +43,13 @@ const Home = ({ navigation, route }) => {
     (state) => state.bank.autoInvestSettings
   );
   const [currentStatus, setCurrentStatus] = useState("");
-  const profileImageUri = useSelector((state) => state.bank.profileImageUri);
-  const selectedImage = userInfo.profileImageUrl;
+  const profileImageUri = useSelector((state) =>
+    extractSecondUrl(state.bank.profileImageUri)
+  );
+
+  console.log("profileImageURLLLLLLLLLLLLLL", profileImageUri);
+  const selectedImage = extractSecondUrl(userInfo.profileImageUrl);
+  console.log("selecteddddddddddddddd", selectedImage);
   const kycStatus = useSelector((state) => state.bank.kycStatus);
   const [showBalances, setShowBalances] = useState(true);
   const isFocused = useIsFocused();
@@ -302,7 +308,7 @@ const Home = ({ navigation, route }) => {
                 />
               ) : userInfo.profileImageUrl ? (
                 <Image
-                  source={{ uri: userInfo.profileImageUrl }}
+                  source={{ uri: extractSecondUrl(userInfo.profileImageUrl) }}
                   style={styles.profileImage}
                 />
               ) : (

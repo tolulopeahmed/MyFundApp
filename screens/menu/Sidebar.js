@@ -1,136 +1,194 @@
-import React, {useState } from 'react';
-import { View, Text, ScrollView, Alert, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Divider from '../components/Divider';
-import QuickSaveModal from '../components/QuickSaveModal';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
-import { ipAddress } from '../../constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  Alert,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+} from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import Divider from "../components/Divider";
+import QuickSaveModal from "../components/QuickSaveModal";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { ipAddress } from "../../constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Sidebar = ({ navigation, }) => {
+const Sidebar = ({ navigation }) => {
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
   const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
 
   const handleLogout = async () => {
     try {
       // Make an API call to log the user out
-      await AsyncStorage.removeItem('authToken');
-      await AsyncStorage.removeItem('profileImageUri');
-  
+      await AsyncStorage.removeItem("authToken");
+      await AsyncStorage.removeItem("profileImageUri");
+      await AsyncStorage.removeItem("has-pin");
+
       const keys = await AsyncStorage.getAllKeys();
       for (const key of keys) {
-        if (key.startsWith('chatMessages')) {
+        if (key.startsWith("chatMessages")) {
           await AsyncStorage.removeItem(key);
         }
       }
-  
+
       try {
         // Attempt to send a logout request
         const response = await axios.post(`${ipAddress}/api/logout/`);
-  
+
         if (response.status === 200) {
           // Successfully logged out
           navigation.reset({
             index: 0,
-            routes: [{ name: 'Login' }],
+            routes: [{ name: "Login" }],
           });
         } else {
           // Handle error cases
-          console.log('Logout failed:', response.data);
+          console.log("Logout failed:", response.data);
         }
       } catch (error) {
         // Handle logout request error
-        console.log('Logout request error:', error);
-  
+        console.log("Logout request error:", error);
+
         // Check if the error is due to a network issue
-        if (error.message === 'Network Error') {
+        if (error.message === "Network Error") {
           // Show an alert for network error
           Alert.alert(
-            'Logout Failed',
-            'There was a problem logging you out. Please check your internet connection and try again.',
+            "Logout Failed",
+            "There was a problem logging you out. Please check your internet connection and try again.",
             [
               {
-                text: 'OK',
+                text: "OK",
               },
             ]
           );
         }
       }
     } catch (error) {
-      console.log('Logout error:', error);
+      console.log("Logout error:", error);
     }
   };
-  
 
   const handleSave = () => {
-    navigation.navigate('Save');
+    navigation.navigate("Save");
     setQuickSaveModalVisible(true);
-  }
-  
+  };
 
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-      <View style={styles.profileContainer}>
+        <View style={styles.profileContainer}>
+          <Image
+            source={require("../images/logo5.1.png")}
+            style={styles.image}
+          />
 
-      <Image source={require('../images/logo5.1.png')} style={styles.image} />
-
-
-
-        <View style={styles.profileInfo}>
-          <Text style={styles.firstName}>Hi</Text>
-          <Text style={styles.username}>{userInfo?.firstName ? `${userInfo.firstName}` : ''}</Text>
+          <View style={styles.profileInfo}>
+            <Text style={styles.firstName}>Hi</Text>
+            <Text style={styles.username}>
+              {userInfo?.firstName ? `${userInfo.firstName}` : ""}
+            </Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.menuItemsContainer}>
-        <TouchableOpacity style={styles.menuItem} onPress={handleSave}>
-          <Ionicons name="save-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
-          <Text style={styles.menuText}>Save</Text>
-        </TouchableOpacity>
+        <View style={styles.menuItemsContainer}>
+          <TouchableOpacity style={styles.menuItem} onPress={handleSave}>
+            <Ionicons
+              name="save-outline"
+              size={24}
+              color="#fff"
+              style={{ marginRight: 15 }}
+            />
+            <Text style={styles.menuText}>Save</Text>
+          </TouchableOpacity>
 
-        {quickSaveModalVisible && (
-      <QuickSaveModal
-        navigation={navigation}
-        quickSaveModalVisible={quickSaveModalVisible}
-        setQuickSaveModalVisible={setQuickSaveModalVisible}
-      />
-    )}
+          {quickSaveModalVisible && (
+            <QuickSaveModal
+              navigation={navigation}
+              quickSaveModalVisible={quickSaveModalVisible}
+              setQuickSaveModalVisible={setQuickSaveModalVisible}
+            />
+          )}
 
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Ownership')}>
-          <Ionicons name="home-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
-          <Text style={styles.menuText}>Buy Properties</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('PropertyList')}>
-          <Ionicons name="wallet-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
-          <Text style={styles.menuText}>Earn Rent</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.push('WealthMap')}>
-              <View style={{ marginLeft: -29, marginRight: 15 }}>
-        <View style={styles.arrow} />
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => navigation.navigate("Ownership")}
+          >
+            <Ionicons
+              name="home-outline"
+              size={24}
+              color="#fff"
+              style={{ marginRight: 15 }}
+            />
+            <Text style={styles.menuText}>Buy Properties</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => navigation.navigate("PropertyList")}
+          >
+            <Ionicons
+              name="wallet-outline"
+              size={24}
+              color="#fff"
+              style={{ marginRight: 15 }}
+            />
+            <Text style={styles.menuText}>Earn Rent</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => navigation.push("WealthMap")}
+          >
+            <View style={{ marginLeft: -29, marginRight: 15 }}>
+              <View style={styles.arrow} />
+            </View>
+            <Ionicons
+              name="cellular-outline"
+              size={24}
+              color="#fff"
+              style={{ marginRight: 15 }}
+            />
+            <Text style={styles.menuText}>My WealthMap</Text>
+          </TouchableOpacity>
         </View>
-          <Ionicons name="cellular-outline" size={24} color="#fff" style={{ marginRight: 15 }} />
-          <Text style={styles.menuText}>My WealthMap</Text>
-        </TouchableOpacity>
-      </View>
 
-
-      <Divider />
-      <View style={styles.subMenuItemsContainer}>
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('More...')}>
-          <Ionicons name="settings-outline" size={18} color="silver" style={{ marginRight: 15 }} />
-          <Text style={styles.subMenuText}>Settings</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Chat')}>
-          <Ionicons name="chatbubbles-outline" size={18} color="silver" style={{ marginRight: 15 }} />
-          <Text style={styles.subMenuText}>Chat Admin</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-          <Ionicons name="log-out-outline" size={18} color="orange" style={{ marginRight: 15 }} />
-          <Text style={styles.subMenuText}>Log Out</Text>
-        </TouchableOpacity>
-      </View>
+        <Divider />
+        <View style={styles.subMenuItemsContainer}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => navigation.navigate("More...")}
+          >
+            <Ionicons
+              name="settings-outline"
+              size={18}
+              color="silver"
+              style={{ marginRight: 15 }}
+            />
+            <Text style={styles.subMenuText}>Settings</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => navigation.navigate("Chat")}
+          >
+            <Ionicons
+              name="chatbubbles-outline"
+              size={18}
+              color="silver"
+              style={{ marginRight: 15 }}
+            />
+            <Text style={styles.subMenuText}>Chat Admin</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+            <Ionicons
+              name="log-out-outline"
+              size={18}
+              color="orange"
+              style={{ marginRight: 15 }}
+            />
+            <Text style={styles.subMenuText}>Log Out</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
   );
@@ -139,17 +197,15 @@ const Sidebar = ({ navigation, }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#4C28BC',
+    backgroundColor: "#4C28BC",
     paddingTop: 60,
     paddingHorizontal: 20,
-    
   },
   profileContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 50,
     marginTop: 55,
-
   },
   image: {
     width: 110,
@@ -158,67 +214,60 @@ const styles = StyleSheet.create({
     marginRight: 5,
     marginLeft: -10,
     borderWidth: 0.5,
-    resizeMode: 'center'
-    },
+    resizeMode: "center",
+  },
   profileInfo: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    
+    flexDirection: "column",
+    justifyContent: "center",
   },
   firstName: {
     fontSize: 40,
-    color: '#fff',
-    fontFamily: 'karla',
+    color: "#fff",
+    fontFamily: "karla",
     marginBottom: 2,
     letterSpacing: -2,
   },
   username: {
     fontSize: 17,
-    color: '#A9A9A9',
-    fontFamily: 'ProductSans',
-
+    color: "#A9A9A9",
+    fontFamily: "ProductSans",
   },
   menuItemsContainer: {
     marginBottom: 40,
-    marginLeft: 10
-
+    marginLeft: 10,
   },
   menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 10,
     marginBottom: 10,
   },
   menuText: {
     fontSize: 20,
-    color: '#fff',
-    fontFamily: 'ProductSans'
+    color: "#fff",
+    fontFamily: "ProductSans",
   },
   arrow: {
     borderTopWidth: 7,
     borderRightWidth: 6,
     borderBottomWidth: 7,
     borderLeftWidth: 8,
-    borderTopColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderLeftColor: '#FF9933',
+    borderTopColor: "transparent",
+    borderRightColor: "transparent",
+    borderBottomColor: "transparent",
+    borderLeftColor: "#FF9933",
     marginTop: 0,
-    transform: [{ scaleX: -1 }]
-
-
+    transform: [{ scaleX: -1 }],
   },
   subMenuItemsContainer: {
     marginBottom: 10,
-    marginLeft: 10
-
+    marginLeft: 10,
   },
   subMenuText: {
     fontSize: 15,
-    color: 'silver',
-    fontFamily: 'ProductSans'
-  }
- 
+    color: "silver",
+    fontFamily: "ProductSans",
+  },
 });
 
 export default Sidebar;

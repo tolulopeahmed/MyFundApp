@@ -32,6 +32,7 @@ import {
   checkUserHasPin,
   userHasTransactionPin,
 } from "../../utils/pinModalUtils";
+import extractSecondUrl from "../../utils/imageUtils";
 
 const Profile = ({ navigation, route }) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -400,9 +401,9 @@ const Profile = ({ navigation, route }) => {
                   <Image
                     source={
                       selectedImage
-                        ? { uri: selectedImage } // Use selected image if available
-                        : userInfo.profileImageUrl
-                        ? { uri: userInfo.profileImageUrl } // Use profile picture URL if available
+                        ? { uri: extractSecondUrl(selectedImage) } // Use selected image if available
+                        : extractSecondUrl(userInfo.profileImageUrl)
+                        ? { uri: extractSecondUrl(userInfo.profileImageUrl) } // Use profile picture URL if available
                         : require("./Profile1.png") // Use a default image if both are null
                     }
                     style={styles.image}

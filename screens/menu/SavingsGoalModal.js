@@ -391,8 +391,8 @@ const SavingsGoalModal = ({
             </View>
           </TouchableOpacity>
         </TouchableOpacity>
+        <LoadingModal visible={processing} />
       </Modal>
-      <LoadingModal visible={processing} />
     </>
   );
 };
