@@ -18,7 +18,6 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from django.db.models import Sum
 import secrets
-from utils.encryption import encrypt_data
 
 
 class CustomUserManager(BaseUserManager):
@@ -58,9 +57,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     otp = models.CharField(max_length=6, blank=True, null=True)
     reset_token = models.CharField(max_length=64, null=True, blank=True)
     reset_token_expires = models.DateTimeField(null=True, blank=True)
-    profile_picture = models.ImageField(
-        upload_to="profile_pics/", blank=True, null=True
-    )
+    profile_picture = models.CharField(max_length=200, null=True, blank=True)
     is_confirmed = models.BooleanField(default=False)
 
     referral = models.ForeignKey(
@@ -221,9 +218,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.savings_and_investments = Decimal(str(self.savings)) + Decimal(
             str(self.investment)
         )
-
-        if self.myfund_pin:
-            self.myfund_pin = encrypt_data(self.myfund_pin)
 
         super().save(*args, **kwargs)
 

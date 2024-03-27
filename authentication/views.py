@@ -38,6 +38,7 @@ from rest_framework.response import Response
 from django.contrib.auth.hashers import make_password, check_password
 import traceback
 from utils.encryption import encrypt_data, decrypt_data
+from utils.imageKit import imagekit
 
 
 @api_view(["POST"])
@@ -388,7 +389,7 @@ def get_user_profile(request):
         "lastName": user.last_name,
         "mobileNumber": user.phone_number,
         "email": user.email,
-        "profile_picture": user.profile_picture.url if user.profile_picture else None,
+        "profile_picture": user.profile_picture if user.profile_picture else None,
         "preferred_asset": user.preferred_asset,
         "savings_goal_amount": user.savings_goal_amount,
         "time_period": user.time_period,
@@ -418,35 +419,60 @@ def update_user_profile(request):
     )
 
 
+import base64
+
+
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
 def profile_picture_update(request):
-    user = request.user
-    serializer = ProfilePictureUpdateSerializer(user, data=request.data, partial=True)
+    try:
+        user = request.user
 
-    if serializer.is_valid():
-        serializer.save()
+        if not bool(request.data):
+            return JsonResponse(
+                "No image was provided", status=status.HTTP_404_NOT_FOUND
+            )
 
-        # Get the updated user instance
-        updated_user = CustomUser.objects.get(id=user.id)
+        profile_pic = request.data["profile_picture"]
 
-        # Create a dictionary with the updated user information
+        imgstr = base64.b64encode(profile_pic.read())
+
+        upload = imagekit.upload_file(file=imgstr, file_name="profile_pic.jpg")
+
+        if not bool(upload.response_metadata.raw):
+            return JsonResponse(
+                "Process failed, please try again.",
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        print(upload.response_metadata.raw)
+
+        image_url = list(upload.response_metadata.raw.values())[5]
+
+        print("image", image_url)
+
+        user.profile_picture = image_url
+
+        user.save()
+
         updated_user_data = {
-            "firstName": updated_user.first_name,
-            "lastName": updated_user.last_name,
-            "mobileNumber": updated_user.phone_number,
-            "email": updated_user.email,
-            "profile_picture": updated_user.profile_picture.url,
+            "firstName": user.first_name,
+            "lastName": user.last_name,
+            "mobileNumber": user.phone_number,
+            "email": user.email,
+            "profile_picture": user.profile_picture,
         }
 
-        return Response(
+        return JsonResponse(
             {
                 "message": "Profile picture updated successfully.",
                 "user": updated_user_data,
             }
         )
-
-    return Response(serializer.errors, status=400)
+    except Exception as e:
+        return JsonResponse(
+            {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 from .serializers import SavingsGoalUpdateSerializer
@@ -2597,7 +2623,7 @@ def update_myfund_pin(request):
                 {"error": "myfund_pin is required"}, status=status.HTTP_200_OK
             )
 
-        user.myfund_pin = myfund_pin
+        user.myfund_pin = encrypt_data(myfund_pin)
         user.save()
 
         return JsonResponse(
