@@ -38,6 +38,7 @@ import TopSavers from "./screens/menu/TopSavers";
 import PasswordForgot from "./screens/menu/PasswordForgot";
 import PasswordConfirm from "./screens/menu/PasswordConfirm";
 import { ThemeProvider } from "./ThemeContext";
+import * as Updates from "expo-updates";
 
 const Stack = createStackNavigator();
 
@@ -57,7 +58,24 @@ const App = ({ darkModeStyles }) => {
       });
       setIsLoading(false);
     }
+
+    const onFetchUpdateAsync = async () => {
+      try {
+        const update = await Updates.checkForUpdateAsync();
+
+        if (update.isAvailable) {
+          alert("Updating..., Be patient");
+          await Updates.fetchUpdateAsync();
+          await Updates.reloadAsync();
+        }
+      } catch (error) {
+        // You can also add an alert() to see the error message in case of an error when fetching updates.
+        alert(`Error fetching latest Expo update: ${error}`);
+      }
+    };
+
     loadFonts();
+    onFetchUpdateAsync();
   }, []);
 
   if (isLoading) {

@@ -28,10 +28,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchUserData } from "../../ReduxActions";
 import { useTheme } from "../../ThemeContext";
 import LoadingModal from "../components/LoadingModal";
-import {
-  checkUserHasPin,
-  userHasTransactionPin,
-} from "../../utils/pinModalUtils";
+import { checkUserHasPin } from "../../utils/pinModalUtils";
 import extractSecondUrl from "../../utils/imageUtils";
 
 const Profile = ({ navigation, route }) => {

@@ -5,6 +5,9 @@ const extractSecondUrl = (str) => {
   if (!str) return null;
 
   const strSplits = str.split("com");
+
+  if (strSplits.length === 1) return strSplits[0];
+
   return strSplits[1];
 };
 

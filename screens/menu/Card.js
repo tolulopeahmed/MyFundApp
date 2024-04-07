@@ -24,6 +24,7 @@ import axios from "axios";
 import { ipAddress } from "../../constants";
 import bankOptions from "../components/BankOptions";
 import { useTheme } from "../../ThemeContext";
+import OTPModal from "../components/OTPModal";
 
 const getBackgroundColor = (bankName) => {
   const bank = bankOptions.find((option) => option.name === bankName);

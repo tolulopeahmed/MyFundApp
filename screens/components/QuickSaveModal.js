@@ -40,7 +40,9 @@ const QuickSaveModal = ({
   navigation,
   quickSaveModalVisible,
   setQuickSaveModalVisible,
-  setIsSuccessVisible,
+  setOtpModalVisible,
+  setReference,
+  setOtpMessage,
 }) => {
   const [showPinModal, setShowPinModal] = useState(false);
   const [frequency, setFrequency] = useState("Bank Transfer");
@@ -171,46 +173,12 @@ const QuickSaveModal = ({
         }
       );
 
-      if (response.status === 200) {
-        // QuickSave was successful, update account balances and transactions
-        const responseData = response.data;
-        dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
-        dispatch(fetchAccountBalances()); // Add this line
-        dispatch(fetchUserTransactions()); // Add this line
-        dispatch(fetchTopSaversData());
-
-        setIsSuccessVisible(true);
+      if (response.status === 200 && response.data.status === true) {
+        setOtpMessage(response.data.data.message);
+        setReference(response.data.data.reference);
         setQuickSaveModalVisible(false);
         setProcessing(false);
-
-        // Dispatch the success message
-        const currentDate = new Date();
-        const messageDate = currentDate.toISOString();
-        const messageTime = currentDate.toLocaleTimeString();
-        const successMessage = `Your QuickSave of ₦${amount} was successful. Keep growing your funds.🥂`;
-        const messageData = {
-          text: successMessage,
-          date: messageDate,
-          time: messageTime,
-        };
-
-        // Send a POST request to create an alert message associated with the user
-        await axios.post(
-          `${ipAddress}/api/create-alert-message/`,
-          {
-            text: successMessage,
-            date: messageDate,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${userInfo.token}`,
-            },
-          }
-        );
-
-        // Dispatch the success message with date and time properties
-        dispatch(addAlertMessage(messageData));
+        setOtpModalVisible(true);
       } else {
         // Handle QuickSave error here and show appropriate alerts
         if (response.status === 400) {
@@ -239,7 +207,7 @@ const QuickSaveModal = ({
       // Handle network or other errors here and show an appropriate alert
       Alert.alert(
         "Error",
-        "An error occurred. Please check your network connection and try again."
+        `${error.response.data.error} ${error.response.data.message}`
       );
     }
   };

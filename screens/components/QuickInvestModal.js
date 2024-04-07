@@ -43,6 +43,9 @@ const QuickInvestModal = ({
   quickInvestModalVisible,
   setQuickInvestModalVisible,
   setIsSuccessVisible,
+  setOtpModalVisible,
+  setReference,
+  setOtpMessage,
 }) => {
   const [showPinModal, setShowPinModal] = useState(false);
   const [frequency, setFrequency] = useState("savings");
@@ -214,16 +217,12 @@ const QuickInvestModal = ({
         }
       );
 
-      if (response.status === 200) {
-        const responseData = response.data;
-        dispatch(updateAccountBalances(responseData.newAccountBalances)); // Dispatch the action here
-        dispatch(fetchAccountBalances()); // Add this line
-        dispatch(fetchUserTransactions()); // Add this line
-        dispatch(fetchTopSaversData());
-
-        setQuickInvestModalVisible(false);
-        setIsSuccessVisible(true);
+      if (response.status === 200 && response.data.status) {
+        setOtpMessage(response.data.data.message);
+        setReference(response.data.data.reference);
         setProcessing(false);
+        setQuickInvestModalVisible(false);
+        setOtpModalVisible(true);
       } else {
         // Handle QuickInvest error here and show appropriate alerts
         if (response.status === 400) {

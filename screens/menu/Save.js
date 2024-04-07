@@ -36,9 +36,13 @@ import Success from "../components/Success";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { useTheme } from "../../ThemeContext";
+import OTPModal from "../components/OTPModal";
 
 const Save = ({ navigation, route }) => {
+  const [otpMessage, setOtpMessage] = useState("");
   const [quickSaveModalVisible, setQuickSaveModalVisible] = useState(false);
+  const [otpModalVisible, setOtpModalVisible] = useState(false);
+  const [reference, setReference] = useState("");
   const [autoSaveModalVisible, setAutoSaveModalVisible] = useState(false);
   const [deactivateAutoSaveModalVisible, setDeactivateAutoSaveModalVisible] =
     useState(false);
@@ -562,7 +566,18 @@ const Save = ({ navigation, route }) => {
           navigation={navigation}
           quickSaveModalVisible={quickSaveModalVisible}
           setQuickSaveModalVisible={setQuickSaveModalVisible}
-          setIsSuccessVisible={setIsSuccessVisible} // Pass the setIsSuccessVisible function here
+          setOtpModalVisible={setOtpModalVisible}
+          setReference={setReference}
+          setOtpMessage={setOtpMessage}
+        />
+
+        <OTPModal
+          otpModalVisible={otpModalVisible}
+          setOtpModalVisible={setOtpModalVisible}
+          reference={reference}
+          setIsSuccessVisible={setIsSuccessVisible}
+          otpMessage={otpMessage}
+          type="Quicksave"
         />
 
         <SafeAreaView style={styles.transactionContainer}>
@@ -906,7 +921,7 @@ const createStyles = (isDarkMode) => {
     },
 
     switch: {
-      marginTop: -15,
+      marginTop: -8,
     },
 
     autoSaveSettingContainer: {

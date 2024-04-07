@@ -19,6 +19,7 @@ import Subtitle from "../components/Subtitle";
 import { MaterialIcons } from "@expo/vector-icons";
 import moment from "moment";
 import { useTheme } from "../../ThemeContext";
+import extractSecondUrl from "../../utils/imageUtils";
 
 const TopSavers = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -63,7 +64,7 @@ const TopSavers = ({ navigation }) => {
           {saver.profile_picture ? (
             <Image
               style={styles.circularImage}
-              source={{ uri: ipAddress + saver.profile_picture }}
+              source={{ uri: extractSecondUrl(saver.profile_picture) }}
               onError={() => console.log("Image load error")}
             />
           ) : (
@@ -205,12 +206,12 @@ const TopSavers = ({ navigation }) => {
         <View style={styles.profileImageContainer}>
           {selectedImage ? (
             <Image
-              source={{ uri: selectedImage }}
+              source={{ uri: extractSecondUrl(selectedImage) }}
               style={styles.profileImage}
             />
           ) : userInfo.profileImageUrl ? (
             <Image
-              source={{ uri: userInfo.profileImageUrl }}
+              source={{ uri: extractSecondUrl(userInfo.profileImageUrl) }}
               style={styles.profileImage}
             />
           ) : (
