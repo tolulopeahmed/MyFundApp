@@ -13,7 +13,6 @@ import { Ionicons } from "@expo/vector-icons";
 import Header from "../components/Header";
 import Divider from "../components/Divider";
 import Swiper from "react-native-swiper";
-import QuickInvestModal from "../components/QuickInvestModal";
 import Title from "../components/Title";
 import Subtitle from "../components/Subtitle";
 import SectionTitle from "../components/SectionTitle";
@@ -30,20 +29,15 @@ import OTPModal from "../components/OTPModal";
 const images = [require("./sponsorship.png"), require("./ownership.png")];
 
 const Invest = ({ navigation, firstName }) => {
-  const [otpModalVisible, setOtpModalVisible] = useState(false);
-  const [reference, setReference] = useState("");
-  const [otpMessage, setOtpMessage] = useState("");
-  const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
   const { isDarkMode, colors } = useTheme();
   const styles = createStyles(isDarkMode);
   const [showBalances, setShowBalances] = useState(true);
   const userInfo = useSelector((state) => state.bank.userInfo); // Get userInfo from Redux state
   const accountBalances = useSelector((state) => state.bank.accountBalances);
-  const [isSuccessVisible, setIsSuccessVisible] = useState(false);
   const dispatch = useDispatch();
 
   const handleQuickInvest = () => {
-    navigation.navigate("Sponsorship", { quickInvestModalVisible: true });
+    navigation.navigate("Sponsorship");
   };
 
   const handleImagePress = (index) => {
@@ -260,23 +254,6 @@ const Invest = ({ navigation, firstName }) => {
                 </ImageBackground>
               </TouchableOpacity>
             </View>
-
-            <QuickInvestModal
-              navigation={navigation}
-              quickInvestModalVisible={quickInvestModalVisible}
-              setQuickInvestModalVisible={setQuickInvestModalVisible}
-              setOtpMessage={setOtpMessage}
-              setReference={setReference}
-              setOtpModalVisible={setOtpModalVisible}
-            />
-            <OTPModal
-              type="QuickInvest"
-              otpModalVisible={otpModalVisible}
-              setOtpModalVisible={otpModalVisible}
-              reference={reference}
-              setIsSuccessVisible={setIsSuccessVisible}
-              otpMessage={otpMessage}
-            />
           </View>
           <Divider />
 

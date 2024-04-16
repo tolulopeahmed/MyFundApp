@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Text, View, TouchableOpacity, Animated } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import Modal from 'react-native-modal';
+import React, { useState, useEffect } from "react";
+import { Text, View, TouchableOpacity, Animated } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import Modal from "react-native-modal";
 
 const Success = ({ isVisible, onClose, navigation }) => {
   const [animation] = useState(new Animated.Value(0));
@@ -39,11 +39,15 @@ const Success = ({ isVisible, onClose, navigation }) => {
           />
         </View>
         <Text style={styles.modalSubText}>
-          Your transaction is successful 
-          {'\n'}and has been updated!
+          Your transaction is being processed, thank you for using MyFund
         </Text>
 
-        <Animated.View style={[styles.checkmarkContainer, { opacity: animation, transform: [{ scale: animation }] }]}>
+        <Animated.View
+          style={[
+            styles.checkmarkContainer,
+            { opacity: animation, transform: [{ scale: animation }] },
+          ]}
+        >
           <Ionicons name="checkmark-circle-outline" size={170} color="green" />
         </Animated.View>
 
@@ -65,10 +69,10 @@ const Success = ({ isVisible, onClose, navigation }) => {
 const styles = {
   modal: {
     margin: 0,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   modalContent: {
-    backgroundColor: '#F6F3FF',
+    backgroundColor: "#F6F3FF",
     borderTopRightRadius: 25,
     borderTopLeftRadius: 25,
     borderBottomLeftRadius: 0,
@@ -76,45 +80,45 @@ const styles = {
     padding: 20,
   },
   modalHeaderContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 20,
   },
   modalHeader: {
     fontSize: 25,
-    fontFamily: 'proxima',
-    color: '#4C28BC',
+    fontFamily: "proxima",
+    color: "#4C28BC",
   },
   modalSubText: {
     fontSize: 14,
-    fontFamily: 'karla',
-    color: 'black',
-    textAlign: 'center',
+    fontFamily: "karla",
+    color: "black",
+    textAlign: "center",
     marginHorizontal: 30,
     marginBottom: 20,
   },
   checkmarkContainer: {
     marginBottom: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonContainer: {
     marginTop: 10,
-    alignSelf: 'center',
-    width: '85%',
+    alignSelf: "center",
+    width: "85%",
   },
   primaryButton: {
-    backgroundColor: '#4C28BC',
-    width: '100%',
+    backgroundColor: "#4C28BC",
+    width: "100%",
     height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 10,
   },
   primaryButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
-    fontFamily: 'ProductSans',
+    fontFamily: "ProductSans",
   },
 };
 

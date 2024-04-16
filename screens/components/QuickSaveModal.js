@@ -30,6 +30,7 @@ import bankOptions from "./BankOptions";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeContext";
 import PinModal from "./PinModal";
+import * as WebBrowser from "expo-web-browser";
 
 const getBackgroundColor = (bankName) => {
   const bank = bankOptions.find((option) => option.name === bankName);
@@ -162,7 +163,7 @@ const QuickSaveModal = ({
       const response = await axios.post(
         `${ipAddress}/api/quicksave/`,
         {
-          card_id: selectedCardId,
+          card_id: selectedCard,
           amount: parseFloat(amount.replace(/,/g, "")),
         },
         {
@@ -173,12 +174,20 @@ const QuickSaveModal = ({
         }
       );
 
-      if (response.status === 200 && response.data.status === true) {
-        setOtpMessage(response.data.data.message);
-        setReference(response.data.data.reference);
+      if (response.status === 200) {
+        if (response.data.status === "send_url") {
+          const result = await WebBrowser.openBrowserAsync(
+            response.data.send_url
+          );
+        }
+
+        setOtpMessage(response.data.display_text);
+        setReference(response.data.reference);
         setQuickSaveModalVisible(false);
+        setTimeout(() => {
+          setOtpModalVisible(true);
+        }, 1000);
         setProcessing(false);
-        setOtpModalVisible(true);
       } else {
         // Handle QuickSave error here and show appropriate alerts
         if (response.status === 400) {
@@ -497,7 +506,7 @@ const QuickSaveModal = ({
                               selectedValue={selectedCard}
                               onValueChange={(value) => {
                                 console.log("Selected Card Value:", value);
-                                setSelectedCardId(value); // Set selectedCardId to the selected card's ID
+                                setSelectedCard(value); // Set selectedCardId to the selected card's ID
                               }}
                             >
                               {userCards.map((card) => (

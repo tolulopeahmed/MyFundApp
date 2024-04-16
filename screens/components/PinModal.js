@@ -44,11 +44,14 @@ const PinModal = ({
   const setModalAction = async () => {
     const hasPin = await checkUserHasPin(userInfo.token);
     if (!hasPin) setAction("create");
+    if (hasPin) setAction(useMode);
   };
 
   useEffect(() => {
     setModalAction();
-  });
+
+    return () => setModalAction();
+  }, [pinModalVisible]);
 
   const changeModeSubmit = async () => {
     setIsLoading(true);
@@ -130,6 +133,7 @@ const PinModal = ({
           await AsyncStorage.setItem("has-pin", "true");
           triggerSuccessHapticFeedback();
           setPinModalVisible(false);
+          setPin(["", "", "", ""]);
         } else {
           Alert.alert("Pins don't match");
           triggerErrorHapticFeedback();

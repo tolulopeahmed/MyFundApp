@@ -206,7 +206,7 @@ const QuickInvestModal = ({
       const response = await axios.post(
         `${ipAddress}/api/quickinvest/`, // Updated API endpoint
         {
-          card_id: selectedCardId,
+          card_id: selectedCard,
           amount: parseFloat(amount.replace(/,/g, "")),
         },
         {
@@ -217,12 +217,16 @@ const QuickInvestModal = ({
         }
       );
 
+      console.log(response.data);
+
       if (response.status === 200 && response.data.status) {
-        setOtpMessage(response.data.data.message);
-        setReference(response.data.data.reference);
-        setProcessing(false);
+        setOtpMessage(response.data.display_text);
+        setReference(response.data.reference);
         setQuickInvestModalVisible(false);
-        setOtpModalVisible(true);
+        setTimeout(() => {
+          setOtpModalVisible(true);
+        }, 1000);
+        setProcessing(false);
       } else {
         // Handle QuickInvest error here and show appropriate alerts
         if (response.status === 400) {
@@ -641,10 +645,8 @@ const QuickInvestModal = ({
                           <View style={styles.dropdown}>
                             <Picker
                               style={styles.labelItem}
-                              selectedValue={selectedCardId}
-                              onValueChange={(value) =>
-                                setSelectedCardId(value)
-                              }
+                              selectedValue={selectedCard}
+                              onValueChange={(value) => setSelectedCard(value)}
                             >
                               {userCards.map((card) => (
                                 <Picker.Item

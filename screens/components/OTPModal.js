@@ -12,14 +12,15 @@ import Divider from "../components/Divider";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingModal from "./LoadingModal";
 import { useNavigation } from "@react-navigation/native";
-import { addAlertMessage } from "../../ReduxActions";
+import { addAlertMessage, fetchAccountBalances } from "../../ReduxActions";
 import axios from "axios";
+import { ipAddress } from "../../constants";
 
 const OTPModal = ({
   otpModalVisible,
   setOtpModalVisible,
-  reference,
-  otpMessage,
+  reference = "reference",
+  otpMessage = "Otp message",
   setIsSuccessVisible,
   type,
 }) => {
@@ -58,6 +59,7 @@ const OTPModal = ({
   };
 
   const handleOtp = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.post(
         `${ipAddress}/api/submit_otp/`,
@@ -72,6 +74,8 @@ const OTPModal = ({
           },
         }
       );
+
+      console.log(response.data);
 
       if (!response.data.status) {
         Alert.alert("Error encountered");
@@ -106,11 +110,16 @@ const OTPModal = ({
 
       // Dispatch the success message with date and time properties
       dispatch(addAlertMessage(messageData));
+      dispatch(fetchAccountBalances());
       closeModal();
       setIsSuccessVisible(true);
     } catch (e) {
+      console.error(e);
+      console.log(e);
       Alert.alert("An error occurred");
       closeModal();
+    } finally {
+      setIsLoading(false);
     }
   };
 

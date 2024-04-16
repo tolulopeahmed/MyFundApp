@@ -32,8 +32,12 @@ import Success from "../components/Success";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { useTheme } from "../../ThemeContext";
+import OTPModal from "../components/OTPModal";
 
 const Sponsorship = ({ navigation, route }) => {
+  const [otpModalVisible, setOtpModalVisible] = useState(false);
+  const [reference, setReference] = useState("");
+  const [otpMessage, setOtpMessage] = useState("");
   const [quickInvestModalVisible, setQuickInvestModalVisible] = useState(false);
   const [autoInvestModalVisible, setAutoInvestModalVisible] = useState(false);
   const [
@@ -379,9 +383,18 @@ const Sponsorship = ({ navigation, route }) => {
           navigation={navigation}
           quickInvestModalVisible={quickInvestModalVisible}
           setQuickInvestModalVisible={setQuickInvestModalVisible}
-          setIsSuccessVisible={setIsSuccessVisible} // Pass the setIsSuccessVisible function here
+          setOtpMessage={setOtpMessage}
+          setReference={setReference}
+          setOtpModalVisible={setOtpModalVisible}
         />
-
+        <OTPModal
+          type="QuickInvest"
+          otpModalVisible={otpModalVisible}
+          setOtpModalVisible={setOtpModalVisible}
+          reference={reference}
+          setIsSuccessVisible={setIsSuccessVisible}
+          otpMessage={otpMessage}
+        />
         <SafeAreaView style={styles.transactionContainer}>
           <Divider />
           <SectionTitle>INVESTMENT TRANSACTIONS</SectionTitle>
