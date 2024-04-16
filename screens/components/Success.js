@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, TouchableOpacity, Animated } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import Modal from "react-native-modal";
 
-const Success = ({ isVisible, onClose, navigation }) => {
+// @params type is either success, pending, failed
+const Success = ({ isVisible, onClose, type }) => {
   const [animation] = useState(new Animated.Value(0));
 
   useEffect(() => {
@@ -30,7 +32,13 @@ const Success = ({ isVisible, onClose, navigation }) => {
     >
       <View style={styles.modalContent}>
         <View style={styles.modalHeaderContainer}>
-          <Text style={styles.modalHeader}>Success!</Text>
+          <Text style={styles.modalHeader}>
+            {type === "success"
+              ? "Success!"
+              : type === "failed"
+              ? "Failed!"
+              : "Pending!"}
+          </Text>
           <Ionicons
             name="close-outline"
             size={24}
@@ -48,7 +56,19 @@ const Success = ({ isVisible, onClose, navigation }) => {
             { opacity: animation, transform: [{ scale: animation }] },
           ]}
         >
-          <Ionicons name="checkmark-circle-outline" size={170} color="green" />
+          {type === "success" && (
+            <Ionicons
+              name="checkmark-circle-outline"
+              size={170}
+              color="green"
+            />
+          )}
+          {type === "failed" && (
+            <AntDesign name="closecircleo" size={170} color="red" />
+          )}
+          {type === "pending" && (
+            <AntDesign name="clockcircleo" size={170} color="black" />
+          )}
         </Animated.View>
 
         <View style={styles.buttonContainer}>

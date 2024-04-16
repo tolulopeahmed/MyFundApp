@@ -52,6 +52,7 @@ const Save = ({ navigation, route }) => {
   const userTransactions = useSelector((state) => state.bank.userTransactions);
   const [currentMonth, setCurrentMonth] = useState("");
   const [isSuccessVisible, setIsSuccessVisible] = useState(false);
+  const [successType, setSuccessType] = useState(false);
   const [amount, setAmount] = useState("");
   const [frequency, setFrequency] = useState("");
   const autoSaveSettings = useSelector((state) => state.bank.autoSaveSettings);
@@ -577,6 +578,7 @@ const Save = ({ navigation, route }) => {
           reference={reference}
           setIsSuccessVisible={setIsSuccessVisible}
           otpMessage={otpMessage}
+          setSuccessType={setSuccessType}
           type="Quicksave"
         />
 
@@ -676,13 +678,12 @@ const Save = ({ navigation, route }) => {
         <Ionicons name="save-outline" size={25} color="#fff" />
       </TouchableOpacity>
 
-      {isSuccessVisible && (
-        <Success
-          isVisible={isSuccessVisible}
-          onClose={handleCloseSuccessModal} // Pass the callback function
-          navigation={navigation}
-        />
-      )}
+      <Success
+        isVisible={isSuccessVisible}
+        onClose={handleCloseSuccessModal} // Pass the callback function
+        navigation={navigation}
+        type={successType}
+      />
     </View>
   );
 };

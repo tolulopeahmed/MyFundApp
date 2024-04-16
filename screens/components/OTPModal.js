@@ -23,6 +23,7 @@ const OTPModal = ({
   otpMessage = "Otp message",
   setIsSuccessVisible,
   type,
+  setSuccessType,
 }) => {
   const [pin, setPin] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
@@ -75,12 +76,12 @@ const OTPModal = ({
         }
       );
 
-      console.log(response.data);
-
       if (!response.data.status) {
         Alert.alert("Error encountered");
         return closeModal();
       }
+
+      setSuccessType(response.data?.data?.status);
 
       // Dispatch the success message
       const currentDate = new Date();

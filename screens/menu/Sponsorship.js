@@ -35,6 +35,7 @@ import { useTheme } from "../../ThemeContext";
 import OTPModal from "../components/OTPModal";
 
 const Sponsorship = ({ navigation, route }) => {
+  const [successType, setSuccessType] = useState("");
   const [otpModalVisible, setOtpModalVisible] = useState(false);
   const [reference, setReference] = useState("");
   const [otpMessage, setOtpMessage] = useState("");
@@ -394,6 +395,7 @@ const Sponsorship = ({ navigation, route }) => {
           reference={reference}
           setIsSuccessVisible={setIsSuccessVisible}
           otpMessage={otpMessage}
+          setSuccessType={setSuccessType}
         />
         <SafeAreaView style={styles.transactionContainer}>
           <Divider />
@@ -481,6 +483,7 @@ const Sponsorship = ({ navigation, route }) => {
             isVisible={isSuccessVisible}
             onClose={handleCloseSuccessModal} // Pass the callback function
             navigation={navigation}
+            type={successType}
           />
         </SafeAreaView>
       </ScrollView>
