@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Modal,
   View,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  TextInput,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Divider from "../components/Divider";
@@ -15,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { addAlertMessage, fetchAccountBalances } from "../../ReduxActions";
 import axios from "axios";
 import { ipAddress } from "../../constants";
+import { AntDesign } from "@expo/vector-icons";
 
 const OTPModal = ({
   otpModalVisible,
@@ -25,7 +27,7 @@ const OTPModal = ({
   type,
   setSuccessType,
 }) => {
-  const [pin, setPin] = useState(["", "", "", "", "", ""]);
+  const [pin, setPin] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const userInfo = useSelector((state) => state.bank.userInfo);
   const token = userInfo.token;
@@ -34,29 +36,15 @@ const OTPModal = ({
 
   const closeModal = () => {
     setOtpModalVisible(false);
-    setPin(["", "", "", "", "", ""]);
+    setPin("");
   };
 
   const handleNumberPress = (number) => {
-    const newPin = [...pin];
-    for (let i = 0; i < pin.length; i++) {
-      if (newPin[i] === "") {
-        newPin[i] = number;
-        break;
-      }
-    }
-    setPin(newPin);
+    setPin((state) => state + String(number));
   };
 
   const handleBackspacePress = () => {
-    const newPin = [...pin];
-    for (let i = pin.length - 1; i >= 0; i--) {
-      if (newPin[i] !== "") {
-        newPin[i] = "";
-        break;
-      }
-    }
-    setPin(newPin);
+    setPin((state) => state.substring(0, state.length - 1));
   };
 
   const handleOtp = async () => {
@@ -66,7 +54,7 @@ const OTPModal = ({
         `${ipAddress}/api/submit_otp/`,
         {
           reference,
-          entered_otp: pin.join(""),
+          entered_otp: pin,
         },
         {
           headers: {
@@ -124,14 +112,6 @@ const OTPModal = ({
     }
   };
 
-  useEffect(() => {
-    // Check if all digits are entered and toggle confirmation mode
-    const isAllDigitsEntered = pin.every((digit) => digit !== "");
-    if (isAllDigitsEntered) {
-      handleOtp();
-    }
-  }, [pin]);
-
   return (
     <>
       <Modal
@@ -163,11 +143,12 @@ const OTPModal = ({
             </Text>
             <Text style={styles.modalBodyText}>{otpMessage}</Text>
             <View style={styles.pinContainer}>
-              {pin.map((digit, index) => (
-                <View key={index} style={styles.pinInput}>
-                  {digit !== "" && <Text style={styles.pinText}>*</Text>}
-                </View>
-              ))}
+              <TextInput
+                editable={false}
+                value={pin}
+                style={styles.pinInput}
+                secureTextEntry={true}
+              ></TextInput>
             </View>
             <View style={styles.keyboardContainer}>
               <View style={styles.keyboardRow}>
@@ -206,9 +187,9 @@ const OTPModal = ({
               <View style={styles.keyboardRow}>
                 <TouchableOpacity
                   style={styles.keyboardButton}
-                  onPress={() => handleNumberPress(0)}
+                  onPress={() => handleOtp()}
                 >
-                  <Text style={styles.keyboardButtonText}>*</Text>
+                  <AntDesign name="checkcircle" size={24} color="green" />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.keyboardButton}
@@ -277,7 +258,7 @@ const styles = StyleSheet.create({
   pinInput: {
     fontSize: 30,
     height: 50,
-    width: "13%",
+    width: "100%",
     fontFamily: "karla",
     backgroundColor: "white",
     borderRadius: 9,

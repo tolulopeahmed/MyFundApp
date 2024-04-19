@@ -582,6 +582,12 @@ const Save = ({ navigation, route }) => {
           type="Quicksave"
         />
 
+        <Success
+          isVisible={isSuccessVisible}
+          onClose={handleCloseSuccessModal} // Pass the callback function
+          navigation={navigation}
+          type={successType}
+        />
         <SafeAreaView style={styles.transactionContainer}>
           <Divider />
 
@@ -677,13 +683,6 @@ const Save = ({ navigation, route }) => {
       >
         <Ionicons name="save-outline" size={25} color="#fff" />
       </TouchableOpacity>
-
-      <Success
-        isVisible={isSuccessVisible}
-        onClose={handleCloseSuccessModal} // Pass the callback function
-        navigation={navigation}
-        type={successType}
-      />
     </View>
   );
 };

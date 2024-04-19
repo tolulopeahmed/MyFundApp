@@ -163,7 +163,7 @@ const QuickSaveModal = ({
       const response = await axios.post(
         `${ipAddress}/api/quicksave/`,
         {
-          card_id: selectedCard,
+          card_id: selectedCardId,
           amount: parseFloat(amount.replace(/,/g, "")),
         },
         {
@@ -175,10 +175,8 @@ const QuickSaveModal = ({
       );
 
       if (response.status === 200) {
-        if (response.data.status === "send_url") {
-          const result = await WebBrowser.openBrowserAsync(
-            response.data.send_url
-          );
+        if (response.data.status === "open_url") {
+          return await WebBrowser.openBrowserAsync(response.data.open_url);
         }
 
         setOtpMessage(response.data.display_text);
@@ -212,12 +210,10 @@ const QuickSaveModal = ({
       }
     } catch (error) {
       console.error("QuickSave Error:", error);
-      setProcessing(false);
       // Handle network or other errors here and show an appropriate alert
-      Alert.alert(
-        "Error",
-        `${error.response.data.error} ${error.response.data.message}`
-      );
+      Alert.alert("Error", "Please check your network and try again");
+    } finally {
+      setProcessing(false);
     }
   };
 

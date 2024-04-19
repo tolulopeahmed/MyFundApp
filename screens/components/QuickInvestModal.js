@@ -206,7 +206,7 @@ const QuickInvestModal = ({
       const response = await axios.post(
         `${ipAddress}/api/quickinvest/`, // Updated API endpoint
         {
-          card_id: selectedCard,
+          card_id: selectedCardId,
           amount: parseFloat(amount.replace(/,/g, "")),
         },
         {
@@ -216,8 +216,6 @@ const QuickInvestModal = ({
           },
         }
       );
-
-      console.log(response.data);
 
       if (response.status === 200 && response.data.status) {
         setOtpMessage(response.data.display_text);
@@ -251,12 +249,13 @@ const QuickInvestModal = ({
       }
     } catch (error) {
       console.error("QuickInvest Error:", error);
-      setProcessing(false);
       // Handle network or other errors here and show an appropriate alert
       Alert.alert(
         "Error",
         "An error occurred. Please check your network connection and try again."
       );
+    } finally {
+      setProcessing(false);
     }
   };
 
