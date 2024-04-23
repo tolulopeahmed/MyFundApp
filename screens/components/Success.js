@@ -47,7 +47,11 @@ const Success = ({ isVisible, onClose, type }) => {
           />
         </View>
         <Text style={styles.modalSubText}>
-          Your transaction is being processed, thank you for using MyFund
+          {type === "success"
+            ? "Your transaction was successful, thank you for using MyFund"
+            : type === "failed"
+            ? "Your transaction is failed, thank you for using MyFund"
+            : "Your transaction is being processed, thank you for using MyFund"}
         </Text>
 
         <Animated.View

@@ -32,6 +32,9 @@ import bankOptions from "./BankOptions";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeContext";
 import PinModal from "./PinModal";
+import { Entypo } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
+import * as WebBrowser from "expo-web-browser";
 
 const getBackgroundColor = (bankName) => {
   const bank = bankOptions.find((option) => option.name === bankName);
@@ -65,6 +68,7 @@ const QuickInvestModal = ({
   const { isDarkMode, colors } = useTheme();
   const styles = createStyles(isDarkMode);
   const accountBalances = useSelector((state) => state.bank.accountBalances);
+  const [copiedText, setCopiedText] = React.useState("");
 
   const dispatch = useDispatch();
 
@@ -122,6 +126,10 @@ const QuickInvestModal = ({
     handleAmountPreset(presetAmount);
     // Dismiss the keyboard when the button is pressed
     Keyboard.dismiss();
+  };
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync("0821326433");
   };
 
   const dismissKeyboard = () => {
@@ -218,6 +226,9 @@ const QuickInvestModal = ({
       );
 
       if (response.status === 200 && response.data.status) {
+        if (response.data.status === "open_url") {
+          return await WebBrowser.openBrowserAsync(response.data.open_url);
+        }
         setOtpMessage(response.data.display_text);
         setReference(response.data.reference);
         setQuickInvestModalVisible(false);
@@ -719,10 +730,22 @@ const QuickInvestModal = ({
                       <Text style={styles.modalSubText2} alignSelf="flex-start">
                         {"\n"} 1. Transfer the exact amount you entered above
                         to... {"\n"}
-                        <Text style={styles.accountDetails}>
-                          {" "}
+                        <Text
+                          onPress={() => {
+                            copyToClipboard();
+                            alert("Account number copied to clipboard");
+                          }}
+                          style={styles.accountDetails}
+                        >
                           0821326433 (Access Bank) {"\n"} VCORP SYSTEMS LIMITED
-                        </Text>{" "}
+                        </Text>
+                        {"  "}
+                        <Entypo
+                          name="clipboard"
+                          size={24}
+                          color={isDarkMode ? "yellow" : "#4C28BC"}
+                          style={{}}
+                        />
                         {"\n"}
                         2. Click{" "}
                         <Text style={{ fontFamily: "proxima" }}>

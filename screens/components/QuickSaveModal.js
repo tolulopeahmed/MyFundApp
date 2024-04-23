@@ -31,6 +31,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeContext";
 import PinModal from "./PinModal";
 import * as WebBrowser from "expo-web-browser";
+import * as Clipboard from "expo-clipboard";
+import { Entypo } from "@expo/vector-icons";
 
 const getBackgroundColor = (bankName) => {
   const bank = bankOptions.find((option) => option.name === bankName);
@@ -61,6 +63,7 @@ const QuickSaveModal = ({
   const [showQuickSaveButton, setShowQuickSaveButton] = useState(true);
   const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(true); // New state variable
   const { isDarkMode, colors } = useTheme();
+  const [copiedText, setCopiedText] = React.useState("");
   const styles = createStyles(isDarkMode);
   const dispatch = useDispatch();
 
@@ -84,6 +87,10 @@ const QuickSaveModal = ({
 
   const handleAmountButtonPress = (presetAmount) => {
     handleAmountPreset(presetAmount);
+  };
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync("0821326433");
   };
 
   useEffect(() => {
@@ -575,10 +582,22 @@ const QuickSaveModal = ({
                       <Text style={styles.modalSubText2} alignSelf="flex-start">
                         {"\n"} 1. Transfer the exact amount you entered above
                         to... {"\n"}
-                        <Text style={styles.accountDetails}>
-                          {" "}
+                        <Text
+                          onPress={() => {
+                            copyToClipboard();
+                            alert("Account number copied to clipboard");
+                          }}
+                          style={styles.accountDetails}
+                        >
                           0821326433 (Access Bank) {"\n"} VCORP SYSTEMS LIMITED
-                        </Text>{" "}
+                        </Text>
+                        {"  "}
+                        <Entypo
+                          name="clipboard"
+                          size={24}
+                          color={isDarkMode ? "yellow" : "#4C28BC"}
+                          style={{}}
+                        />
                         {"\n"}
                         2. Click{" "}
                         <Text style={{ fontFamily: "proxima" }}>
