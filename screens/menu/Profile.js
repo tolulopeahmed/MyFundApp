@@ -553,7 +553,7 @@ const Profile = ({ navigation, route }) => {
                 onPress={() => setPinModalVisible(true)}
               >
                 <Ionicons name="key-sharp" size={24} style={styles.icon} />
-                <Text style={styles.buttonText}>Create Transaction Pin</Text>
+                <Text style={styles.buttonText}>Create Transaction PIN</Text>
               </TouchableOpacity>
             </View>
           )}

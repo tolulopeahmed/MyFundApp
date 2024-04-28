@@ -25,16 +25,16 @@ export const setModalBodyText = (
   if (useMode === "create") {
     return !isConfirmMode
       ? "Set up your secure transaction PIN to ensure smooth and safe financial transactions."
-      : "Confirm your pin";
+      : "Confirm your PIN";
   }
 
   if (useMode === "validate") {
-    return "Secure your purchase with your transaction PIN. Input your pin to proceed.";
+    return "Secure your purchase with your transaction PIN. Input your PIN to proceed.";
   }
 
   if (useMode === "change") {
     return previusPinConfirmed && isConfirmMode
-      ? "Confirm your pin"
+      ? "Confirm your PIN"
       : previusPinConfirmed
       ? "Securely update your transaction PIN for added peace of mind. Your financial safety is our priority."
       : "Input your previous transaction PIN";

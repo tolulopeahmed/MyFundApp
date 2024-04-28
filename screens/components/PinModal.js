@@ -67,7 +67,7 @@ const PinModal = ({
           setPin(["", "", "", ""]);
           triggerSuccessHapticFeedback();
         } else {
-          Alert.alert("Pin does not match");
+          Alert.alert("PIN does not match");
           setPin(["", "", "", ""]);
           triggerErrorHapticFeedback();
         }
@@ -77,7 +77,7 @@ const PinModal = ({
 
         if (pinsMatch) {
           await updateUserTransactionPin(confirmationPin, token);
-          Alert.alert("Pin successfully changed");
+          Alert.alert("PIN successfully changed");
           triggerSuccessHapticFeedback();
           closeModal();
         } else {
@@ -93,10 +93,10 @@ const PinModal = ({
           enteredChosenPin,
           token
         );
-        console.log(`Pin in use ${pinAlreadyInUse}`);
+        console.log(`PIN in use ${pinAlreadyInUse}`);
 
         if (pinAlreadyInUse) {
-          Alert.alert("You entered your existing transaction pin");
+          Alert.alert("You entered your existing transaction PIN");
           return closeModal();
         }
         setIsConfirmMode(true);
@@ -129,7 +129,7 @@ const PinModal = ({
 
         if (pinsMatch) {
           await updateUserTransactionPin(confirmationPin, token);
-          Alert.alert("Pin successfully created");
+          Alert.alert("PIN successfully created");
           await AsyncStorage.setItem("has-pin", "true");
           triggerSuccessHapticFeedback();
           setPinModalVisible(false);
@@ -167,7 +167,7 @@ const PinModal = ({
           state -= 1;
           console.log(state);
           Alert.alert(
-            `Incorrect Pin, ${state} more ${state === 1 ? "chance" : "chances"}`
+            `Incorrect PIN, ${state} more ${state === 1 ? "chance" : "chances"}`
           );
           return state;
         });
